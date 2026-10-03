@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><rect width="1024" height="1024" fill="#f4f8fc"/><g transform="translate(0.0 0.0) scale(1.0)"><rect x="202" y="168" width="620" height="100" rx="22" fill="#003366" stroke="#1f2d3d" stroke-width="14"/>
+<path d="M262 206 h170 M262 236 h110" stroke="#fff" stroke-width="13" stroke-linecap="round" opacity=".9"/>
+<path d="M640 238 l34-40 l34 40 z" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" opacity=".9"/>
+<rect x="402" y="262" width="220" height="24" rx="12" fill="#c9a97a" stroke="#1f2d3d" stroke-width="12"/>
+<rect x="197" y="352" width="250" height="66" rx="16" fill="#fff3d6" stroke="#1f2d3d" stroke-width="14"/>
+<rect x="577" y="352" width="250" height="66" rx="16" fill="#fff3d6" stroke="#1f2d3d" stroke-width="14"/>
+
+  <defs><linearGradient id="g322575" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4fd38c"/><stop offset="1" stop-color="#16a05c"/></linearGradient></defs>
+  <path d="M217 575 v-22 a105 74 0 0 1 210 0 v22 z" fill="url(#g322575)" stroke="#1f2d3d" stroke-width="14" stroke-linejoin="round"/>
+  <circle cx="322" cy="427" r="50" fill="url(#g322575)" stroke="#1f2d3d" stroke-width="14"/>
+  <ellipse cx="306" cy="409" rx="14" ry="10" fill="#fff" opacity=".5"/>
+
+  <defs><linearGradient id="g702575" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#a98bff"/><stop offset="1" stop-color="#7c4ddb"/></linearGradient></defs>
+  <path d="M597 575 v-22 a105 74 0 0 1 210 0 v22 z" fill="url(#g702575)" stroke="#1f2d3d" stroke-width="14" stroke-linejoin="round"/>
+  <circle cx="702" cy="427" r="50" fill="url(#g702575)" stroke="#1f2d3d" stroke-width="14"/>
+  <ellipse cx="686" cy="409" rx="14" ry="10" fill="#fff" opacity=".5"/>
+<rect x="197" y="612" width="250" height="66" rx="16" fill="#fff3d6" stroke="#1f2d3d" stroke-width="14"/>
+<rect x="577" y="612" width="250" height="66" rx="16" fill="#fff3d6" stroke="#1f2d3d" stroke-width="14"/>
+
+  <defs><linearGradient id="g322835" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ff7b7b"/><stop offset="1" stop-color="#d93636"/></linearGradient></defs>
+  <path d="M217 835 v-22 a105 74 0 0 1 210 0 v22 z" fill="url(#g322835)" stroke="#1f2d3d" stroke-width="14" stroke-linejoin="round"/>
+  <circle cx="322" cy="687" r="50" fill="url(#g322835)" stroke="#1f2d3d" stroke-width="14"/>
+  <ellipse cx="306" cy="669" rx="14" ry="10" fill="#fff" opacity=".5"/>
+
+  <defs><linearGradient id="g702835" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffc24a"/><stop offset="1" stop-color="#e08b00"/></linearGradient></defs>
+  <path d="M597 835 v-22 a105 74 0 0 1 210 0 v22 z" fill="url(#g702835)" stroke="#1f2d3d" stroke-width="14" stroke-linejoin="round"/>
+  <circle cx="702" cy="687" r="50" fill="url(#g702835)" stroke="#1f2d3d" stroke-width="14"/>
+  <ellipse cx="686" cy="669" rx="14" ry="10" fill="#fff" opacity=".5"/></g></svg>

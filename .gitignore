@@ -1,0 +1,11 @@
+res/ios/icon-*.png
+res/ios/Default*.png
+node_modules/
+package-lock.json
+platforms/
+build/
+tools/icon/out/
+*.keystore
+*.p12
+*.p8
+*.mobileprovision

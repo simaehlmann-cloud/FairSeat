@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Version an drei Stellen gleich halten: hier, APP_VERSION in index.html
+     und der Cache-Name in sw.js. validate.js prüft das.
+     versionCode = Haupt*10000 + Neben*100 + Patch (2.0.0 -> 20000). -->
+<widget id="de.fairseat.app"
+        version="2.0.0"
+        android-versionCode="20000"
+        ios-CFBundleVersion="20000"
+        xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+
+    <name>FairSeat</name>
+    <description>Sitzpläne für Klasse, Hochzeit und Feier: Namen verwalten, Räume gestalten, Plätze zuordnen. Läuft vollständig offline.</description>
+    <author email="smaehlmann.appdev@gmail.com">Wisdompeak Apps – Simon Mählmann</author>
+
+    <content src="index.html" />
+
+    <!-- Offline-App: kein <access origin="*">. Externe Links öffnen im
+         System-Browser, nicht im WebView. -->
+    <allow-intent href="mailto:*" />
+    <allow-intent href="https://*/*" />
+
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="Fullscreen" value="false" />
+    <!-- Sitzpläne werden oft quer bearbeitet, deshalb beide Lagen -->
+    <preference name="Orientation" value="default" />
+    <preference name="BackgroundColor" value="0xffbcdcff" />
+
+    <platform name="android">
+        <preference name="android-minSdkVersion"     value="24" />
+        <preference name="android-targetSdkVersion"  value="36" />
+        <preference name="android-compileSdkVersion" value="36" />
+        <preference name="AndroidInsecureFileModeEnabled" value="false" />
+        <preference name="AndroidXEnabled" value="true" />
+
+        <preference name="AndroidWindowSplashScreenBackground" value="#003366" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/android/icon_fg_xxxhdpi.png" />
+
+        <resource-file src="res/android/colors.xml" target="/app/src/main/res/values/fairseat_colors.xml" />
+
+        <icon density="ldpi"    background="@color/fairseat_icon_background" foreground="res/android/icon_fg_ldpi.png"    src="res/android/icon_ldpi.png" />
+        <icon density="mdpi"    background="@color/fairseat_icon_background" foreground="res/android/icon_fg_mdpi.png"    src="res/android/icon_mdpi.png" />
+        <icon density="hdpi"    background="@color/fairseat_icon_background" foreground="res/android/icon_fg_hdpi.png"    src="res/android/icon_hdpi.png" />
+        <icon density="xhdpi"   background="@color/fairseat_icon_background" foreground="res/android/icon_fg_xhdpi.png"   src="res/android/icon_xhdpi.png" />
+        <icon density="xxhdpi"  background="@color/fairseat_icon_background" foreground="res/android/icon_fg_xxhdpi.png"  src="res/android/icon_xxhdpi.png" />
+        <icon density="xxxhdpi" background="@color/fairseat_icon_background" foreground="res/android/icon_fg_xxxhdpi.png" src="res/android/icon_xxxhdpi.png" />
+    </platform>
+
+    <platform name="ios">
+        <!-- Wie FairMix: Apple nimmt ab Frühjahr 2027 nichts unter 15.0 an -->
+        <preference name="deployment-target" value="15.0" />
+
+        <!-- iPhone und iPad. Auf dem iPad laufen alle vier Lagen sowie
+             Split View und Slide Over; die App passt sich jeder Breite an
+             (ab 860 px mit Seitenleiste im Editor). Apple verlangt für
+             universelle Apps zusätzlich iPad-Screenshots (13 Zoll). -->
+        <preference name="target-device" value="universal" />
+
+        <!-- Wischen von links führt aus den Rechtstexten zurück zur App -->
+        <preference name="AllowBackForwardNavigationGestures" value="true" />
+
+        <!-- Helle Statusleiste über der dunkelblauen Kopfzeile. Die Kopfzeilen
+             der App rechnen env(safe-area-inset-top) bereits ein. -->
+        <preference name="StatusBarOverlaysWebView" value="true" />
+        <preference name="StatusBarStyle" value="lightcontent" />
+
+        <edit-config target="ITSAppUsesNonExemptEncryption" file="*-Info.plist" mode="overwrite">
+            <false/>
+        </edit-config>
+
+        <!-- PNG-Export läuft über das Teilen-Menü; dort kann "Bild sichern"
+             gewählt werden. Ohne diese Texte beendet iOS die App bzw. lehnt
+             Apple den Build wegen Platzhaltertexten ab (siehe FairMix 12203). -->
+        <edit-config target="NSPhotoLibraryAddUsageDescription" file="*-Info.plist" mode="overwrite">
+            <string>FairSeat speichert auf deinen Wunsch ein Bild des Sitzplans in deiner Fotomediathek. Es werden keine vorhandenen Fotos gelesen.</string>
+        </edit-config>
+        <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="overwrite">
+            <string>FairSeat speichert auf deinen Wunsch ein Bild des Sitzplans in deiner Fotomediathek. Vorhandene Fotos werden weder gelesen noch verändert.</string>
+        </edit-config>
+
+        <!-- Privacy-Manifest: kein resource-file (doppelte Kopie in Xcode).
+             Der Workflow ersetzt das von cordova-ios erzeugte Manifest. -->
+
+        <icon src="res/ios/icon-20.png"   width="20"   height="20" />
+        <icon src="res/ios/icon-29.png"   width="29"   height="29" />
+        <icon src="res/ios/icon-40.png"   width="40"   height="40" />
+        <icon src="res/ios/icon-58.png"   width="58"   height="58" />
+        <icon src="res/ios/icon-60.png"   width="60"   height="60" />
+        <icon src="res/ios/icon-76.png"   width="76"   height="76" />
+        <icon src="res/ios/icon-80.png"   width="80"   height="80" />
+        <icon src="res/ios/icon-87.png"   width="87"   height="87" />
+        <icon src="res/ios/icon-120.png"  width="120"  height="120" />
+        <icon src="res/ios/icon-152.png"  width="152"  height="152" />
+        <icon src="res/ios/icon-167.png"  width="167"  height="167" />
+        <icon src="res/ios/icon-180.png"  width="180"  height="180" />
+        <icon src="res/ios/icon-1024.png" width="1024" height="1024" />
+
+        <splash src="res/ios/Default@2x~universal~anyany.png" />
+    </platform>
+
+    <!-- Export von PDF, Bild, Sicherung und Anwesenheitsliste über das
+         Teilen-Menü (data:-URI). Auf dem iPad übergibt die App einen
+         Ankerpunkt für das Popover. -->
+    <plugin name="cordova-plugin-x-socialsharing" spec="^6.0.4" />
+    <plugin name="cordova-plugin-statusbar" spec="^4.0.0" />
+</widget>

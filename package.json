@@ -1,0 +1,13 @@
+{
+  "name": "fairseat",
+  "version": "2.0.0",
+  "private": true,
+  "description": "FairSeat – Sitzplaner für Klasse, Hochzeit und Feier (Cordova, Android und iOS)",
+  "scripts": {
+    "test": "node validate.js && node smoketest.js",
+    "legal": "node make-legal-pages.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.0"
+  }
+}
