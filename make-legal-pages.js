@@ -70,7 +70,8 @@ function erwarteteDateien() {
   const d = n => fuerWeb(fs.readFileSync(n, 'utf8'));
   return {
     [path.join(ZIEL, 'index.html')]: START,
-    [path.join(ZIEL, '.nojekyll')]: '',
+    /* Bewusst keine .nojekyll: Beim Hochladen über die GitHub-Webseite fallen Dateien
+       mit Punkt am Anfang weg, und reine HTML-Seiten brauchen sie nicht. */
     [path.join(ZIEL, 'fairseat', 'datenschutz.html')]: d('datenschutz.html'),
     [path.join(ZIEL, 'fairseat', 'impressum.html')]: d('impressum.html'),
     [path.join(ZIEL, 'fairseat', 'datenschutz-en.html')]: d('datenschutz-en.html'),
