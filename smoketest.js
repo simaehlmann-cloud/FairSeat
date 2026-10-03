@@ -983,7 +983,7 @@ test('Bewertungen: anlegen, eintragen, Durchschnitte, PDF', app => {
   erwarte(roh.indexOf('fremd') < 0 && roh.indexOf('"7"') < 0 && roh.indexOf('"2-"') >= 0 && roh.indexOf('"14"') >= 0, 'Bewertungen werden beim Laden nicht geprüft');
   // Smileys
   app.klick('#g-tab-list'); app.klick('#g-new'); app.klick(app.$$('#a-scale button')[2]); app.sheetOk();
-  erwarte(app.$$('#assess-pad button').length === 3 + 2, 'Smiley-Tastenfeld falsch');
+  erwarte(app.$$('#assess-pad button').length === 4 + 2 && app.$$('#assess-pad button')[3].textContent === '🙁', 'Smiley-Tastenfeld nicht vierstufig');
   taste('s1');
   erwarte(app.E('studentAverages(curClass(), "ma", curClass().students[0].id).total') === 1, 'Smileys verändern den Durchschnitt');
   // Ausblenden in den Einstellungen
@@ -1002,10 +1002,152 @@ test('Mitarbeit direkt im Sitzplan bewerten', app => {
   app.klick(app.$$('#sheet .keypad button').find(b => b.dataset.tok === '2+'));
   const a = app.E('curClass().assess[0]');
   erwarte(a && a.auto && a.kind === 'other' && a.subjectId === 'de' && Object.values(a.marks)[0] === '2+', 'Mitarbeit nicht gespeichert');
-  app.E(`quickMark(curClass().students[5])`);
+  app.E(`quickMark(curClass().students.find(s => !curClass().assess[0].marks[s.id]))`);
   app.klick(app.$$('#sheet .keypad button').find(b => b.dataset.tok === '3'));
   erwarte(app.E('curClass().assess.length') === 1 && app.E('Object.keys(curClass().assess[0].marks).length') === 2, 'Zweite Mitarbeit legt eine neue Bewertung an');
   erwarte(app.E('pdfPlanPage(curClass(), curPlan(), curRoom(), "x")').indexOf('2+') < 0, 'Bewertung erscheint im Sitzplan-PDF');
+});
+
+
+function getComputedStyleDisplay(app, sel){ const el = app.$(sel); return el ? app.w.getComputedStyle(el).display : ''; }
+
+test('Bewerten im Sitzplan und über die Liste', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.gradesAck = true; goGrades("ma")');
+  app.klick('#g-new'); app.sheetOk();
+  // erst zwei über die Liste
+  const taste = (sel, tok) => app.klick(app.$$(sel + ' button').find(b => b.dataset.tok === tok));
+  taste('#assess-pad', '2'); taste('#assess-pad', '3+');
+  // dann im Sitzplan weiter
+  app.klick('#av-plan');
+  erwarte(app.$('#screen-editor').classList.contains('active') && app.w.document.body.classList.contains('grading'), 'Bewerten im Sitzplan startet nicht');
+  erwarte(getComputedStyleDisplay(app, '.panels') === 'none', 'Menü verdeckt beim Bewerten den Plan');
+  erwarte(app.$$('#stage .gmark').length === 2, 'Plätze zeigen die schon vergebenen Werte nicht: ' + app.$$('#stage .gmark').length);
+  const erster = app.E('gradeSel');
+  erwarte(!!erster && !app.E(`curAssess().marks["${erster}"]`), 'Kein freier Platz vorausgewählt');
+  taste('#gb-pad', '1-');
+  erwarte(app.E(`curAssess().marks["${erster}"]`) === '1-' && app.E('gradeSel') !== erster, 'Wert nicht gesetzt oder kein Weiterspringen');
+  // gezielt einen Platz antippen
+  const d = app.E('curPlan().desks.find(x => x.studentId && !curAssess().marks[x.studentId] && x.studentId !== gradeSel)');   // ein noch unbewerteter Platz – unabhängig von der Zufallsverteilung
+  app.E(`pickGradeSeat("${d.studentId}")`);
+  erwarte(!!app.$('#stage .item.gsel'), 'Gewählter Platz nicht hervorgehoben');
+  taste('#gb-pad', 'x');
+  erwarte(app.E(`curAssess().marks["${d.studentId}"]`) === 'x' && app.$$('#stage .gmark.miss').length === 1, '„fehlt“ im Sitzplan nicht gesetzt');
+  erwarte(app.$('#gb-meta').textContent.indexOf('4 von 12') >= 0, 'Zähler in der Leiste falsch: ' + app.$('#gb-meta').textContent);
+  // zurück zur Liste: dieselbe Bewertung mit allen Werten
+  app.klick('#gb-list');
+  erwarte(app.$('#screen-assess').classList.contains('active') && !app.w.document.body.classList.contains('grading'), 'Zurück zur Liste klappt nicht');
+  erwarte(app.$$('#assess-list .av:not(.empty)').length === 4, 'Liste zeigt die Werte aus dem Sitzplan nicht');
+  // Werte erscheinen sonst nirgends auf dem Plan
+  app.E('openPlan(curClass().plans[0].id)');
+  erwarte(app.$$('#stage .gmark').length === 0, 'Bewertungen bleiben nach dem Bewerten auf dem Plan sichtbar');
+  // aus dem Unterrichtsmodus
+  app.E('setLesson(true)');
+  erwarte(app.$('#lb-grade').style.display !== 'none', '„Bewerten“ fehlt in der Unterrichtsleiste');
+  app.klick('#lb-grade'); app.klick('#lg-new');
+  erwarte(app.w.document.body.classList.contains('grading') && app.E('gradeAssess().auto') === true, 'Mitarbeit heute startet nicht im Sitzplan');
+  app.klick('#gb-exit');
+  erwarte(!app.w.document.body.classList.contains('grading') && app.E('lessonMode') === true, 'Nach dem Bewerten nicht zurück im Unterrichtsmodus');
+  app.E('setLesson(false)');
+  erwarte(app.E('lessonMode') === false && app.E('gradeMode') === null, 'Unterrichtsmodus endet nicht sauber');
+});
+
+test('Menü unter dem Plan einklappen', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  erwarte(!!app.$('#panel-grip'), 'Griff zum Einklappen fehlt');
+  app.klick('#panel-grip');
+  erwarte(app.w.document.body.classList.contains('panels-min') && app.E('DB.panelsMin') === true, 'Menü klappt nicht ein');
+  app.klick(app.$$('.tabbar button')[1]);
+  erwarte(!app.w.document.body.classList.contains('panels-min') && app.$('#panel-room').classList.contains('on'), 'Reiter klappt das Menü nicht wieder auf');
+  app.klick('#panel-grip');
+  app.E('goPlans(); openPlan(curClass().plans[0].id)');
+  erwarte(app.w.document.body.classList.contains('panels-min'), 'Eingeklappter Zustand wird nicht gemerkt');
+  const roh = app.E('JSON.stringify(sanitizeDB(JSON.parse(JSON.stringify(DB))))');
+  erwarte(roh.indexOf('"panelsMin":true') >= 0, 'Zustand übersteht das Speichern nicht');
+});
+
+
+test('Audit-Korrekturen', async app => {
+  klasseMitNamen(app, '7b', ['Anna', 'Ben', 'Cem']);
+  // Punkte → Noten an den Rändern
+  erwarte(Math.abs(app.E('pointsToGrade(15)') - 0.7) < 1e-9 && app.E('pointsToGrade(0)') === 6 && app.E('pointsToGrade(8)') === 3, 'Umrechnung Punkte → Note falsch');
+  // Gelöschte Schüler zählen nicht
+  app.E(`(() => { const c = curClass(); c.assess = [{ id: "a1", subjectId: "m", title: "T", date: "2026-10-01", kind: "written", scale: "grade", weight: 1,
+    marks: { [c.students[0].id]: "1", [c.students[1].id]: "1", [c.students[2].id]: "6" } }]; c.students.pop(); })()`);
+  erwarte(app.E('assessAverage(curClass().assess[0])') === 1, 'Gelöschter Schüler zählt im Durchschnitt mit');
+  // Gewichtung 100 % schriftlich: Mündliches zählt nicht
+  app.E(`(() => { const c = curClass(); c.gradeW = { m: 100 }; c.assess.push({ id: "a2", subjectId: "m", title: "M", date: "2026-10-02", kind: "other", scale: "grade", weight: 1, marks: { [c.students[0].id]: "5" } }); })()`);
+  erwarte(app.E('studentAverages(curClass(), "m", curClass().students[0].id).total') === 1, 'Bei 100 % schriftlich zählt Mündliches mit');
+  app.E('curClass().gradeW = { m: 0 }');
+  erwarte(app.E('studentAverages(curClass(), "m", curClass().students[1].id).total') === null, 'Bei 0 % schriftlich wird nur Schriftliches als Gesamt gezeigt');
+  // Manipulierte Datei: kein Absturz, keine Prototyp-Namen
+  const kaputt = app.E(`(() => { try{ const d = { v: 2, classes: [{ id: "k", name: "X", students: [{ id: "__proto__", name: "A" }, { id: "toString", name: "B" }],
+    assess: [{ id: "z", subjectId: "m", scale: "constructor", marks: { x: "1" } }], gradeW: { "__proto__": 5 } }], rooms: [{ id: "r", name: "R", items: [{ type: "constructor" }] }] };
+    const c = sanitizeDB(d).classes[0]; return JSON.stringify([c.students.map(s => s.id === "__proto__" || s.id === "toString"), c.assess.length]); }catch(e){ return "Ausnahme " + e.message; } })()`);
+  erwarte(kaputt === '[[false,false],0]', 'Manipulierte Sicherung wird nicht sauber abgefangen: ' + kaputt);
+  // Abgelaufene Kopie vor einer Wiederherstellung wird gelöscht
+  app.E('localStorage.setItem(KEY_PREV, JSON.stringify({ at: "2025-01-01T00:00:00Z", data: "{}" })); prevState()');
+  erwarte(app.E('localStorage.getItem(KEY_PREV)') === null, 'Abgelaufene Kopie bleibt liegen');
+  // Sicherung ohne Papierkorb
+  app.E('DB.trash = [{ id: "t", kind: "class", name: "Alt", at: new Date().toISOString(), payload: { name: "Alt" } }]');
+  erwarte(app.E('backupData().trash.length') === 0 && app.E('DB.trash.length') === 1, 'Papierkorb landet in der Sicherung');
+  // Gäste gleichmäßig auf Tische
+  erwarte(app.E('JSON.stringify(tableCounts(9, 8))') === '[5,4]' && app.E('JSON.stringify(tableCounts(56, 8))') === '[8,8,8,8,8,8,8]', 'Gäste nicht gleichmäßig verteilt');
+  // Kontrast der Fachfarben
+  erwarte(app.E('inkOn("#C9A400")') === '#16232B' && app.E('inkOn("#0059B3")') === '#fff' && app.E('inkOn("#FFFFFF")') === '#16232B', 'Schriftfarbe auf Fachfarben falsch');
+});
+
+test('Klassenarbeit rückgängig machen', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  const vorher = app.E('JSON.stringify(curPlan().desks.map(d => [d.x, d.y, d.studentId || ""]))');
+  app.E('openExamSheet()'); app.sheetOk();
+  app.E('undo()');
+  erwarte(app.E('curPlan().exam') === false && app.E('JSON.stringify(curPlan().desks.map(d => [d.x, d.y, d.studentId || ""]))') === vorher, 'Ein Rückgängig nimmt das Einrichten nicht ganz zurück');
+  app.E('openExamSheet()'); app.sheetOk();
+  app.E('openExamSheet()'); app.klick('#exam-end-restore');
+  app.E('undo()');
+  erwarte(app.E('curPlan().exam') === true && !!app.E('curPlan().examPrev') && app.E('curPlan().desks.some(d => d.var)'), 'Rückgängig nach dem Beenden stellt die Klassenarbeit nicht wieder her');
+});
+
+test('Stundenplan: nichts verschwindet still', app => {
+  klasseMitNamen(app);
+  app.E(`DB.subjects.push({ id: "m", name: "Mathe", short: "Ma", color: "#2E86DE" });
+    DB.lessons.push({ id: "l7", day: 0, period: 6, span: 1, week: "", subjectId: "m", classId: curClass().id, roomId: "", planId: "" },
+                    { id: "lb", day: 1, period: 0, span: 1, week: "B", subjectId: "m", classId: "", roomId: "", planId: "" },
+                    { id: "la", day: 1, period: 0, span: 1, week: "A", subjectId: "m", classId: "", roomId: "", planId: "" });
+    DB.tt.ab = true; DB.tt.abRef = "2026-09-28"; goTimetable()`);
+  app.klick('#btn-tt-times'); app.$('#tt-count').value = '5'; app.sheetOk();
+  erwarte(app.E('DB.lessons.some(L => L.id === "l7")'), 'Stunde außerhalb des verkleinerten Rasters wurde gelöscht');
+  app.klick('#btn-tt-times'); app.$('#tt-count').value = '8';
+  app.klick(app.$$('#sheet .setrow').find(r => r.textContent.indexOf('A/B') >= 0)); app.sheetOk();
+  erwarte(app.$('#sheet').textContent.indexOf('B-Wochen') >= 0, 'Keine Rückfrage beim Ausschalten der A/B-Wochen');
+  app.sheetOk();
+  erwarte(app.E('DB.tt.ab') === false && app.E('JSON.stringify(DB.lessons.map(L => L.id + ":" + L.week))') === '["l7:","la:"]', 'A/B-Wochen nicht sauber ausgeschaltet: ' + app.E('JSON.stringify(DB.lessons.map(L => L.id + ":" + L.week))'));
+  erwarte(app.$$('#tt-grid .tt-cell').length === 2, 'Stunde der 7. Stunde erscheint nicht wieder');
+  // Überschneidung nur nach Rückfrage
+  app.E('editLesson(null, 1, 0)'); app.sheetOk();
+  erwarte(app.$('#sheet').textContent.indexOf('ersetzen') >= 0 && app.E('DB.lessons.length') === 2, 'Überschneidung ohne Rückfrage ersetzt');
+  app.sheetOk();
+  erwarte(app.E('DB.lessons.length') === 2 && !app.E('DB.lessons.some(L => L.id === "la")'), 'Ersetzen nach Bestätigung klappt nicht');
+  // Neues Fach im Dialog: Auswahl bleibt erhalten
+  app.E('editLesson(null, 2, 2)');
+  const sels = app.$$('#sheet select'); sels[1].value = app.E('curClass().id');
+  sels[0].value = '__new'; sels[0].dispatchEvent(new app.w.Event('change'));
+  app.$$('#sheet input.field')[0].value = 'Physik'; app.sheetOk();
+  return new Promise(r => setTimeout(r, 150)).then(() => {
+    const s2 = app.$$('#sheet select');
+    erwarte(s2.length && app.E('subjectById(' + JSON.stringify(s2[0].value) + ').name') === 'Physik' && s2[1].value === app.E('curClass().id'), 'Neues Fach nicht vorausgewählt oder Klasse verloren');
+  });
+});
+
+test('Feier: Absagen nicht auf Karten', app => {
+  hochzeit(app);
+  const n0 = app.E('guestSeats(curClass(), curPlan()).length');
+  app.E('const s0 = curPlan().desks.find(d => d.studentId).studentId; studentById(curClass(), s0).rsvp = "no"');
+  erwarte(app.E('guestSeats(curClass(), curPlan()).length') === n0 - 1, 'Abgesagter Gast landet auf Karten und Küchenliste');
 });
 
 /* ------------------------------------------------------------------ */

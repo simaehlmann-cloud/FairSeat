@@ -350,7 +350,7 @@ select.field{-webkit-appearance:none;appearance:none;
 /* ---- Bewertungen ---- */
 .subjchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
 .subjchip{border:2px solid var(--sc,var(--line));border-radius:99px;padding:7px 13px;font-weight:700;font-size:14px;background:var(--surface);color:var(--ink)}
-.subjchip.on{background:var(--sc);color:#fff}
+.subjchip.on{background:var(--sc);color:var(--sci,#fff)}
 .subjchip.add{border-style:dashed;--sc:var(--line);color:var(--ink-soft)}
 .acard{display:block;width:100%;text-align:left;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-top:8px;color:var(--ink);font:inherit}
 .acard .at{display:flex;align-items:center;gap:8px}
@@ -366,11 +366,11 @@ select.field{-webkit-appearance:none;appearance:none;
 .arow .av.empty{color:var(--ink-soft);font-weight:500;background:none}
 .arow .av.miss{font-size:12px;color:var(--warn)}
 .astat{font-size:13.5px;font-weight:650;margin:12px 0 4px}
-.keypad-wrap{flex:0 0 auto;background:var(--surface);border-top:2px solid var(--border);padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+.keypad-wrap{flex:0 0 auto;background:var(--surface);border-top:2px solid var(--border);padding:8px 10px calc(8px + var(--safe-b))}
 .keypad{display:grid;gap:6px;max-width:760px;margin:0 auto}
 .keypad.k-grade{grid-template-columns:repeat(6,minmax(0,1fr))}
 .keypad.k-points{grid-template-columns:repeat(6,minmax(0,1fr))}
-.keypad.k-smiley{grid-template-columns:repeat(5,minmax(0,1fr))}
+.keypad.k-smiley{grid-template-columns:repeat(6,minmax(0,1fr))}
 .keypad button{min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:17px;font-weight:750}
 .keypad.k-smiley button{font-size:26px;min-height:54px}
 .keypad button.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -399,6 +399,46 @@ select.field{-webkit-appearance:none;appearance:none;
 .srow{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:14px}
 .wout{font-size:15px;font-weight:700;margin-top:10px}
 .wrange{width:100%;margin:12px 0 4px;accent-color:var(--accent)}
+
+/* Bewerten im Sitzplan */
+.gradebar{display:none;flex:0 0 auto;background:var(--surface);border-top:2px solid var(--border);
+  padding:8px 10px calc(8px + var(--safe-b));flex-direction:column;gap:6px}
+body.grading .gradebar{display:flex}
+body.grading .panels,body.grading .lessonbar,body.grading .stagehint{display:none!important}
+.gb-head{display:flex;align-items:center;gap:8px}
+.gb-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.gb-tx b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gb-tx span{font-size:12px;color:var(--ink-soft)}
+.gb-head .minibtn{padding:8px 11px;flex:0 0 auto}
+.gb-head .iconbtn{color:var(--ink)}
+.gb-who{font-size:13.5px;font-weight:700;color:var(--accent);min-height:18px}
+.gradebar .keypad{width:100%}
+.gradebar .keypad button{min-height:40px}
+.item .gmark{position:absolute;right:-4px;top:-6px;min-width:24px;height:22px;padding:0 5px;border-radius:11px;
+  background:var(--accent);color:#fff;font-size:12.5px;font-weight:800;font-style:normal;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 0 0 2px var(--surface);z-index:4;line-height:1;transform:scale(var(--gz,1));transform-origin:100% 0}
+.item .gmark.miss{background:var(--warn);font-size:10px}
+.item .gmark.sm{background:var(--surface);font-size:15px;box-shadow:0 0 0 2px var(--accent)}
+.item.gsel{box-shadow:0 0 0 4px var(--accent)!important;z-index:9}
+/* Einklappbares Menü unter dem Plan */
+.panelgrip{display:flex;align-items:center;justify-content:center;gap:8px;order:0;width:100%;height:22px;flex:0 0 auto;
+  color:var(--ink-soft);touch-action:none;border-bottom:1px solid var(--line-soft)}
+.panelgrip span{width:38px;height:5px;border-radius:3px;background:var(--line)}
+.panelgrip svg.i{width:15px;height:15px;transform:rotate(-90deg);transition:transform .15s}
+body.panels-min .panelgrip svg.i{transform:rotate(90deg)}
+body.panels-min .panel{display:none!important}
+body.panels-min .panelgrip{border-bottom:0}
+/* Handy quer: Tastenfeld neben dem Plan statt darunter */
+@media (orientation:landscape) and (max-height:520px){
+  body.grading .editor-body{flex-direction:row}
+  body.grading .gradebar{order:2;width:290px;flex:0 0 290px;border-top:0;border-left:2px solid var(--border);overflow-y:auto;
+    padding:6px 8px calc(6px + var(--safe-b)) 8px;padding-right:calc(8px + var(--safe-r))}
+  body.grading .gradebar .keypad button{min-height:34px;font-size:15px}
+  body.grading .gradebar .keypad button.kx{font-size:11.5px}
+  body.grading .gb-head .minibtn span{display:none}
+}
+/* Android: Die App liegt nicht unter Status- und Navigationsleiste – keine doppelten Abstände */
+html.android{--safe-t:0px;--safe-b:0px;--safe-l:0px;--safe-r:0px}
 /* ===================== Editor ===================== */
 .editor-body{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0}
 .stage-wrap{flex:1;position:relative;overflow:hidden;touch-action:none;background:var(--paper);min-height:0}
@@ -686,6 +726,9 @@ body.presenting #exitPresent{display:flex}
   .tabbar{order:0;border-top:0;border-bottom:1px solid var(--line-soft);padding-bottom:0}
   .tabbar button{font-size:11.5px}
   .panel{max-height:none;flex:1}
+  .panelgrip{display:none}
+  body.panels-min .panel.on{display:block!important}
+  .gradebar{order:0;width:330px;flex:0 0 330px;border-top:0;border-right:2px solid var(--border);overflow-y:auto}
 }
 @media (min-width:860px){
   .board-inner,.scroll{padding-left:max(24px,var(--safe-l));padding-right:max(24px,var(--safe-r))}
@@ -877,7 +920,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ INFO ============ -->
 <section id="screen-info" class="screen">
   <div class="topbar">
-    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 data-i="infoTitle">Info</h2>
   </div>
   <div class="scroll" id="info-body"></div>
@@ -886,7 +929,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ EINSTELLUNGEN ============ -->
 <section id="screen-settings" class="screen">
   <div class="topbar">
-    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 data-i="settingsTitle">Einstellungen</h2>
   </div>
   <div class="scroll" id="settings-body"></div>
@@ -896,7 +939,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ STUNDENPLAN ============ -->
 <section id="screen-timetable" class="screen">
   <div class="topbar">
-    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 data-i="tileTT"></h2>
     <button class="iconbtn" id="btn-tt-subjects" data-al="subjTitle"><svg class="i"><use href="#i-tag"></use></svg></button>
     <button class="iconbtn" id="btn-tt-times" data-al="ttTimes"><svg class="i"><use href="#i-clock"></use></svg></button>
@@ -912,7 +955,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ BEWERTUNGEN ============ -->
 <section id="screen-grades" class="screen">
   <div class="topbar">
-    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 data-i="tileGrades"></h2>
   </div>
   <div class="scroll"><div class="wrapc">
@@ -925,12 +968,16 @@ body.presenting #exitPresent{display:flex}
 </section>
 <section id="screen-assess" class="screen">
   <div class="topbar">
-    <button class="iconbtn" id="btn-assess-back" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" id="btn-assess-back" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 id="assess-title"></h2>
     <button class="iconbtn" id="btn-assess-edit" data-al="gEdit"><svg class="i"><use href="#i-edit"></use></svg></button>
   </div>
   <div class="scroll"><div class="wrapc">
     <div id="assess-head"></div>
+    <div class="segmented" id="assess-view" style="margin:0 0 10px">
+      <button class="on" id="av-list" data-i="gList"></button>
+      <button id="av-plan" data-i="gOnPlan"></button>
+    </div>
     <div class="box" style="padding:0;overflow:hidden" id="assess-list"></div>
     <div id="assess-stats"></div>
   </div></div>
@@ -940,7 +987,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ NAMEN VERWALTEN ============ -->
 <section id="screen-names" class="screen">
   <div class="topbar">
-    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 data-i="tileNames"></h2>
     <button class="iconbtn" id="btn-undo-class" disabled aria-label="Undo"><svg class="i"><use href="#i-undo"></use></svg></button>
     <button class="iconbtn" id="btn-attendance" aria-label="Attendance"><svg class="i"><use href="#i-check"></use></svg></button>
@@ -1019,7 +1066,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ RÄUME ============ -->
 <section id="screen-rooms" class="screen">
   <div class="topbar">
-    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 data-i="tileRooms"></h2>
   </div>
   <div class="scroll"><div class="wrapc">
@@ -1039,7 +1086,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ SITZPLÄNE ============ -->
 <section id="screen-plans" class="screen">
   <div class="topbar">
-    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 data-i="tilePlans"></h2>
   </div>
   <div class="scroll"><div class="wrapc">
@@ -1058,7 +1105,7 @@ body.presenting #exitPresent{display:flex}
 <!-- ============ EDITOR ============ -->
 <section id="screen-editor" class="screen">
   <div class="topbar">
-    <button class="iconbtn" id="btn-editor-back" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <button class="iconbtn" id="btn-editor-back" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
     <h2 id="plan-title">—</h2>
     <button class="iconbtn" id="btn-undo" disabled aria-label="Undo"><svg class="i"><use href="#i-undo"></use></svg></button>
     <button class="iconbtn" id="btn-redo" disabled aria-label="Redo"><svg class="i"><use href="#i-redo"></use></svg></button>
@@ -1088,6 +1135,7 @@ body.presenting #exitPresent{display:flex}
         <span class="lb-count" id="lb-count"></span>
         <button id="lb-pick"><svg class="i"><use href="#i-dice"></use></svg><span data-i="pickOne"></span></button>
         <button id="lb-reset"><svg class="i"><use href="#i-history"></use></svg><span data-i="lessonReset"></span></button>
+        <button id="lb-grade"><svg class="i"><use href="#i-grade"></use></svg><span data-i="gRate"></span></button>
         <button id="lb-exit"><svg class="i"><use href="#i-close"></use></svg><span data-i="close"></span></button>
       </div>
       <div class="selbar" id="selbar">
@@ -1106,7 +1154,17 @@ body.presenting #exitPresent{display:flex}
       </div>
     </div>
 
+    <div class="gradebar" id="gradebar">
+      <div class="gb-head">
+        <div class="gb-tx"><b id="gb-title"></b><span id="gb-meta"></span></div>
+        <button class="minibtn" id="gb-list"><svg class="i"><use href="#i-note"></use></svg><span data-i="gList"></span></button>
+        <button class="iconbtn" id="gb-exit" data-al="close"><svg class="i"><use href="#i-close"></use></svg></button>
+      </div>
+      <div class="gb-who" id="gb-who"></div>
+      <div class="keypad" id="gb-pad"></div>
+    </div>
     <aside class="panels">
+      <button class="panelgrip" id="panel-grip" data-al="panelToggle"><span></span><svg class="i"><use href="#i-back"></use></svg></button>
       <div class="panel on" id="panel-seats">
         <h3 data-i="pnSeats"></h3>
         <div class="hint" data-i="pnSeatsHint"></div>
@@ -1374,7 +1432,7 @@ const I18N = {
            "Weil nichts in einer Cloud liegt, sind deine Sitzpläne bei einer Deinstallation oder einem Gerätewechsel verloren. Erstelle deshalb ab und zu eine Sicherung über die Startseite.",
            "Ein Hinweis zu Notizen und Sitzwünschen: Notiere dort Organisatorisches, keine Gesundheitsdaten oder Diagnosen."] },
       { h:"Tipps",
-        ul:["Zwei Finger zum Zoomen, ein Finger zum Verschieben der Fläche.",
+        ul:["Zwei Finger zum Zoomen, ein Finger zum Verschieben der Fläche.", "Der kleine Balken über dem Menü unter dem Plan klappt es ein und aus – eingeklappt hat der Plan mehr Platz.",
             "Das Handsymbol oben schaltet auf Rahmenauswahl um — damit wählst du mehrere Tische auf einmal. Auf dem Handy liegen Auswahl, Spiegeln und Vollbild im Menü ···.",
             "„Festhalten“ in der Auswahlleiste fixiert einen Platz: Automatisch setzen, Mischen und Gruppen lassen ihn stehen.",
             "Wer im Unterrichtsmodus als abwesend markiert ist, bekommt beim automatischen Setzen an diesem Tag keinen Platz.",
@@ -1579,7 +1637,7 @@ const I18N = {
            "Because nothing lives in a cloud, your plans are gone if you uninstall the app or switch devices. Save a backup now and then from the start screen.",
            "One note on notes and seating needs: keep them organisational — no health data or diagnoses."] },
       { h:"Tips",
-        ul:["Two fingers to zoom, one finger to move the canvas.",
+        ul:["Two fingers to zoom, one finger to move the canvas.", "The small bar above the menu below the plan folds it away and back – folded, the plan gets more room.",
             "The hand icon switches to box selection — for picking several desks at once. On phones, selection, mirror and full screen sit in the ··· menu.",
             "“Keep” in the selection bar fixes a seat: auto-seat, shuffle and groups leave it in place.",
             "Anyone marked absent in lesson mode gets no seat when auto-seating on that day.",
@@ -1922,10 +1980,10 @@ Object.assign(I18N.en, {
 });
 I18N.de.info.push({ h:"Stundenplan und Bewertungen",
   p:["Im Schulmodus gibt es zwei weitere Kacheln. Im Stundenplan trägst du Fach, Klasse und Raum ein; Zeiten, Pausen und A/B-Wochen stellst du mit der Uhr ein, Farben je Fach mit dem Etikett. Auf der Startseite steht dann die laufende Stunde – ein Tipp öffnet den passenden Sitzplan.",
-     "Unter Bewertungen legst du je Klasse und Fach Bewertungen an (Noten, Punkte oder Smileys), trägst sie über das Tastenfeld ein und siehst Durchschnitte, Notenspiegel und Verläufe. Im Unterrichtsmodus bewertest du Mitarbeit direkt über den Platz. Beides lässt sich in den Einstellungen ausblenden."] });
+     "Unter Bewertungen legst du je Klasse und Fach Bewertungen an (Noten, Punkte oder Smileys), trägst sie über die Liste oder direkt im Sitzplan ein (Plätze antippen, Wert im Tastenfeld wählen) und siehst Durchschnitte, Notenspiegel und Verläufe. Im Unterrichtsmodus startet „Bewerten“ die Mitarbeit von heute im Sitzplan. Beides lässt sich in den Einstellungen ausblenden."] });
 I18N.en.info.push({ h:"Timetable and assessments",
   p:["In school mode there are two more tiles. In the timetable you enter subject, class and room; set times, breaks and A/B weeks with the clock and colours per subject with the tag. The start page then shows the current period – one tap opens the matching seating plan.",
-     "Under Assessments you create assessments per class and subject (grades, points or smileys), enter them with the keypad and see averages, distributions and trends. In lesson mode you can mark participation straight from the seat. Both can be hidden in the settings."] });
+     "Under Assessments you create assessments per class and subject (grades, points or smileys), enter them in the list or right on the seating plan (tap seats, pick a value on the keypad) and see averages, distributions and trends. In lesson mode, “Mark” opens today's participation on the seating plan. Both can be hidden in the settings."] });
 I18N.de.info.forEach(sec => { if(sec.h === "Datenschutz") sec.p.splice(1, 0,
   "Für Lehrkräfte: Wer Schülerdaten auf einem privaten Gerät verarbeitet, braucht dafür in vielen Bundesländern eine schriftliche Genehmigung der Schulleitung (in Niedersachsen z. B. nach dem Erlass zu privaten IT-Systemen von Lehrkräften). Kläre das bitte vor der Nutzung mit echten Namen. Sichere das Gerät mit PIN oder Code, schütze Sicherungen mit einem Passwort und lösche Klassen, die du nicht mehr brauchst.",
   "Für Feiern: Zusagen, Menüs und Küchenhinweise sind freiwillig. Allergien und Unverträglichkeiten gelten als Gesundheitsdaten – trage sie nur mit Einverständnis des Gastes ein."); });
@@ -1970,7 +2028,7 @@ Object.assign(I18N.de, {
   gDist:"Notenspiegel", gClassTrend:"Klassendurchschnitt im Verlauf", gClassAvg:"Ø Klasse", gCount:"Bewertungen",
   gW:"schr.", gO:"münd.", gTotal:"Gesamt", gPdf:"Übersicht als PDF", gPdfTitle:"Notenübersicht",
   gPdfCut:"Es sind nur die letzten {n} Bewertungen abgedruckt; die Durchschnitte enthalten alle.",
-  gOverviewHint:"Smileys zählen nicht in Durchschnitte. Punkte werden mit Noten gemischt über (17 − Punkte) : 3 umgerechnet. Ein Tipp auf einen Namen zeigt den Verlauf.",
+  gOverviewHint:"Smileys zählen nicht in Durchschnitte. Mischt ein Fach Punkte und Noten, wird umgerechnet wie in der Oberstufe: 15 P = 1+, 14 P = 1 … 1 P = 5−, 0 P = 6. Ein Tipp auf einen Namen zeigt den Verlauf.",
   gTrend:"Verlauf", gQuick:"Mitarbeit bewerten", gQuickSaved:"{a}: {v} gespeichert",
   gQuickHint:"Wird in der Bewertung „Mitarbeit“ von heute gespeichert (mündlich & sonstige)."
 });
@@ -2012,9 +2070,31 @@ Object.assign(I18N.en, {
   gDist:"Distribution", gClassTrend:"Class average over time", gClassAvg:"Class Ø", gCount:"Assessments",
   gW:"wr.", gO:"oral", gTotal:"Total", gPdf:"Overview as PDF", gPdfTitle:"Grade overview",
   gPdfCut:"Only the last {n} assessments are printed; the averages include all of them.",
-  gOverviewHint:"Smileys do not count towards averages. Points mixed with grades are converted with (17 − points) ÷ 3. Tap a name to see the trend.",
+  gOverviewHint:"Smileys do not count towards averages. When a subject mixes points and grades, points are converted as in German upper school: 15 = 1+, 14 = 1 … 1 = 5−, 0 = 6. Tap a name to see the trend.",
   gTrend:"Trend", gQuick:"Mark participation", gQuickSaved:"{a}: {v} saved",
   gQuickHint:"Saved in today's “Participation” assessment (oral & other)."
+});
+Object.assign(I18N.de, {
+  gList:"Liste", gOnPlan:"Im Sitzplan", gRate:"Bewerten", gTapSeat:"Tippe auf einen Platz",
+  gNoPlan:"Für diese Klasse gibt es noch keinen Sitzplan", gPickPlan:"Welcher Sitzplan?",
+  gNewToday:"Mitarbeit heute", gContinueToday:"Mitarbeit heute fortsetzen", panelToggle:"Menü ein- oder ausklappen"
+});
+Object.assign(I18N.en, {
+  gList:"List", gOnPlan:"On the seating plan", gRate:"Mark", gTapSeat:"Tap a seat",
+  gNoPlan:"This class has no seating plan yet", gPickPlan:"Which seating plan?",
+  gNewToday:"Participation today", gContinueToday:"Continue today's participation", panelToggle:"Show or hide the menu"
+});
+Object.assign(I18N.de, {
+  back:"Zurück", gSm_s1:"sehr gut", gSm_s2:"gut", gSm_s3:"geht so", gSm_s4:"nicht gut",
+  ttABOffQ:"A/B-Wochen ausschalten?", ttABOffT:"A-Stunden gelten dann jede Woche. {n} Stunden nur in B-Wochen werden gelöscht.", ttABOffOk:"Ausschalten",
+  ttReplaceQ:"Stunde ersetzen?", ttReplaceOk:"Ersetzen",
+  backupHasGrades:"Diese Sicherung enthält Noten – bitte mit Passwort sichern."
+});
+Object.assign(I18N.en, {
+  back:"Back", gSm_s1:"very good", gSm_s2:"good", gSm_s3:"so-so", gSm_s4:"not good",
+  ttABOffQ:"Turn off A/B weeks?", ttABOffT:"A-week periods then apply every week. {n} periods that only run in B weeks are deleted.", ttABOffOk:"Turn off",
+  ttReplaceQ:"Replace period?", ttReplaceOk:"Replace",
+  backupHasGrades:"This backup contains grades – please save it with a password."
 });
 I18N.de.info[1] = { h:"In drei Schritten zum Sitzplan",
   ol:["Namen verwalten: Klasse anlegen, Namen eintragen oder aus FairMix übernehmen, Stufen und Regeln festlegen.",
@@ -2053,6 +2133,10 @@ const APP_VERSION = "2.0.0";
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+/* Eigene Eigenschaft? Schützt Nachschlagetabellen vor Namen wie "constructor" oder "__proto__" */
+const own = (o, k) => typeof k === "string" && Object.prototype.hasOwnProperty.call(o, k);
+/* IDs aus Dateien: Text, kurz, kein Name aus Object.prototype – sonst neu vergeben */
+const safeId = v => typeof v === "string" && v.length > 0 && v.length <= 60 && !(v in Object.prototype) ? v : uid();
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const clone = o => JSON.parse(JSON.stringify(o));
 function haptic(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||8); }catch(e){} }
@@ -2123,7 +2207,7 @@ let DB = emptyDB();
 /* --- Validierung: schützt vor beschädigten oder fremden Daten --- */
 function sanitizeItem(raw){
   if(!raw || typeof raw !== "object") return null;
-  const type = typeof raw.type === "string" && ITEMS[raw.type] ? raw.type : null;
+  const type = own(ITEMS, raw.type) ? raw.type : null;
   if(!type) return null;
   const def = ITEMS[type];
   const num = (v,fb) => (typeof v === "number" && isFinite(v)) ? v : fb;
@@ -2199,6 +2283,7 @@ function sanitizeDB(raw){
     planId: typeof L.planId === "string" ? L.planId.slice(0, 40) : ""
   })).slice(0, MAX_LESSONS) : [];
   out.gradesAck = raw.gradesAck === true;
+  out.panelsMin = raw.panelsMin === true;
   out.lastClass = typeof raw.lastClass === "string" ? raw.lastClass.slice(0, 40) : "";
   /* Wer schon Klassen hat, kennt die App – die Erststart-Frage entfällt */
   out.tipsDone = raw.tipsDone === true;
@@ -2221,7 +2306,7 @@ function sanitizeDB(raw){
       if(s?.front === true && tags.indexOf("front") < 0) tags.push("front");           // altes Feld
       const lv = parseInt(s?.level, 10);
       return {
-        id: typeof s?.id === "string" && s.id ? s.id : uid(),
+        id: safeId(s?.id),
         name: typeof s?.name === "string" ? s.name.slice(0,40) : "?",
         tags: tags.slice(0, TAGS.length),
         level: (lv >= 1 && lv <= 3) ? lv : 0,           // Stufe wie in FairMix: 0 = ohne, 1–3 = A–C
@@ -2240,19 +2325,20 @@ function sanitizeDB(raw){
       levelMode: (c?.levelMode === "hetero" || c?.levelMode === "homo") ? c.levelMode : "off",
       subNote: typeof c?.subNote === "string" ? c.subNote.slice(0, 1200) : "",
       /* Bewertungen je Fach */
-      assess: Array.isArray(c?.assess) ? c.assess.filter(a => a && typeof a.subjectId === "string" && SCALE_TOKS[a.scale]).map(a => {
+      assess: Array.isArray(c?.assess) ? c.assess.filter(a => a && typeof a.subjectId === "string" && own(SCALE_TOKS, a.scale)).map(a => {
         const okTok = v => v === "x" || SCALE_TOKS[a.scale].indexOf(v) >= 0;
         const marks = {};
-        if(a.marks && typeof a.marks === "object") Object.keys(a.marks).forEach(k => { if(ids.has(k) && okTok(a.marks[k])) marks[k] = a.marks[k]; });
+        if(a.marks && typeof a.marks === "object") Object.keys(a.marks).forEach(k => { if(ids.has(k) && own(a.marks, k) && okTok(a.marks[k])) marks[k] = a.marks[k]; });
         return { id: typeof a.id === "string" && a.id ? a.id.slice(0, 40) : uid(), subjectId: a.subjectId.slice(0, 40),
           title: typeof a.title === "string" ? a.title.slice(0, 60) : "", date: typeof a.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(a.date) ? a.date : "",
           kind: a.kind === "written" ? "written" : "other", scale: a.scale, weight: [0.5, 1, 2, 3].indexOf(a.weight) >= 0 ? a.weight : 1,
           marks, ...(a.auto === true ? { auto: true } : {}) };
       }).slice(0, MAX_ASSESS) : [],
       gradeW: (c?.gradeW && typeof c.gradeW === "object") ? Object.keys(c.gradeW).reduce((o, k) => {
-        const v = c.gradeW[k]; if(Number.isInteger(v) && v >= 0 && v <= 100) o[k.slice(0, 40)] = v; return o; }, {}) : {},
+        const v = c.gradeW[k]; if(!(k in Object.prototype) && Number.isInteger(v) && v >= 0 && v <= 100) o[k.slice(0, 40)] = v; return o; }, {}) : {},
       gradeSubjects: Array.isArray(c?.gradeSubjects) ? c.gradeSubjects.filter(x => typeof x === "string").slice(0, MAX_SUBJECTS) : [],
       lastSubject: typeof c?.lastSubject === "string" ? c.lastSubject.slice(0, 40) : "",
+      lastGradePlan: typeof c?.lastGradePlan === "string" ? c.lastGradePlan.slice(0, 40) : "",
       /* Aus FairMix übernommene Gruppen: Mitglieder als Schüler-IDs */
       groups: Array.isArray(c?.groups) ? c.groups.filter(g => g && Array.isArray(g.members)).map(g => ({
         id: typeof g.id === "string" && g.id ? g.id : uid(),
@@ -2278,12 +2364,12 @@ function sanitizeDB(raw){
           id: typeof p?.id === "string" && p.id ? p.id : uid(),
           name: typeof p?.name === "string" ? p.name.slice(0,60) : "Sitzplan",
           roomId: roomId,
-          deskSize: DESK_SIZES[p?.deskSize] ? p.deskSize : "single",
+          deskSize: own(DESK_SIZES, p?.deskSize) ? p.deskSize : "single",
           byGroups: p?.byGroups === true,
           exam: p?.exam === true,
           /* Sitzordnung vor der Klassenarbeit – wird beim Beenden zurückgeholt */
           examPrev: p?.exam === true && p?.examPrev && Array.isArray(p.examPrev.desks) ? {
-            deskSize: DESK_SIZES[p.examPrev.deskSize] ? p.examPrev.deskSize : "single",
+            deskSize: own(DESK_SIZES, p.examPrev.deskSize) ? p.examPrev.deskSize : "single",
             desks: p.examPrev.desks.map(sanitizeItem).filter(i => i && i.type === "desk").slice(0, MAX_DESKS)
           } : undefined,
           seatsPerTable: [4,6,8,10,12].indexOf(p?.seatsPerTable) >= 0 ? p.seatsPerTable : 8,
@@ -2354,9 +2440,15 @@ function load(){
   } else if(parsed.v !== 2){
     parsed = migrateV1(parsed);
   }
-  const clean = parsed ? sanitizeDB(parsed) : null;
+  let clean = null;
+  try{ clean = parsed ? sanitizeDB(parsed) : null; }
+  catch(e){
+    broken = true;                                    // Rohstand aufheben, bevor irgendetwas überschrieben wird
+    try{ if(raw) window.localStorage.setItem(KEY + ".defekt", raw); }catch(x){}
+  }
   DB = clean || emptyDB();
   purgeTrash();
+  prevState();                                        // räumt eine abgelaufene Kopie vor der Sicherung weg
   LANG = DB.lang;
   if(broken) setTimeout(() => toast(t("dataBroken")), 400);
 }
@@ -2543,6 +2635,7 @@ function snapshot(){
     levelMode: c ? (c.levelMode || "off") : null,
     planId: p ? p.id : null,
     desks: p ? clone(p.desks) : null,
+    planMeta: p ? { exam: !!p.exam, examPrev: p.examPrev ? clone(p.examPrev) : null, deskSize: p.deskSize } : null,
     roomId: r ? r.id : null,
     room: r ? clone(r.items) : null,
     roomSize: r ? { w: r.w, h: r.h, floor: r.floor } : null
@@ -2562,6 +2655,10 @@ function restore(state){
   if(c && state.levelMode) c.levelMode = state.levelMode;
   const p = (c && state.planId) ? c.plans.find(x => x.id === state.planId) : null;
   if(p && state.desks) p.desks = clone(state.desks);
+  if(p && state.planMeta){
+    p.exam = state.planMeta.exam; p.deskSize = state.planMeta.deskSize;
+    if(state.planMeta.examPrev) p.examPrev = clone(state.planMeta.examPrev); else delete p.examPrev;
+  }
   const r = state.roomId ? DB.rooms.find(x => x.id === state.roomId) : null;
   if(r && state.room) r.items = clone(state.room);
   if(r && state.roomSize) Object.assign(r, state.roomSize);
@@ -2620,6 +2717,9 @@ function applyTheme(){
   btn.appendChild(icon(DB.theme === "dark" ? "sun" : "moon"));
   const meta = document.querySelector('meta[name="theme-color"]');
   if(meta) meta.setAttribute("content", DB.theme === "dark" ? "#2c2033" : "#003366");
+  if(window.StatusBar && window.cordova && window.cordova.platformId === "android"){
+    try{ StatusBar.backgroundColorByHexString(DB.theme === "dark" ? "#2c2033" : "#003366"); StatusBar.styleLightContent(); }catch(e){}
+  }
 }
 $("#btn-theme").onclick = () => { DB.theme = DB.theme === "dark" ? "light" : "dark"; applyTheme(); save(); };
 $("#flag-de").onclick = () => { LANG = "de"; save(); applyLang(); };
@@ -2640,6 +2740,7 @@ $$("[data-nav]").forEach(b => b.onclick = () => {
 });
 $("#btn-editor-back").onclick = () => {
   if(presenting){ setPresenting(false); return; }
+  if(gradeMode){ $("#gb-exit").onclick(); return; }
   if(lessonMode){ setLesson(false); return; }
   if(editMode === "room" && curPlanId){ setEditMode("desks"); return; }
   if(curPlanId) goPlans();
@@ -2860,7 +2961,10 @@ function prevState(){
     const raw = Store.get(KEY_PREV);
     if(!raw) return null;
     const o = JSON.parse(raw);
-    if(!o || typeof o.data !== "string" || daysSince(o.at) > 14) return null;
+    if(!o || typeof o.data !== "string" || daysSince(o.at) > 14){
+      try{ window.localStorage.removeItem(KEY_PREV); }catch(e){}   // abgelaufene Kopie nicht ewig aufheben
+      return null;
+    }
     return o;
   }catch(e){ return null; }
 }
@@ -3976,7 +4080,9 @@ function openPlan(id){
     DB.rooms.push(r); p.roomId = r.id; curRoomId = r.id; save();
   }
   editMode = "desks"; selected.clear();
+  if(gradeMode) endGradeMode(true);
   lessonMode = false; pickedId = null;
+  applyPanelsMin();
   undoStack = []; redoStack = []; updateUndoButtons();
   show("editor");
   $("#plan-title").textContent = p.name;
@@ -4055,6 +4161,7 @@ function updateEditorChrome(){
   clearTimeout(hintTimer);
   hintTimer = setTimeout(() => hintEl.classList.add("faded"), 5000);   // gibt die Sicht wieder frei
   $("#lessonbar").classList.toggle("on", lessonMode);
+  if($("#lb-grade")) $("#lb-grade").style.display = gradesOn() && DB.gradesAck ? "" : "none";
   $("#btn-lesson").classList.toggle("on", lessonMode);
   const panelsEl = document.querySelector(".panels");
   if(panelsEl) panelsEl.style.display = lessonMode ? "none" : "";
@@ -4176,6 +4283,13 @@ function renderStage(full){
     const wantLock = isDesk && it.locked && it.studentId && !viewLocked();
     if(wantLock && !lk){ lk = document.createElement("i"); lk.className = "lockmark"; lk.appendChild(icon("lock")); el.appendChild(lk); }
     else if(!wantLock && lk) lk.remove();
+    let gm = el.querySelector(".gmark");
+    const ga = gradeMode ? gradeAssess() : null;
+    const gTok = ga && isDesk && it.studentId ? ga.marks[it.studentId] : null;
+    if(gTok && !gm){ gm = document.createElement("i"); gm.className = "gmark"; el.appendChild(gm); }
+    else if(!gTok && gm) gm.remove();
+    if(gTok){ gm.textContent = tokLabel(gTok); gm.classList.toggle("miss", gTok === "x"); gm.classList.toggle("sm", !!SMILEY[gTok]); }
+    el.classList.toggle("gsel", !!ga && isDesk && !!it.studentId && it.studentId === gradeSel);
     let pd = el.querySelector(".pdot");
     const pc = isDesk && it.studentId ? seatGroupColor(it.studentId) : null;
     if(pc && !pd){ pd = document.createElement("i"); pd.className = "pdot"; el.appendChild(pd); }
@@ -4213,6 +4327,7 @@ let shortBand = false;
 function applyTransformOnly(){
   const stage = $("#stage");
   stage.dataset.grid = zoom < 0.4 ? "off" : "on";
+  stage.style.setProperty("--gz", String(Math.min(1.7, Math.max(1, 0.5 / Math.max(zoom, 0.05)))));   // Bewertungen bleiben herausgezoomt lesbar
   const band = zoom < 0.55;
   if(band !== shortBand){ shortBand = band; if(elCache.size) requestAnimationFrame(() => renderStage(false)); }
   if(mirrored){
@@ -4603,7 +4718,7 @@ function endPointer(e){
     }
     if(!movedFar && onItem && lessonMode){
       const it = findItem(onItem.dataset.id);
-      if(it && it.type === "desk" && it.studentId) openLessonSheet(it);
+      if(it && it.type === "desk" && it.studentId){ if(gradeMode) pickGradeSeat(it.studentId); else openLessonSheet(it); }
     } else if(!movedFar && !onItem && !(e.target.closest && e.target.closest(".selbar"))){
       selected.clear(); renderStage(false);
     }
@@ -5962,8 +6077,12 @@ function tableShapes(desks){
                cx: cx + ux * uc + vx * vc, cy: cy + uy * uc + vy * vc });
   });
   /* Nummern von vorne nach hinten, in einer Reihe von links nach rechts */
-  out.sort((p, q) => Math.abs(p.cy - q.cy) > 140 ? p.cy - q.cy : p.cx - q.cx);
-  out.forEach((o, i) => { o.no = i + 1; });
+  /* Erst Reihen (Abstand > 140 px), dann innerhalb der Reihe von links nach rechts – stabil und transitiv */
+  out.sort((p, q) => p.cy - q.cy);
+  let row = 0, rowStart = out.length ? out[0].cy : 0;
+  out.forEach(o => { if(o.cy - rowStart > 140){ row++; rowStart = o.cy; } o.row = row; });
+  out.sort((p, q) => p.row - q.row || p.cx - q.cx);
+  out.forEach((o, i) => { o.no = i + 1; delete o.row; });
   return out;
 }
 const tableEls = new Map();
@@ -6036,6 +6155,11 @@ function freeCells(cellW, cellH, count){
   }
   return cells.slice(0, count);
 }
+/* 9 Gäste bei 8 Plätzen: 5 + 4 statt 8 + 1 – sonst entsteht ein Tisch mit einem einzelnen Stuhl */
+function tableCounts(n, per){
+  const tables = Math.max(1, Math.ceil(n / per)), base = Math.floor(n / tables), extra = n % tables;
+  return Array.from({ length: tables }, (_, i) => base + (i < extra ? 1 : 0));
+}
 function roundTableRadius(per){ return per <= 4 ? 60 : per <= 6 ? 85 : per <= 8 ? 110 : per <= 10 ? 125 : 140; }
 function pRounds(n){
   const p = curPlan();
@@ -6047,7 +6171,7 @@ function pRounds(n){
   const cells = freeCells(cell, cell, tables);
   const res = [];
   for(let tb = 0; tb < tables; tb++){
-    const count = Math.min(per, n - tb * per);
+    const count = tableCounts(n, per)[tb];
     const cx = cells[tb].x + cell / 2, cy = cells[tb].y + cell / 2;
     for(let k = 0; k < count; k++){
       const ang = (k / count) * Math.PI * 2 - Math.PI / 2;
@@ -6067,7 +6191,7 @@ function pLongTables(n){
   const off = DEP / 2 + TABLE_GAP + S / 2;
   const res = [];
   for(let tb = 0; tb < tables; tb++){
-    const count = Math.min(per, n - tb * per);
+    const count = tableCounts(n, per)[tb];
     const cy = cells[tb].y + cellH / 2;
     for(let k = 0; k < count; k++){
       const side = k % 2 ? 1 : -1, idx = Math.floor(k / 2);
@@ -6091,7 +6215,7 @@ function pSquares(n){
   const cells = freeCells(cell, cell, tables);
   const res = [];
   for(let tb = 0; tb < tables; tb++){
-    const count = Math.min(per, n - tb * per);
+    const count = tableCounts(n, per)[tb];
     const sd = squareSides(count);
     const cx = cells[tb].x + cell / 2, cy = cells[tb].y + cell / 2;
     /* Seiten: oben, unten, links, rechts */
@@ -6133,7 +6257,7 @@ function pOvals(n){
   const cells = freeCells(cellW, cellH, tables);
   const res = [];
   for(let tb = 0; tb < tables; tb++){
-    const count = Math.min(per, n - tb * per);
+    const count = tableCounts(n, per)[tb];
     const cx = cells[tb].x + cellW / 2, cy = cells[tb].y + cellH / 2;
     ovalPoints(count, A, B).pts.forEach(([x, y]) => res.push({ x: cx + x - S / 2, y: cy + y - S / 2, rot: 0, g: tb, tbl: "oval" }));
   }
@@ -6192,14 +6316,19 @@ function placeShape(res, w, h){
     return n;
   };
   const x0 = (ROOM_W - w) / 2;
+  /* Nur Hindernisse, die die Anordnung überhaupt erreichen kann */
+  const near = obstacles.filter(o => o.x < ROOM_W && o.y < ROOM_H && o.x + o.w > 0 && o.y + o.h > 0);
+  obstacles.length = 0; near.forEach(o => obstacles.push(o));
   let best = null;
-  for(let dy = 20; dy <= Math.max(20, ROOM_H - h - 20); dy += 30){
-    for(let dx = 20; dx <= Math.max(20, ROOM_W - w - 20); dx += 30){
-      const n = hits(dx, dy);
-      const score = n * 1e6 + Math.abs(dx - x0) + dy * 0.6;
-      if(!best || score < best.score) best = { dx, dy, score };
-    }
-  }
+  const tryAt = (dx, dy) => {
+    const n = hits(dx, dy), score = n * 1e6 + Math.abs(dx - x0) + dy * 0.6;
+    if(!best || score < best.score) best = { dx, dy, score };
+  };
+  const maxX = Math.max(20, ROOM_W - w - 20), maxY = Math.max(20, ROOM_H - h - 20);
+  for(let dy = 20; dy <= maxY; dy += 90) for(let dx = 20; dx <= maxX; dx += 90) tryAt(dx, dy);   // grob
+  const c0 = best;
+  for(let dy = Math.max(20, c0.dy - 90); dy <= Math.min(maxY, c0.dy + 90); dy += 15)                 // fein um den besten Punkt
+    for(let dx = Math.max(20, c0.dx - 90); dx <= Math.min(maxX, c0.dx + 90); dx += 15) tryAt(dx, dy);
   if(!best) best = { dx: Math.max(10, x0), dy: 20 };
   return res.map(q => Object.assign(q, { x: q.x + best.dx, y: q.y + best.dy }));
 }
@@ -6373,12 +6502,12 @@ function rowIndices(desks){
     return best;
   });
 }
-function autoSeat(quiet){
+function autoSeat(quiet, noUndo){
   const c = curClass(), p = curPlan();
   if(!c || !p) return;
   if(!p.desks.length){ toast(t("noDesks")); return; }
   if(!c.students.length){ toast(t("noStudents")); return; }
-  pushUndo();
+  if(!noUndo) pushUndo();
 
   const desks = p.desks;
   const nb = neighbourMatrix(desks);
@@ -6700,7 +6829,7 @@ function openExamSheet(){
     /* Nur beim ersten Einrichten merken – ein zweites Einrichten darf die Ausgangslage nicht überschreiben */
     if(!p.exam) p.examPrev = { deskSize: p.deskSize, desks: clone(p.desks) };
     if(arrange) layoutDesks("exam", true);
-    if(shuffle) autoSeat(true);
+    if(shuffle) autoSeat(true, true);                 // ein einziger Undo-Schritt für das ganze Einrichten
     p.exam = true;
     assignExamGroups(p);
     save(); renderStage(false); renderSeatOptions();
@@ -6810,7 +6939,8 @@ function guestSeats(c, p){
   const shapes = tableShapes(p.desks);
   const tno = new Map(shapes.map(sh => [sh.id, sh.no]));
   const nums = seatOrder(p.desks).no;
-  return p.desks.filter(d => d.studentId && studentById(c, d.studentId)).map(d => ({
+  const declined = id => DB.settings.mode === "event" && (studentById(c, id) || {}).rsvp === "no";
+  return p.desks.filter(d => d.studentId && studentById(c, d.studentId) && !declined(d.studentId)).map(d => ({
     st: studentById(c, d.studentId), desk: d,
     table: d.groupId && tno.has(d.groupId) ? tno.get(d.groupId) : null,
     seat: nums.get(d.id) || 0
@@ -6917,13 +7047,11 @@ function kitchenPages(c, p){
     cur.push(pdfText(A4P_W - M - 6 - pdfTextW(sm, 9.5), y, 9.5, sm, "0.353 0.420 0.459"));
     y -= 22;
     arr.filter(e => e.st.menu || e.st.note).forEach(e => {
-      need(16);
+      const ls = e.st.note ? pdfWrap(e.st.note, 40) : [];
+      need(16 + Math.max(0, ls.length - 1) * 13);         // Name und Hinweis bleiben auf einer Seite
       cur.push(pdfText(M + 10, y, 10.5, e.st.name));
       cur.push(pdfText(M + 200, y, 10.5, e.st.menu ? t("menu_" + e.st.menu) : "–"));
-      if(e.st.note){
-        const ls = pdfWrap(e.st.note, 40);
-        ls.forEach((l, i) => { if(i) { y -= 13; need(14); } cur.push(pdfText(M + 300, y, 10, l, "0.6 0.15 0.1")); });
-      }
+      ls.forEach((l, i) => { if(i) y -= 13; cur.push(pdfText(M + 300, y, 10, l, "0.6 0.15 0.1")); });
       y -= 15;
     });
     y -= 6;
@@ -6983,7 +7111,8 @@ function lessonNote(id){
   return (c && c.lesson && c.lesson.notes) ? c.lesson.notes[id] : "";
 }
 function setLesson(on){
-  if(on && (!curPlanId || !DB.settings.lesson)) return;
+  if(on && (!curPlanId || (!DB.settings.lesson && !gradeMode))) return;
+  if(!on && gradeMode) endGradeMode(true);
   lessonMode = !!on;
   selected.clear();
   pickedId = null;
@@ -7043,17 +7172,18 @@ function openLessonSheet(it){
     const qm = document.createElement("button");
     qm.className = "ghost"; qm.id = "lesson-quickmark"; qm.style.width = "100%"; qm.style.marginTop = "10px";
     qm.textContent = t("gQuick");
-    qm.onclick = () => { closeModal(); setTimeout(() => quickMark(st), 60); };
+    qm.onclick = () => { commitLesson(); setTimeout(() => quickMark(st), 60); };
     sheet.appendChild(qm);
   }
-  sheetButtons(sheet, t("save"), () => {
+  function commitLesson(){
     const i = L.absent.indexOf(st.id);
     if(absent && i < 0) L.absent.push(st.id);
     if(!absent && i >= 0) L.absent.splice(i, 1);
     const note = area.value.trim();
     if(note) L.notes[st.id] = note; else delete L.notes[st.id];
     closeModal(); save(); renderStage(false); updateLessonCount();
-  });
+  }
+  sheetButtons(sheet, t("save"), commitLesson);
 }
 function pickRandom(){
   const c = curClass(), p = curPlan();
@@ -7303,6 +7433,7 @@ $$(".tabbar button").forEach(b => b.onclick = () => {
   const target = b.dataset.panel;
   const isWide = window.matchMedia("(min-width:860px) and (min-aspect-ratio:1/1)").matches;   // Seitenleiste sichtbar
   const already = $("#" + target).classList.contains("on");
+  if(document.body.classList.contains("panels-min") && !isWide){ setPanelsMin(false); switchPanel(target); return; }
   if(already && !isWide){                       // auf dem Handy zuklappen für mehr Plan-Fläche
     $$(".tabbar button").forEach(x => x.classList.remove("on"));
     $$(".panel").forEach(x => x.classList.remove("on"));
@@ -7782,6 +7913,8 @@ async function decryptBackup(enc, pw){
   const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(enc.iv) }, key, unb64(enc.data));
   return new TextDecoder().decode(pt);
 }
+/* Gelöschtes (Papierkorb) gehört nicht in eine Sicherung, die das Gerät verlässt */
+function backupData(){ const d = clone(DB); d.trash = []; return d; }
 function writeBackup(obj, encrypted){
   const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
   const stamp = new Date().toISOString().slice(0, 10);
@@ -7791,7 +7924,7 @@ function writeBackup(obj, encrypted){
   else toast(t("exportFail"));
 }
 $("#btn-backup").onclick = () => {
-  const plain = () => { try{ writeBackup({ app: "fairseat", v: 2, exported: new Date().toISOString(), data: DB }, false); }catch(e){ toast(t("exportFail")); } };
+  const plain = () => { try{ writeBackup({ app: "fairseat", v: 2, exported: new Date().toISOString(), data: backupData() }, false); }catch(e){ toast(t("exportFail")); } };
   if(!hasCrypto()){ plain(); return; }
   const sheet = sheetBase(t("backupTitle"));
   const hint = document.createElement("div"); hint.className = "hint"; hint.style.fontSize = "14px"; hint.textContent = t("backupEncHint");
@@ -7804,6 +7937,10 @@ $("#btn-backup").onclick = () => {
   pw1.id = "bk-pw1"; pw2.id = "bk-pw2";
   const warn = document.createElement("div"); warn.className = "hint"; warn.textContent = t("backupPwWarn");
   sheet.appendChild(warn);
+  if(DB.classes.some(c => (c.assess || []).some(a => Object.keys(a.marks).length))){
+    const g = document.createElement("div"); g.className = "hint"; g.style.color = "var(--warn)"; g.style.fontWeight = "650";
+    g.textContent = t("backupHasGrades"); sheet.appendChild(g);
+  }
   const enc = document.createElement("button");
   enc.className = "primary"; enc.id = "bk-enc"; enc.style.width = "100%"; enc.style.marginTop = "12px";
   enc.textContent = t("backupEncBtn");
@@ -7812,7 +7949,7 @@ $("#btn-backup").onclick = () => {
     if(pw1.value !== pw2.value){ toast(t("backupPwMismatch")); pw2.focus(); return; }
     enc.disabled = true;
     try{
-      const obj = await encryptBackup(JSON.stringify({ app: "fairseat", v: 2, data: DB }), pw1.value);
+      const obj = await encryptBackup(JSON.stringify({ app: "fairseat", v: 2, data: backupData() }), pw1.value);
       closeModal(); writeBackup(obj, true);
     }catch(e){ enc.disabled = false; toast(t("exportFail")); }
   };
@@ -7872,7 +8009,7 @@ $("#filepick").addEventListener("change", e => {
 function restoreParsed(parsed){
     const raw = parsed && parsed.data ? parsed.data : parsed;
     const clean = sanitizeDB(raw && raw.v === 2 ? raw : migrateV1(raw || {}));
-    if(!clean || (!clean.classes.length && !clean.rooms.length)){ toast(t("backupBad")); return; }
+    if(!clean || (!clean.classes.length && !clean.rooms.length && !clean.subjects.length && !clean.lessons.length)){ toast(t("backupBad")); return; }
     askConfirm(t("restoreQ"), t("restoreT2"), t("restore"), () => {
       /* Den bisherigen Stand aufheben: eine falsch gewählte Datei darf nichts zerstören */
       flushSave();
@@ -8137,6 +8274,14 @@ function abWeek(date){
 const subjectById = id => DB.subjects.find(s => s.id === id) || null;
 const classById = id => DB.classes.find(c => c.id === id) || null;
 const roomById = id => DB.rooms.find(r => r.id === id) || null;
+/* Weiß oder Dunkel – je nachdem, was auf der Fachfarbe besser lesbar ist (WCAG-Leuchtdichte) */
+function inkOn(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if(!m) return "#fff";
+  const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const n = parseInt(m[1], 16), L = 0.2126 * lin(n >> 16) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+  const Ld = 0.0158;                                   // Leuchtdichte der dunklen Schrift #16232B
+  return (L + 0.05) / (Ld + 0.05) > 1.05 / (L + 0.05) ? "#16232B" : "#fff";
+}
 function lessonLabel(L){
   const s = subjectById(L.subjectId), c = classById(L.classId), r = roomById(L.roomId);
   return [s ? s.name : "", c ? c.name : "", r ? r.name : ""].filter(Boolean).join(" · ");
@@ -8247,7 +8392,8 @@ function renderTimetable(){
     const span = Math.min(L.span, T.count - L.period);
     const s = subjectById(L.subjectId), c = classById(L.classId), rm = roomById(L.roomId);
     const cell = document.createElement("button"); cell.className = "tt-cell";
-    if(s){ cell.style.background = s.color; cell.style.borderColor = s.color; }
+    if(s){ cell.style.background = s.color; cell.style.borderColor = s.color; cell.style.color = inkOn(s.color);
+      cell.style.textShadow = inkOn(s.color) === "#fff" ? "" : "none"; }
     const a = document.createElement("b"); a.textContent = s ? (s.short || s.name) : "–";
     const b = document.createElement("span"); b.textContent = c ? c.name : "";
     const d = document.createElement("span"); d.textContent = rm ? rm.name : "";
@@ -8275,10 +8421,10 @@ function selectField(sheet, items, value){
   sheet.appendChild(sel);
   return sel;
 }
-function editLesson(L, day, period){
+function editLesson(L, day, period, draft){
   const isNew = !L;
   if(isNew && DB.lessons.length >= MAX_LESSONS){ toast(t("ttLimit")); return; }
-  const cur = L ? Object.assign({}, L) : { id: uid(), day, period, span: 1, week: DB.tt.ab ? ttWeekView || "" : "",
+  const cur = draft ? Object.assign({}, draft) : L ? Object.assign({}, L) : { id: uid(), day, period, span: 1, week: "",
     subjectId: (DB.subjects[0] || {}).id || "", classId: curClassId || "", roomId: "", planId: "" };
   const times = periodTimes();
   const sheet = sheetBase(I18N[LANG].ttDays[cur.day] + ", " + (cur.period + 1) + ". " + t("ttPeriod") + " (" + fmtHM(times[cur.period].start) + ")");
@@ -8287,8 +8433,11 @@ function editLesson(L, day, period){
   const subjSel = selectField(sheet, subjItems(), cur.subjectId);
   subjSel.onchange = () => {
     if(subjSel.value !== "__new") return;
+    /* Bisherige Eingaben mitnehmen, damit nach dem Anlegen des Fachs nichts fehlt */
+    Object.assign(cur, { classId: clsSel.value, roomId: roomSel.value, planId: planSel ? planSel.value : cur.planId });
     closeModal();
-    editSubject(null, s => { cur.subjectId = s.id; if(isNew) editLesson(null, cur.day, cur.period); else editLesson(Object.assign(L, { subjectId: s.id })); });
+    editSubject(null, s => { cur.subjectId = s.id; editLesson(L, cur.day, cur.period, cur); },
+      () => editLesson(L, cur.day, cur.period, Object.assign(cur, { subjectId: (DB.subjects[0] || {}).id || "" })));
   };
   sheetLabel(sheet, t("ttClass"));
   const clsSel = selectField(sheet, [["", "–"]].concat(DB.classes.filter(c => !c.archived).map(c => [c.id, c.name])), cur.classId);
@@ -8331,12 +8480,17 @@ function editLesson(L, day, period){
     const span = Math.min(cur.span, DB.tt.count - cur.period);
     const overl = x => x.id !== cur.id && x.day === cur.day && (!x.week || !cur.week || x.week === cur.week) &&
       x.period < cur.period + span && cur.period < x.period + x.span;
-    DB.lessons = DB.lessons.filter(x => !overl(x));
-    if(isNew) DB.lessons.push(cur); else Object.assign(L, cur);
-    closeModal(); save(); renderTimetable();
+    const doSave = () => {
+      DB.lessons = DB.lessons.filter(x => !overl(x));
+      if(isNew) DB.lessons.push(cur); else Object.assign(L, cur);
+      closeModal(); save(); renderTimetable();
+    };
+    const hit = DB.lessons.filter(overl);
+    if(hit.length){ closeModal(); askConfirm(t("ttReplaceQ"), hit.map(lessonLabel).join(", ") || t("ttEmpty"), t("ttReplaceOk"), doSave); }
+    else doSave();
   });
 }
-function editSubject(s, after){
+function editSubject(s, after, onCancel){
   const isNew = !s;
   if(isNew && DB.subjects.length >= MAX_SUBJECTS){ toast(t("subjLimit")); return; }
   let color = s ? s.color : SUBJECT_COLORS[DB.subjects.length % SUBJECT_COLORS.length];
@@ -8369,13 +8523,18 @@ function editSubject(s, after){
       askConfirm(t("subjDeleteQ").replace("{s}", s.name), t("subjDeleteT"), t("delete"), () => {
         DB.subjects = DB.subjects.filter(x => x !== s);
         DB.lessons = DB.lessons.filter(L => L.subjectId !== s.id);
-        DB.classes.forEach(c => { c.assess = (c.assess || []).filter(a => a.subjectId !== s.id); if(c.gradeW) delete c.gradeW[s.id]; });
+        DB.classes.forEach(c => {
+          c.assess = (c.assess || []).filter(a => a.subjectId !== s.id);
+          if(c.gradeW) delete c.gradeW[s.id];
+          c.gradeSubjects = (c.gradeSubjects || []).filter(x => x !== s.id);
+          if(c.lastSubject === s.id) c.lastSubject = "";
+        });
         save(); refreshTTViews();
       });
     };
     sheet.appendChild(del);
   }
-  sheetButtons(sheet, t("save"), () => {
+  const okBtn = sheetButtons(sheet, t("save"), () => {
     const v = name.value.trim(); if(!v){ name.focus(); return; }
     const sh = short.value.trim() || v.slice(0, 4);
     if(isNew){ s = { id: uid(), name: v, short: sh, color }; DB.subjects.push(s); }
@@ -8383,6 +8542,7 @@ function editSubject(s, after){
     closeModal(); save(); refreshTTViews();
     if(after) setTimeout(() => after(s), 80);
   });
+  if(onCancel){ const cancel = okBtn.parentNode.querySelector("button.ghost"); if(cancel) cancel.onclick = () => { closeModal(); setTimeout(onCancel, 80); }; }
   setTimeout(() => name.focus(), 60);
 }
 function refreshTTViews(){
@@ -8456,9 +8616,18 @@ function openTimes(){
       if(thisWeek === "B") mon.setDate(mon.getDate() - 7);
       T.abRef = isoDay(mon);
     }
-    DB.tt = T;
-    DB.lessons = DB.lessons.filter(L => L.day < 6 && L.period < T.count);
-    closeModal(); save(); refreshTTViews(); toast(t("ttSaved"));
+    const apply = () => {
+      if(!T.ab && DB.tt.ab){                          // A/B aus: A gilt jede Woche, B-Stunden entfallen
+        DB.lessons = DB.lessons.filter(L => L.week !== "B");
+        DB.lessons.forEach(L => { L.week = ""; });
+      }
+      /* Stunden außerhalb des Rasters bleiben erhalten und erscheinen wieder, wenn das Raster wächst */
+      DB.tt = T;
+      closeModal(); save(); refreshTTViews(); toast(t("ttSaved"));
+    };
+    const nB = DB.lessons.filter(L => L.week === "B").length;
+    if(!T.ab && DB.tt.ab && nB){ closeModal(); askConfirm(t("ttABOffQ"), t("ttABOffT").replace("{n}", String(nB)), t("ttABOffOk"), apply); }
+    else apply();
   });
 }
 
@@ -8467,16 +8636,17 @@ function openTimes(){
    Werte als Kürzel: "2+", "11", "s1"; "x" = fehlt. */
 const GRADE_TOKS = ["1+","1","1-","2+","2","2-","3+","3","3-","4+","4","4-","5+","5","5-","6"];
 const POINT_TOKS = ["15","14","13","12","11","10","9","8","7","6","5","4","3","2","1","0"];
-const SMILEY_TOKS = ["s1","s2","s3"];
-const SMILEY = { s1: "😀", s2: "😐", s3: "🙁" };
-const SMILEY_PDF = { s1: "+", s2: "o", s3: "-" };
+/* Vier Stufen, damit es keine bequeme Mitte gibt: sehr gut, gut, geht so, nicht gut */
+const SMILEY_TOKS = ["s1","s2","s3","s4"];
+const SMILEY = { s1: "😀", s2: "🙂", s3: "😐", s4: "🙁" };
+const SMILEY_PDF = { s1: "++", s2: "+", s3: "-", s4: "--" };
 const SCALE_TOKS = { grade: GRADE_TOKS, points: POINT_TOKS, smiley: SMILEY_TOKS };
 function tokNum(tok, scale){
   if(scale === "grade"){ const m = /^([1-6])([+-]?)$/.exec(tok || ""); if(!m) return null; return +m[1] + (m[2] === "+" ? -0.3 : m[2] === "-" ? 0.3 : 0); }
   if(scale === "points"){ const v = parseInt(tok, 10); return isFinite(v) && v >= 0 && v <= 15 && String(v) === tok ? v : null; }
   return null;
 }
-const pointsToGrade = p => Math.min(6, Math.max(1, (17 - p) / 3));
+const pointsToGrade = p => tokNum(GRADE_TOKS[POINT_TOKS.indexOf(String(p))], "grade");
 const tokLabel = (tok, forPdf) => tok === "x" ? t("gMissing") : SMILEY[tok] ? (forPdf ? SMILEY_PDF[tok] : SMILEY[tok]) : String(tok || "");
 const fmtNum = (v, d) => v === null || v === undefined || !isFinite(v) ? "–" : (LANG === "de" ? v.toFixed(d).replace(".", ",") : v.toFixed(d));
 const fmtDate = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); return m ? (LANG === "de" ? m[3] + "." + m[2] + "." : m[3] + "/" + m[2]) : ""; };
@@ -8489,18 +8659,27 @@ function studentAverages(c, subjectId, sid){
   const part = kind => { let s = 0, w = 0; list.filter(a => a.kind === kind).forEach(a => { const v = valIn(a, a.marks[sid], sc); if(v !== null){ s += v * a.weight; w += a.weight; } }); return w ? s / w : null; };
   const wr = part("written"), ot = part("other");
   const W = ((c.gradeW || {})[subjectId] ?? 50) / 100;
-  const total = wr !== null && ot !== null ? W * wr + (1 - W) * ot : wr !== null ? wr : ot;
+  /* Nur Teile mit Wert und Gewicht > 0 – bei 100 % schriftlich zählt Mündliches gar nicht */
+  const parts = [[wr, W], [ot, 1 - W]].filter(([v, w]) => v !== null && w > 0);
+  const sw = parts.reduce((a, [, w]) => a + w, 0);
+  const total = sw ? parts.reduce((a, [v, w]) => a + v * w, 0) / sw : null;
   return { written: wr, other: ot, total, scale: sc };
 }
-function assessAverage(a){
-  const v = Object.values(a.marks).map(tok => tokNum(tok, a.scale)).filter(x => x !== null);
+function assessAverage(a, c){
+  c = c || curClass();
+  const ids = c ? c.students.map(st => st.id) : Object.keys(a.marks);     // Gelöschte zählen nicht mehr mit
+  const v = ids.map(id => tokNum(a.marks[id], a.scale)).filter(x => x !== null);
   return v.length ? v.reduce((p, q) => p + q, 0) / v.length : null;
 }
 let gradeSubject = null, gradeTab = "list", curAssessId = null, assessSel = null;
 function goGrades(subjectId){
   if(!DB.gradesAck){ showGradesPrivacy(() => goGrades(subjectId)); return; }
   ensureCurClass();
-  if(subjectId) gradeSubject = subjectId;
+  if(subjectId && subjectById(subjectId)){
+    gradeSubject = subjectId;
+    const c = curClass();                       // Fach aus Stundenplan oder Startseite gleich als Kurs führen
+    if(c && courseSubjects(c).every(x => x.id !== subjectId)){ c.gradeSubjects = (c.gradeSubjects || []).concat([subjectId]); save(); }
+  }
   show("grades"); renderGrades();
 }
 function showGradesPrivacy(then){
@@ -8529,7 +8708,7 @@ function renderGrades(){
   const chips = document.createElement("div"); chips.className = "subjchips";
   subs.forEach(s => {
     const b = document.createElement("button"); b.className = "subjchip" + (s.id === gradeSubject ? " on" : "");
-    b.style.setProperty("--sc", s.color); b.textContent = s.name;
+    b.style.setProperty("--sc", s.color); b.style.setProperty("--sci", inkOn(s.color)); b.textContent = s.name;
     b.onclick = () => { gradeSubject = s.id; renderGrades(); };
     chips.appendChild(b);
   });
@@ -8684,6 +8863,7 @@ function renderAssess(){
   pad.className = "keypad k-" + a.scale;
   SCALE_TOKS[a.scale].forEach(tok => {
     const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
+    if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
     b.classList.toggle("on", !!assessSel && a.marks[assessSel] === tok);
     b.onclick = () => setMark(tok);
     pad.appendChild(b);
@@ -8721,7 +8901,8 @@ function svgEl(tag, attrs, parent){ const e = document.createElementNS(SVGNS, ta
 function distChart(a){
   const cats = a.scale === "grade" ? ["1","2","3","4","5","6"] : a.scale === "points" ? POINT_TOKS.slice().reverse() : SMILEY_TOKS;
   const cnt = cats.map(() => 0);
-  Object.values(a.marks).forEach(tok => {
+  const cl = curClass();
+  (cl ? cl.students.map(st => a.marks[st.id]).filter(Boolean) : Object.values(a.marks)).forEach(tok => {
     if(tok === "x") return;
     const k = a.scale === "grade" ? cats.indexOf(String(tok).charAt(0)) : cats.indexOf(tok);
     if(k >= 0) cnt[k]++;
@@ -8881,6 +9062,7 @@ function quickMark(st){
     pad.className = "keypad k-" + scale; pad.textContent = "";
     SCALE_TOKS[scale].forEach(tok => {
       const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
+      if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
       b.classList.toggle("on", !!a && a.marks[st.id] === tok);
       b.onclick = () => {
         let A = a;
@@ -8899,12 +9081,184 @@ function quickMark(st){
   close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
 }
 $("#tile-timetable").onclick = goTimetable;
+/* Die laufende Stunde ändert sich mit der Uhr – minütlich und beim Zurückkehren in die App nachziehen */
+setInterval(() => { if(document.visibilityState !== "hidden" && $("#screen-start").classList.contains("active")) renderNowCard(); }, 60000);
+document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible") renderNowCard(); });
 $("#tile-grades").onclick = () => goGrades();
 $("#btn-tt-times").onclick = openTimes;
 $("#btn-tt-subjects").onclick = openSubjects;
 $("#grades-class").onchange = e => { if(e.target.value){ setCurClass(e.target.value); save(); renderGrades(); } };
 $("#btn-assess-back").onclick = () => { show("grades"); renderGrades(); };
 $("#btn-assess-edit").onclick = editAssessMeta;
+
+
+/* ============ 25. Bewerten im Sitzplan, einklappbares Menü ============ */
+let gradeMode = null, gradeSel = null, gradeWasLesson = false;
+const gradeAssess = () => { const c = curClass(); return c && gradeMode ? (c.assess || []).find(a => a.id === gradeMode) || null : null; };
+/* Startet das Bewerten auf dem gerade offenen Plan */
+function startGradeMode(assessId){
+  const c = curClass(), p = curPlan(); if(!c || !p) return;
+  gradeMode = assessId;
+  gradeWasLesson = lessonMode;
+  if(!lessonMode){ lessonMode = true; selected.clear(); const cl = curClass(); if(cl) ensureLesson(cl); }
+  if(presenting) setPresenting(false);
+  document.body.classList.add("grading");
+  const a = gradeAssess();
+  const order = seatOrder(p.desks).no;
+  const seated = p.desks.filter(d => d.studentId).sort((x, y) => (order.get(x.id) || 0) - (order.get(y.id) || 0));
+  gradeSel = ((seated.find(d => a && !a.marks[d.studentId]) || seated[0]) || {}).studentId || null;
+  updateEditorChrome(); renderGradeBar(); renderStage(false);
+  requestAnimationFrame(fitToScreen);
+}
+function endGradeMode(silent){
+  if(!gradeMode) return;
+  gradeMode = null; gradeSel = null;
+  document.body.classList.remove("grading");
+  if(!silent){
+    lessonMode = gradeWasLesson && DB.settings.lesson;
+    updateEditorChrome(); renderStage(false); requestAnimationFrame(fitToScreen);
+  }
+}
+function leaveGradeToList(){
+  const id = gradeMode;
+  endGradeMode(true); lessonMode = false; updateEditorChrome();
+  if(id){ openAssess(id); } else goPlans();
+}
+function pickGradeSeat(sid){ gradeSel = sid; renderGradeBar(); renderStage(false); haptic(6); }
+function renderGradeBar(){
+  const a = gradeAssess(), c = curClass(); if(!a || !c) return;
+  const s = subjectById(a.subjectId);
+  $("#gb-title").textContent = a.title;
+  const done = c.students.filter(st => a.marks[st.id]).length, avg = assessAverage(a);
+  $("#gb-meta").textContent = (s ? s.name + " · " : "") + fmtDate(a.date) + " · " + t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) +
+    (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
+  const st = gradeSel ? studentById(c, gradeSel) : null;
+  $("#gb-who").textContent = st ? st.name + (a.marks[st.id] ? " · " + tokLabel(a.marks[st.id]) : "") : t("gTapSeat");
+  const pad = $("#gb-pad"); pad.textContent = "";
+  pad.className = "keypad k-" + a.scale;
+  SCALE_TOKS[a.scale].forEach(tok => {
+    const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
+    if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
+    b.classList.toggle("on", !!st && a.marks[st.id] === tok);
+    b.onclick = () => setGradeOnPlan(tok); pad.appendChild(b);
+  });
+  const miss = document.createElement("button"); miss.className = "kx"; miss.textContent = t("gMissing"); miss.dataset.tok = "x"; miss.onclick = () => setGradeOnPlan("x"); pad.appendChild(miss);
+  const clr = document.createElement("button"); clr.className = "kx"; clr.textContent = "⌫"; clr.setAttribute("aria-label", t("gClear")); clr.onclick = () => setGradeOnPlan(null); pad.appendChild(clr);
+}
+function setGradeOnPlan(tok){
+  const a = gradeAssess(), p = curPlan(); if(!a || !p || !gradeSel) { toast(t("gTapSeat")); return; }
+  if(tok) a.marks[gradeSel] = tok; else delete a.marks[gradeSel];
+  save(); haptic(8);
+  if(tok){                                     // weiter zum nächsten freien Platz von vorne nach hinten
+    const order = seatOrder(p.desks).no;
+    const seated = p.desks.filter(d => d.studentId).sort((x, y) => (order.get(x.id) || 0) - (order.get(y.id) || 0));
+    const i = seated.findIndex(d => d.studentId === gradeSel);
+    const next = seated.slice(i + 1).find(d => !a.marks[d.studentId]);
+    if(next) gradeSel = next.studentId;
+  }
+  renderGradeBar(); renderStage(false);
+}
+/* Aus der Bewertung heraus: passenden Plan der Klasse wählen */
+function gradeOnPlan(){
+  const c = curClass(), a = curAssess(); if(!c || !a) return;
+  if(!c.plans.length){ toast(t("gNoPlan")); return; }
+  const go = p => { c.lastGradePlan = p.id; save(); openPlan(p.id); startGradeMode(a.id); };
+  const nl = nowLessons(), fromTT = nl.now && nl.now.L.classId === c.id ? planForLesson(nl.now.L) : null;
+  const pref = fromTT || c.plans.find(p => p.id === c.lastGradePlan);
+  if(c.plans.length === 1){ go(c.plans[0]); return; }
+  const sheet = sheetBase(t("gPickPlan"));
+  c.plans.slice().sort((x, y) => (y === pref) - (x === pref)).forEach(p => {
+    const b = document.createElement("button"); b.className = "grpcard";
+    const h = document.createElement("b"); h.textContent = p.name + (p === pref ? " ✓" : "");
+    const r = roomById(p.roomId); const d = document.createElement("div"); d.textContent = r ? r.name : "";
+    b.appendChild(h); b.appendChild(d);
+    b.onclick = () => { closeModal(); go(p); };
+    sheet.appendChild(b);
+  });
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
+}
+/* Aus dem Unterrichtsmodus: Bewertung wählen oder „Mitarbeit heute“ anlegen */
+function gradeFromLesson(){
+  const c = curClass(); if(!c) return;
+  if(!DB.subjects.length){ toast(t("subjNeed")); return; }
+  const nl = nowLessons();
+  const fromTT = nl.now && nl.now.L.classId === c.id ? nl.now.L.subjectId : null;
+  let sid = fromTT || c.lastSubject || (courseSubjects(c)[0] || DB.subjects[0]).id;
+  if(!subjectById(sid)) sid = DB.subjects[0].id;
+  const sheet = sheetBase(t("gRate"));
+  const subjSel = selectField(sheet, DB.subjects.map(s => [s.id, s.name]), sid);
+  const list = document.createElement("div"); sheet.appendChild(list);
+  const paint = () => {
+    list.textContent = "";
+    const today = isoDay(new Date());
+    const add = document.createElement("button"); add.className = "cbtn green"; add.id = "lg-new"; add.style.width = "100%"; add.style.marginTop = "10px";
+    const exist = (c.assess || []).find(x => x.auto && x.subjectId === subjSel.value && x.date === today);
+    add.textContent = exist ? t("gContinueToday") : "+ " + t("gNewToday");
+    add.onclick = () => {
+      let A = exist;
+      if(!A){
+        if((c.assess || []).length >= MAX_ASSESS){ toast(t("gLimit")); return; }
+        const last = courseAssess(c, subjSel.value).filter(x => x.kind === "other").slice(-1)[0];
+        A = { id: uid(), subjectId: subjSel.value, title: t("gDefOther") + " " + fmtDate(today), date: today, kind: "other",
+              scale: last ? last.scale : "grade", weight: 1, marks: {}, auto: true };
+        c.assess = (c.assess || []).concat([A]);
+      }
+      c.lastSubject = subjSel.value; save(); closeModal(); startGradeMode(A.id);
+    };
+    list.appendChild(add);
+    courseAssess(c, subjSel.value).filter(x => x !== exist).slice(-6).reverse().forEach(a => {
+      const b = document.createElement("button"); b.className = "acard";
+      const top = document.createElement("div"); top.className = "at";
+      const n = document.createElement("b"); n.textContent = a.title; top.appendChild(n);
+      const m = document.createElement("div"); m.className = "am"; m.textContent = fmtDate(a.date) + " · " + t(a.kind === "written" ? "gWritten" : "gOther");
+      b.appendChild(top); b.appendChild(m);
+      b.onclick = () => { c.lastSubject = subjSel.value; save(); closeModal(); startGradeMode(a.id); };
+      list.appendChild(b);
+    });
+  };
+  subjSel.onchange = paint; paint();
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
+}
+$("#gb-list").onclick = leaveGradeToList;
+$("#gb-exit").onclick = () => { if(gradeWasLesson){ endGradeMode(); } else leaveGradeToList(); };
+$("#lb-grade").onclick = () => { if(!DB.gradesAck){ showGradesPrivacy(gradeFromLesson); return; } gradeFromLesson(); };
+$("#av-plan").onclick = gradeOnPlan;
+$("#av-list").onclick = () => {};
+
+/* ---- Menü unter dem Plan ein- und ausklappen ----
+   Gemerkt wird die Wahl; im Querformat auf dem Handy startet es eingeklappt. */
+const phoneLandscape = () => window.matchMedia("(orientation:landscape) and (max-height:520px)").matches;
+let landscapeOpened = false;
+function setPanelsMin(on, user){
+  document.body.classList.toggle("panels-min", !!on);
+  $("#panel-grip").setAttribute("aria-expanded", on ? "false" : "true");
+  if(user){
+    if(phoneLandscape()) landscapeOpened = !on;
+    else { DB.panelsMin = !!on; save(); }
+  }
+  requestAnimationFrame(() => { if($("#screen-editor").classList.contains("active")) fitToScreen(); });
+}
+function applyPanelsMin(){
+  const want = phoneLandscape() ? !landscapeOpened : !!DB.panelsMin;
+  if(document.body.classList.contains("panels-min") !== want) setPanelsMin(want);
+}
+(function(){
+  const grip = $("#panel-grip");
+  let sy = null, moved = false;
+  grip.addEventListener("pointerdown", e => { sy = e.clientY; moved = false; try{ grip.setPointerCapture(e.pointerId); }catch(x){} });
+  grip.addEventListener("pointermove", e => {
+    if(sy === null) return;
+    const dy = e.clientY - sy;
+    if(dy > 24 && !document.body.classList.contains("panels-min")){ setPanelsMin(true, true); moved = true; sy = null; }
+    else if(dy < -24 && document.body.classList.contains("panels-min")){ setPanelsMin(false, true); moved = true; sy = null; }
+  });
+  grip.addEventListener("pointerup", () => { sy = null; });
+  grip.addEventListener("pointercancel", () => { sy = null; });
+  grip.addEventListener("click", () => { if(moved){ moved = false; return; } setPanelsMin(!document.body.classList.contains("panels-min"), true); });
+  window.addEventListener("resize", () => { landscapeOpened = landscapeOpened && phoneLandscape(); applyPanelsMin(); });
+})();
 
 /* Einmal beim ersten Start im Schulmodus: Hinweis auf die Genehmigung der Schulleitung */
 function showSchoolPrivacy(){
@@ -8959,18 +9313,37 @@ function navBack(){
   if($("#modal").classList.contains("on")){ closeModal(); return true; }
   if($("#screen-editor").classList.contains("active")){
     if(presenting){ setPresenting(false); return true; }
+    if(gradeMode){ $("#gb-exit").onclick(); return true; }
     if(lessonMode){ setLesson(false); return true; }
     if(editMode === "room" && curPlanId){ setEditMode("desks"); return true; }
     if(swapSrc){ swapSrc = null; renderStage(false); updateEditorChrome(); return true; }
     if(curPlanId){ goPlans(); return true; }
     goRooms(); return true;
   }
-  if(["names","rooms","plans","info","settings"].some(id => $("#screen-" + id).classList.contains("active"))){
+  if($("#screen-assess").classList.contains("active")){ show("grades"); renderGrades(); return true; }
+  if(["names","rooms","plans","info","settings","timetable","grades"].some(id => $("#screen-" + id).classList.contains("active"))){
     goHome(); return true;
   }
   return false;                                    // Startseite: App darf sich schließen
 }
+/* Liegt die WebView neben Status- und Navigationsleiste (nicht randlos), meldet Android
+   trotzdem Abstände über env(safe-area-*) – die würden doppelt zählen. Randlos (Android 15+)
+   ist die WebView so groß wie der Bildschirm; dann bleiben die Abstände nötig. */
+function checkAndroidInsets(){
+  const scr = Math.max(screen.width, screen.height), view = Math.max(window.innerWidth, window.innerHeight);
+  const framed = scr - view > 20;
+  const had = document.documentElement.classList.contains("android");
+  document.documentElement.classList.toggle("android", framed);
+  if(had !== framed && $("#screen-editor").classList.contains("active")) setTimeout(fitToScreen, 60);
+}
 (function registerBackButton(){
+  document.addEventListener("deviceready", () => {
+    if(window.cordova && window.cordova.platformId === "android"){
+      if(window.StatusBar){ try{ StatusBar.overlaysWebView(false); }catch(e){} }
+      applyTheme(); checkAndroidInsets();
+      window.addEventListener("resize", checkAndroidInsets);
+    }
+  }, false);
   document.addEventListener("deviceready", () => {        // Cordova unter Android
     document.addEventListener("backbutton", e => {
       e.preventDefault();
