@@ -141,6 +141,17 @@ Schule, Bild 5–8 die Hochzeit (runde Tische, Raumpalette, Saalvorlagen).
   Exporte für Feiern: Tisch- und Platzkarten (Klappkarten), „Wer sitzt wo?“, Küchenliste.
 - Schule: Klassenarbeit mit Platznummern und A/B im Schachbrett, Vertretungsmappe als PDF.
 
+## Stundenplan und Bewertungen (nur Schulmodus)
+
+- Stundenplan: `DB.tt` (Beginn, Länge, Stunden, Pausen nach jeder Stunde, Mo–Fr/Mo–Sa, A/B-Wochen ab `abRef`),
+  `DB.subjects` (Name, Kürzel, Farbe), `DB.lessons` (Tag, Stunde, Einzel-/Doppelstunde, Woche, Fach, Klasse,
+  Raum, optional Sitzplan). Die Startseite zeigt laufende und nächste Stunde und öffnet den passenden Sitzplan.
+- Bewertungen je Klasse und Fach in `c.assess` (Noten 1–6 mit +/−, Punkte 0–15, Smileys; „fehlt“),
+  Gewichtung schriftlich : mündlich & sonstige je Fach in `c.gradeW`, Gewicht je Bewertung ½–3.
+  Smileys zählen nicht in Durchschnitte; Punkte werden mit Noten gemischt über (17 − P) : 3 umgerechnet.
+- Beides lässt sich in den Einstellungen ausblenden. Vor der ersten Nutzung der Bewertungen erscheint
+  ein Datenschutzhinweis.
+
 ## Datenschutz
 
 - Keine Datenerhebung durch den Anbieter; alles bleibt im App-Speicher des Geräts.

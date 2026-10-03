@@ -89,7 +89,7 @@ const besetzt = app => app.E('curPlan().desks.filter(d => d.studentId).length');
 
 test('Start', app => {
   erwarte(app.$('#screen-start').classList.contains('active'), 'Startseite nicht aktiv');
-  erwarte(app.$$('.home-tile').length === 3, 'Es müssen drei Kacheln sein');
+  erwarte(app.$$('.home-tile').length === 5 && app.$$('.home-tile').slice(0, 3).map(b => b.id).join() === 'tile-names,tile-rooms,tile-plans', 'Kacheln fehlen oder falsche Reihenfolge');
   erwarte(app.$('#tile-names').textContent.indexOf('Namen verwalten') >= 0, 'Kachel „Namen verwalten“ fehlt');
   app.klick('#tile-plans');
   erwarte(app.$('#screen-names').classList.contains('active'), 'Ohne Klasse muss „Sitzpläne“ zu den Namen führen');
@@ -826,7 +826,8 @@ test('Verschlüsselte Sicherung', async app => {
   erwarte(!!box.blob, 'Verschlüsselte Sicherung nicht erzeugt');
   if(!box.blob) return;
   const text = await blobText(app, box.blob);
-  erwarte(text.indexOf('Zoe') < 0 && text.indexOf('Geheim') < 0 && text.indexOf('"enc"') >= 0, 'Sicherung enthält Klartext');
+  /* Zeichen mit Leerzeichen oder Anführungszeichen kommen in Base64 nicht vor – kein Zufallstreffer */
+  erwarte(text.indexOf('Zoe Zufall') < 0 && text.indexOf('"Geheim"') < 0 && text.indexOf('"students"') < 0 && text.indexOf('"enc"') >= 0, 'Sicherung enthält Klartext');
   erwarte(/geschuetzt\.json$/.test(box.name), 'Dateiname zeigt den Schutz nicht');
   // falsches Passwort
   dateiWaehlen(app, '#filepick', 'b.json', text); await pause(60);
@@ -854,6 +855,158 @@ test('Datenschutzhinweis für Lehrkräfte', async app => {
   const ds = require('fs').readFileSync('datenschutz.html', 'utf8') + require('fs').readFileSync('datenschutz-en.html', 'utf8');
   erwarte(ds.indexOf('Genehmigung') >= 0 && ds.indexOf('head teacher') >= 0 && ds.indexOf('Art. 9') >= 0, 'Datenschutzerklärung unvollständig');
 }, true);
+
+
+test('Klassenarbeit beenden holt die alte Sitzordnung zurück', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  const lage = () => app.E('JSON.stringify(curPlan().desks.map(d => [d.x, d.y, d.studentId || ""]))');
+  const vorher = lage();
+  app.E('openExamSheet()'); app.sheetOk();
+  erwarte(app.E('curPlan().exam') === true && lage() !== vorher, 'Klassenarbeit verändert die Plätze nicht');
+  app.E('openExamSheet()'); app.sheetOk();                       // zweites Einrichten
+  const roh = app.E('JSON.stringify(sanitizeDB(JSON.parse(JSON.stringify(DB))))');
+  erwarte(roh.indexOf('"examPrev"') >= 0, 'Ausgangslage übersteht das Speichern nicht');
+  app.E('openExamSheet()');
+  erwarte(!!app.$('#exam-end-restore') && !!app.$('#exam-end'), 'Beim Beenden keine Wahl, die alte Ordnung zurückzuholen');
+  app.klick('#exam-end-restore');
+  erwarte(lage() === vorher, 'Alte Sitzordnung nicht wiederhergestellt');
+  erwarte(app.E('curPlan().exam') === false && app.E('curPlan().examPrev') === undefined && app.E('curPlan().desks.every(d => !d.var)'), 'Klassenarbeit nicht sauber beendet');
+  app.E('openExamSheet()'); app.sheetOk();
+  const pruefung = app.E('JSON.stringify(curPlan().desks.map(d => [d.x, d.y]))');
+  app.E('openExamSheet()'); app.klick('#exam-end');
+  erwarte(app.E('JSON.stringify(curPlan().desks.map(d => [d.x, d.y]))') === pruefung && app.E('curPlan().exam') === false, '„So lassen“ verändert die Plätze');
+});
+
+
+test('Stundenplan: Zeiten, Fächer, Stunden und Verknüpfung', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('goHome()');
+  erwarte(app.$('#tile-timetable').style.display !== 'none' && app.$('#tile-grades').style.display !== 'none', 'Kacheln fehlen im Schulmodus');
+  app.klick('#tile-timetable');
+  erwarte(app.$$('#tt-grid .tt-free').length === 5 * 8, 'Raster nicht 5 × 8');
+  erwarte(app.$$('#tt-grid .tt-break').length === 3, 'Pausen fehlen im Raster');
+  // Zeiten ändern
+  app.klick('#btn-tt-times');
+  app.$('#tt-start').value = '07:50'; app.$('#tt-len').value = '45';
+  app.$('#tt-count').value = '6'; app.$('#tt-count').dispatchEvent(new app.w.Event('input'));
+  const pausen = app.$$('#sheet .ttbreaks input');
+  erwarte(pausen.length === 5, 'Pausenfelder passen nicht zur Stundenzahl');
+  pausen[1].value = '25'; pausen[1].dispatchEvent(new app.w.Event('input'));
+  app.sheetOk();
+  erwarte(app.E('JSON.stringify(periodTimes().slice(0, 3).map(p => fmtHM(p.start)))') === '["07:50","08:35","09:45"]', 'Stundenzeiten falsch: ' + app.E('JSON.stringify(periodTimes().map(p => fmtHM(p.start)))'));
+  erwarte(app.$$('#tt-grid .tt-free').length === 5 * 6, 'Raster nach Änderung nicht 5 × 6');
+  // Fach anlegen
+  app.klick('#btn-tt-subjects'); app.klick('#subj-add');
+  app.$$('#sheet input.field')[0].value = 'Mathematik'; app.$$('#sheet input.field')[1].value = 'Ma';
+  app.klick(app.$$('#sheet .swatches button')[2]);
+  app.sheetOk();
+  erwarte(app.E('DB.subjects.length') === 1 && app.E('DB.subjects[0].color') === '#20A464', 'Fach oder Farbe nicht gespeichert');
+  // Stunde eintragen: Mo, 1. Stunde, Doppelstunde
+  app.klick(app.$$('#tt-grid .tt-free')[0]);
+  const sels = app.$$('#sheet select');
+  sels[2].value = app.E('DB.rooms[0].id');
+  app.klick(app.$$('#sheet .segmented button').find(b => b.textContent === 'Doppelstunde'));
+  app.sheetOk();
+  erwarte(app.E('DB.lessons.length') === 1 && app.E('DB.lessons[0].span') === 2 && app.E('DB.lessons[0].classId') === app.E('curClass().id'), 'Stunde nicht richtig gespeichert');
+  erwarte(app.$$('#tt-grid .tt-cell').length === 1 && app.$$('#tt-grid .tt-free').length === 5 * 6 - 2, 'Doppelstunde belegt nicht zwei Felder');
+  // Überschneidung ersetzt die alte Stunde
+  app.klick(app.$$('#tt-grid .tt-free')[0]); app.sheetOk();
+  erwarte(app.E('DB.lessons.length') === 2, 'Zweite Stunde fehlt');
+  app.E('DB.lessons[1].day = 0; DB.lessons[1].period = 1');
+  // Jetzt-Karte: Montag 08:00
+  const nl = app.E('(() => { const d = new Date(2026, 9, 5, 8, 0); const r = nowLessons(d); return r.now ? r.now.L.id === DB.lessons[0].id || r.now.L.id === DB.lessons[1].id : false; })()');
+  erwarte(nl, 'Laufende Stunde wird nicht erkannt');
+  erwarte(app.E('planForLesson(DB.lessons[0]).id') === app.E('curClass().plans[0].id'), 'Sitzplan zur Stunde nicht gefunden');
+  app.E('openLessonPlan(DB.lessons[0])');
+  erwarte(app.$('#screen-editor').classList.contains('active') && app.E('lessonMode') === true, 'Sitzplan öffnet nicht im Unterrichtsmodus');
+  // A/B-Wochen
+  app.E('DB.tt.ab = true; DB.tt.abRef = isoDay(mondayOf(new Date(2026, 9, 5)))');
+  erwarte(app.E('abWeek(new Date(2026, 9, 7))') === 'A' && app.E('abWeek(new Date(2026, 9, 14))') === 'B' && app.E('abWeek(new Date(2026, 8, 30))') === 'B', 'A/B-Wochen falsch gezählt');
+  // Sicherung
+  const roh = app.E('JSON.stringify(sanitizeDB(JSON.parse(JSON.stringify(DB))))');
+  erwarte(roh.indexOf('"Mathematik"') >= 0 && roh.indexOf('"07:50"') >= 0 && roh.indexOf('"span":2') >= 0, 'Stundenplan übersteht die Sicherung nicht');
+  // Feiermodus blendet alles aus
+  app.E('DB.settings.mode = "event"; applyLang(); goHome()');
+  erwarte(app.$('#tile-timetable').style.display === 'none' && app.$('#tile-grades').style.display === 'none' && app.$('#now-card').style.display === 'none', 'Schulkacheln im Feiermodus sichtbar');
+});
+
+test('Bewertungen: anlegen, eintragen, Durchschnitte, PDF', app => {
+  klasseMitNamen(app, '7b', ['Anna', 'Ben', 'Cem', 'Dana']);
+  app.E('DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }); goHome()');
+  app.klick('#tile-grades');
+  erwarte(!!app.$('#g-priv-ok') && app.$('#sheet').textContent.indexOf('Schulleitung') >= 0, 'Datenschutzhinweis vor den Bewertungen fehlt');
+  app.klick('#g-priv-ok');
+  erwarte(app.$('#screen-grades').classList.contains('active'), 'Bewertungen öffnen nicht');
+  app.klick('#g-add-subject'); app.klick(app.$$('#sheet .grpcard')[0]);
+  erwarte(app.$$('#grades-body .subjchip.on').length === 1, 'Fach nicht gewählt');
+  // Klassenarbeit, Noten
+  app.klick('#g-new'); app.sheetOk();
+  erwarte(app.$('#screen-assess').classList.contains('active') && app.$$('#assess-pad button').length === 16 + 2, 'Tastenfeld für Noten falsch');
+  const taste = tok => app.klick(app.$$('#assess-pad button').find(b => b.dataset.tok === tok));
+  taste('1'); taste('2-'); taste('x'); taste('4+');
+  erwarte(app.E('JSON.stringify(Object.values(curAssess().marks))') === '["1","2-","x","4+"]', 'Werte nicht der Reihe nach eingetragen');
+  erwarte(Math.abs(app.E('assessAverage(curAssess())') - (1 + 2.3 + 3.7) / 3) < 1e-9, 'Durchschnitt der Arbeit falsch');
+  erwarte(!!app.$('#assess-stats .gchart') && app.$$('#assess-stats .gbar').length === 3, 'Notenspiegel fehlt oder falsch');
+  app.klick('#btn-assess-back');
+  // Mitarbeit mit Punkten, Gewicht 2
+  app.klick('#g-new');
+  app.klick(app.$$('#a-kind button')[1]); app.klick(app.$$('#a-scale button')[1]); app.klick(app.$$('#a-weight button')[2]);
+  app.sheetOk();
+  erwarte(app.$$('#assess-pad button').length === 16 + 2, 'Tastenfeld für Punkte falsch');
+  taste('14'); taste('8');
+  app.klick('#btn-assess-back');
+  // Gewichtung 60:40
+  app.klick('#g-weight'); app.$('#g-weight-range').value = '60'; app.$('#g-weight-range').dispatchEvent(new app.w.Event('input')); app.sheetOk();
+  const av = app.E('studentAverages(curClass(), "ma", curClass().students[0].id)');
+  erwarte(av.scale === 'grade' && Math.abs(av.written - 1) < 1e-9 && Math.abs(av.other - 1) < 1e-9 && Math.abs(av.total - 1) < 1e-9, 'Durchschnitt Anna falsch: ' + JSON.stringify(av));
+  const ben = app.E('studentAverages(curClass(), "ma", curClass().students[1].id)');
+  erwarte(Math.abs(ben.total - (0.6 * 2.3 + 0.4 * 3)) < 1e-9, 'Gewichtung falsch: ' + ben.total);
+  const benW = app.E(`(() => { const c = curClass(), b = c.students[1].id;
+    c.assess.push({ id: "w2", subjectId: "ma", title: "KA 2", date: "2030-01-01", kind: "written", scale: "grade", weight: 2, marks: { [b]: "4" } });
+    const r = studentAverages(c, "ma", b).written; c.assess = c.assess.filter(x => x.id !== "w2"); return r; })()`);
+  erwarte(Math.abs(benW - (2.3 + 2 * 4) / 3) < 1e-9, 'Gewicht einzelner Bewertungen wirkt nicht: ' + benW);
+  const cem = app.E('studentAverages(curClass(), "ma", curClass().students[2].id)');
+  erwarte(cem.total === null, '„fehlt“ zählt in den Durchschnitt');
+  // Übersicht
+  app.klick('#g-tab-overview');
+  erwarte(!!app.$('#g-table') && app.$$('#g-table tr').length === 5 && app.$$('#grades-body .gline, #grades-body .gdotc').length >= 2, 'Übersicht oder Verlauf fehlt');
+  erwarte(app.$('#g-table').textContent.indexOf('1,00') >= 0, 'Durchschnitt in der Tabelle fehlt');
+  app.klick(app.$$('#g-table .gname')[1]);
+  erwarte(app.$('#sheet').textContent.indexOf('Gesamt') >= 0 && !!app.$('#sheet .gchart'), 'Schülerverlauf fehlt');
+  app.E('closeModal()');
+  const pdf = app.E('gradesPdfPages(curClass(), subjectById("ma")).join("\\n")');
+  erwarte(pdf.indexOf('(Anna)') >= 0 && pdf.indexOf('2-') >= 0 && pdf.indexOf('?') < 0, 'Noten-PDF unvollständig');
+  // Sanitize: ungültige Werte und fremde IDs fliegen raus
+  const roh = app.E('(() => { const d = JSON.parse(JSON.stringify(DB)); d.classes[0].assess[0].marks.fremd = "1"; d.classes[0].assess[0].marks[d.classes[0].students[3].id] = "7"; return JSON.stringify(sanitizeDB(d).classes[0].assess); })()');
+  erwarte(roh.indexOf('fremd') < 0 && roh.indexOf('"7"') < 0 && roh.indexOf('"2-"') >= 0 && roh.indexOf('"14"') >= 0, 'Bewertungen werden beim Laden nicht geprüft');
+  // Smileys
+  app.klick('#g-tab-list'); app.klick('#g-new'); app.klick(app.$$('#a-scale button')[2]); app.sheetOk();
+  erwarte(app.$$('#assess-pad button').length === 3 + 2, 'Smiley-Tastenfeld falsch');
+  taste('s1');
+  erwarte(app.E('studentAverages(curClass(), "ma", curClass().students[0].id).total') === 1, 'Smileys verändern den Durchschnitt');
+  // Ausblenden in den Einstellungen
+  app.E('DB.settings.grades = false; goHome()');
+  erwarte(app.$('#tile-grades').style.display === 'none', 'Bewertungen lassen sich nicht ausblenden');
+});
+
+test('Mitarbeit direkt im Sitzplan bewerten', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "de", name: "Deutsch", short: "De", color: "#E0533D" }); DB.gradesAck = true; setLesson(true)');
+  const d = app.E('curPlan().desks.find(x => x.studentId).id');
+  app.E(`openLessonSheet(curPlan().desks.find(x => x.id === "${d}"))`);
+  erwarte(!!app.$('#lesson-quickmark'), 'Kein „Mitarbeit bewerten“ im Unterrichtsmodus');
+  app.E(`quickMark(studentById(curClass(), curPlan().desks.find(x => x.id === "${d}").studentId))`);
+  app.klick(app.$$('#sheet .keypad button').find(b => b.dataset.tok === '2+'));
+  const a = app.E('curClass().assess[0]');
+  erwarte(a && a.auto && a.kind === 'other' && a.subjectId === 'de' && Object.values(a.marks)[0] === '2+', 'Mitarbeit nicht gespeichert');
+  app.E(`quickMark(curClass().students[5])`);
+  app.klick(app.$$('#sheet .keypad button').find(b => b.dataset.tok === '3'));
+  erwarte(app.E('curClass().assess.length') === 1 && app.E('Object.keys(curClass().assess[0].marks).length') === 2, 'Zweite Mitarbeit legt eine neue Bewertung an');
+  erwarte(app.E('pdfPlanPage(curClass(), curPlan(), curRoom(), "x")').indexOf('2+') < 0, 'Bewertung erscheint im Sitzplan-PDF');
+});
 
 /* ------------------------------------------------------------------ */
 alleTests().then(() => {

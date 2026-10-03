@@ -22,7 +22,7 @@
   --border:#0055aa;
   --accent:#0059b3; --accent-soft:#dbe9fb; --accent-ink:#FFFFFF;
   --warn:#c40000;
-  --c-green:#00752c; --c-blue:#0059b3; --c-purple:#5c2d91; --c-orange:#b35c00; --c-grey:#4f5a68;
+  --c-green:#00752c; --c-blue:#0059b3; --c-purple:#5c2d91; --c-orange:#b35c00; --c-grey:#4f5a68; --c-teal:#006d77;
   --desk:#FFFDF7; --desk-line:#16232B;
   --grid:rgba(0,89,179,.07); --grid-strong:rgba(0,89,179,.16);
   --wall:#46505E; --chair:#C9D3DC; --table:#F3E6CF; --table-line:#B0915F; --table-ink:#7A5B30;
@@ -40,7 +40,7 @@
   --border:#5b9ce6;
   --accent:#5b9ce6; --accent-soft:#22304a; --accent-ink:#0b1424;
   --warn:#e03535;
-  --c-green:#17a34a; --c-blue:#2f86e0; --c-purple:#9a6ad6; --c-orange:#d97b0a; --c-grey:#6b7684;
+  --c-green:#17a34a; --c-blue:#2f86e0; --c-purple:#9a6ad6; --c-orange:#d97b0a; --c-grey:#6b7684; --c-teal:#1a9aa5;
   --desk:#2a2a40; --desk-line:#8e97b0;
   --grid:rgba(91,156,230,.08); --grid-strong:rgba(91,156,230,.18);
   --wall:#8A93A6; --chair:#3A4A5C; --table:#3B3428; --table-line:#9C8457; --table-ink:#E2CFA9;
@@ -107,7 +107,7 @@ svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.8;
 .home-tile .ht-n{margin-left:auto;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);
   padding:4px 10px;border-radius:99px;white-space:nowrap}
 .bg-green{background:var(--c-green)} .bg-blue{background:var(--c-blue)}
-.bg-purple{background:var(--c-purple)} .bg-orange{background:var(--c-orange)} .bg-grey{background:var(--c-grey)}
+.bg-purple{background:var(--c-purple)} .bg-orange{background:var(--c-orange)} .bg-grey{background:var(--c-grey)} .bg-teal{background:var(--c-teal)}
 .board-card{background:var(--surface);border:2px solid var(--border);
   border-radius:var(--radius);padding:13px 14px;margin-bottom:9px;display:flex;align-items:center;
   gap:12px;width:100%;text-align:left;color:var(--ink)}
@@ -320,6 +320,85 @@ select.field{-webkit-appearance:none;appearance:none;
   #screen-editor #btn-tool,#screen-editor #btn-mirror,#screen-editor #btn-present{display:none}
   #screen-editor #btn-more{display:flex}
 }
+
+/* ---- Stundenplan ---- */
+.ttgrid{display:grid;gap:3px;margin-top:10px;align-items:stretch}
+.tt-day{text-align:center;font-size:12.5px;font-weight:750;color:var(--ink-soft);padding:4px 0}
+.tt-day.today{color:var(--accent)}
+.tt-time{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--ink-soft);line-height:1.2}
+.tt-time b{font-size:14px;color:var(--ink)}
+.tt-break{font-size:10.5px;color:var(--ink-soft);text-align:center;border-top:1px dashed var(--line);padding-top:1px;line-height:1.1}
+.tt-cell{position:relative;min-height:54px;border-radius:9px;border:2px solid var(--line);color:#fff;padding:4px 3px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;overflow:hidden;font:inherit;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.tt-cell b{font-size:13px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tt-cell span{font-size:11px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.95}
+.tt-cell i{position:absolute;top:2px;right:4px;font-style:normal;font-size:10px;font-weight:800}
+.tt-free{min-height:54px;border-radius:9px;border:1.5px dashed var(--line);color:var(--ink-soft);font-size:18px;background:transparent;opacity:.55}
+.tt-free:hover{opacity:1}
+.ttfields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ttbreaks{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:6px}
+.ttf{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--ink-soft)}
+.ttf .field{margin:0}
+.colorpick{width:34px;height:34px;border-radius:50%;border:2px dashed var(--line);padding:0;background:none}
+#now-card{margin-top:14px}
+.nowrow{display:flex;align-items:center;gap:8px;background:var(--surface);border:2px solid var(--border);border-left:8px solid var(--line);
+  border-radius:var(--radius);padding:10px 10px 10px 12px;margin-top:8px}
+.nowtx{flex:1;min-width:0}
+.nowk{font-size:12px;color:var(--ink-soft);font-weight:650}
+.nowt{font-size:15.5px;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nowrow .minibtn{padding:9px 11px;flex:0 0 auto}
+/* ---- Bewertungen ---- */
+.subjchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.subjchip{border:2px solid var(--sc,var(--line));border-radius:99px;padding:7px 13px;font-weight:700;font-size:14px;background:var(--surface);color:var(--ink)}
+.subjchip.on{background:var(--sc);color:#fff}
+.subjchip.add{border-style:dashed;--sc:var(--line);color:var(--ink-soft)}
+.acard{display:block;width:100%;text-align:left;background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-top:8px;color:var(--ink);font:inherit}
+.acard .at{display:flex;align-items:center;gap:8px}
+.acard .at b{flex:1;min-width:0;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acard .am{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+.akind{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.akind.other{background:var(--surface-2);color:var(--ink-soft)}
+.arow{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left}
+.arow.on{background:var(--accent-soft);box-shadow:inset 4px 0 0 var(--accent)}
+.arow .nr{width:28px;color:var(--ink-soft);font-size:13px;text-align:right}
+.arow .an{flex:1;min-width:0;font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arow .av{min-width:44px;text-align:center;font-weight:800;font-size:16px;padding:4px 8px;border-radius:8px;background:var(--surface-2)}
+.arow .av.empty{color:var(--ink-soft);font-weight:500;background:none}
+.arow .av.miss{font-size:12px;color:var(--warn)}
+.astat{font-size:13.5px;font-weight:650;margin:12px 0 4px}
+.keypad-wrap{flex:0 0 auto;background:var(--surface);border-top:2px solid var(--border);padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+.keypad{display:grid;gap:6px;max-width:760px;margin:0 auto}
+.keypad.k-grade{grid-template-columns:repeat(6,minmax(0,1fr))}
+.keypad.k-points{grid-template-columns:repeat(6,minmax(0,1fr))}
+.keypad.k-smiley{grid-template-columns:repeat(5,minmax(0,1fr))}
+.keypad button{min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:17px;font-weight:750}
+.keypad.k-smiley button{font-size:26px;min-height:54px}
+.keypad button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.keypad button.kx{font-size:13px;font-weight:650;color:var(--ink-soft)}
+.keypad.k-smiley button.kx{font-size:13px}
+.gfig{margin-top:12px}
+.gcap{font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:4px}
+.gchart{width:100%;height:auto;max-width:520px;display:block;overflow:visible}
+.gchart .gbar{fill:var(--accent)}
+.gchart .gline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.gchart .gdotc{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.gchart .gaxis{stroke:var(--line);stroke-width:1}
+.gchart .ggrid{stroke:var(--line);stroke-width:1;opacity:.6}
+.gchart .glab{fill:var(--ink-soft);font-size:10.5px}
+.gchart .gval{fill:var(--ink);font-size:11px;font-weight:700}
+.gtable-wrap{overflow-x:auto;margin-top:12px;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+.gtable{border-collapse:collapse;font-size:13.5px;min-width:100%}
+.gtable th,.gtable td{padding:7px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+.gtable th{font-size:11.5px;color:var(--ink-soft);font-weight:700;vertical-align:bottom}
+.gtable th small{display:block;font-size:10px;font-weight:600}
+.gtable th:first-child,.gtable td:first-child{text-align:left;position:sticky;left:0;background:var(--surface)}
+.gtable td.avg{color:var(--ink-soft)}
+.gtable td.tot,.gtable th.tot{font-weight:800}
+.gtable td.miss{color:var(--warn);font-size:11px}
+.gname{background:none;border:0;color:var(--accent);font:inherit;font-weight:650;padding:0;text-align:left}
+.srow{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.wout{font-size:15px;font-weight:700;margin-top:10px}
+.wrange{width:100%;margin:12px 0 4px;accent-color:var(--accent)}
 /* ===================== Editor ===================== */
 .editor-body{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0}
 .stage-wrap{flex:1;position:relative;overflow:hidden;touch-action:none;background:var(--paper);min-height:0}
@@ -688,6 +767,8 @@ body.presenting #exitPresent{display:flex}
 <symbol id="i-note" viewBox="0 0 24 24"><path d="M5 4h14v12l-5 4H5z"/><path d="M19 16h-5v4"/><path d="M8 9h8M8 13h4"/></symbol>
 <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="7.5" r="1.4"/></symbol>
 <symbol id="i-teach" viewBox="0 0 24 24"><circle cx="12" cy="6" r="3"/><path d="M6 21v-3a6 6 0 0 1 12 0v3"/><path d="M9 12l-4 3M15 12l4 3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14h2M12 14h2M16 14h1M8 17.5h2M12 17.5h2"/></symbol>
+<symbol id="i-grade" viewBox="0 0 24 24"><path d="M4 20h16"/><rect x="5.5" y="12" width="3" height="6" rx="1"/><rect x="10.5" y="7" width="3" height="11" rx="1"/><rect x="15.5" y="10" width="3" height="8" rx="1"/></symbol>
 <symbol id="i-history" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v4h4"/><path d="M12 8v4.5l3 1.8"/></symbol>
 <symbol id="i-round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><circle cx="12" cy="3.6" r="1.6"/><circle cx="12" cy="20.4" r="1.6"/><circle cx="3.6" cy="12" r="1.6"/><circle cx="20.4" cy="12" r="1.6"/></symbol>
 <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
@@ -762,6 +843,15 @@ body.presenting #exitPresent{display:flex}
       <span><span class="ht-t" data-i="tilePlans"></span><span class="ht-s" data-i="tilePlansSub"></span></span>
       <span class="ht-n" id="tile-plans-n"></span>
     </button>
+    <button class="home-tile bg-orange" id="tile-timetable">
+      <span class="ht-ico"><svg class="i"><use href="#i-calendar"></use></svg></span>
+      <span><span class="ht-t" data-i="tileTT"></span><span class="ht-s" data-i="tileTTSub"></span></span>
+    </button>
+    <button class="home-tile bg-teal" id="tile-grades">
+      <span class="ht-ico"><svg class="i"><use href="#i-grade"></use></svg></span>
+      <span><span class="ht-t" data-i="tileGrades"></span><span class="ht-s" data-i="tileGradesSub"></span></span>
+    </button>
+    <div id="now-card" style="display:none"></div>
 
 
     <div class="minirow" style="margin-top:26px">
@@ -800,6 +890,51 @@ body.presenting #exitPresent{display:flex}
     <h2 data-i="settingsTitle">Einstellungen</h2>
   </div>
   <div class="scroll" id="settings-body"></div>
+</section>
+
+
+<!-- ============ STUNDENPLAN ============ -->
+<section id="screen-timetable" class="screen">
+  <div class="topbar">
+    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <h2 data-i="tileTT"></h2>
+    <button class="iconbtn" id="btn-tt-subjects" data-al="subjTitle"><svg class="i"><use href="#i-tag"></use></svg></button>
+    <button class="iconbtn" id="btn-tt-times" data-al="ttTimes"><svg class="i"><use href="#i-clock"></use></svg></button>
+  </div>
+  <div class="scroll"><div class="wrapc">
+    <div class="segmented" id="tt-ab" style="display:none"></div>
+    <div class="hint" id="tt-empty" data-i="ttEmptyHint"></div>
+    <div class="ttgrid" id="tt-grid"></div>
+    <div class="hint" data-i="ttHint"></div>
+  </div></div>
+</section>
+
+<!-- ============ BEWERTUNGEN ============ -->
+<section id="screen-grades" class="screen">
+  <div class="topbar">
+    <button class="iconbtn" data-nav="start" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <h2 data-i="tileGrades"></h2>
+  </div>
+  <div class="scroll"><div class="wrapc">
+    <div class="classbar" style="margin-top:0">
+      <label for="grades-class" data-i="classLabel"></label>
+      <select class="field" id="grades-class"></select>
+    </div>
+    <div id="grades-body"></div>
+  </div></div>
+</section>
+<section id="screen-assess" class="screen">
+  <div class="topbar">
+    <button class="iconbtn" id="btn-assess-back" aria-label="Back"><svg class="i"><use href="#i-back"></use></svg></button>
+    <h2 id="assess-title"></h2>
+    <button class="iconbtn" id="btn-assess-edit" data-al="gEdit"><svg class="i"><use href="#i-edit"></use></svg></button>
+  </div>
+  <div class="scroll"><div class="wrapc">
+    <div id="assess-head"></div>
+    <div class="box" style="padding:0;overflow:hidden" id="assess-list"></div>
+    <div id="assess-stats"></div>
+  </div></div>
+  <div class="keypad-wrap"><div class="keypad" id="assess-pad"></div></div>
 </section>
 
 <!-- ============ NAMEN VERWALTEN ============ -->
@@ -1563,10 +1698,11 @@ Object.assign(I18N.de, {
   presentHint:"Vollbild — Plätze lassen sich weiter verschieben und zoomen. Das Schloss sperrt die Ansicht.",
   examTitle:"Klassenarbeit", examSub:"Platznummern und Aufgabengruppen A/B im Schachbrett",
   examActiveSub:"Aktiv: A/B im Schachbrett, Platznummern – antippen zum Ändern",
-  examHint:"Jeder Platz bekommt eine Nummer (von vorne nach hinten) und Gruppe A oder B. Links, rechts, vor und hinter jedem Platz sitzt die andere Gruppe.",
+  examHint:"Jeder Platz bekommt eine Nummer (von vorne nach hinten) und Gruppe A oder B. Links, rechts, vor und hinter jedem Platz sitzt die andere Gruppe. Die bisherige Sitzordnung wird gemerkt und lässt sich beim Beenden zurückholen.",
   examArrange:"Prüfungsanordnung stellen", examArrangeSub:"Einzeltische mit Abstand",
   examShuffle:"Namen neu verteilen", examShuffleSub:"Beachtet „nie zusammen“ und Sitzwünsche",
   examStart:"Klassenarbeit einrichten", examEnd:"Klassenarbeit beenden (A/B entfernen)", examEnded:"Klassenarbeit beendet",
+  examEndRestore:"Beenden und alte Sitzordnung zurückholen", examEndKeep:"Beenden, Plätze so lassen", examEndedRestored:"Klassenarbeit beendet – alte Sitzordnung ist zurück",
   examReady:"Bereit: {a} × A, {b} × B",
   subTitle:"Vertretungsmappe", subSub:"Sitzplan mit Nummern, Namensliste und Hinweise als PDF",
   subHint:"Für die Vertretung: Sitzplan mit Platznummern, Liste und deine Hinweise.",
@@ -1691,10 +1827,11 @@ Object.assign(I18N.en, {
   presentHint:"Full screen — you can still move seats and zoom. The lock freezes the view.",
   examTitle:"Class test", examSub:"Seat numbers and versions A/B in a checkerboard",
   examActiveSub:"Active: A/B checkerboard, seat numbers – tap to change",
-  examHint:"Every seat gets a number (front to back) and version A or B. Left, right, in front and behind each seat sits the other version.",
+  examHint:"Every seat gets a number (front to back) and version A or B. Left, right, in front and behind each seat sits the other version. The current seating is kept and can be brought back when you end the test.",
   examArrange:"Set up exam layout", examArrangeSub:"Single desks spaced apart",
   examShuffle:"Reassign names", examShuffleSub:"Respects “never together” and seating needs",
   examStart:"Set up class test", examEnd:"End class test (remove A/B)", examEnded:"Class test ended",
+  examEndRestore:"End and bring back the previous seating", examEndKeep:"End, keep seats as they are", examEndedRestored:"Class test ended – previous seating restored",
   examReady:"Ready: {a} × A, {b} × B",
   subTitle:"Cover pack", subSub:"Plan with seat numbers, name list and notes as PDF",
   subHint:"For the cover teacher: seating plan with numbers, the list and your notes.",
@@ -1764,7 +1901,7 @@ Object.assign(I18N.de, {
   privSchoolTitle:"Kurz zum Datenschutz",
   privSchool1:"Alle Namen bleiben auf diesem Gerät. FairSeat hat keinen Server, kein Konto und überträgt nichts.",
   privSchool2:"Für Schülerdaten auf privaten Geräten brauchen Lehrkräfte in vielen Bundesländern eine schriftliche Genehmigung der Schulleitung, in Niedersachsen zum Beispiel nach dem Erlass zur Datenverarbeitung auf privaten IT-Systemen von Lehrkräften. Bitte kläre das vor dem Eintragen echter Namen.",
-  privSchool3:"Üblich sind dabei: Gerätesperre mit PIN oder Code, verschlüsselte Sicherungen (beim Sichern ein Passwort wählen), Vornamen oder Kürzel statt voller Namen und das Löschen alter Klassen zum Schuljahresende. Keine Gesundheitsdaten, Diagnosen oder Noten eintragen.",
+  privSchool3:"Üblich sind dabei: Gerätesperre mit PIN oder Code, verschlüsselte Sicherungen (beim Sichern ein Passwort wählen), Vornamen oder Kürzel statt voller Namen und das Löschen alter Klassen zum Schuljahresende. Keine Gesundheitsdaten oder Diagnosen eintragen.",
   privSchoolOk:"Verstanden",
   kitchenNoteHint:"Freiwillig. Unverträglichkeiten und Allergien sind Gesundheitsdaten – nur eintragen, wenn der Gast einverstanden ist. Bleibt auf diesem Gerät."
 });
@@ -1779,16 +1916,106 @@ Object.assign(I18N.en, {
   privSchoolTitle:"A quick word on privacy",
   privSchool1:"Every name stays on this device. FairSeat has no server, no account and sends nothing anywhere.",
   privSchool2:"In many places, teachers need written approval from their head teacher to keep pupils' data on a private device (in Lower Saxony, Germany, for example, under the ministry's decree on private IT systems). Please check this before entering real names.",
-  privSchool3:"Usual conditions: a device lock with PIN or passcode, encrypted backups (choose a password when saving), first names or initials instead of full names, and deleting old classes at the end of the school year. Do not enter health data, diagnoses or grades.",
+  privSchool3:"Usual conditions: a device lock with PIN or passcode, encrypted backups (choose a password when saving), first names or initials instead of full names, and deleting old classes at the end of the school year. Do not enter health data or diagnoses.",
   privSchoolOk:"Got it",
   kitchenNoteHint:"Optional. Intolerances and allergies are health data – only enter them if the guest agrees. Stays on this device."
 });
+I18N.de.info.push({ h:"Stundenplan und Bewertungen",
+  p:["Im Schulmodus gibt es zwei weitere Kacheln. Im Stundenplan trägst du Fach, Klasse und Raum ein; Zeiten, Pausen und A/B-Wochen stellst du mit der Uhr ein, Farben je Fach mit dem Etikett. Auf der Startseite steht dann die laufende Stunde – ein Tipp öffnet den passenden Sitzplan.",
+     "Unter Bewertungen legst du je Klasse und Fach Bewertungen an (Noten, Punkte oder Smileys), trägst sie über das Tastenfeld ein und siehst Durchschnitte, Notenspiegel und Verläufe. Im Unterrichtsmodus bewertest du Mitarbeit direkt über den Platz. Beides lässt sich in den Einstellungen ausblenden."] });
+I18N.en.info.push({ h:"Timetable and assessments",
+  p:["In school mode there are two more tiles. In the timetable you enter subject, class and room; set times, breaks and A/B weeks with the clock and colours per subject with the tag. The start page then shows the current period – one tap opens the matching seating plan.",
+     "Under Assessments you create assessments per class and subject (grades, points or smileys), enter them with the keypad and see averages, distributions and trends. In lesson mode you can mark participation straight from the seat. Both can be hidden in the settings."] });
 I18N.de.info.forEach(sec => { if(sec.h === "Datenschutz") sec.p.splice(1, 0,
   "Für Lehrkräfte: Wer Schülerdaten auf einem privaten Gerät verarbeitet, braucht dafür in vielen Bundesländern eine schriftliche Genehmigung der Schulleitung (in Niedersachsen z. B. nach dem Erlass zu privaten IT-Systemen von Lehrkräften). Kläre das bitte vor der Nutzung mit echten Namen. Sichere das Gerät mit PIN oder Code, schütze Sicherungen mit einem Passwort und lösche Klassen, die du nicht mehr brauchst.",
   "Für Feiern: Zusagen, Menüs und Küchenhinweise sind freiwillig. Allergien und Unverträglichkeiten gelten als Gesundheitsdaten – trage sie nur mit Einverständnis des Gastes ein."); });
 I18N.en.info.forEach(sec => { if(sec.h === "Privacy") sec.p.splice(1, 0,
   "For teachers: processing pupils' data on a private device often needs written approval from the head teacher (in Lower Saxony, Germany, for example, under the ministry's decree on teachers' private IT systems). Please check this before using real names. Lock the device with a PIN or passcode, protect backups with a password and delete classes you no longer need.",
   "For events: RSVPs, meals and kitchen notes are optional. Allergies and intolerances count as health data – only enter them with the guest's consent."); });
+Object.assign(I18N.de, {
+  tileTT:"Stundenplan", tileTTSub:"Fächer, Klassen, Räume – mit Sitzplan verknüpft",
+  tileGrades:"Bewertungen", tileGradesSub:"Noten, Punkte, Smileys – mit Übersicht",
+  ttDays:["Mo","Di","Mi","Do","Fr","Sa"], ttPeriod:"Stunde", ttNow:"Jetzt", ttNext:"Als Nächstes",
+  ttOpenPlan:"Sitzplan", ttEmpty:"Freie Stunde", ttNoClass:"Dieser Stunde ist keine Klasse zugeordnet",
+  ttWeek:"{w}-Woche", ttThisWeek:"diese Woche", ttBreak:"Pause {n} min", ttAdd:"Stunde eintragen",
+  ttLimit:"Der Stundenplan ist voll", ttSubject:"Fach", ttClass:"Klasse", ttRoom:"Raum", ttPlan:"Sitzplan",
+  ttPlanAuto:"Automatisch (Plan der Klasse in diesem Raum)", ttLength:"Länge", ttSingle:"Einzelstunde", ttDouble:"Doppelstunde",
+  ttWeeks:"Woche", ttEveryWeek:"Jede Woche", ttDelete:"Stunde löschen",
+  ttTimes:"Zeiten und Pausen", ttStart:"Beginn", ttLen:"Minuten je Stunde", ttCount:"Stunden am Tag",
+  ttDaysLabel:"Schultage", ttMoFr:"Mo–Fr", ttMoSa:"Mo–Sa",
+  ttBreaks:"Pausen", ttBreaksHint:"Minuten nach der jeweiligen Stunde, 0 = keine Pause",
+  ttAfter:"nach der {n}.", ttAB:"A/B-Wochen", ttABSub:"Stunden nur in A- oder nur in B-Wochen",
+  ttThisIs:"Diese Woche ist {w}", ttSaved:"Zeiten gespeichert",
+  ttEmptyHint:"Tippe auf ein freies Feld, um eine Stunde einzutragen. Zeiten und Pausen stellst du oben mit der Uhr ein, Fächer und Farben mit dem Etikett.",
+  ttHint:"Auf der Startseite erscheint dann die laufende und die nächste Stunde – ein Tipp öffnet den passenden Sitzplan.",
+  subjNew:"Neues Fach", subjEdit:"Fach bearbeiten", subjName:"Name", subjNamePh:"z. B. Mathematik",
+  subjShort:"Kürzel im Stundenplan", subjShortPh:"z. B. Ma", subjCustomColor:"Eigene Farbe",
+  subjDelete:"Fach löschen", subjDeleteQ:"„{s}“ löschen?", subjDeleteT:"Alle Stunden und Bewertungen dieses Fachs werden mitgelöscht.",
+  subjNeed:"Lege zuerst ein Fach an", subjLimit:"Höchstens 40 Fächer", subjTitle:"Fächer und Farben", subjNone:"Noch keine Fächer.",
+  setSchoolTools:"Stundenplan und Bewertungen", setTTSub:"Kachel auf der Startseite, aktuelle Stunde mit Sitzplan",
+  setGradesSub:"Kachel auf der Startseite und Bewerten im Unterrichtsmodus",
+  gMissing:"fehlt", gPrivTitle:"Bewertungen und Datenschutz",
+  gPriv1:"Noten sind Leistungsdaten deiner Schülerinnen und Schüler. Sie bleiben ausschließlich auf diesem Gerät – FairSeat überträgt nichts.",
+  gPriv2:"Ob du Noten auf einem privaten Gerät führen darfst, regelt deine Genehmigung der Schulleitung (in Niedersachsen nach dem Erlass zu privaten IT-Systemen von Lehrkräften). Bitte prüfe das vorher.",
+  gPriv3:"Sichere das Gerät mit PIN oder Code, speichere Sicherungen mit Passwort und lösche Bewertungen, sobald du sie nicht mehr brauchst. Bewertungen erscheinen nie auf Sitzplänen, im Vollbild oder in der Vertretungsmappe.",
+  gNoSubject:"Wähle oben ein Fach oder lege eines an. Fächer aus dem Stundenplan erscheinen hier automatisch.",
+  gWeight:"Gewichtung", gWeightSub:"schriftlich {a} % · mündlich & sonstige {b} %",
+  gWeightHint:"Wie stark zählen schriftliche Leistungen gegenüber mündlichen und sonstigen? Jede einzelne Bewertung kann zusätzlich ein eigenes Gewicht haben.",
+  gTabList:"Bewertungen", gTabOverview:"Übersicht", gNew:"Neue Bewertung", gNone:"Noch keine Bewertungen in diesem Fach.",
+  gWritten:"schriftlich", gOther:"mündlich & sonstige", gScale_grade:"Noten 1–6", gScale_points:"Punkte 0–15", gScale_smiley:"Smileys",
+  gPickSubject:"Fach hinzufügen", gTitle:"Titel", gDate:"Datum", gKind:"Art", gScale:"Bewertung mit", gWeightOne:"Gewicht",
+  gDefWritten:"Klassenarbeit", gDefOther:"Mitarbeit", gLimit:"Höchstens 300 Bewertungen je Klasse", gCreate:"Anlegen und bewerten",
+  gEntered:"{a} von {b} bewertet", gClear:"Wert löschen", gEdit:"Bewertung bearbeiten", gDelete:"Bewertung löschen",
+  gDeleteQ:"Bewertung löschen?", gDeleteT:"Alle eingetragenen Werte dieser Bewertung werden gelöscht.",
+  gDist:"Notenspiegel", gClassTrend:"Klassendurchschnitt im Verlauf", gClassAvg:"Ø Klasse", gCount:"Bewertungen",
+  gW:"schr.", gO:"münd.", gTotal:"Gesamt", gPdf:"Übersicht als PDF", gPdfTitle:"Notenübersicht",
+  gPdfCut:"Es sind nur die letzten {n} Bewertungen abgedruckt; die Durchschnitte enthalten alle.",
+  gOverviewHint:"Smileys zählen nicht in Durchschnitte. Punkte werden mit Noten gemischt über (17 − Punkte) : 3 umgerechnet. Ein Tipp auf einen Namen zeigt den Verlauf.",
+  gTrend:"Verlauf", gQuick:"Mitarbeit bewerten", gQuickSaved:"{a}: {v} gespeichert",
+  gQuickHint:"Wird in der Bewertung „Mitarbeit“ von heute gespeichert (mündlich & sonstige)."
+});
+Object.assign(I18N.en, {
+  tileTT:"Timetable", tileTTSub:"Subjects, classes, rooms – linked to seating plans",
+  tileGrades:"Assessments", tileGradesSub:"Grades, points, smileys – with overview",
+  ttDays:["Mon","Tue","Wed","Thu","Fri","Sat"], ttPeriod:"period", ttNow:"Now", ttNext:"Next",
+  ttOpenPlan:"Seating", ttEmpty:"Free period", ttNoClass:"No class is linked to this period",
+  ttWeek:"Week {w}", ttThisWeek:"this week", ttBreak:"Break {n} min", ttAdd:"Add period",
+  ttLimit:"The timetable is full", ttSubject:"Subject", ttClass:"Class", ttRoom:"Room", ttPlan:"Seating plan",
+  ttPlanAuto:"Automatic (the class's plan for this room)", ttLength:"Length", ttSingle:"Single period", ttDouble:"Double period",
+  ttWeeks:"Week", ttEveryWeek:"Every week", ttDelete:"Delete period",
+  ttTimes:"Times and breaks", ttStart:"Start", ttLen:"Minutes per period", ttCount:"Periods per day",
+  ttDaysLabel:"School days", ttMoFr:"Mon–Fri", ttMoSa:"Mon–Sat",
+  ttBreaks:"Breaks", ttBreaksHint:"Minutes after each period, 0 = no break",
+  ttAfter:"after {n}", ttAB:"A/B weeks", ttABSub:"Periods only in week A or only in week B",
+  ttThisIs:"This week is {w}", ttSaved:"Times saved",
+  ttEmptyHint:"Tap a free slot to add a period. Set times and breaks with the clock at the top, subjects and colours with the tag.",
+  ttHint:"The start page then shows the current and the next period – one tap opens the matching seating plan.",
+  subjNew:"New subject", subjEdit:"Edit subject", subjName:"Name", subjNamePh:"e.g. Maths",
+  subjShort:"Short name in the timetable", subjShortPh:"e.g. Ma", subjCustomColor:"Custom colour",
+  subjDelete:"Delete subject", subjDeleteQ:"Delete “{s}”?", subjDeleteT:"All periods and assessments of this subject are deleted too.",
+  subjNeed:"Create a subject first", subjLimit:"At most 40 subjects", subjTitle:"Subjects and colours", subjNone:"No subjects yet.",
+  setSchoolTools:"Timetable and assessments", setTTSub:"Tile on the start page, current period with seating plan",
+  setGradesSub:"Tile on the start page and quick marks in lesson mode",
+  gMissing:"absent", gPrivTitle:"Assessments and privacy",
+  gPriv1:"Grades are performance data about your pupils. They stay on this device only – FairSeat sends nothing anywhere.",
+  gPriv2:"Whether you may keep grades on a private device depends on your head teacher's approval (in Lower Saxony, Germany, under the decree on teachers' private IT systems). Please check this first.",
+  gPriv3:"Lock the device with a PIN or passcode, save backups with a password and delete assessments once you no longer need them. Assessments never appear on seating plans, in full screen or in the cover pack.",
+  gNoSubject:"Pick a subject above or create one. Subjects from your timetable appear here automatically.",
+  gWeight:"Weighting", gWeightSub:"written {a} % · oral & other {b} %",
+  gWeightHint:"How much do written assessments count compared with oral and other work? Each assessment can also carry its own weight.",
+  gTabList:"Assessments", gTabOverview:"Overview", gNew:"New assessment", gNone:"No assessments in this subject yet.",
+  gWritten:"written", gOther:"oral & other", gScale_grade:"Grades 1–6", gScale_points:"Points 0–15", gScale_smiley:"Smileys",
+  gPickSubject:"Add subject", gTitle:"Title", gDate:"Date", gKind:"Type", gScale:"Mark with", gWeightOne:"Weight",
+  gDefWritten:"Class test", gDefOther:"Participation", gLimit:"At most 300 assessments per class", gCreate:"Create and mark",
+  gEntered:"{a} of {b} marked", gClear:"Clear mark", gEdit:"Edit assessment", gDelete:"Delete assessment",
+  gDeleteQ:"Delete assessment?", gDeleteT:"All marks entered for this assessment are deleted.",
+  gDist:"Distribution", gClassTrend:"Class average over time", gClassAvg:"Class Ø", gCount:"Assessments",
+  gW:"wr.", gO:"oral", gTotal:"Total", gPdf:"Overview as PDF", gPdfTitle:"Grade overview",
+  gPdfCut:"Only the last {n} assessments are printed; the averages include all of them.",
+  gOverviewHint:"Smileys do not count towards averages. Points mixed with grades are converted with (17 − points) ÷ 3. Tap a name to see the trend.",
+  gTrend:"Trend", gQuick:"Mark participation", gQuickSaved:"{a}: {v} saved",
+  gQuickHint:"Saved in today's “Participation” assessment (oral & other)."
+});
 I18N.de.info[1] = { h:"In drei Schritten zum Sitzplan",
   ol:["Namen verwalten: Klasse anlegen, Namen eintragen oder aus FairMix übernehmen, Stufen und Regeln festlegen.",
       "Räume: eine Vorlage anpassen oder einen eigenen Raum mit Tafel, Tür, Fenstern und Möbeln gestalten.",
@@ -1883,11 +2110,12 @@ const Store = {
 
 /* Standard-Datensatz */
 function defaultSettings(){
-  return { mode:"school", rules:true, tags:true, history:true, lesson:true };
+  return { mode:"school", rules:true, tags:true, history:true, lesson:true, timetable:true, grades:true };
 }
 function emptyDB(){
   return { v:2, lang:"de", theme:"light", settings:defaultSettings(),
-           rooms:[], classes:[], trash:[], lastBackup:"", lastClass:"", onboarded:false };
+           rooms:[], classes:[], trash:[], lastBackup:"", lastClass:"", onboarded:false,
+           subjects:[], lessons:[], tt:defaultTT(), gradesAck:false };
 }
 const TRASH_DAYS = 30;
 let DB = emptyDB();
@@ -1931,7 +2159,9 @@ function sanitizeDB(raw){
     rules:   st.rules   !== false,
     tags:    st.tags    !== false,
     history: st.history !== false,
-    lesson:  st.lesson  !== false
+    lesson:  st.lesson  !== false,
+    timetable: st.timetable !== false,
+    grades:  st.grades  !== false
   };
 
   out.rooms = Array.isArray(raw.rooms) ? raw.rooms.map(r => ({
@@ -1946,6 +2176,29 @@ function sanitizeDB(raw){
   })) : [];
 
   out.lastBackup = typeof raw.lastBackup === "string" ? raw.lastBackup.slice(0, 30) : "";
+  /* Stundenplan */
+  const isHex = v => typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v);
+  out.subjects = Array.isArray(raw.subjects) ? raw.subjects.filter(x => x && typeof x.name === "string" && x.name.trim()).map(x => ({
+    id: typeof x.id === "string" && x.id ? x.id.slice(0, 40) : uid(), name: x.name.trim().slice(0, 30),
+    short: typeof x.short === "string" ? x.short.slice(0, 6) : "", color: isHex(x.color) ? x.color.toUpperCase() : "#5C6B7A"
+  })).slice(0, MAX_SUBJECTS) : [];
+  const tt0 = raw.tt && typeof raw.tt === "object" ? raw.tt : {}, dt = defaultTT();
+  const intIn = (v, lo, hi, d) => Number.isInteger(v) && v >= lo && v <= hi ? v : d;
+  out.tt = {
+    start: typeof tt0.start === "string" && /^\d{1,2}:\d{2}$/.test(tt0.start) ? tt0.start : dt.start,
+    len: intIn(tt0.len, 20, 120, dt.len), count: intIn(tt0.count, 1, 12, dt.count), days: tt0.days === 6 ? 6 : 5,
+    breaks: Array.from({ length: 11 }, (_, i) => intIn(Array.isArray(tt0.breaks) ? tt0.breaks[i] : undefined, 0, 120, Array.isArray(tt0.breaks) ? 0 : (dt.breaks[i] || 0))),
+    ab: tt0.ab === true, abRef: typeof tt0.abRef === "string" && /^\d{4}-\d{2}-\d{2}$/.test(tt0.abRef) ? tt0.abRef : ""
+  };
+  const subjIds = new Set(out.subjects.map(x => x.id));
+  out.lessons = Array.isArray(raw.lessons) ? raw.lessons.filter(L => L && subjIds.has(L.subjectId)).map(L => ({
+    id: typeof L.id === "string" && L.id ? L.id.slice(0, 40) : uid(),
+    day: intIn(L.day, 0, 5, 0), period: intIn(L.period, 0, 11, 0), span: L.span === 2 ? 2 : 1,
+    week: L.week === "A" || L.week === "B" ? L.week : "", subjectId: L.subjectId,
+    classId: typeof L.classId === "string" ? L.classId.slice(0, 40) : "", roomId: typeof L.roomId === "string" ? L.roomId.slice(0, 40) : "",
+    planId: typeof L.planId === "string" ? L.planId.slice(0, 40) : ""
+  })).slice(0, MAX_LESSONS) : [];
+  out.gradesAck = raw.gradesAck === true;
   out.lastClass = typeof raw.lastClass === "string" ? raw.lastClass.slice(0, 40) : "";
   /* Wer schon Klassen hat, kennt die App – die Erststart-Frage entfällt */
   out.tipsDone = raw.tipsDone === true;
@@ -1986,6 +2239,20 @@ function sanitizeDB(raw){
       students,
       levelMode: (c?.levelMode === "hetero" || c?.levelMode === "homo") ? c.levelMode : "off",
       subNote: typeof c?.subNote === "string" ? c.subNote.slice(0, 1200) : "",
+      /* Bewertungen je Fach */
+      assess: Array.isArray(c?.assess) ? c.assess.filter(a => a && typeof a.subjectId === "string" && SCALE_TOKS[a.scale]).map(a => {
+        const okTok = v => v === "x" || SCALE_TOKS[a.scale].indexOf(v) >= 0;
+        const marks = {};
+        if(a.marks && typeof a.marks === "object") Object.keys(a.marks).forEach(k => { if(ids.has(k) && okTok(a.marks[k])) marks[k] = a.marks[k]; });
+        return { id: typeof a.id === "string" && a.id ? a.id.slice(0, 40) : uid(), subjectId: a.subjectId.slice(0, 40),
+          title: typeof a.title === "string" ? a.title.slice(0, 60) : "", date: typeof a.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(a.date) ? a.date : "",
+          kind: a.kind === "written" ? "written" : "other", scale: a.scale, weight: [0.5, 1, 2, 3].indexOf(a.weight) >= 0 ? a.weight : 1,
+          marks, ...(a.auto === true ? { auto: true } : {}) };
+      }).slice(0, MAX_ASSESS) : [],
+      gradeW: (c?.gradeW && typeof c.gradeW === "object") ? Object.keys(c.gradeW).reduce((o, k) => {
+        const v = c.gradeW[k]; if(Number.isInteger(v) && v >= 0 && v <= 100) o[k.slice(0, 40)] = v; return o; }, {}) : {},
+      gradeSubjects: Array.isArray(c?.gradeSubjects) ? c.gradeSubjects.filter(x => typeof x === "string").slice(0, MAX_SUBJECTS) : [],
+      lastSubject: typeof c?.lastSubject === "string" ? c.lastSubject.slice(0, 40) : "",
       /* Aus FairMix übernommene Gruppen: Mitglieder als Schüler-IDs */
       groups: Array.isArray(c?.groups) ? c.groups.filter(g => g && Array.isArray(g.members)).map(g => ({
         id: typeof g.id === "string" && g.id ? g.id : uid(),
@@ -2014,6 +2281,11 @@ function sanitizeDB(raw){
           deskSize: DESK_SIZES[p?.deskSize] ? p.deskSize : "single",
           byGroups: p?.byGroups === true,
           exam: p?.exam === true,
+          /* Sitzordnung vor der Klassenarbeit – wird beim Beenden zurückgeholt */
+          examPrev: p?.exam === true && p?.examPrev && Array.isArray(p.examPrev.desks) ? {
+            deskSize: DESK_SIZES[p.examPrev.deskSize] ? p.examPrev.deskSize : "single",
+            desks: p.examPrev.desks.map(sanitizeItem).filter(i => i && i.type === "desk").slice(0, MAX_DESKS)
+          } : undefined,
           seatsPerTable: [4,6,8,10,12].indexOf(p?.seatsPerTable) >= 0 ? p.seatsPerTable : 8,
           desks: all.filter(i => i.type === "desk").slice(0, MAX_DESKS)
         };
@@ -2326,6 +2598,7 @@ function applyLang(){
   document.documentElement.lang = LANG;
   $$("[data-i]").forEach(el => { el.textContent = t(el.dataset.i); });
   $$("[data-ph]").forEach(el => { el.placeholder = t(el.dataset.ph); });
+  $$("[data-al]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.al)); });
   $("#privacy-note").textContent = t("privacy");
   $("#flag-de").classList.toggle("on", LANG === "de");
   $("#flag-en").classList.toggle("on", LANG === "en");
@@ -2543,6 +2816,9 @@ function renderStart(){
   $("#tile-plans-n").textContent = c && c.plans.length ? String(c.plans.length) : "";
   $("#tile-plans-n").style.display = c && c.plans.length ? "" : "none";
   $("#tile-rooms-n").style.display = DB.rooms.length ? "" : "none";
+  $("#tile-timetable").style.display = ttOn() ? "" : "none";
+  $("#tile-grades").style.display = gradesOn() ? "" : "none";
+  renderNowCard();
   renderTrash();
   renderBackupReminder();
 }
@@ -3551,7 +3827,8 @@ $("#btn-add-plan").onclick = () => {
   const isEventMode = DB.settings.mode === "event";
   const st = { layout: isEventMode ? "rounds" : hasGroups ? "fmgroups" : "rows", extra: 0, seats: 8,
                dist: hasGroups && !isEventMode ? "groups" : "random",
-               room: DB.rooms.length ? DB.rooms[DB.rooms.length - 1].id : (isEventMode ? "__tpl_hall" : "__tpl_classic"),
+               room: wizRoomHint && DB.rooms.some(r => r.id === wizRoomHint) ? wizRoomHint
+                   : DB.rooms.length ? DB.rooms[DB.rooms.length - 1].id : (isEventMode ? "__tpl_hall" : "__tpl_classic"),
                levelMode: c.levelMode || "off" };
   const sheet = sheetBase(t("newPlan"));
 
@@ -6387,18 +6664,41 @@ function openExamSheet(){
   opt("examArrange", "examArrangeSub", () => arrange, v => arrange = v);
   opt("examShuffle", "examShuffleSub", () => shuffle, v => shuffle = v);
   if(p.exam){
-    const off = document.createElement("button");
-    off.className = "ghost"; off.style.width = "100%"; off.style.marginTop = "10px";
-    off.textContent = t("examEnd");
-    off.onclick = () => {
-      pushUndo(); p.exam = false; p.desks.forEach(d => { delete d.var; });
-      closeModal(); save(); renderStage(false); renderSeatOptions(); toastUndo(t("examEnded"));
+    const prev = p.examPrev && p.examPrev.desks && p.examPrev.desks.length ? p.examPrev : null;
+    const endExam = restore => {
+      pushUndo();
+      if(restore && prev){
+        p.desks = clone(prev.desks).map(d => { if(d.studentId && !studentById(c, d.studentId)) delete d.studentId; delete d.var; return d; });
+        p.deskSize = prev.deskSize;
+        /* Wer zwischendurch dazugekommen ist, bekommt einen freien Platz */
+        const seated = new Set(p.desks.map(d => d.studentId).filter(Boolean));
+        const absent = absentToday(c);
+        const free = p.desks.filter(d => !d.studentId);
+        c.students.forEach(st => { if(!seated.has(st.id) && !absent.has(st.id) && free.length) free.shift().studentId = st.id; });
+      } else p.desks.forEach(d => { delete d.var; });
+      p.exam = false; delete p.examPrev;
+      selected.clear(); clearConflicts();
+      closeModal(); save(); renderStage(false); renderUnseated(); renderSeatOptions(); fitToScreen();
+      toastUndo(t(restore && prev ? "examEndedRestored" : "examEnded"));
     };
+    if(prev){
+      const back = document.createElement("button");
+      back.className = "primary"; back.id = "exam-end-restore"; back.style.width = "100%"; back.style.marginTop = "10px";
+      back.textContent = t("examEndRestore");
+      back.onclick = () => endExam(true);
+      sheet.appendChild(back);
+    }
+    const off = document.createElement("button");
+    off.className = "ghost"; off.id = "exam-end"; off.style.width = "100%"; off.style.marginTop = "8px";
+    off.textContent = t(prev ? "examEndKeep" : "examEnd");
+    off.onclick = () => endExam(false);
     sheet.appendChild(off);
   }
   sheetButtons(sheet, t("examStart"), () => {
     closeModal();
     pushUndo();
+    /* Nur beim ersten Einrichten merken – ein zweites Einrichten darf die Ausgangslage nicht überschreiben */
+    if(!p.exam) p.examPrev = { deskSize: p.deskSize, desks: clone(p.desks) };
     if(arrange) layoutDesks("exam", true);
     if(shuffle) autoSeat(true);
     p.exam = true;
@@ -6739,6 +7039,13 @@ function openLessonSheet(it){
   area.value = lessonNote(st.id) || "";
   sheet.appendChild(area);
 
+  if(gradesOn() && DB.gradesAck){
+    const qm = document.createElement("button");
+    qm.className = "ghost"; qm.id = "lesson-quickmark"; qm.style.width = "100%"; qm.style.marginTop = "10px";
+    qm.textContent = t("gQuick");
+    qm.onclick = () => { closeModal(); setTimeout(() => quickMark(st), 60); };
+    sheet.appendChild(qm);
+  }
   sheetButtons(sheet, t("save"), () => {
     const i = L.absent.indexOf(st.id);
     if(absent && i < 0) L.absent.push(st.id);
@@ -6943,6 +7250,17 @@ function renderSettings(){
       });
     box.appendChild(row);
   });
+
+  if(S.mode !== "event"){
+    const l5 = document.createElement("div");
+    l5.className = "eyebrow"; l5.style.marginTop = "26px"; l5.textContent = t("setSchoolTools");
+    box.appendChild(l5);
+    const sp5 = document.createElement("div"); sp5.style.height = "10px"; box.appendChild(sp5);
+    box.appendChild(switchRow(t("tileTT"), t("setTTSub"), () => S.timetable !== false, () => { S.timetable = S.timetable === false; save(); renderStart(); }));
+    const tb = document.createElement("button"); tb.className = "ghost"; tb.id = "set-tt-times"; tb.style.width = "100%"; tb.style.marginBottom = "8px";
+    tb.textContent = t("ttTimes"); tb.onclick = openTimes; box.appendChild(tb);
+    box.appendChild(switchRow(t("tileGrades"), t("setGradesSub"), () => S.grades !== false, () => { S.grades = S.grades === false; save(); renderStart(); }));
+  }
 
   const l3 = document.createElement("div");
   l3.className = "eyebrow"; l3.style.marginTop = "26px"; l3.textContent = t("setAppearance");
@@ -7786,6 +8104,807 @@ function showWelcome(){
     sheet.appendChild(b);
   });
 }
+
+/* ============ 23. Stundenplan ============
+   Nur im Schulmodus. Zeiten und Pausen in DB.tt, Fächer in DB.subjects,
+   Stunden in DB.lessons. Jede Stunde kann auf Klasse, Raum und Sitzplan zeigen. */
+const SUBJECT_COLORS = ["#2E86DE","#E0533D","#20A464","#E08A00","#8E44AD","#D63384","#16A2B8","#7A5C3E","#5C6B7A","#C9A400"];
+const MAX_SUBJECTS = 40, MAX_LESSONS = 400, MAX_ASSESS = 300;
+function defaultTT(){ return { start: "08:00", len: 45, count: 8, days: 5, breaks: [0, 20, 0, 15, 0, 30, 0], ab: false, abRef: "" }; }
+function ttOn(){ return DB.settings.mode !== "event" && DB.settings.timetable !== false; }
+function gradesOn(){ return DB.settings.mode !== "event" && DB.settings.grades !== false; }
+const hm = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || "")); return m ? Math.min(23, +m[1]) * 60 + Math.min(59, +m[2]) : 480; };
+const fmtHM = m => String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+function periodTimes(){
+  const T = DB.tt, out = [];
+  let cur = hm(T.start);
+  for(let i = 0; i < T.count; i++){
+    out.push({ start: cur, end: cur + T.len });
+    cur += T.len + (T.breaks[i] || 0);
+  }
+  return out;
+}
+function mondayOf(d){ const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+function isoDay(d){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+/* A- oder B-Woche: gezählt ab dem Montag, der als A-Woche festgelegt wurde */
+function abWeek(date){
+  if(!DB.tt.ab || !DB.tt.abRef) return "";
+  const ref = new Date(DB.tt.abRef + "T00:00:00");
+  if(isNaN(ref)) return "";
+  const weeks = Math.round((mondayOf(date) - mondayOf(ref)) / (7 * 864e5));
+  return ((weeks % 2) + 2) % 2 === 0 ? "A" : "B";
+}
+const subjectById = id => DB.subjects.find(s => s.id === id) || null;
+const classById = id => DB.classes.find(c => c.id === id) || null;
+const roomById = id => DB.rooms.find(r => r.id === id) || null;
+function lessonLabel(L){
+  const s = subjectById(L.subjectId), c = classById(L.classId), r = roomById(L.roomId);
+  return [s ? s.name : "", c ? c.name : "", r ? r.name : ""].filter(Boolean).join(" · ");
+}
+/* Laufende und nächste Stunde von heute */
+function nowLessons(date){
+  date = date || new Date();
+  const day = (date.getDay() + 6) % 7;
+  if(day >= DB.tt.days) return { now: null, next: null };
+  const wk = abWeek(date), times = periodTimes(), m = date.getHours() * 60 + date.getMinutes();
+  const today = DB.lessons.filter(L => L.day === day && (!L.week || !wk || L.week === wk) && times[L.period])
+    .map(L => ({ L, start: times[L.period].start, end: times[Math.min(times.length - 1, L.period + L.span - 1)].end }))
+    .sort((a, b) => a.start - b.start);
+  return { now: today.find(x => x.start <= m && m < x.end) || null, next: today.find(x => x.start > m) || null };
+}
+/* Passender Sitzplan: fest verknüpft, sonst der Plan der Klasse in diesem Raum, sonst ihr erster */
+function planForLesson(L){
+  const c = classById(L.classId); if(!c) return null;
+  return c.plans.find(p => p.id === L.planId) || c.plans.find(p => p.roomId === L.roomId) || c.plans[0] || null;
+}
+let wizRoomHint = null;
+function openLessonPlan(L){
+  const c = classById(L.classId);
+  if(!c){ toast(t("ttNoClass")); return; }
+  setCurClass(c.id); save();
+  const p = planForLesson(L);
+  if(p){ openPlan(p.id); if(DB.settings.lesson) setLesson(true); return; }
+  wizRoomHint = L.roomId || null;
+  goPlans(); $("#btn-add-plan").click();
+  wizRoomHint = null;
+}
+function renderNowCard(){
+  const box = $("#now-card"); if(!box) return;
+  box.textContent = "";
+  const show = ttOn() && DB.lessons.length;
+  const nl = show ? nowLessons() : { now: null, next: null };
+  const items = [["ttNow", nl.now], ["ttNext", nl.next]].filter(x => x[1]);
+  box.style.display = items.length ? "" : "none";
+  items.forEach(([k, x]) => {
+    const L = x.L, s = subjectById(L.subjectId);
+    const row = document.createElement("div"); row.className = "nowrow";
+    row.style.borderLeftColor = s ? s.color : "var(--line)";
+    const tx = document.createElement("div"); tx.className = "nowtx";
+    const a = document.createElement("div"); a.className = "nowk";
+    a.textContent = t(k) + " · " + (L.period + 1) + ". " + t("ttPeriod") + " · " + fmtHM(x.start) + "–" + fmtHM(x.end);
+    const b = document.createElement("div"); b.className = "nowt"; b.textContent = lessonLabel(L) || t("ttEmpty");
+    tx.appendChild(a); tx.appendChild(b); row.appendChild(tx);
+    if(L.classId && classById(L.classId)){
+      const go = document.createElement("button"); go.className = "minibtn"; go.appendChild(icon("grid"));
+      const gs = document.createElement("span"); gs.textContent = t("ttOpenPlan"); go.appendChild(gs);
+      go.onclick = () => openLessonPlan(L);
+      row.appendChild(go);
+      if(gradesOn() && L.subjectId){
+        const gr = document.createElement("button"); gr.className = "minibtn"; gr.appendChild(icon("grade"));
+        gr.setAttribute("aria-label", t("tileGrades"));
+        gr.onclick = () => { setCurClass(L.classId); goGrades(L.subjectId); };
+        row.appendChild(gr);
+      }
+    }
+    box.appendChild(row);
+  });
+}
+function goTimetable(){ show("timetable"); renderTimetable(); }
+let ttWeekView = "";
+function renderTimetable(){
+  const grid = $("#tt-grid"); if(!grid) return;
+  const T = DB.tt, times = periodTimes();
+  const abBar = $("#tt-ab");
+  abBar.style.display = T.ab ? "" : "none";
+  if(T.ab){
+    if(!ttWeekView) ttWeekView = abWeek(new Date()) || "A";
+    abBar.textContent = "";
+    ["A", "B"].forEach(w => {
+      const b = document.createElement("button"); b.textContent = t("ttWeek").replace("{w}", w) + (abWeek(new Date()) === w ? " · " + t("ttThisWeek") : "");
+      b.classList.toggle("on", ttWeekView === w);
+      b.onclick = () => { ttWeekView = w; renderTimetable(); };
+      abBar.appendChild(b);
+    });
+  }
+  grid.textContent = "";
+  grid.style.gridTemplateColumns = "46px repeat(" + T.days + ", minmax(0,1fr))";
+  /* Zeilen: Kopf, dann je Stunde eine Zeile, Pausen als schmale Zeilen dazwischen */
+  const rowOf = []; let r = 2;
+  for(let i = 0; i < T.count; i++){ rowOf.push(r); r += (i < T.count - 1 && T.breaks[i] > 0) ? 2 : 1; }
+  const put = (el, row, col, span) => { el.style.gridRow = row + (span > 1 ? " / span " + span : ""); el.style.gridColumn = String(col); grid.appendChild(el); };
+  const days = I18N[LANG].ttDays;
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  put(document.createElement("div"), 1, 1, 1);
+  for(let d = 0; d < T.days; d++){
+    const h = document.createElement("div"); h.className = "tt-day" + (d === todayIdx ? " today" : ""); h.textContent = days[d];
+    put(h, 1, d + 2, 1);
+  }
+  times.forEach((tm, i) => {
+    const h = document.createElement("div"); h.className = "tt-time";
+    const n = document.createElement("b"); n.textContent = String(i + 1);
+    const s = document.createElement("span"); s.textContent = fmtHM(tm.start);
+    h.appendChild(n); h.appendChild(s);
+    put(h, rowOf[i], 1, 1);
+    if(i < T.count - 1 && T.breaks[i] > 0){
+      const br = document.createElement("div"); br.className = "tt-break";
+      br.textContent = t("ttBreak").replace("{n}", String(T.breaks[i]));
+      br.style.gridColumn = "1 / -1"; br.style.gridRow = String(rowOf[i] + 1); grid.appendChild(br);
+    }
+  });
+  const wk = T.ab ? ttWeekView : "";
+  const taken = new Set();
+  DB.lessons.filter(L => L.day < T.days && L.period < T.count && (!wk || !L.week || L.week === wk)).forEach(L => {
+    const span = Math.min(L.span, T.count - L.period);
+    const s = subjectById(L.subjectId), c = classById(L.classId), rm = roomById(L.roomId);
+    const cell = document.createElement("button"); cell.className = "tt-cell";
+    if(s){ cell.style.background = s.color; cell.style.borderColor = s.color; }
+    const a = document.createElement("b"); a.textContent = s ? (s.short || s.name) : "–";
+    const b = document.createElement("span"); b.textContent = c ? c.name : "";
+    const d = document.createElement("span"); d.textContent = rm ? rm.name : "";
+    cell.appendChild(a); cell.appendChild(b); cell.appendChild(d);
+    if(L.week){ const w = document.createElement("i"); w.textContent = L.week; cell.appendChild(w); }
+    cell.setAttribute("aria-label", days[L.day] + " " + (L.period + 1) + ": " + lessonLabel(L));
+    cell.onclick = () => editLesson(L);
+    const endRow = rowOf[L.period + span - 1];
+    put(cell, rowOf[L.period], L.day + 2, endRow - rowOf[L.period] + 1);
+    for(let k = 0; k < span; k++) taken.add(L.day + ":" + (L.period + k));
+  });
+  for(let d = 0; d < T.days; d++) for(let i = 0; i < T.count; i++){
+    if(taken.has(d + ":" + i)) continue;
+    const e = document.createElement("button"); e.className = "tt-free"; e.setAttribute("aria-label", days[d] + " " + (i + 1) + ": " + t("ttAdd"));
+    e.textContent = "+";
+    e.onclick = () => editLesson(null, d, i);
+    put(e, rowOf[i], d + 2, 1);
+  }
+  $("#tt-empty").style.display = DB.lessons.length ? "none" : "";
+}
+function selectField(sheet, items, value){
+  const sel = document.createElement("select"); sel.className = "field";
+  items.forEach(([v, label]) => { const o = document.createElement("option"); o.value = v; o.textContent = label; sel.appendChild(o); });
+  sel.value = value; if(sel.value !== value && items.length) sel.value = items[0][0];
+  sheet.appendChild(sel);
+  return sel;
+}
+function editLesson(L, day, period){
+  const isNew = !L;
+  if(isNew && DB.lessons.length >= MAX_LESSONS){ toast(t("ttLimit")); return; }
+  const cur = L ? Object.assign({}, L) : { id: uid(), day, period, span: 1, week: DB.tt.ab ? ttWeekView || "" : "",
+    subjectId: (DB.subjects[0] || {}).id || "", classId: curClassId || "", roomId: "", planId: "" };
+  const times = periodTimes();
+  const sheet = sheetBase(I18N[LANG].ttDays[cur.day] + ", " + (cur.period + 1) + ". " + t("ttPeriod") + " (" + fmtHM(times[cur.period].start) + ")");
+  sheetLabel(sheet, t("ttSubject"));
+  const subjItems = () => DB.subjects.map(s => [s.id, s.name]).concat([["__new", t("subjNew")]]);
+  const subjSel = selectField(sheet, subjItems(), cur.subjectId);
+  subjSel.onchange = () => {
+    if(subjSel.value !== "__new") return;
+    closeModal();
+    editSubject(null, s => { cur.subjectId = s.id; if(isNew) editLesson(null, cur.day, cur.period); else editLesson(Object.assign(L, { subjectId: s.id })); });
+  };
+  sheetLabel(sheet, t("ttClass"));
+  const clsSel = selectField(sheet, [["", "–"]].concat(DB.classes.filter(c => !c.archived).map(c => [c.id, c.name])), cur.classId);
+  sheetLabel(sheet, t("ttRoom"));
+  const roomSel = selectField(sheet, [["", "–"]].concat(DB.rooms.map(r => [r.id, r.name])), cur.roomId);
+  const planLab = sheetLabel(sheet, t("ttPlan"));
+  const planWrap = document.createElement("div"); sheet.appendChild(planWrap);
+  let planSel = null;
+  const fillPlans = () => {
+    planWrap.textContent = "";
+    const c = classById(clsSel.value);
+    planLab.style.display = c && c.plans.length ? "" : "none";
+    if(!c || !c.plans.length){ planSel = null; return; }
+    planSel = selectField(planWrap, [["", t("ttPlanAuto")]].concat(c.plans.map(p => [p.id, p.name])), cur.planId);
+  };
+  clsSel.onchange = fillPlans; fillPlans();
+  const segRow = (labelKey, opts, get, set) => {
+    sheetLabel(sheet, t(labelKey));
+    const row = document.createElement("div"); row.className = "segmented";
+    opts.forEach(([v, label]) => {
+      const b = document.createElement("button"); b.textContent = label; b.classList.toggle("on", get() === v);
+      b.onclick = () => { set(v); Array.from(row.children).forEach((x, j) => x.classList.toggle("on", opts[j][0] === v)); };
+      row.appendChild(b);
+    });
+    sheet.appendChild(row);
+  };
+  if(cur.period < DB.tt.count - 1) segRow("ttLength", [[1, t("ttSingle")], [2, t("ttDouble")]], () => cur.span, v => cur.span = v);
+  if(DB.tt.ab) segRow("ttWeeks", [["", t("ttEveryWeek")], ["A", t("ttWeek").replace("{w}", "A")], ["B", t("ttWeek").replace("{w}", "B")]], () => cur.week, v => cur.week = v);
+  if(!isNew){
+    const del = document.createElement("button");
+    del.className = "ghost"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
+    del.textContent = t("ttDelete");
+    del.onclick = () => { DB.lessons = DB.lessons.filter(x => x.id !== L.id); closeModal(); save(); renderTimetable(); };
+    sheet.appendChild(del);
+  }
+  sheetButtons(sheet, t("save"), () => {
+    if(!DB.subjects.length || subjSel.value === "__new"){ toast(t("subjNeed")); return; }
+    Object.assign(cur, { subjectId: subjSel.value, classId: clsSel.value, roomId: roomSel.value, planId: planSel ? planSel.value : "" });
+    /* Überschneidungen am selben Tag in derselben Woche entfernen */
+    const span = Math.min(cur.span, DB.tt.count - cur.period);
+    const overl = x => x.id !== cur.id && x.day === cur.day && (!x.week || !cur.week || x.week === cur.week) &&
+      x.period < cur.period + span && cur.period < x.period + x.span;
+    DB.lessons = DB.lessons.filter(x => !overl(x));
+    if(isNew) DB.lessons.push(cur); else Object.assign(L, cur);
+    closeModal(); save(); renderTimetable();
+  });
+}
+function editSubject(s, after){
+  const isNew = !s;
+  if(isNew && DB.subjects.length >= MAX_SUBJECTS){ toast(t("subjLimit")); return; }
+  let color = s ? s.color : SUBJECT_COLORS[DB.subjects.length % SUBJECT_COLORS.length];
+  const sheet = sheetBase(isNew ? t("subjNew") : t("subjEdit"));
+  sheetLabel(sheet, t("subjName"));
+  const name = document.createElement("input"); name.className = "field"; name.maxLength = 30; name.placeholder = t("subjNamePh");
+  name.value = s ? s.name : ""; sheet.appendChild(name);
+  sheetLabel(sheet, t("subjShort"));
+  const short = document.createElement("input"); short.className = "field"; short.maxLength = 6; short.placeholder = t("subjShortPh");
+  short.value = s ? s.short : ""; sheet.appendChild(short);
+  sheetLabel(sheet, t("groupColor"));
+  const sw = document.createElement("div"); sw.className = "swatches";
+  const custom = document.createElement("input"); custom.type = "color"; custom.className = "colorpick"; custom.setAttribute("aria-label", t("subjCustomColor"));
+  const paint = () => { Array.from(sw.querySelectorAll("button")).forEach(b => b.classList.toggle("on", b.dataset.c === color)); custom.value = color; };
+  SUBJECT_COLORS.forEach((col, k) => {
+    const b = document.createElement("button"); b.style.background = col; b.dataset.c = col;
+    b.setAttribute("aria-label", t("groupColor") + " " + (k + 1));
+    b.onclick = () => { color = col; paint(); };
+    sw.appendChild(b);
+  });
+  custom.oninput = () => { color = custom.value.toUpperCase(); paint(); };
+  sw.appendChild(custom);
+  sheet.appendChild(sw); paint();
+  if(!isNew){
+    const del = document.createElement("button");
+    del.className = "ghost"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
+    del.textContent = t("subjDelete");
+    del.onclick = () => {
+      closeModal();
+      askConfirm(t("subjDeleteQ").replace("{s}", s.name), t("subjDeleteT"), t("delete"), () => {
+        DB.subjects = DB.subjects.filter(x => x !== s);
+        DB.lessons = DB.lessons.filter(L => L.subjectId !== s.id);
+        DB.classes.forEach(c => { c.assess = (c.assess || []).filter(a => a.subjectId !== s.id); if(c.gradeW) delete c.gradeW[s.id]; });
+        save(); refreshTTViews();
+      });
+    };
+    sheet.appendChild(del);
+  }
+  sheetButtons(sheet, t("save"), () => {
+    const v = name.value.trim(); if(!v){ name.focus(); return; }
+    const sh = short.value.trim() || v.slice(0, 4);
+    if(isNew){ s = { id: uid(), name: v, short: sh, color }; DB.subjects.push(s); }
+    else Object.assign(s, { name: v, short: sh, color });
+    closeModal(); save(); refreshTTViews();
+    if(after) setTimeout(() => after(s), 80);
+  });
+  setTimeout(() => name.focus(), 60);
+}
+function refreshTTViews(){
+  if($("#screen-timetable").classList.contains("active")) renderTimetable();
+  if($("#screen-grades").classList.contains("active")) renderGrades();
+  renderStart();
+}
+function openSubjects(){
+  const sheet = sheetBase(t("subjTitle"));
+  if(!DB.subjects.length){ const h = document.createElement("div"); h.className = "hint"; h.textContent = t("subjNone"); sheet.appendChild(h); }
+  DB.subjects.forEach(s => {
+    const b = document.createElement("button"); b.className = "grpcard";
+    const h = document.createElement("b");
+    const dot = document.createElement("i"); dot.className = "gdot"; dot.style.background = s.color;
+    const n = document.createElement("span"); n.textContent = s.name + (s.short && s.short !== s.name ? " (" + s.short + ")" : "");
+    h.appendChild(dot); h.appendChild(n); b.appendChild(h);
+    b.onclick = () => { closeModal(); editSubject(s); };
+    sheet.appendChild(b);
+  });
+  const add = document.createElement("button"); add.className = "cbtn green"; add.id = "subj-add"; add.style.width = "100%"; add.style.marginTop = "12px";
+  add.textContent = "+ " + t("subjNew"); add.onclick = () => { closeModal(); editSubject(null); };
+  sheet.appendChild(add);
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
+}
+function openTimes(){
+  const T = clone(DB.tt);
+  const sheet = sheetBase(t("ttTimes"));
+  const row2 = document.createElement("div"); row2.className = "ttfields";
+  const field = (labelKey, el) => { const w = document.createElement("label"); w.className = "ttf"; const s = document.createElement("span"); s.textContent = t(labelKey); w.appendChild(s); w.appendChild(el); row2.appendChild(w); return el; };
+  const start = document.createElement("input"); start.type = "time"; start.className = "field"; start.value = T.start; start.id = "tt-start";
+  const len = document.createElement("input"); len.type = "number"; len.inputMode = "numeric"; len.min = 20; len.max = 120; len.className = "field"; len.value = T.len; len.id = "tt-len";
+  const count = document.createElement("input"); count.type = "number"; count.inputMode = "numeric"; count.min = 1; count.max = 12; count.className = "field"; count.value = T.count; count.id = "tt-count";
+  field("ttStart", start); field("ttLen", len); field("ttCount", count);
+  sheet.appendChild(row2);
+  sheetLabel(sheet, t("ttDaysLabel"));
+  const dRow = document.createElement("div"); dRow.className = "segmented";
+  [5, 6].forEach(n => { const b = document.createElement("button"); b.textContent = t(n === 5 ? "ttMoFr" : "ttMoSa"); b.classList.toggle("on", T.days === n);
+    b.onclick = () => { T.days = n; Array.from(dRow.children).forEach(x => x.classList.toggle("on", x === b)); }; dRow.appendChild(b); });
+  sheet.appendChild(dRow);
+  sheetLabel(sheet, t("ttBreaks"));
+  const bh = document.createElement("div"); bh.className = "hint"; bh.textContent = t("ttBreaksHint"); sheet.appendChild(bh);
+  const bWrap = document.createElement("div"); bWrap.className = "ttbreaks"; sheet.appendChild(bWrap);
+  const paintBreaks = () => {
+    bWrap.textContent = "";
+    const n = clamp(parseInt(count.value, 10) || T.count, 1, 12);
+    for(let i = 0; i < n - 1; i++){
+      const w = document.createElement("label"); w.className = "ttf";
+      const s = document.createElement("span"); s.textContent = t("ttAfter").replace("{n}", String(i + 1));
+      const f = document.createElement("input"); f.type = "number"; f.inputMode = "numeric"; f.min = 0; f.max = 120; f.className = "field";
+      f.value = String(T.breaks[i] || 0); f.dataset.i = String(i);
+      f.oninput = () => { T.breaks[i] = clamp(parseInt(f.value, 10) || 0, 0, 120); };
+      w.appendChild(s); w.appendChild(f); bWrap.appendChild(w);
+    }
+  };
+  count.oninput = paintBreaks; paintBreaks();
+  sheet.appendChild(switchRow(t("ttAB"), t("ttABSub"), () => T.ab, () => { T.ab = !T.ab; abRow.style.display = T.ab ? "" : "none"; }));
+  const abRow = document.createElement("div"); abRow.className = "segmented"; abRow.style.display = T.ab ? "" : "none";
+  const curAB = (() => { const keep = DB.tt; DB.tt = T; const w = abWeek(new Date()) || "A"; DB.tt = keep; return w; })();
+  let thisWeek = curAB;
+  ["A", "B"].forEach(w => { const b = document.createElement("button"); b.textContent = t("ttThisIs").replace("{w}", w); b.classList.toggle("on", thisWeek === w);
+    b.onclick = () => { thisWeek = w; Array.from(abRow.children).forEach(x => x.classList.toggle("on", x === b)); }; abRow.appendChild(b); });
+  sheet.appendChild(abRow);
+  sheetButtons(sheet, t("save"), () => {
+    T.start = /^\d{1,2}:\d{2}$/.test(start.value) ? start.value : T.start;
+    T.len = clamp(parseInt(len.value, 10) || 45, 20, 120);
+    T.count = clamp(parseInt(count.value, 10) || 8, 1, 12);
+    T.breaks = Array.from({ length: 11 }, (_, i) => clamp(T.breaks[i] || 0, 0, 120));
+    if(T.ab){
+      const mon = mondayOf(new Date());
+      if(thisWeek === "B") mon.setDate(mon.getDate() - 7);
+      T.abRef = isoDay(mon);
+    }
+    DB.tt = T;
+    DB.lessons = DB.lessons.filter(L => L.day < 6 && L.period < T.count);
+    closeModal(); save(); refreshTTViews(); toast(t("ttSaved"));
+  });
+}
+
+/* ============ 24. Bewertungen ============
+   Je Klasse und Fach. Noten 1–6 mit +/−, Punkte 0–15 oder Smileys.
+   Werte als Kürzel: "2+", "11", "s1"; "x" = fehlt. */
+const GRADE_TOKS = ["1+","1","1-","2+","2","2-","3+","3","3-","4+","4","4-","5+","5","5-","6"];
+const POINT_TOKS = ["15","14","13","12","11","10","9","8","7","6","5","4","3","2","1","0"];
+const SMILEY_TOKS = ["s1","s2","s3"];
+const SMILEY = { s1: "😀", s2: "😐", s3: "🙁" };
+const SMILEY_PDF = { s1: "+", s2: "o", s3: "-" };
+const SCALE_TOKS = { grade: GRADE_TOKS, points: POINT_TOKS, smiley: SMILEY_TOKS };
+function tokNum(tok, scale){
+  if(scale === "grade"){ const m = /^([1-6])([+-]?)$/.exec(tok || ""); if(!m) return null; return +m[1] + (m[2] === "+" ? -0.3 : m[2] === "-" ? 0.3 : 0); }
+  if(scale === "points"){ const v = parseInt(tok, 10); return isFinite(v) && v >= 0 && v <= 15 && String(v) === tok ? v : null; }
+  return null;
+}
+const pointsToGrade = p => Math.min(6, Math.max(1, (17 - p) / 3));
+const tokLabel = (tok, forPdf) => tok === "x" ? t("gMissing") : SMILEY[tok] ? (forPdf ? SMILEY_PDF[tok] : SMILEY[tok]) : String(tok || "");
+const fmtNum = (v, d) => v === null || v === undefined || !isFinite(v) ? "–" : (LANG === "de" ? v.toFixed(d).replace(".", ",") : v.toFixed(d));
+const fmtDate = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); return m ? (LANG === "de" ? m[3] + "." + m[2] + "." : m[3] + "/" + m[2]) : ""; };
+function courseAssess(c, subjectId){ return (c.assess || []).filter(a => a.subjectId === subjectId).sort((a, b) => (a.date || "").localeCompare(b.date || "") || 0); }
+/* Durchschnitte im Maßstab des Fachs: nur Punkte → Punkte, sonst Noten (Punkte umgerechnet) */
+function courseScale(list){ const num = list.filter(a => a.scale !== "smiley"); return num.length && num.every(a => a.scale === "points") ? "points" : "grade"; }
+function valIn(a, tok, sc){ const v = tokNum(tok, a.scale); if(v === null) return null; return sc === "grade" && a.scale === "points" ? pointsToGrade(v) : v; }
+function studentAverages(c, subjectId, sid){
+  const list = courseAssess(c, subjectId), sc = courseScale(list);
+  const part = kind => { let s = 0, w = 0; list.filter(a => a.kind === kind).forEach(a => { const v = valIn(a, a.marks[sid], sc); if(v !== null){ s += v * a.weight; w += a.weight; } }); return w ? s / w : null; };
+  const wr = part("written"), ot = part("other");
+  const W = ((c.gradeW || {})[subjectId] ?? 50) / 100;
+  const total = wr !== null && ot !== null ? W * wr + (1 - W) * ot : wr !== null ? wr : ot;
+  return { written: wr, other: ot, total, scale: sc };
+}
+function assessAverage(a){
+  const v = Object.values(a.marks).map(tok => tokNum(tok, a.scale)).filter(x => x !== null);
+  return v.length ? v.reduce((p, q) => p + q, 0) / v.length : null;
+}
+let gradeSubject = null, gradeTab = "list", curAssessId = null, assessSel = null;
+function goGrades(subjectId){
+  if(!DB.gradesAck){ showGradesPrivacy(() => goGrades(subjectId)); return; }
+  ensureCurClass();
+  if(subjectId) gradeSubject = subjectId;
+  show("grades"); renderGrades();
+}
+function showGradesPrivacy(then){
+  const sheet = sheetBase(t("gPrivTitle"));
+  ["gPriv1", "gPriv2", "gPriv3"].forEach(k => { const p = document.createElement("p"); p.className = "hint"; p.style.fontSize = "14px"; p.style.lineHeight = "1.5"; p.textContent = t(k); sheet.appendChild(p); });
+  const ok = document.createElement("button"); ok.className = "primary"; ok.id = "g-priv-ok"; ok.style.width = "100%"; ok.style.marginTop = "10px";
+  ok.textContent = t("privSchoolOk");
+  ok.onclick = () => { DB.gradesAck = true; save(); closeModal(); then(); };
+  sheet.appendChild(ok);
+}
+function courseSubjects(c){
+  const ids = new Set();
+  DB.lessons.forEach(L => { if(L.classId === c.id) ids.add(L.subjectId); });
+  (c.assess || []).forEach(a => ids.add(a.subjectId));
+  (c.gradeSubjects || []).forEach(id => ids.add(id));
+  return DB.subjects.filter(s => ids.has(s.id));
+}
+function renderGrades(){
+  const body = $("#grades-body"); if(!body) return;
+  body.textContent = "";
+  const c = curClass();
+  const sel = $("#grades-class"); fillClassSelect(sel);
+  if(!c){ const h = document.createElement("div"); h.className = "hint"; h.textContent = t("needClassFirst"); body.appendChild(h); return; }
+  const subs = courseSubjects(c);
+  if(!subs.some(s => s.id === gradeSubject)) gradeSubject = (subs[0] || {}).id || null;
+  const chips = document.createElement("div"); chips.className = "subjchips";
+  subs.forEach(s => {
+    const b = document.createElement("button"); b.className = "subjchip" + (s.id === gradeSubject ? " on" : "");
+    b.style.setProperty("--sc", s.color); b.textContent = s.name;
+    b.onclick = () => { gradeSubject = s.id; renderGrades(); };
+    chips.appendChild(b);
+  });
+  const add = document.createElement("button"); add.className = "subjchip add"; add.id = "g-add-subject"; add.textContent = "+ " + t("ttSubject");
+  add.onclick = () => pickCourseSubject(c);
+  chips.appendChild(add);
+  body.appendChild(chips);
+  if(!gradeSubject){ const h = document.createElement("div"); h.className = "hint"; h.style.marginTop = "14px"; h.textContent = t("gNoSubject"); body.appendChild(h); return; }
+  const s = subjectById(gradeSubject);
+  const W = (c.gradeW || {})[s.id] ?? 50;
+  const wBtn = document.createElement("button"); wBtn.className = "setrow"; wBtn.id = "g-weight"; wBtn.style.marginTop = "12px";
+  const wt = document.createElement("div"); wt.style.flex = "1";
+  const w1 = document.createElement("div"); w1.className = "st"; w1.textContent = t("gWeight");
+  const w2 = document.createElement("div"); w2.className = "ss"; w2.textContent = t("gWeightSub").replace("{a}", String(W)).replace("{b}", String(100 - W));
+  wt.appendChild(w1); wt.appendChild(w2); wBtn.appendChild(wt); wBtn.appendChild(icon("edit"));
+  wBtn.onclick = () => editWeight(c, s);
+  body.appendChild(wBtn);
+  const tabs = document.createElement("div"); tabs.className = "segmented";
+  [["list", "gTabList"], ["overview", "gTabOverview"]].forEach(([k, lk]) => {
+    const b = document.createElement("button"); b.textContent = t(lk); b.classList.toggle("on", gradeTab === k); b.id = "g-tab-" + k;
+    b.onclick = () => { gradeTab = k; renderGrades(); };
+    tabs.appendChild(b);
+  });
+  body.appendChild(tabs);
+  const list = courseAssess(c, s.id);
+  if(gradeTab === "list"){
+    const nb = document.createElement("button"); nb.className = "cbtn green"; nb.id = "g-new"; nb.style.width = "100%"; nb.style.marginTop = "12px";
+    nb.appendChild(icon("plus")); const ns = document.createElement("span"); ns.textContent = t("gNew"); nb.appendChild(ns);
+    nb.onclick = () => newAssessment(c, s);
+    body.appendChild(nb);
+    if(!list.length){ const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gNone"); body.appendChild(h); }
+    list.slice().reverse().forEach(a => {
+      const card = document.createElement("button"); card.className = "acard";
+      const top = document.createElement("div"); top.className = "at";
+      const n = document.createElement("b"); n.textContent = a.title;
+      const kd = document.createElement("span"); kd.className = "akind " + a.kind; kd.textContent = t(a.kind === "written" ? "gWritten" : "gOther");
+      top.appendChild(n); top.appendChild(kd);
+      const meta = document.createElement("div"); meta.className = "am";
+      const done = c.students.filter(st => a.marks[st.id]).length;
+      const avg = assessAverage(a);
+      meta.textContent = fmtDate(a.date) + " · " + t("gScale_" + a.scale) + (a.weight !== 1 ? " · ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") +
+        " · " + done + "/" + c.students.length + (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
+      card.appendChild(top); card.appendChild(meta);
+      card.onclick = () => openAssess(a.id);
+      body.appendChild(card);
+    });
+  } else renderOverview(body, c, s, list);
+}
+function pickCourseSubject(c){
+  const sheet = sheetBase(t("gPickSubject"));
+  const have = new Set(courseSubjects(c).map(s => s.id));
+  DB.subjects.filter(s => !have.has(s.id)).forEach(s => {
+    const b = document.createElement("button"); b.className = "grpcard";
+    const h = document.createElement("b"); const dot = document.createElement("i"); dot.className = "gdot"; dot.style.background = s.color;
+    const n = document.createElement("span"); n.textContent = s.name; h.appendChild(dot); h.appendChild(n); b.appendChild(h);
+    b.onclick = () => { c.gradeSubjects = (c.gradeSubjects || []).concat([s.id]); gradeSubject = s.id; save(); closeModal(); renderGrades(); };
+    sheet.appendChild(b);
+  });
+  const nw = document.createElement("button"); nw.className = "cbtn green"; nw.style.width = "100%"; nw.style.marginTop = "12px";
+  nw.textContent = "+ " + t("subjNew");
+  nw.onclick = () => { closeModal(); editSubject(null, s => { c.gradeSubjects = (c.gradeSubjects || []).concat([s.id]); gradeSubject = s.id; save(); renderGrades(); }); };
+  sheet.appendChild(nw);
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
+}
+function editWeight(c, s){
+  let W = (c.gradeW || {})[s.id] ?? 50;
+  const sheet = sheetBase(t("gWeight") + " – " + s.name);
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gWeightHint"); sheet.appendChild(h);
+  const out = document.createElement("div"); out.className = "wout";
+  const rng = document.createElement("input"); rng.type = "range"; rng.min = 0; rng.max = 100; rng.step = 5; rng.value = W; rng.className = "wrange"; rng.id = "g-weight-range";
+  const paint = () => { out.textContent = t("gWeightSub").replace("{a}", String(W)).replace("{b}", String(100 - W)); };
+  rng.oninput = () => { W = +rng.value; paint(); };
+  sheet.appendChild(out); sheet.appendChild(rng); paint();
+  const quick = document.createElement("div"); quick.className = "segmented";
+  [30, 40, 50, 60, 70].forEach(v => { const b = document.createElement("button"); b.textContent = v + ":" + (100 - v);
+    b.onclick = () => { W = v; rng.value = v; paint(); }; quick.appendChild(b); });
+  sheet.appendChild(quick);
+  sheetButtons(sheet, t("save"), () => { c.gradeW = Object.assign({}, c.gradeW, { [s.id]: W }); save(); closeModal(); renderGrades(); });
+}
+function assessForm(sheet, a){
+  sheetLabel(sheet, t("gTitle"));
+  const title = document.createElement("input"); title.className = "field"; title.maxLength = 60; title.value = a.title; title.id = "a-title"; sheet.appendChild(title);
+  sheetLabel(sheet, t("gDate"));
+  const date = document.createElement("input"); date.type = "date"; date.className = "field"; date.value = a.date; date.id = "a-date"; sheet.appendChild(date);
+  const seg = (labelKey, opts, key, id) => {
+    sheetLabel(sheet, t(labelKey));
+    const row = document.createElement("div"); row.className = "segmented"; if(id) row.id = id;
+    opts.forEach(([v, label]) => { const b = document.createElement("button"); b.textContent = label; b.dataset.v = String(v); b.classList.toggle("on", a[key] === v);
+      b.onclick = () => {
+        if(key === "kind" && title.value === t(a.kind === "written" ? "gDefWritten" : "gDefOther")) title.value = t(v === "written" ? "gDefWritten" : "gDefOther");
+        a[key] = v; Array.from(row.children).forEach(x => x.classList.toggle("on", x === b));
+      };
+      row.appendChild(b); });
+    sheet.appendChild(row);
+    return row;
+  };
+  seg("gKind", [["written", t("gWritten")], ["other", t("gOther")]], "kind", "a-kind");
+  const hasMarks = Object.keys(a.marks || {}).length > 0;
+  if(!hasMarks) seg("gScale", [["grade", t("gScale_grade")], ["points", t("gScale_points")], ["smiley", t("gScale_smiley")]], "scale", "a-scale");
+  seg("gWeightOne", [[0.5, "½"], [1, "1"], [2, "2"], [3, "3"]], "weight", "a-weight");
+  return () => { a.title = title.value.trim().slice(0, 60) || t(a.kind === "written" ? "gDefWritten" : "gDefOther"); a.date = /^\d{4}-\d{2}-\d{2}$/.test(date.value) ? date.value : a.date; };
+}
+function newAssessment(c, s){
+  if((c.assess || []).length >= MAX_ASSESS){ toast(t("gLimit")); return; }
+  const last = courseAssess(c, s.id).slice(-1)[0];
+  const a = { id: uid(), subjectId: s.id, title: t("gDefWritten"), date: isoDay(new Date()), kind: "written",
+              scale: last ? last.scale : "grade", weight: 1, marks: {} };
+  const sheet = sheetBase(t("gNew") + " – " + s.name);
+  const read = assessForm(sheet, a);
+  sheetButtons(sheet, t("gCreate"), () => {
+    read(); c.assess = (c.assess || []).concat([a]); save(); closeModal(); openAssess(a.id);
+  });
+}
+function curAssess(){ const c = curClass(); return c ? (c.assess || []).find(a => a.id === curAssessId) || null : null; }
+function openAssess(id){
+  curAssessId = id;
+  const c = curClass(), a = curAssess(); if(!a) return;
+  assessSel = (c.students.find(st => !a.marks[st.id]) || c.students[0] || {}).id || null;
+  show("assess"); renderAssess();
+}
+function renderAssess(){
+  const c = curClass(), a = curAssess(); if(!c || !a) return;
+  const s = subjectById(a.subjectId);
+  $("#assess-title").textContent = a.title;
+  const head = $("#assess-head"); head.textContent = "";
+  const m = document.createElement("div"); m.className = "hint"; m.style.marginTop = "0";
+  m.textContent = (s ? s.name + " · " : "") + fmtDate(a.date) + " · " + t(a.kind === "written" ? "gWritten" : "gOther") + " · " + t("gScale_" + a.scale);
+  head.appendChild(m);
+  const list = $("#assess-list"); list.textContent = "";
+  c.students.forEach((st, i) => {
+    const row = document.createElement("button"); row.className = "arow" + (st.id === assessSel ? " on" : "");
+    row.dataset.sid = st.id;
+    const n = document.createElement("span"); n.className = "nr"; n.textContent = (i + 1) + ".";
+    const nm = document.createElement("span"); nm.className = "an"; nm.textContent = st.name;
+    const v = document.createElement("span"); v.className = "av" + (a.marks[st.id] === "x" ? " miss" : "") + (a.marks[st.id] ? "" : " empty");
+    v.textContent = a.marks[st.id] ? tokLabel(a.marks[st.id]) : "–";
+    row.appendChild(n); row.appendChild(nm); row.appendChild(v);
+    row.onclick = () => { assessSel = st.id; renderAssess(); };
+    list.appendChild(row);
+  });
+  /* Notenspiegel und Durchschnitt */
+  const stats = $("#assess-stats"); stats.textContent = "";
+  const done = Object.keys(a.marks).filter(id => studentById(c, id)).length;
+  const avg = assessAverage(a);
+  const p = document.createElement("div"); p.className = "astat";
+  p.textContent = t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) + (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
+  stats.appendChild(p);
+  if(done) stats.appendChild(distChart(a));
+  /* Tastenfeld */
+  const pad = $("#assess-pad"); pad.textContent = "";
+  pad.className = "keypad k-" + a.scale;
+  SCALE_TOKS[a.scale].forEach(tok => {
+    const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
+    b.classList.toggle("on", !!assessSel && a.marks[assessSel] === tok);
+    b.onclick = () => setMark(tok);
+    pad.appendChild(b);
+  });
+  const miss = document.createElement("button"); miss.className = "kx"; miss.textContent = t("gMissing"); miss.dataset.tok = "x"; miss.onclick = () => setMark("x"); pad.appendChild(miss);
+  const clr = document.createElement("button"); clr.className = "kx"; clr.textContent = "⌫"; clr.setAttribute("aria-label", t("gClear")); clr.onclick = () => setMark(null); pad.appendChild(clr);
+  const sel = list.querySelector(".arow.on"); if(sel && sel.scrollIntoView) sel.scrollIntoView({ block: "nearest" });
+}
+function setMark(tok){
+  const c = curClass(), a = curAssess(); if(!c || !a || !assessSel) return;
+  if(tok) a.marks[assessSel] = tok; else delete a.marks[assessSel];
+  save(); haptic(8);
+  if(tok){                                            // weiter zum nächsten Namen
+    const i = c.students.findIndex(st => st.id === assessSel);
+    const next = c.students.slice(i + 1).find(st => !a.marks[st.id]) || c.students[i + 1];
+    if(next) assessSel = next.id;
+  }
+  renderAssess();
+}
+function editAssessMeta(){
+  const c = curClass(), a = curAssess(); if(!c || !a) return;
+  const copy = clone(a);
+  const sheet = sheetBase(t("gEdit"));
+  const read = assessForm(sheet, copy);
+  const del = document.createElement("button"); del.className = "ghost"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
+  del.textContent = t("gDelete");
+  del.onclick = () => { closeModal(); askConfirm(t("gDeleteQ"), t("gDeleteT"), t("delete"), () => { c.assess = c.assess.filter(x => x.id !== a.id); save(); show("grades"); renderGrades(); }); };
+  sheet.appendChild(del);
+  sheetButtons(sheet, t("save"), () => { read(); Object.assign(a, { title: copy.title, date: copy.date, kind: copy.kind, scale: copy.scale, weight: copy.weight }); save(); closeModal(); renderAssess(); });
+}
+/* ---- Grafiken (SVG, eine Farbe, leise Achsen) ---- */
+const SVGNS = "http://www.w3.org/2000/svg";
+function svgEl(tag, attrs, parent){ const e = document.createElementNS(SVGNS, tag); Object.keys(attrs || {}).forEach(k => e.setAttribute(k, attrs[k])); if(parent) parent.appendChild(e); return e; }
+/* Notenspiegel: Balken je Note (bei +/− zusammengefasst), Anzahl über dem Balken */
+function distChart(a){
+  const cats = a.scale === "grade" ? ["1","2","3","4","5","6"] : a.scale === "points" ? POINT_TOKS.slice().reverse() : SMILEY_TOKS;
+  const cnt = cats.map(() => 0);
+  Object.values(a.marks).forEach(tok => {
+    if(tok === "x") return;
+    const k = a.scale === "grade" ? cats.indexOf(String(tok).charAt(0)) : cats.indexOf(tok);
+    if(k >= 0) cnt[k]++;
+  });
+  const W = 320, H = 130, pb = 22, pt = 16, n = cats.length, gap = 2, bw = (W - (n - 1) * gap) / n;
+  const max = Math.max(1, Math.max.apply(null, cnt));
+  const svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, class: "gchart", role: "img",
+    "aria-label": t("gDist") + ": " + cats.map((c, i) => tokLabel(c) + " " + cnt[i]).join(", ") });
+  svgEl("line", { x1: 0, x2: W, y1: H - pb, y2: H - pb, class: "gaxis" }, svg);
+  cats.forEach((cat, i) => {
+    const x = i * (bw + gap), h = (H - pb - pt) * cnt[i] / max, y = H - pb - h;
+    if(cnt[i]){
+      const r = Math.min(4, bw / 2, h);
+      svgEl("path", { class: "gbar", d: "M" + x + "," + (H - pb) + "V" + (y + r) + "Q" + x + "," + y + " " + (x + r) + "," + y +
+        "H" + (x + bw - r) + "Q" + (x + bw) + "," + y + " " + (x + bw) + "," + (y + r) + "V" + (H - pb) + "Z" }, svg);
+      const tv = svgEl("text", { x: x + bw / 2, y: y - 4, class: "gval", "text-anchor": "middle" }, svg); tv.textContent = String(cnt[i]);
+    }
+    const tl = svgEl("text", { x: x + bw / 2, y: H - 6, class: "glab", "text-anchor": "middle" }, svg); tl.textContent = tokLabel(cat);
+  });
+  const wrap = document.createElement("div"); wrap.className = "gfig";
+  const cap = document.createElement("div"); cap.className = "gcap"; cap.textContent = t("gDist");
+  wrap.appendChild(cap); wrap.appendChild(svg);
+  return wrap;
+}
+/* Verlauf: Werte über die Zeit, bessere Werte oben. Punkte am Ende beschriftet. */
+function lineChart(points, scale, caption){
+  const W = 320, H = 150, pl = 30, pr = 30, pt = 14, pb = 24;
+  const lo = scale === "points" ? 0 : 1, hi = scale === "points" ? 15 : 6;
+  const yOf = v => scale === "points" ? pt + (H - pt - pb) * (hi - v) / (hi - lo) : pt + (H - pt - pb) * (v - lo) / (hi - lo);
+  const xOf = i => points.length < 2 ? (pl + W - pr) / 2 : pl + (W - pl - pr) * i / (points.length - 1);
+  const svg = svgEl("svg", { viewBox: "0 0 " + W + " " + H, class: "gchart", role: "img",
+    "aria-label": caption + ": " + points.map(p => p.label + " " + fmtNum(p.v, scale === "points" ? 1 : 1)).join(", ") });
+  const ticks = scale === "points" ? [15, 10, 5, 0] : [1, 2, 3, 4, 5, 6];
+  ticks.forEach(v => {
+    svgEl("line", { x1: pl, x2: W - pr, y1: yOf(v), y2: yOf(v), class: "ggrid" }, svg);
+    const tx = svgEl("text", { x: pl - 6, y: yOf(v) + 3.5, class: "glab", "text-anchor": "end" }, svg); tx.textContent = String(v);
+  });
+  if(points.length > 1) svgEl("polyline", { points: points.map((p, i) => xOf(i) + "," + yOf(p.v)).join(" "), class: "gline" }, svg);
+  points.forEach((p, i) => {
+    const c = svgEl("circle", { cx: xOf(i), cy: yOf(p.v), r: 4.5, class: "gdotc" }, svg);
+    const tt = svgEl("title", {}, c); tt.textContent = p.label + ": " + fmtNum(p.v, scale === "points" ? 1 : 2);
+    if(i === 0 || i === points.length - 1 || points.length <= 6){
+      const tl = svgEl("text", { x: xOf(i), y: H - 7, class: "glab", "text-anchor": "middle" }, svg); tl.textContent = p.label;
+    }
+  });
+  const last = points[points.length - 1];
+  if(last){ const lv = svgEl("text", { x: Math.min(W - 2, xOf(points.length - 1) + 7), y: yOf(last.v) - 7, class: "gval", "text-anchor": "start" }, svg); lv.textContent = fmtNum(last.v, scale === "points" ? 1 : 1); }
+  const wrap = document.createElement("div"); wrap.className = "gfig";
+  const cap = document.createElement("div"); cap.className = "gcap"; cap.textContent = caption;
+  wrap.appendChild(cap); wrap.appendChild(svg);
+  return wrap;
+}
+function renderOverview(body, c, s, list){
+  const sc = courseScale(list), dg = sc === "points" ? 1 : 2;
+  const numeric = list.filter(a => a.scale !== "smiley");
+  const pts = numeric.map(a => ({ label: fmtDate(a.date), v: (() => { const v = assessAverage(a); return v === null ? null : sc === "grade" && a.scale === "points" ? pointsToGrade(v) : v; })() })).filter(p => p.v !== null);
+  if(pts.length) body.appendChild(lineChart(pts, sc, t("gClassTrend")));
+  const avgAll = c.students.map(st => studentAverages(c, s.id, st.id).total).filter(v => v !== null);
+  const sum = document.createElement("div"); sum.className = "lvlstats";
+  [[t("gClassAvg"), avgAll.length ? fmtNum(avgAll.reduce((a, b) => a + b, 0) / avgAll.length, dg) : "–"],
+   [t("gCount"), String(list.length)]].forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + v; sum.appendChild(sp); });
+  body.appendChild(sum);
+  const wrap = document.createElement("div"); wrap.className = "gtable-wrap";
+  const tb = document.createElement("table"); tb.className = "gtable"; tb.id = "g-table";
+  const hr = document.createElement("tr");
+  const th = txt => { const e = document.createElement("th"); e.textContent = txt; hr.appendChild(e); return e; };
+  th(t("subColName"));
+  list.forEach(a => { const e = th(fmtDate(a.date)); e.title = a.title; const k = document.createElement("small"); k.textContent = a.kind === "written" ? t("gW") : t("gO"); e.appendChild(k); });
+  th("Ø " + t("gW")); th("Ø " + t("gO")); th(t("gTotal")).className = "tot";
+  tb.appendChild(hr);
+  c.students.forEach(st => {
+    const tr = document.createElement("tr");
+    const n = document.createElement("td"); const nb = document.createElement("button"); nb.className = "gname"; nb.textContent = st.name;
+    nb.onclick = () => studentDetail(c, s, st); n.appendChild(nb); tr.appendChild(n);
+    list.forEach(a => { const d = document.createElement("td"); d.textContent = a.marks[st.id] ? tokLabel(a.marks[st.id]) : ""; if(a.marks[st.id] === "x") d.className = "miss"; tr.appendChild(d); });
+    const av = studentAverages(c, s.id, st.id);
+    [av.written, av.other, av.total].forEach((v, k) => { const d = document.createElement("td"); d.textContent = v === null ? "" : fmtNum(v, dg); d.className = k === 2 ? "tot" : "avg"; tr.appendChild(d); });
+    tb.appendChild(tr);
+  });
+  wrap.appendChild(tb); body.appendChild(wrap);
+  const ex = document.createElement("button"); ex.className = "cbtn outline"; ex.id = "g-pdf"; ex.style.width = "100%"; ex.style.marginTop = "12px";
+  ex.appendChild(icon("pdf")); const es = document.createElement("span"); es.textContent = t("gPdf"); ex.appendChild(es);
+  ex.onclick = () => exportGradesPdf(c, s);
+  body.appendChild(ex);
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gOverviewHint"); body.appendChild(h);
+}
+function studentDetail(c, s, st){
+  const list = courseAssess(c, s.id), sc = courseScale(list), av = studentAverages(c, s.id, st.id), dg = sc === "points" ? 1 : 2;
+  const sheet = sheetBase(st.name + " – " + s.name);
+  const sum = document.createElement("div"); sum.className = "lvlstats";
+  [[t("gW"), av.written], [t("gO"), av.other], [t("gTotal"), av.total]].forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + fmtNum(v, dg); sum.appendChild(sp); });
+  sheet.appendChild(sum);
+  const pts = list.map(a => ({ label: fmtDate(a.date), v: valIn(a, a.marks[st.id], sc) })).filter(p => p.v !== null);
+  if(pts.length) sheet.appendChild(lineChart(pts, sc, t("gTrend")));
+  list.slice().reverse().forEach(a => {
+    if(!a.marks[st.id]) return;
+    const r = document.createElement("div"); r.className = "srow";
+    const l = document.createElement("span"); l.textContent = fmtDate(a.date) + " · " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + ")";
+    const v = document.createElement("b"); v.textContent = tokLabel(a.marks[st.id]);
+    r.appendChild(l); r.appendChild(v); sheet.appendChild(r);
+  });
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "12px";
+  close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
+}
+function gradesPdfPages(c, s){
+  const list = courseAssess(c, s.id), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
+  const cols = list.slice(-14);                                  // höchstens 14 Spalten passen auf A4 quer
+  const M = PDF_M, title = c.name + " · " + s.name + " – " + t("gPdfTitle");
+  const nameW = 170, colW = Math.min(44, (PDF_W - 2 * M - nameW - 3 * 46) / Math.max(1, cols.length));
+  const pages = []; let cur = [], y = 0;
+  const head = () => {
+    cur = [pdfText(M, PDF_H - M - 12, 15, title), pdfText(M, PDF_H - M - 28, 9, t("printDate") + " " + new Date().toLocaleDateString(), "0.353 0.420 0.459")];
+    y = PDF_H - M - 56;
+    cur.push(pdfText(M, y, 8.5, t("subColName"), "0.353 0.420 0.459"));
+    cols.forEach((a, i) => { const x = M + nameW + i * colW; cur.push(pdfText(x, y + 9, 7.5, fmtDate(a.date), "0.353 0.420 0.459")); cur.push(pdfText(x, y, 7.5, (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " x" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : ""), "0.353 0.420 0.459")); });
+    const x0 = M + nameW + cols.length * colW;
+    ["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal")].forEach((h, k) => cur.push(pdfText(x0 + k * 46, y, 8.5, h, "0.353 0.420 0.459")));
+    y -= 16;
+  };
+  head();
+  c.students.forEach((st, idx) => {
+    if(y < M + 10){ pages.push(cur.join("\n")); head(); }
+    if(idx % 2) cur.push("0.95 0.96 0.97 rg " + M + " " + (y - 4).toFixed(1) + " " + (PDF_W - 2 * M) + " 15 re f");
+    cur.push(pdfText(M, y, 9.5, st.name));
+    cols.forEach((a, i) => { const tok = a.marks[st.id]; if(tok) cur.push(pdfText(M + nameW + i * colW, y, 9.5, tokLabel(tok, true))); });
+    const av = studentAverages(c, s.id, st.id), x0 = M + nameW + cols.length * colW;
+    [av.written, av.other, av.total].forEach((v, k) => { if(v !== null) cur.push(pdfText(x0 + k * 46, y, 9.5, fmtNum(v, dg))); });
+    y -= 15;
+  });
+  if(list.length > cols.length){ y -= 8; cur.push(pdfText(M, Math.max(M, y), 8, t("gPdfCut").replace("{n}", String(cols.length)), "0.353 0.420 0.459")); }
+  pages.push(cur.join("\n"));
+  return pages;
+}
+function exportGradesPdf(c, s){
+  try{
+    if(download(buildPDF(gradesPdfPages(c, s)), safeName(c.name + " " + s.name + " " + t("gPdfTitle")) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
+/* Schnellbewertung aus dem Unterrichtsmodus: legt je Tag und Fach eine Bewertung „Mitarbeit“ an */
+function quickMark(st){
+  const c = curClass(); if(!c) return;
+  if(!DB.subjects.length){ toast(t("subjNeed")); return; }
+  const nl = nowLessons();
+  const fromTT = nl.now && nl.now.L.classId === c.id ? nl.now.L.subjectId : null;
+  const own = courseSubjects(c);
+  let sid = fromTT || c.lastSubject || (own[0] || DB.subjects[0]).id;
+  if(!subjectById(sid)) sid = DB.subjects[0].id;
+  const sheet = sheetBase(st.name + " – " + t("gQuick"));
+  const subjSel = selectField(sheet, DB.subjects.map(s => [s.id, s.name]), sid);
+  const pad = document.createElement("div"); sheet.appendChild(pad);
+  const paint = () => {
+    const today = isoDay(new Date());
+    const a = (c.assess || []).find(x => x.auto && x.subjectId === subjSel.value && x.date === today);
+    const last = courseAssess(c, subjSel.value).filter(x => x.kind === "other").slice(-1)[0];
+    const scale = a ? a.scale : last ? last.scale : "grade";
+    pad.className = "keypad k-" + scale; pad.textContent = "";
+    SCALE_TOKS[scale].forEach(tok => {
+      const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
+      b.classList.toggle("on", !!a && a.marks[st.id] === tok);
+      b.onclick = () => {
+        let A = a;
+        if(!A){ if((c.assess || []).length >= MAX_ASSESS){ toast(t("gLimit")); return; }
+          A = { id: uid(), subjectId: subjSel.value, title: t("gDefOther") + " " + fmtDate(today), date: today, kind: "other", scale, weight: 1, marks: {}, auto: true };
+          c.assess = (c.assess || []).concat([A]); }
+        A.marks[st.id] = tok; c.lastSubject = subjSel.value; save(); closeModal();
+        toast(t("gQuickSaved").replace("{a}", st.name).replace("{v}", tokLabel(tok)));
+      };
+      pad.appendChild(b);
+    });
+  };
+  subjSel.onchange = paint; paint();
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gQuickHint"); sheet.appendChild(h);
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
+}
+$("#tile-timetable").onclick = goTimetable;
+$("#tile-grades").onclick = () => goGrades();
+$("#btn-tt-times").onclick = openTimes;
+$("#btn-tt-subjects").onclick = openSubjects;
+$("#grades-class").onchange = e => { if(e.target.value){ setCurClass(e.target.value); save(); renderGrades(); } };
+$("#btn-assess-back").onclick = () => { show("grades"); renderGrades(); };
+$("#btn-assess-edit").onclick = editAssessMeta;
 
 /* Einmal beim ersten Start im Schulmodus: Hinweis auf die Genehmigung der Schulleitung */
 function showSchoolPrivacy(){
