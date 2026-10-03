@@ -1150,6 +1150,172 @@ test('Feier: Absagen nicht auf Karten', app => {
   erwarte(app.E('guestSeats(curClass(), curPlan()).length') === n0 - 1, 'Abgesagter Gast landet auf Karten und Küchenliste');
 });
 
+
+test('Name im Sitzplan antippen und bewerten', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "de", name: "Deutsch", short: "De", color: "#E0533D" }); DB.gradesAck = true');
+  const d = app.E('curPlan().desks.find(x => x.studentId)');
+  app.E(`selected = new Set(["${d.id}"]); renderStage(false)`);
+  erwarte(app.$('#sb-grade').style.display !== 'none', '„Bewerten“ fehlt in der Auswahlleiste');
+  app.klick('#sb-grade');
+  erwarte(app.$$('#sheet .keypad button').length === 16, 'Tastenfeld mit Noten fehlt');
+  app.klick(app.$$('#sheet .keypad button').find(b => b.dataset.tok === '2'));
+  erwarte(!app.$('#modal').classList.contains('on') && app.E(`curClass().assess[0].marks["${d.studentId}"]`) === '2', 'Bewertung aus dem Sitzplan nicht gespeichert');
+  // Einstellung Smileys: gilt für eine neue Mitarbeit (anderes Fach, heute noch keine)
+  app.E('DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.settings.quickScale = "smiley"; curClass().lastSubject = "ma"');
+  app.klick('#sb-grade');
+  erwarte(app.$$('#sheet .keypad button').length === 4 && app.$$('#sheet .keypad button')[0].textContent === '😀', 'Einstellung Smileys wird nicht verwendet');
+  app.klick(app.$$('#sheet .keypad button')[1]);
+  erwarte(app.E('curClass().assess.find(a => a.subjectId === "ma").scale') === 'smiley', 'Mitarbeit nicht mit Smileys angelegt');
+  // Einstellungen zeigen die Wahl
+  app.E('renderSettings(); show("settings")');
+  erwarte(!!app.$('#set-quickscale') && app.$('#set-quickscale .on').dataset.v === 'smiley', 'Einstellung fehlt');
+  // Unterrichtsmodus: Tastenfeld direkt beim Antippen, Notiz bleibt erhalten
+  app.E(`openPlan(curPlan().id); setLesson(true); openLessonSheet(curPlan().desks.find(x => x.id === "${d.id}"))`);
+  erwarte(!!app.$('#lesson-quickmark .keypad'), 'Kein Tastenfeld beim Antippen im Unterrichtsmodus');
+  app.$('#sheet textarea').value = 'Hausaufgabe vergessen';
+  app.klick(app.$$('#lesson-quickmark .keypad button')[0]);
+  erwarte(app.E(`curClass().lesson.notes["${d.studentId}"]`) === 'Hausaufgabe vergessen' && !app.$('#modal').classList.contains('on'), 'Notiz beim Bewerten verloren');
+  // Ohne Bewertungen: kein Knopf
+  app.E('setLesson(false); DB.settings.grades = false; selected = new Set(["' + d.id + '"]); renderStage(false)');
+  erwarte(app.$('#sb-grade').style.display === 'none', '„Bewerten“ trotz ausgeschalteter Bewertungen');
+});
+
+
+test('Zweites Audit: Laden, Skalen, Sicherung', app => {
+  klasseMitNamen(app, '7b', ['Anna', 'Ben', 'Cem']);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "m", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.gradesAck = true; flushSave()');
+  // Punkte-Kurs bleibt Punkte-Kurs
+  app.E(`curClass().assess = [{ id: "k1", subjectId: "m", title: "Klausur", date: "2026-09-01", kind: "written", scale: "points", weight: 1,
+    marks: { [curClass().students[0].id]: "12", [curClass().students[1].id]: "9" } }]`);
+  erwarte(app.E('quickScaleFor(curClass(), "m")') === 'points', 'Schnellbewertung stellt Punkte-Kurs auf Noten um');
+  app.E('DB.settings.quickScale = "smiley"');
+  erwarte(app.E('quickScaleFor(curClass(), "m")') === 'smiley', 'Einstellung Smileys wird ignoriert');
+  app.E('DB.settings.quickScale = "grade"');
+  // Klassentrend mit Punkte-Durchschnitt in gemischtem Kurs
+  app.E(`curClass().assess.push({ id: "k2", subjectId: "m", title: "KA", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: { [curClass().students[0].id]: "2" } })`);
+  app.E('gradeSubject = "m"; gradeTab = "overview"; show("grades"); renderGrades()');
+  erwarte(app.$$('#grades-body .gdotc').length === 2, 'Punkte-Test fehlt im Klassentrend');
+  // Sicherung enthält keine Noten gelöschter Schüler
+  const sid = app.E('curClass().students[1].id');
+  app.E(`curClass().students = curClass().students.filter(s => s.id !== "${sid}")`);
+  erwarte(JSON.stringify(app.E('backupData()')).indexOf(sid) < 0, 'Sicherung enthält Daten gelöschter Schüler');
+  // Abbrechen beim neuen Fach behält das alte Fach
+  app.E('DB.subjects.push({ id: "d", name: "Deutsch", short: "De", color: "#E0533D" }); DB.lessons.push({ id: "L1", day: 0, period: 0, span: 1, week: "", subjectId: "d", classId: "", roomId: "", planId: "" }); editLesson(DB.lessons[0])');
+  const sel = app.$$('#sheet select')[0]; sel.value = '__new'; sel.dispatchEvent(new app.w.Event('change'));
+  app.klick(app.$$('#sheet .row button')[0]);
+  return new Promise(r => setTimeout(r, 200)).then(() => {
+    erwarte(app.$$('#sheet select')[0] && app.$$('#sheet select')[0].value === 'd', 'Abbrechen beim neuen Fach wechselt das Fach der Stunde');
+    app.E('closeModal()');
+  });
+});
+
+test('Bewerten macht anwesend, Gruppentische', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 2);                                 // Tischgruppen
+  app.E('layoutDesks("groups4", true); autoSeat(true); DB.subjects.push({ id: "m", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.gradesAck = true');
+  const d = app.E('curPlan().desks.find(x => x.studentId && x.groupId)');
+  erwarte(!!d, 'Keine Gruppentische');
+  app.E(`selected.clear(); selectWithGroup(curPlan().desks.find(x => x.id === "${d.id}")); renderStage(false)`);
+  erwarte(app.E('selected.size') > 1 && app.$('#sb-grade').style.display !== 'none' && app.E('selectedSeat().id') === d.id, '„Bewerten“ fehlt bei Gruppentischen');
+  app.E(`setLesson(true); curClass().lesson.absent.push("${d.studentId}"); openLessonSheet(curPlan().desks.find(x => x.id === "${d.id}"))`);
+  app.klick(app.$$('#lesson-quickmark .keypad button')[1]);
+  erwarte(app.E(`curClass().lesson.absent.indexOf("${d.studentId}")`) < 0, 'Bewerteter Schüler bleibt als abwesend markiert');
+});
+
+
+test('Kaputter Speicher wird aufgehoben', app => {
+  app.E('localStorage.setItem(KEY, JSON.stringify({ v: 2, classes: [{ id: "a", name: "Wichtig", students: [], plans: [] }] }).slice(0, 40)); load()');
+  erwarte(app.E('localStorage.getItem(KEY + ".defekt")') !== null, 'Abgeschnittener Speicher wird nicht gesichert');
+  app.E('localStorage.setItem(KEY, JSON.stringify({ classes: [null], rooms: [null] }))');
+  const r = app.E('(() => { try{ load(); return "ok"; }catch(e){ return e.message; } })()');
+  erwarte(r === 'ok', 'Laden alter Daten mit leeren Einträgen stürzt ab: ' + r);
+});
+
+
+test('Selbsteinschätzung', async app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.gradesAck = true; setLesson(true)');
+  erwarte(app.$('#lb-self').style.display !== 'none', 'Knopf „Selbsteinschätzung“ fehlt in der Unterrichtsleiste');
+  app.klick('#lb-self');
+  app.$('#self-question').value = 'Wie gut hast du heute zugehört?';
+  app.sheetOk();
+  const body = app.w.document.body;
+  erwarte(body.classList.contains('selfmode') && app.$('#selfhead .sh-title').textContent === 'Selbsteinschätzung' && app.$('#self-q').textContent === 'Wie gut hast du heute zugehört?', 'Überschrift oder Frage fehlt');
+  erwarte(app.w.getComputedStyle(app.$('#screen-editor > .topbar')).display === 'none' && app.w.getComputedStyle(app.$('.panels')).display === 'none', 'Werkzeuge sind für Schüler erreichbar');
+  erwarte(app.E('DB.settings.selfQuestion') === 'Wie gut hast du heute zugehört?', 'Eigene Frage wird nicht gemerkt');
+  // Lehrerbewertung vom selben Tag für Vergleich
+  const d = app.E('curPlan().desks.find(x => x.studentId)');
+  app.E(`curClass().assess.push({ id: "t1", subjectId: "ma", title: "Mitarbeit", date: isoDay(new Date()), kind: "other", scale: "grade", weight: 1, marks: { "${d.studentId}": "2" }, auto: true })`);
+  app.E(`openSelfSheet("${d.studentId}")`);
+  erwarte(app.$('#sheet').textContent.indexOf('Bist du') >= 0 && app.$$('#self-pad button').length === 4, 'Auswahl mit vier Smileys fehlt');
+  erwarte(app.$('#sheet').textContent.indexOf('Lehrkraft') < 0, 'Schüler sehen in der Auswahl die Lehrerbewertung');
+  app.klick(app.$$('#self-pad button')[1]);
+  const sa = app.E('selfAssessCur()');
+  erwarte(sa.kind === 'self' && sa.marks[d.studentId] === 's2', 'Selbsteinschätzung nicht gespeichert');
+  erwarte(app.$$('#stage .selfdone').length === 1 && app.$('#stage').textContent.indexOf('🙂') < 0, 'Am Platz ist die Antwort sichtbar oder das Häkchen fehlt');
+  erwarte(app.$('#self-n').textContent.indexOf('1 von') === 0, 'Zähler fehlt');
+  // Lehrernoten sind im Modus unsichtbar
+  erwarte(app.$$('#stage .gmark').length === 0, 'Lehrerbewertungen im Schülermodus sichtbar');
+  // Zurück-Taste und kurzer Tipp beenden nicht
+  app.E('navBack()'); app.klick('#self-exit');
+  erwarte(body.classList.contains('selfmode'), 'Selbsteinschätzung lässt sich ohne Halten beenden');
+  // 2 Sekunden halten
+  app.$('#self-exit').dispatchEvent(new app.w.Event('pointerdown'));
+  await pause(2150);
+  erwarte(!body.classList.contains('selfmode') && app.E('lessonMode') === true, 'Halten beendet die Selbsteinschätzung nicht');
+  // Nicht in Durchschnitten, eigene Übersicht mit Vergleich
+  erwarte(app.E(`studentAverages(curClass(), "ma", "${d.studentId}").total`) === 2, 'Selbsteinschätzung verändert den Durchschnitt');
+  erwarte(app.E('courseAssess(curClass(), "ma").every(a => a.kind !== "self")'), 'Selbsteinschätzung erscheint bei den Lehrerbewertungen');
+  app.E('goGrades("ma")');
+  erwarte(!!app.$('#self-box') && app.$$('#self-box .acard.self').length === 1, 'Eigener Bereich für Selbsteinschätzungen fehlt');
+  app.klick('#g-tab-overview');
+  erwarte(app.$('#self-table').textContent.indexOf('🙂 · 2') >= 0, 'Vergleich Selbst/Lehrkraft fehlt in der Übersicht');
+  erwarte(app.E('gradesPdfPages(curClass(), subjectById("ma")).join("")').indexOf('zugeh') < 0, 'Selbsteinschätzung landet im Noten-PDF');
+  const roh = app.E('JSON.stringify(sanitizeDB(JSON.parse(JSON.stringify(DB))))');
+  erwarte(roh.indexOf('"kind":"self"') >= 0 && roh.indexOf('zugehört') >= 0, 'Selbsteinschätzung übersteht die Sicherung nicht');
+});
+
+
+test('Selbsteinschätzung: Schutz der Lehrerdaten', async app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.gradesAck = true; setLesson(true)');
+  const ds = app.E('curPlan().desks.filter(x => x.studentId).slice(0, 3)');
+  app.E(`curClass().lesson.notes["${ds[2].studentId}"] = "vertraulich"; curClass().lesson.absent.push("${ds[1].studentId}")`);
+  app.klick('#lb-self'); app.sheetOk();
+  // Antwort eines anderen nicht sichtbar
+  app.E(`openSelfSheet("${ds[0].studentId}")`); app.klick(app.$$('#self-pad button')[3]);
+  app.E(`openSelfSheet("${ds[0].studentId}")`);
+  erwarte(app.$$('#self-pad button.on').length === 0 && !!app.$('#self-already'), 'Vorherige Antwort ist für andere sichtbar');
+  app.E('closeModal()');
+  erwarte(!app.$('#sheet').classList.contains('selfsheet'), 'Violette Fensterformatierung bleibt hängen');
+  // Notizpunkte und Abwesenheit unsichtbar, Abwesende nicht antippbar
+  erwarte(app.$$('#stage .item .dot').length === 0 && app.$$('#stage .item.absent').length === 0, 'Notizen oder Abwesenheit im Schülermodus sichtbar');
+  erwarte(app.$('#self-n').textContent.indexOf('von ' + (app.E('curPlan().desks.filter(d => d.studentId).length') - 1)) > 0, 'Abwesende zählen im Zähler mit');
+  // Strg+Z wirkt nicht
+  const vorher = app.E('JSON.stringify(curPlan().desks.map(d => d.studentId || ""))');
+  app.E('undoStack.push(snapshot())');
+  const nUndo = app.E('undoStack.length');
+  app.w.document.dispatchEvent(new app.w.KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true }));
+  erwarte(app.E('undoStack.length') === nUndo, 'Rückgängig per Tastatur im Schülermodus möglich');
+  app.E(`selfTap("${ds[1].studentId}")`);
+  erwarte(!app.$('#modal').classList.contains('on'), 'Für abwesende Schüler kann jemand anderes antworten');
+  // Kurzer Tipp auf ✕: kein Hinweis, Modus bleibt
+  app.$('#toast').textContent = '';
+  app.klick('#self-exit');
+  erwarte(app.w.document.body.classList.contains('selfmode') && app.$('#toast').textContent.indexOf('halten') < 0, 'Kurzer Tipp verrät, wie man den Modus beendet');
+  // Sperre wird gespeichert und nach dem Beenden gelöscht
+  erwarte(!!app.E('JSON.parse(localStorage.getItem(KEY)).selfLock') && !!app.E('sanitizeDB(JSON.parse(localStorage.getItem(KEY))).selfLock'), 'Modus übersteht keinen Neustart');
+  // Tastatur: Enter zwei Sekunden halten
+  app.$('#self-exit').dispatchEvent(new app.w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  await pause(2150);
+  erwarte(!app.w.document.body.classList.contains('selfmode') && !app.E('DB.selfLock'), 'Beenden per Tastatur klappt nicht oder Sperre bleibt');
+});
+
 /* ------------------------------------------------------------------ */
 alleTests().then(() => {
   console.log(bestanden + ' Prüfungen bestanden, ' + fehler + ' Fehler.');
