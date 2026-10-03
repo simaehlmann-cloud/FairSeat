@@ -367,6 +367,9 @@ select.field{-webkit-appearance:none;appearance:none;
 .arow .av.miss{font-size:12px;color:var(--warn)}
 .astat{font-size:13.5px;font-weight:650;margin:12px 0 4px}
 .qpad .keypad{margin-top:8px}
+.qdate{display:flex;align-items:center;gap:10px;margin:2px 0 8px;font-size:13px;color:var(--ink-soft)}
+.qdate .field{margin:0;flex:1;max-width:190px}
+.qdate .qtoday{font-weight:700;color:var(--accent)}
 .qpad .field{margin-bottom:0}
 .keypad-wrap{flex:0 0 auto;background:var(--surface);border-top:2px solid var(--border);padding:8px 10px calc(8px + var(--safe-b))}
 .keypad{display:grid;gap:6px;max-width:760px;margin:0 auto}
@@ -687,7 +690,7 @@ body.presenting .lockbtn{display:flex}
   overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .lessonbar::-webkit-scrollbar{display:none}
 #sb-grade.sb-main{background:var(--accent);color:#fff;border-radius:8px}
-.lessonbar.on{display:flex}
+.lessonbar.on{display:flex;flex-wrap:wrap;overflow:visible}
 .lessonbar button{padding:8px 10px;border-radius:8px;font-size:12.5px;font-weight:600;
   white-space:nowrap;display:flex;align-items:center;gap:5px;color:var(--surface)}
 .lessonbar button:active{background:rgba(127,127,127,.3)}
@@ -2183,6 +2186,16 @@ Object.assign(I18N.de, {
 Object.assign(I18N.en, {
   selfAlready:"You have already answered – a new choice replaces the old one.", selfExitLabel:"End (teacher)",
   selfPinHint:"Tip: with screen pinning (Android) or Guided Access (iPhone/iPad) nobody can leave the app."
+});
+Object.assign(I18N.de, { selfMenuSub:"Schüler schätzen ihre Mitarbeit am Stundenende selbst ein" });
+Object.assign(I18N.en, { selfMenuSub:"Pupils rate their own participation at the end of the lesson" });
+Object.assign(I18N.de, {
+  gToday:"heute", gQuickHintDate:"Wird in der Bewertung „Mitarbeit“ dieses Tages gespeichert (mündlich & sonstige). Ein anderes Datum gilt für alle weiteren Schnellbewertungen, bis du es zurückstellst.",
+  gNewDay:"Mitarbeit am {d}", gContinueDay:"Mitarbeit am {d} fortsetzen"
+});
+Object.assign(I18N.en, {
+  gToday:"today", gQuickHintDate:"Saved in that day's “Participation” assessment (oral & other). A different date applies to all further quick marks until you change it back.",
+  gNewDay:"Participation on {d}", gContinueDay:"Continue participation on {d}"
 });
 I18N.de.info[1] = { h:"In drei Schritten zum Sitzplan",
   ol:["Namen verwalten: Klasse anlegen, Namen eintragen oder aus FairMix übernehmen, Stufen und Regeln festlegen.",
@@ -4182,6 +4195,7 @@ function openPlan(id){
   editMode = "desks"; selected.clear();
   if(gradeMode) endGradeMode(true);
   if(selfMode) endSelfMode(true);
+  quickDate = null;                                   // neues Öffnen eines Plans: Schnellbewertung wieder für heute
   lessonMode = false; pickedId = null;
   applyPanelsMin();
   undoStack = []; redoStack = []; updateUndoButtons();
@@ -4262,8 +4276,8 @@ function updateEditorChrome(){
   clearTimeout(hintTimer);
   hintTimer = setTimeout(() => hintEl.classList.add("faded"), 5000);   // gibt die Sicht wieder frei
   $("#lessonbar").classList.toggle("on", lessonMode);
-  if($("#lb-grade")) $("#lb-grade").style.display = gradesOn() && DB.gradesAck ? "" : "none";
-  if($("#lb-self")) $("#lb-self").style.display = gradesOn() && DB.gradesAck && DB.subjects.length ? "" : "none";
+  if($("#lb-grade")) $("#lb-grade").style.display = gradesOn() ? "" : "none";
+  if($("#lb-self")) $("#lb-self").style.display = gradesOn() ? "" : "none";
   $("#btn-lesson").classList.toggle("on", lessonMode);
   const panelsEl = document.querySelector(".panels");
   if(panelsEl) panelsEl.style.display = lessonMode ? "none" : "";
@@ -4531,6 +4545,7 @@ $("#btn-more").onclick = () => {
   mk("eye", t("morePresent"), t("morePresentSub"), () => setPresenting(true));
   mk(tool === "select" ? "hand" : "marquee", tool === "select" ? t("moreToolPan") : t("moreToolSelect"), t("moreToolSub"), () => $("#btn-tool").onclick());
   mk("mirror", t("moreMirror"), t("moreMirrorSub"), () => $("#btn-mirror").onclick());
+  if(gradesOn() && curPlanId) mk("users", t("selfTitle"), t("selfMenuSub"), () => withGradesReady(() => { if(!lessonMode) setLesson(true); startSelfSetup(); }));
   const close = document.createElement("button");
   close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "14px";
   close.textContent = t("close"); close.onclick = closeModal;
@@ -7299,9 +7314,9 @@ function openLessonSheet(it){
 
   if(gradesOn() && DB.gradesAck && DB.subjects.length){
     const lab2 = document.createElement("div");
-    lab2.className = "eyebrow"; lab2.style.marginTop = "14px"; lab2.textContent = t("gQuick");
+    lab2.className = "eyebrow"; lab2.style.marginTop = "14px"; lab2.textContent = t("gQuick") + " · " + t("gToday");
     sheet.appendChild(lab2);
-    const qp = quickPad(sheet, c, st, () => { absent = false; commitLesson(); });   // wer bewertet wird, ist da; Notiz wird mitgespeichert
+    const qp = quickPad(sheet, c, st, () => { absent = false; commitLesson(); }, isoDay(new Date()));   // im Unterricht: immer heute   // wer bewertet wird, ist da; Notiz wird mitgespeichert
     qp.id = "lesson-quickmark";
   }
   function commitLesson(){
@@ -9222,26 +9237,30 @@ function quickSubject(c){
 /* Skala für „Mitarbeit heute“: bestehende heutige Mitarbeit → deren Skala; Smileys laut Einstellung
    immer möglich (zählen nicht in Durchschnitte); sonst passt sie sich dem Kurs an, damit ein
    Punkte-Kurs nicht plötzlich auf Noten umspringt. */
-function quickScaleFor(c, subjectId){
-  const today = isoDay(new Date());
-  const a = (c.assess || []).find(x => x.auto && x.subjectId === subjectId && x.date === today);
+/* Datum für Mitarbeitsnoten aus dem Sitzplan: standardmäßig heute, im normalen Sitzplan wählbar
+   (z. B. Noten einer vergangenen Stunde nachtragen). Gilt bis zum Wechsel – auch für weitere Schüler. */
+let quickDate = null;
+const quickDay = () => quickDate || isoDay(new Date());
+function quickScaleFor(c, subjectId, date){
+  const day = date || isoDay(new Date());
+  const a = (c.assess || []).find(x => x.auto && x.subjectId === subjectId && x.date === day);
   if(a) return a.scale;
   const pref = own(SCALE_TOKS, DB.settings.quickScale) ? DB.settings.quickScale : "grade";
   if(pref === "smiley") return "smiley";
   const list = courseAssess(c, subjectId).filter(x => x.scale !== "smiley");
   return list.length ? courseScale(list) : pref;
 }
-function quickPad(parent, c, st, onSaved){
+function quickPad(parent, c, st, onSaved, date){
   const wrap = document.createElement("div"); wrap.className = "qpad"; parent.appendChild(wrap);
+  const day = typeof date === "function" ? date : () => date || isoDay(new Date());
   let subjSel = null;
   if(DB.subjects.length > 1){ subjSel = selectField(wrap, DB.subjects.map(s => [s.id, s.name]), quickSubject(c)); subjSel.setAttribute("aria-label", t("ttSubject")); }
   const subjectId = () => subjSel ? subjSel.value : DB.subjects[0].id;
   const pad = document.createElement("div"); wrap.appendChild(pad);
-  const today = isoDay(new Date());
-  const todays = () => (c.assess || []).find(x => x.auto && x.subjectId === subjectId() && x.date === today);
+  const todays = () => (c.assess || []).find(x => x.auto && x.subjectId === subjectId() && x.date === day());
   const paint = () => {
     const a = todays();
-    const scale = quickScaleFor(c, subjectId());
+    const scale = quickScaleFor(c, subjectId(), day());
     pad.className = "keypad k-" + scale; pad.textContent = "";
     SCALE_TOKS[scale].forEach(tok => {
       const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
@@ -9251,7 +9270,7 @@ function quickPad(parent, c, st, onSaved){
         let A = todays();
         if(!A){
           if((c.assess || []).length >= MAX_ASSESS){ toast(t("gLimit")); return; }
-          A = { id: uid(), subjectId: subjectId(), title: t("gDefOther") + " " + fmtDate(today), date: today, kind: "other", scale, weight: 1, marks: {}, auto: true };
+          A = { id: uid(), subjectId: subjectId(), title: t("gDefOther") + " " + fmtDate(day()), date: day(), kind: "other", scale, weight: 1, marks: {}, auto: true };
           c.assess = (c.assess || []).concat([A]);
         }
         A.marks[st.id] = tok; c.lastSubject = subjectId(); save();
@@ -9263,14 +9282,26 @@ function quickPad(parent, c, st, onSaved){
   };
   if(subjSel) subjSel.onchange = paint;
   paint();
+  wrap.repaint = paint;
   return wrap;
 }
 function quickMark(st){
   const c = curClass(); if(!c) return;
   if(!DB.subjects.length){ toast(t("subjNeed")); return; }
   const sheet = sheetBase(st.name + " – " + t("gQuick"));
-  quickPad(sheet, c, st, () => closeModal());
-  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gQuickHint"); sheet.appendChild(h);
+  const dl = document.createElement("label"); dl.className = "qdate";
+  const ds = document.createElement("span"); ds.textContent = t("gDate");
+  const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "quick-date"; di.value = quickDay();
+  di.max = isoDay(new Date());
+  const dh = document.createElement("span"); dh.className = "qtoday";
+  const paintDay = () => { dh.textContent = di.value === isoDay(new Date()) ? t("gToday") : ""; };
+  dl.appendChild(ds); dl.appendChild(di); dl.appendChild(dh); sheet.appendChild(dl); paintDay();
+  const qp = quickPad(sheet, c, st, () => closeModal(), () => quickDay());
+  di.onchange = () => {
+    quickDate = /^\d{4}-\d{2}-\d{2}$/.test(di.value) && di.value !== isoDay(new Date()) ? di.value : null;   // heute = Standard
+    di.value = quickDay(); paintDay(); qp.repaint();
+  };
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gQuickHintDate"); sheet.appendChild(h);
   const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
   close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
 }
@@ -9332,7 +9363,7 @@ function renderGradeBar(){
   const s = subjectById(a.subjectId);
   $("#gb-title").textContent = a.title;
   const done = c.students.filter(st => a.marks[st.id]).length, avg = assessAverage(a);
-  $("#gb-meta").textContent = (s ? s.name + " · " : "") + fmtDate(a.date) + " · " + t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) +
+  $("#gb-meta").textContent = (s ? s.name + " · " : "") + (a.date === isoDay(new Date()) ? t("gToday") : fmtDate(a.date)) + " · " + t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) +
     (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
   const st = gradeSel ? studentById(c, gradeSel) : null;
   $("#gb-who").textContent = st ? st.name + (a.marks[st.id] ? " · " + tokLabel(a.marks[st.id]) : "") : t("gTapSeat");
@@ -9390,19 +9421,25 @@ function gradeFromLesson(){
   if(!subjectById(sid)) sid = DB.subjects[0].id;
   const sheet = sheetBase(t("gRate"));
   const subjSel = selectField(sheet, DB.subjects.map(s => [s.id, s.name]), sid);
+  const dl = document.createElement("label"); dl.className = "qdate";
+  const dsp = document.createElement("span"); dsp.textContent = t("gDate");
+  const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "lg-date"; di.value = isoDay(new Date()); di.max = isoDay(new Date());
+  dl.appendChild(dsp); dl.appendChild(di); sheet.appendChild(dl);
   const list = document.createElement("div"); sheet.appendChild(list);
   const paint = () => {
     list.textContent = "";
-    const today = isoDay(new Date());
+    const today = /^\d{4}-\d{2}-\d{2}$/.test(di.value) ? di.value : isoDay(new Date());
+    const isToday = today === isoDay(new Date());
     const add = document.createElement("button"); add.className = "cbtn green"; add.id = "lg-new"; add.style.width = "100%"; add.style.marginTop = "10px";
     const exist = (c.assess || []).find(x => x.auto && x.subjectId === subjSel.value && x.date === today);
-    add.textContent = exist ? t("gContinueToday") : "+ " + t("gNewToday");
+    add.textContent = isToday ? (exist ? t("gContinueToday") : "+ " + t("gNewToday"))
+      : (exist ? t("gContinueDay") : "+ " + t("gNewDay")).replace("{d}", fmtDate(today));
     add.onclick = () => {
       let A = exist;
       if(!A){
         if((c.assess || []).length >= MAX_ASSESS){ toast(t("gLimit")); return; }
         A = { id: uid(), subjectId: subjSel.value, title: t("gDefOther") + " " + fmtDate(today), date: today, kind: "other",
-              scale: quickScaleFor(c, subjSel.value), weight: 1, marks: {}, auto: true };
+              scale: quickScaleFor(c, subjSel.value, today), weight: 1, marks: {}, auto: true };
         c.assess = (c.assess || []).concat([A]);
       }
       c.lastSubject = subjSel.value; save(); closeModal(); startGradeMode(A.id);
@@ -9418,13 +9455,13 @@ function gradeFromLesson(){
       list.appendChild(b);
     });
   };
-  subjSel.onchange = paint; paint();
+  subjSel.onchange = paint; di.onchange = paint; paint();
   const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
   close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
 }
 $("#gb-list").onclick = leaveGradeToList;
 $("#gb-exit").onclick = () => { if(gradeWasLesson){ endGradeMode(); } else leaveGradeToList(); };
-$("#lb-grade").onclick = () => { if(!DB.gradesAck){ showGradesPrivacy(gradeFromLesson); return; } gradeFromLesson(); };
+$("#lb-grade").onclick = () => withGradesReady(gradeFromLesson);
 $("#av-plan").onclick = gradeOnPlan;
 $("#av-list").onclick = () => {};
 
@@ -9563,7 +9600,13 @@ function openSelfSheet(sid){
   btn.addEventListener("click", e => e.preventDefault());
   btn.addEventListener("contextmenu", e => e.preventDefault());
 })();
-$("#lb-self").onclick = () => { if(!DB.gradesAck){ showGradesPrivacy(startSelfSetup); return; } startSelfSetup(); };
+/* Vor dem ersten Mal: Datenschutzhinweis, und ohne Fach gleich eines anlegen */
+function withGradesReady(fn){
+  const go = () => DB.subjects.length ? fn() : editSubject(null, () => fn());
+  if(!DB.gradesAck){ showGradesPrivacy(go); return; }
+  go();
+}
+$("#lb-self").onclick = () => withGradesReady(startSelfSetup);
 /* Übersicht: Selbsteinschätzungen neben der Lehrerbewertung desselben Tages */
 function renderSelfSection(body, c, s, withTable){
   const list = selfAssess(c, s.id);

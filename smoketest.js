@@ -356,7 +356,7 @@ test('Editor-Menü und Export-Dialog', app => {
   klasseMitNamen(app);
   neuerPlan(app, 0, 'Zufällig');
   app.klick('#btn-more');
-  erwarte(app.$$('#sheet .tile').length === 3, 'Menü zeigt nicht Vollbild, Auswahl und Spiegeln');
+  erwarte(app.$$('#sheet .tile').length === 4 && app.$$('#sheet .tile')[3].textContent.indexOf('Selbsteinschätzung') >= 0, 'Menü zeigt nicht Vollbild, Auswahl, Spiegeln und Selbsteinschätzung');
   app.klick(app.$$('#sheet .tile')[2]);
   app.klick('#btn-share');
   erwarte(app.$$('#sheet .tile').length >= 2, 'Export-Dialog unvollständig');
@@ -1314,6 +1314,34 @@ test('Selbsteinschätzung: Schutz der Lehrerdaten', async app => {
   app.$('#self-exit').dispatchEvent(new app.w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
   await pause(2150);
   erwarte(!app.w.document.body.classList.contains('selfmode') && !app.E('DB.selfLock'), 'Beenden per Tastatur klappt nicht oder Sperre bleibt');
+});
+
+
+test('Datum bei Bewertungen aus dem Sitzplan', app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.gradesAck = true');
+  const ds = app.E('curPlan().desks.filter(x => x.studentId).slice(0, 2)');
+  // Normaler Sitzplan: Datum wählbar, bleibt für den nächsten Schüler
+  app.E(`selected = new Set(["${ds[0].id}"]); renderStage(false)`); app.klick('#sb-grade');
+  erwarte(app.$('#quick-date').value === app.E('isoDay(new Date())'), 'Standarddatum ist nicht heute');
+  app.$('#quick-date').value = '2026-09-28'; app.$('#quick-date').dispatchEvent(new app.w.Event('change'));
+  app.klick(app.$$('#sheet .keypad button').find(b => b.dataset.tok === '2'));
+  erwarte(app.E('curClass().assess.find(a => a.auto).date') === '2026-09-28', 'Gewähltes Datum nicht übernommen');
+  app.E(`selected = new Set(["${ds[1].id}"]); renderStage(false)`); app.klick('#sb-grade');
+  erwarte(app.$('#quick-date').value === '2026-09-28', 'Datum gilt nicht für den nächsten Schüler');
+  app.klick(app.$$('#sheet .keypad button').find(b => b.dataset.tok === '3'));
+  erwarte(app.E('curClass().assess.filter(a => a.auto).length') === 1 && app.E('Object.keys(curClass().assess[0].marks).length') === 2, 'Zweite Note landet nicht in derselben Mitarbeit');
+  // Unterrichtsmodus: immer heute
+  app.E(`setLesson(true); openLessonSheet(curPlan().desks.find(x => x.id === "${ds[0].id}"))`);
+  app.klick(app.$$('#lesson-quickmark .keypad button')[0]);
+  erwarte(app.E('curClass().assess.some(a => a.auto && a.date === isoDay(new Date()))'), 'Im Unterrichtsmodus nicht heute gespeichert');
+  // „Bewerten“ in der Leiste: Datum wählbar
+  app.klick('#lb-grade');
+  app.$('#lg-date').value = '2026-09-28'; app.$('#lg-date').dispatchEvent(new app.w.Event('change'));
+  erwarte(app.$('#lg-new').textContent.indexOf('28.09.') >= 0, 'Datum im Start-Dialog nicht wählbar');
+  app.klick('#lg-new');
+  erwarte(app.E('gradeAssess().date') === '2026-09-28', 'Bewerten im Sitzplan nutzt nicht das gewählte Datum');
 });
 
 /* ------------------------------------------------------------------ */
