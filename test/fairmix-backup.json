@@ -1,0 +1,357 @@
+{
+ "app": "FairMix",
+ "version": 3,
+ "schema": 1,
+ "lite": false,
+ "exported": "2026-10-02T20:19:53.110Z",
+ "state": {
+  "originalNames": [
+   "Amira Yilmaz",
+   "Ben Kowalski",
+   "Clara Hoffmann",
+   "David Novak",
+   "Elif Demir",
+   "Finn Brandt",
+   "Greta Sommer",
+   "Hasan Öztürk",
+   "Ida Larsen",
+   "Jonas Weber",
+   "Kira Baumann",
+   "Levi Achterberg",
+   "Mila Petrova",
+   "Noah Fischer",
+   "Olivia Rossi",
+   "Paul Wagner",
+   "Quirin Haas",
+   "Rosa Lindqvist",
+   "Samir Haddad",
+   "Tessa Vermeer",
+   "Uwe Schröder",
+   "Vera Kaminski",
+   "Wanja Sokolov",
+   "Zoe Bergström"
+  ],
+  "presentNames": [
+   "Amira Yilmaz",
+   "Ben Kowalski",
+   "Clara Hoffmann",
+   "David Novak",
+   "Elif Demir",
+   "Finn Brandt",
+   "Greta Sommer",
+   "Hasan Öztürk",
+   "Ida Larsen",
+   "Jonas Weber",
+   "Kira Baumann",
+   "Levi Achterberg",
+   "Mila Petrova",
+   "Noah Fischer",
+   "Olivia Rossi",
+   "Paul Wagner",
+   "Quirin Haas",
+   "Rosa Lindqvist",
+   "Samir Haddad",
+   "Tessa Vermeer",
+   "Uwe Schröder",
+   "Vera Kaminski",
+   "Wanja Sokolov",
+   "Zoe Bergström"
+  ],
+  "absentNames": [],
+  "groups": {},
+  "teams": [
+   [
+    {
+     "name": "Amira Yilmaz",
+     "roleId": null
+    },
+    {
+     "name": "Elif Demir",
+     "roleId": null
+    },
+    {
+     "name": "Uwe Schröder",
+     "roleId": null
+    },
+    {
+     "name": "David Novak",
+     "roleId": null
+    }
+   ],
+   [
+    {
+     "name": "Ida Larsen",
+     "roleId": null
+    },
+    {
+     "name": "Kira Baumann",
+     "roleId": null
+    },
+    {
+     "name": "Finn Brandt",
+     "roleId": null
+    },
+    {
+     "name": "Greta Sommer",
+     "roleId": null
+    }
+   ],
+   [
+    {
+     "name": "Levi Achterberg",
+     "roleId": null
+    },
+    {
+     "name": "Samir Haddad",
+     "roleId": null
+    },
+    {
+     "name": "Jonas Weber",
+     "roleId": null
+    },
+    {
+     "name": "Olivia Rossi",
+     "roleId": null
+    }
+   ],
+   [
+    {
+     "name": "Tessa Vermeer",
+     "roleId": null
+    },
+    {
+     "name": "Ben Kowalski",
+     "roleId": null
+    },
+    {
+     "name": "Hasan Öztürk",
+     "roleId": null
+    },
+    {
+     "name": "Zoe Bergström",
+     "roleId": null
+    }
+   ],
+   [
+    {
+     "name": "Vera Kaminski",
+     "roleId": null
+    },
+    {
+     "name": "Mila Petrova",
+     "roleId": null
+    },
+    {
+     "name": "Wanja Sokolov",
+     "roleId": null
+    },
+    {
+     "name": "Paul Wagner",
+     "roleId": null
+    }
+   ],
+   [
+    {
+     "name": "Quirin Haas",
+     "roleId": null
+    },
+    {
+     "name": "Noah Fischer",
+     "roleId": null
+    },
+    {
+     "name": "Rosa Lindqvist",
+     "roleId": null
+    },
+    {
+     "name": "Clara Hoffmann",
+     "roleId": null
+    }
+   ]
+  ],
+  "teamNames": [],
+  "jigsaw": null,
+  "teamMode": "auto",
+  "fixedPersons": [],
+  "customRoles": [],
+  "activeRoleIds": [
+   "r1",
+   "r2"
+  ],
+  "drawnGroups": {
+   "manual": [],
+   "auto": []
+  },
+  "pairRules": {
+   "together": [
+    [
+     "Amira Yilmaz",
+     "Elif Demir"
+    ]
+   ],
+   "apart": [
+    [
+     "Jonas Weber",
+     "Finn Brandt"
+    ]
+   ]
+  },
+  "drawCounts": {},
+  "pairHistory": {},
+  "features": {
+   "roles": false,
+   "fixed": false,
+   "rules": true,
+   "levels": true,
+   "partners": false,
+   "jigsaw": false,
+   "tasks": false,
+   "classes": true,
+   "data": true
+  },
+  "currentClass": "7b",
+  "levels": {
+   "Amira Yilmaz": 1,
+   "Ben Kowalski": 2,
+   "Clara Hoffmann": 3,
+   "David Novak": 2,
+   "Elif Demir": 1,
+   "Finn Brandt": 3,
+   "Greta Sommer": 2,
+   "Hasan Öztürk": 1,
+   "Ida Larsen": 3,
+   "Jonas Weber": 2,
+   "Kira Baumann": 1,
+   "Levi Achterberg": 3,
+   "Mila Petrova": 2,
+   "Noah Fischer": 1,
+   "Olivia Rossi": 3,
+   "Paul Wagner": 2
+  },
+  "levelMode": "off",
+  "drawStyle": "ticker",
+  "fairDraw": true,
+  "lastBackup": 0,
+  "backupNagOff": false,
+  "timerMinutes": 5,
+  "timerSound": true,
+  "showDemoHint": true,
+  "drawTasks": [],
+  "drawTask": "",
+  "roleChoiceMigrated": true
+ },
+ "savedLists": {
+  "7b": {
+   "date": "2.10.2026 22:19",
+   "original": [
+    "Amira Yilmaz",
+    "Ben Kowalski",
+    "Clara Hoffmann",
+    "David Novak",
+    "Elif Demir",
+    "Finn Brandt",
+    "Greta Sommer",
+    "Hasan Öztürk",
+    "Ida Larsen",
+    "Jonas Weber",
+    "Kira Baumann",
+    "Levi Achterberg",
+    "Mila Petrova",
+    "Noah Fischer",
+    "Olivia Rossi",
+    "Paul Wagner",
+    "Quirin Haas",
+    "Rosa Lindqvist",
+    "Samir Haddad",
+    "Tessa Vermeer",
+    "Uwe Schröder",
+    "Vera Kaminski",
+    "Wanja Sokolov",
+    "Zoe Bergström"
+   ],
+   "present": [
+    "Amira Yilmaz",
+    "Ben Kowalski",
+    "Clara Hoffmann",
+    "David Novak",
+    "Elif Demir",
+    "Finn Brandt",
+    "Greta Sommer",
+    "Hasan Öztürk",
+    "Ida Larsen",
+    "Jonas Weber",
+    "Kira Baumann",
+    "Levi Achterberg",
+    "Mila Petrova",
+    "Noah Fischer",
+    "Olivia Rossi",
+    "Paul Wagner",
+    "Quirin Haas",
+    "Rosa Lindqvist",
+    "Samir Haddad",
+    "Tessa Vermeer",
+    "Uwe Schröder",
+    "Vera Kaminski",
+    "Wanja Sokolov",
+    "Zoe Bergström"
+   ],
+   "absent": [],
+   "levels": {
+    "Amira Yilmaz": 1,
+    "Ben Kowalski": 2,
+    "Clara Hoffmann": 3,
+    "David Novak": 2,
+    "Elif Demir": 1,
+    "Finn Brandt": 3,
+    "Greta Sommer": 2,
+    "Hasan Öztürk": 1,
+    "Ida Larsen": 3,
+    "Jonas Weber": 2,
+    "Kira Baumann": 1,
+    "Levi Achterberg": 3,
+    "Mila Petrova": 2,
+    "Noah Fischer": 1,
+    "Olivia Rossi": 3,
+    "Paul Wagner": 2
+   },
+   "drawCounts": {},
+   "pairHistory": {},
+   "fixedPersons": [],
+   "pairRules": {
+    "together": [
+     [
+      "Amira Yilmaz",
+      "Elif Demir"
+     ]
+    ],
+    "apart": [
+     [
+      "Jonas Weber",
+      "Finn Brandt"
+     ]
+    ]
+   }
+  },
+  "8a": {
+   "original": [
+    "Anna",
+    "Bert",
+    "Cem",
+    "Dana"
+   ],
+   "levels": {
+    "Anna": 1,
+    "Cem": 3
+   },
+   "pairRules": {
+    "together": [
+     [
+      "Anna",
+      "Bert"
+     ]
+    ],
+    "apart": []
+   }
+  }
+ }
+}
