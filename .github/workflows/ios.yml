@@ -81,6 +81,11 @@ jobs:
           set -e
           cordova create build "$APP_ID" "$APP_NAME"
           cp config.xml build/config.xml
+          # Jeder Lauf bekommt eine eigene, steigende Build-Nummer (20000.1, 20000.2, …).
+          # App Store Connect lehnt einen zweiten Upload mit gleicher Nummer ab.
+          : "${GITHUB_RUN_NUMBER:?}"
+          perl -pi -e 's/ios-CFBundleVersion="(\d+)"/ios-CFBundleVersion="$1.$ENV{GITHUB_RUN_NUMBER}"/' build/config.xml
+          grep -o 'ios-CFBundleVersion="[^"]*"' build/config.xml
           mkdir -p build/res/ios build/res/android
           cp res/ios/* build/res/ios/
           cp res/android/* build/res/android/

@@ -90,6 +90,11 @@ jobs:
           set -e
           cordova create build "$APP_ID" "$APP_NAME"
           cp "$QUELLE/config.xml" build/config.xml
+          # Eigene, steigende versionCode je Lauf (20000 -> 20000001, 20000002, …),
+          # damit Google Play jeden neuen Upload annimmt.
+          : "${GITHUB_RUN_NUMBER:?}"
+          perl -pi -e 's/android-versionCode="(\d+)"/"android-versionCode=\"".($1*1000+$ENV{GITHUB_RUN_NUMBER})."\""/e' build/config.xml
+          grep -o 'android-versionCode="[^"]*"' build/config.xml
           mkdir -p build/res/android
           cp "$QUELLE"/res/android/* build/res/android/
 
