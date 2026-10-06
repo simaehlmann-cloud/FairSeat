@@ -60,14 +60,12 @@
   <h2>3. Welche Daten auf dem Gerät gespeichert werden</h2>
   <p>Alle Eingaben verbleiben ausschließlich im lokalen Speicher des Geräts. Gespeichert werden:</p>
   <ul>
-    <li>die von Ihnen angelegten Klassen bzw. Veranstaltungen und die eingegebenen Namen</li>
+    <li>die von Ihnen angelegten Klassen und die eingegebenen Namen</li>
     <li>optional von Ihnen vergebene Stufen (A, B oder C) zu einzelnen Namen</li>
     <li>Regeln, wer immer oder nie nebeneinander sitzen soll, sowie optional Sitzwünsche
         (etwa „Nähe zur Tafel“ oder „ruhiger Platz“)</li>
     <li>Gruppen, die Sie selbst anlegen oder aus FairMix übernehmen, mit Name und Farbe,
         sowie die Partnerhistorie aus FairMix, falls Sie diese importieren</li>
-    <li>bei Veranstaltungen optional Zusage (offen, zugesagt, abgesagt), Menüwahl und ein kurzer
-        Hinweis für die Küche je Gast</li>
     <li>optional Ihr Stundenplan (Fächer mit Farben, Zeiten, Pausen und die Zuordnung von
         Klassen, Räumen und Sitzplänen)</li>
     <li>optional Bewertungen je Klasse und Fach (Titel, Datum, Art, Gewichtung und die
@@ -79,7 +77,10 @@
     <li>Räume mit ihrer Ausstattung (Tafel, Türen, Fenster, Möbel) und die Sitzpläne mit der
         Zuordnung von Namen zu Plätzen, einschließlich festgehaltener Plätze</li>
     <li>optional frühere Sitzordnungen, damit neue Nachbarschaften entstehen</li>
-    <li>optional im Unterrichtsmodus die Anwesenheit je Tag und kurze Notizen zu einzelnen Namen</li>
+    <li>optional im Unterrichtsmodus die Anwesenheit je Tag und kurze Notizen zu einzelnen Namen,
+        die daraus gezählten Fehlstunden je Stunde des Stundenplans sowie als ausgefallen markierte Stunden</li>
+    <li>optional dauerhafte Beobachtungen zu einzelnen Namen (Datum, Fach und kurzer Text)</li>
+    <li>optional Abhaklisten (Titel, Datum und wer bereits abgehakt ist)</li>
     <li>der Zeitpunkt Ihres letzten Backups, damit die App daran erinnern kann</li>
     <li>nach dem Laden einer Sicherung für 14 Tage eine Kopie des vorherigen Stands,
         damit sich ein versehentliches Laden rückgängig machen lässt</li>
@@ -95,7 +96,7 @@
 
   <h2>4. Hinweis zur Eingabe von Namen Dritter</h2>
   <p>
-    Wenn Sie Namen von Schülerinnen und Schülern oder von Gästen eingeben, verarbeiten Sie personenbezogene Daten
+    Wenn Sie Namen von Schülerinnen und Schülern eingeben, verarbeiten Sie personenbezogene Daten
     in eigener Verantwortung. Da diese Daten das Gerät nicht verlassen, findet keine Übermittlung
     an den Anbieter statt. Bitte beachten Sie dennoch die Vorgaben Ihrer Schule
     und die jeweiligen landesrechtlichen Regelungen zum Schuldatenschutz.
@@ -105,8 +106,9 @@
     Stufen (A, B, C) sind neutrale Markierungen, mit denen sich Sitznachbarn gemischt oder
     gleichstark verteilen lassen. Welche Bedeutung Sie ihnen geben, legen allein Sie fest;
     die App nimmt keine Bewertung vor. Stufen erscheinen weder auf dem Sitzplan noch in der
-    Vollbildansicht oder im Ausdruck. Notizen und Sitzwünsche sind für Organisatorisches
-    gedacht – bitte tragen Sie dort keine Gesundheitsdaten, Diagnosen oder Förderbedarfe ein.
+    Vollbildansicht oder im Ausdruck. Notizen, Beobachtungen und Sitzwünsche sind für
+    Pädagogisches und Organisatorisches gedacht – bitte tragen Sie dort keine Gesundheitsdaten
+    (Art. 9 DSGVO), Diagnosen oder Förderbedarfe ein.
     Sofern Sie Stufen eine leistungsbezogene Bedeutung geben, prüfen Sie bitte, ob die Vorgaben
     Ihrer Schule und Ihres Bundeslandes dies auf diesem Gerät zulassen.
   </p>
@@ -121,7 +123,8 @@
     beachten Sie die damit verbundenen Auflagen. Üblich sind:
   </p>
   <ul>
-    <li>eine Gerätesperre mit PIN, Code oder biometrischem Schutz</li>
+    <li>eine Gerätesperre mit PIN, Code oder biometrischem Schutz – zusätzlich lassen sich in
+        FairSeat Bewertungen und Beobachtungen mit Face ID, Fingerabdruck oder Geräte-PIN sperren</li>
     <li>verschlüsselte Sicherungen – FairSeat bietet dafür beim Sichern ein Passwort an
         (AES-256-GCM, der Schlüssel wird aus dem Passwort abgeleitet und nie gespeichert)</li>
     <li>so wenige Daten wie nötig, etwa Vornamen oder Kürzel statt vollständiger Namen</li>
@@ -134,18 +137,14 @@
     nicht der Anbieter der App: Der Anbieter erhält keine dieser Daten und kann sie nicht einsehen.
   </p>
 
-  <h3>Für Feiern und Veranstaltungen</h3>
-  <p>
-    Zusagen, Menüwahl und Küchenhinweise sind freiwillige Angaben. Allergien und
-    Unverträglichkeiten gelten als Gesundheitsdaten (Art. 9 DSGVO); tragen Sie sie bitte nur ein,
-    wenn der Gast damit einverstanden ist, und nur so genau, wie es die Küche braucht. Die
-    Küchenliste und die Platzkarten entstehen auf Ihrem Gerät und werden nur weitergegeben,
-    wenn Sie sie selbst teilen.
-  </p>
 
   <h2>5. Berechtigungen</h2>
   <p>
     Die App fordert keine Berechtigungen für Kamera, Mikrofon, Kontakte, Standort oder Telefonie an.
+    Schalten Sie die optionale Sperre für Bewertungen und Beobachtungen ein, nutzt die App die
+    Entsperrfunktion Ihres Geräts (Face ID, Fingerabdruck oder Geräte-PIN). Die Prüfung übernimmt
+    das Betriebssystem; die App erhält nur die Information, ob die Entsperrung gelungen ist.
+    Biometrische Daten werden von der App weder verarbeitet noch gespeichert.
     Beim Export eines PDFs, eines Bildes, einer Anwesenheitsliste oder eines Backups wird die Datei
     in einem temporären App-Verzeichnis abgelegt und über die Teilen-Funktion Ihres Geräts
     weitergegeben. Wohin die Datei anschließend gelangt, entscheiden allein Sie. Beim Import
