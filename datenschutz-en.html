@@ -60,14 +60,12 @@
   <h2>3. What is stored on the device</h2>
   <p>All entries remain exclusively in the local storage of your device. The following is stored:</p>
   <ul>
-    <li>the classes or events you create and the names you enter</li>
+    <li>the classes you create and the names you enter</li>
     <li>optionally the levels (A, B or C) you assign to individual names</li>
     <li>rules on who should always or never sit next to each other, and optionally seating
         wishes (such as “near the board” or “quiet spot”)</li>
     <li>groups you create yourself or take over from FairMix, with name and colour, and the
         partner history from FairMix, if you import it</li>
-    <li>for events, optionally the RSVP (pending, attending, declined), meal choice and a short
-        note for the kitchen per guest</li>
     <li>optionally your timetable (subjects with colours, times, breaks and the links to
         classes, rooms and seating plans)</li>
     <li>optionally assessments per class and subject (title, date, type, weighting and the
@@ -79,7 +77,10 @@
     <li>rooms with their furnishings (board, doors, windows, furniture) and the seating plans
         with the assignment of names to seats, including seats you keep fixed</li>
     <li>optionally earlier seating arrangements, so that new neighbours are formed</li>
-    <li>optionally, in lesson mode, attendance per day and short notes on individual names</li>
+    <li>optionally, in lesson mode, attendance per day and short notes on individual names,
+        the missed lessons counted from them per timetable period, and lessons marked as cancelled</li>
+    <li>optionally, lasting observations on individual names (date, subject and a short text)</li>
+    <li>optionally, checklists (title, date and who has already been ticked off)</li>
     <li>the time of your last backup, so that the app can remind you</li>
     <li>after loading a backup, a copy of the previous state for 14 days, so that loading
         the wrong file can be undone</li>
@@ -95,7 +96,7 @@
 
   <h2>4. Note on entering the names of others</h2>
   <p>
-    If you enter the names of pupils or guests, you process personal data on your own
+    If you enter the names of pupils, you process personal data on your own
     responsibility. As this data does not leave the device, no transmission to the
     provider takes place. Please nevertheless observe the requirements of your school and
     the applicable state regulations on data protection in schools. We recommend using
@@ -104,9 +105,9 @@
   <p>
     Levels (A, B, C) are neutral markers used to seat neighbours mixed or evenly matched.
     You alone decide what they mean; the app makes no assessment. Levels appear neither on
-    the seating plan nor in full-screen view or printouts. Notes and seating wishes are
-    meant for organisational matters – please do not enter health data, diagnoses or
-    support needs. If you attach a performance-related meaning to the levels, please check
+    the seating plan nor in full-screen view or printouts. Notes, observations and seating
+    wishes are meant for teaching and organisational matters – please do not enter health
+    data (Art. 9 GDPR), diagnoses or support needs. If you attach a performance-related meaning to the levels, please check
     whether the requirements of your school and your federal state permit this on this
     device.
   </p>
@@ -120,7 +121,8 @@
     Usual conditions are:
   </p>
   <ul>
-    <li>a device lock with PIN, passcode or biometrics</li>
+    <li>a device lock with PIN, passcode or biometrics – in addition, FairSeat can lock
+        assessments and observations with Face ID, fingerprint or the device PIN</li>
     <li>encrypted backups – FairSeat offers a password when saving a backup
         (AES-256-GCM; the key is derived from the password and never stored)</li>
     <li>as little data as necessary, e.g. first names or initials instead of full names</li>
@@ -133,18 +135,14 @@
     of the app: the provider receives none of this data and cannot see it.
   </p>
 
-  <h3>For parties and events</h3>
-  <p>
-    RSVPs, meal choices and kitchen notes are optional. Allergies and intolerances count as
-    health data (Art. 9 GDPR); please only enter them if the guest agrees, and only as precisely
-    as the kitchen needs. The kitchen list and place cards are created on your device and are
-    only passed on if you share them yourself.
-  </p>
 
   <h2>5. Permissions</h2>
   <p>
     The app requests no permissions for camera, microphone, contacts, location or
-    telephony. When you export a PDF, an image, an attendance list or a backup, the file is
+    telephony. If you turn on the optional lock for assessments and observations, the app uses
+    your device's unlock function (Face ID, fingerprint or device PIN). The check is done by the
+    operating system; the app only learns whether unlocking succeeded. The app neither
+    processes nor stores biometric data. When you export a PDF, an image, an attendance list or a backup, the file is
     placed in a temporary app directory and passed on via your device's share function.
     Where the file goes from there is entirely up to you. When importing (a backup or a
     FairMix backup), the app only reads the file you select yourself.

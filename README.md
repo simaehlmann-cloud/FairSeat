@@ -1,12 +1,12 @@
 # FairSeat – Sitzplaner
 
-Sitzpläne für Klasse, Hochzeit und Feier: **Namen verwalten**, **Räume gestalten**, **Sitzpläne zuordnen**.
+Sitzpläne für den Unterricht: **Namen verwalten**, **Räume gestalten**, **Sitzpläne zuordnen** – dazu Stundenplan, Bewertungen, Anwesenheit, Beobachtungen und Abhaklisten.
 Läuft als Android- und iOS-App (Cordova, iPhone und iPad) und als Web-App – vollständig offline,
 ohne Konto, ohne Tracking, ohne externe Bibliotheken. Paketkennung: `de.fairseat.app`.
 
 Store-Eintrag (je höchstens 30 Zeichen):
-- Name: **FairSeat – Sitzplaner** · Untertitel: *Klasse, Hochzeit & Feier*
-- englisch: **FairSeat – Seating Planner** · Untertitel: *Classroom, wedding & party*
+- Name: **FairSeat – Sitzplaner** · Untertitel: *Sitzplan & Noten für Lehrer*
+- englisch: **FairSeat – Seating Planner** · Untertitel: *Seating & grades for teachers*
 
 Zur Marke: FairSeat gehört zur Familie von FairMix (gleiches Design, gleicher Import).
 Vor der ersten Veröffentlichung kurz im Markenregister (DPMA, EUIPO) prüfen.
@@ -117,8 +117,8 @@ im Editor eine Seitenleiste neben dem Plan, im Hochformat sitzen die Knöpfe unt
 Das Teilen-Menü hängt auf dem iPad am auslösenden Knopf.
 
 Apple verlangt für universelle Apps iPad-Screenshots (13 Zoll). Fertige Bilder für iPad und iPhone
-liegen in `store-bilder/`; neu erzeugen mit `python3 tools/store-bilder.py`. Bild 1–4 zeigen die
-Schule, Bild 5–8 die Hochzeit (runde Tische, Raumpalette, Saalvorlagen).
+liegen in `store-bilder/`; neu erzeugen mit `python3 tools/store-bilder.py`.
+**Achtung:** Bild 5–8 zeigen noch den entfernten Feier-Modus und müssen ersetzt werden.
 
 ### Angaben in den Stores
 
@@ -126,22 +126,21 @@ Schule, Bild 5–8 die Hochzeit (runde Tische, Raumpalette, Saalvorlagen).
 - Altersfreigabe: für alle; Zielgruppe Lehrkräfte (keine Kinder-App)
 - Kategorie: Bildung
 
-## Räume und Feiern
+## Räume und Tische
 
 - Räume haben eine Größe in Metern (150 px = 1 m, 4–40 m) und einen Boden (schlicht, Parkett,
   Fliesen, Teppich, Stein). Ältere Räume ohne Größe bekommen beim Laden 9,3 × 6,7 m.
-- Vorlagen: Klassisch, Modern, Fachraum, Festsaal, Partyraum, Konferenzraum, Aula.
+- Vorlagen: Klassisch, Modern, Fachraum, Konferenzraum, Aula.
 - Runde Tische und lange Tafeln (4–12 Plätze) weichen Möbeln aus. Die Tischplatte wird nicht
   gespeichert, sondern aus den Stühlen einer Gruppe berechnet (`tableShapes`).
 - Türen und Fenster rasten immer an der nächsten Wand ein, Tafeln nur in Wandnähe (`snapToWall`).
-- Beim ersten Start fragt die App: Schule oder Feier. Das steuert Bezeichnungen, Vorlagen und Beispiel.
+- Den früheren Veranstaltungsmodus (Hochzeit/Feier) gibt es seit 2.0 nicht mehr; die App richtet sich nur an Lehrkräfte.
 - Weitere Tischformen: quadratisch, oval, U-Tafel, T-Tafel (`tbl` = `square`, `oval`, `long`, `longv`).
   Einseitig besetzte Tafeln liegen auf der Seite zur Mitte ihrer Anordnung.
-- Gäste: Zusage, Menü, Küchenhinweis, Begleitung; Gruppen mit Farbe (auch in der Schule).
-  Exporte für Feiern: Tisch- und Platzkarten (Klappkarten), „Wer sitzt wo?“, Küchenliste.
+- Gruppen mit Farbe (eigene oder aus FairMix).
 - Schule: Klassenarbeit mit Platznummern und A/B im Schachbrett, Vertretungsmappe als PDF.
 
-## Stundenplan und Bewertungen (nur Schulmodus)
+## Stundenplan und Bewertungen
 
 - Stundenplan: `DB.tt` (Beginn, Länge, Stunden, Pausen nach jeder Stunde, Mo–Fr/Mo–Sa, A/B-Wochen ab `abRef`),
   `DB.subjects` (Name, Kürzel, Farbe), `DB.lessons` (Tag, Stunde, Einzel-/Doppelstunde, Woche, Fach, Klasse,
@@ -156,12 +155,24 @@ Schule, Bild 5–8 die Hochzeit (runde Tische, Raumpalette, Saalvorlagen).
 
 - Keine Datenerhebung durch den Anbieter; alles bleibt im App-Speicher des Geräts.
 - Sicherungen lassen sich mit Passwort verschlüsseln (AES-GCM 256, PBKDF2-SHA-256, 250 000 Runden).
-- Beim ersten Start im Schulmodus, in der Info und in der Datenschutzerklärung steht der Hinweis auf die
+- Beim ersten Start, in der Info und in der Datenschutzerklärung steht der Hinweis auf die
   schriftliche Genehmigung der Schulleitung (z. B. Niedersachsen) und die üblichen Auflagen.
-- Küchenhinweise (Allergien) sind als Gesundheitsdaten gekennzeichnet: nur mit Einverständnis des Gastes.
+- Notizen und Beobachtungen: Hinweis, keine Gesundheitsdaten (Art. 9 DSGVO) einzutragen.
 
 ## Icon ändern
 
 `tools/icon/art.py` bearbeiten, dann `python3 tools/icon/render.py`
 (braucht Playwright mit Chromium). Die Ergebnisse aus `tools/icon/out/` in das
 Wurzelverzeichnis bzw. nach `res/android/` kopieren.
+
+## Sperre für Noten und Beobachtungen
+
+- Optional in den Einstellungen (`DB.settings.lock`). Nutzt `cordova-plugin-fingerprint-aio`
+  (Face ID, Touch ID, Fingerabdruck, ersatzweise Geräte-PIN; unter Android braucht die PIN einen eingerichteten
+  Fingerabdruck bzw. Gesichtserkennung). Die App erfährt nur „entsperrt“ oder nicht. Die Einstellung gilt je Gerät
+  und wird nicht mitgesichert. Fällt die Entsperrung weg, bietet die App das Ausschalten an.
+- Gesperrt sind: Bewertungen (Kachel, Bewerten im Plan und im Unterricht), Beobachtungen,
+  Gesprächsblatt/CSV (liegen in den Bewertungen), Sicherung und Schuljahreswechsel.
+- Frei bleiben Sitzplan, Anwesenheit, Abhaken und die Selbsteinschätzung.
+- Wieder gesperrt nach 5 Minuten im Hintergrund und nach jeder Selbsteinschätzung.
+  Ausschalten nur nach Entsperren.

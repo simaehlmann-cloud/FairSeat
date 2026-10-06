@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: gap: content: filesystem:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: blob: content: filesystem:; connect-src 'self' blob: data: filesystem:; media-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#003366">
-<meta name="description" content="FairSeat – Sitzpläne für Klasse, Hochzeit und Feier. Offline, ohne Cloud.">
+<meta name="description" content="FairSeat – Sitzpläne, Stundenplan und Bewertungen für Lehrkräfte. Offline, ohne Cloud.">
 <title>FairSeat</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -240,12 +240,7 @@ select.field{-webkit-appearance:none;appearance:none;
 [data-theme="dark"] .lvl.l3{background:#2f2342;color:#c8a6f0}
 .namerow .ed{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
 .lvlstats{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-#guest-stats .r-yes{background:#DCF3E3;color:#00752C}#guest-stats .r-no{background:#FBE1E1;color:#B00000}
-.rsvp{width:36px;height:36px;border-radius:50%;font-weight:800;font-size:16px;flex:0 0 auto;border:2px dashed var(--line);color:var(--ink-soft)}
-.rsvp.r-yes{border:2px solid #00752C;background:#DCF3E3;color:#00752C}
-.rsvp.r-no{border:2px solid #C40000;background:#FBE1E1;color:#C40000}
 .gdot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:0 0 auto}
-.menutag{font-size:11px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--surface-2);color:var(--ink-soft)}
 .segmented.wrap{flex-wrap:wrap}.segmented.wrap button{flex:1 1 80px}
 .lvlstats span{font-size:12.5px;font-weight:650;padding:4px 9px;border-radius:99px;background:var(--surface-2)}
 .pairpick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -302,8 +297,6 @@ select.field{-webkit-appearance:none;appearance:none;
 .floorbtn.floor-tiles .fsw{background:linear-gradient(90deg,#CBD3D9 1px,transparent 1px) 0 0/9px 9px,linear-gradient(#CBD3D9 1px,transparent 1px) 0 0/9px 9px,#F5F7F8}
 .floorbtn.floor-carpet .fsw{background:radial-gradient(#C9CFDF 1px,transparent 1.3px) 0 0/4px 4px,#E8EBF3}
 .floorbtn.floor-stone .fsw{background:linear-gradient(90deg,#C9C4BA 1px,transparent 1px) 0 0/19px 19px,linear-gradient(#C9C4BA 1px,transparent 1px) 0 0/19px 19px,#ECE9E3}
-.welcome .choice{padding:14px 12px}
-.welcome .choice b{font-size:16px}
 .choicegrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px}
 .choicegrid .choice{margin-top:0;padding:9px 10px;gap:8px}
 .choicegrid .choice b{font-size:13.5px}
@@ -332,7 +325,7 @@ select.field{-webkit-appearance:none;appearance:none;
   align-items:center;justify-content:center;gap:1px;overflow:hidden;font:inherit;text-shadow:0 1px 1px rgba(0,0,0,.25)}
 .tt-cell b{font-size:13px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tt-cell span{font-size:11px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.95}
-.tt-cell i{position:absolute;top:2px;right:4px;font-style:normal;font-size:10px;font-weight:800}
+.tt-cell > i{position:absolute;top:2px;right:4px;font-style:normal;font-size:10px;font-weight:800}
 .tt-free{min-height:54px;border-radius:9px;border:1.5px dashed var(--line);color:var(--ink-soft);font-size:18px;background:transparent;opacity:.55}
 .tt-free:hover{opacity:1}
 .ttfields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -467,6 +460,30 @@ body.selfmode .item.t-desk{background:#E7D9FB;border-color:#6A3FB5;color:#2E1A55
 body.selfmode .item.t-desk.empty{background:transparent}
 [data-theme="dark"] body.selfmode #stage-wrap{background:#221735}
 [data-theme="dark"] body.selfmode .item.t-desk{background:#3D2A63;border-color:#B48CF2;color:#F1E8FF}
+.lockbtn2{color:var(--ink)}
+/* Abhaklisten im Sitzplan */
+.checkbar{display:none;flex:0 0 auto;background:var(--surface);border-top:2px solid var(--border);
+  padding:8px 10px calc(8px + var(--safe-b));flex-direction:column;gap:4px}
+body.checking .checkbar{display:flex}
+body.checking .panels,body.checking .lessonbar,body.checking .stagehint,body.selfmode .checkbar{display:none!important}
+.item .ckmark{position:absolute;right:-6px;top:-8px;width:22px;height:22px;border-radius:50%;background:#1E7A3C;color:#fff;
+  font-style:normal;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--surface);
+  transform:scale(var(--gz,1));transform-origin:100% 0;z-index:4}
+.item.t-desk.ckdone{background:#DDF2E3;border-color:#1E7A3C;color:#12361F}
+[data-theme="dark"] .item.t-desk.ckdone{background:#1D4A2C;border-color:#6FD08F;color:#E6F7EC}
+/* Ausgefallene Stunden */
+.tt-cell.cancelled{opacity:.5;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 6px,transparent 6px 12px)!important}
+.tt-cell.cancelled b{text-decoration:line-through}
+.tt-cell .ttoff{font-size:10px;font-weight:800;background:var(--surface);color:var(--warn);border-radius:6px;padding:0 4px;text-shadow:none}
+.nowrow.cancelled .nowt{text-decoration:line-through;opacity:.7}
+.nowoff span{font-size:11.5px}
+/* Beobachtungen */
+.obsform{display:flex;gap:8px;margin-top:8px}
+.obsform .field{flex:1;min-width:0;margin:0}
+.obsrow{display:flex;gap:8px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.obsrow .obsm{flex:0 0 76px;font-size:12px;color:var(--ink-soft);padding-top:2px}
+.obsrow .obst{flex:1;min-width:0;font-size:14px;line-height:1.4;overflow-wrap:anywhere;white-space:pre-wrap}
+.obsrow .iconbtn{flex:0 0 auto;width:32px;height:32px;color:var(--warn)}
 .item .selfdone{position:absolute;right:-6px;top:-8px;width:22px;height:22px;border-radius:50%;background:#5B2D9E;color:#fff;
   font-style:normal;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff;
   transform:scale(var(--gz,1));transform-origin:100% 0;z-index:4}
@@ -491,6 +508,19 @@ body.selfmode .item.t-desk.empty{background:transparent}
 .selfbox .eyebrow{color:#5B2D9E}
 [data-theme="dark"] .selfbox .eyebrow{color:#C9A9FF}
 .acard.self{border-color:#B9A0E8}
+.dragghost.newdesk::before{content:"+ ";font-weight:900}
+.dragghost.newdesk{outline:2px dashed var(--accent);outline-offset:2px}
+.tt-cell.hascls{outline:3px solid var(--cc);outline-offset:2px}
+.tt-cell .ccbadge{padding:1px 6px;border-radius:6px;font-weight:800;box-shadow:0 0 0 1.5px rgba(255,255,255,.85);margin:1px 0}
+.swatches button.nocolor{background:var(--surface);color:var(--ink-soft);font-weight:800;border:2px dashed var(--line)}
+.swatches button.nocolor.on{border:3px solid var(--ink)}
+.colorpick.on{border:3px solid var(--ink)}
+.gtable td.prop{color:var(--accent)}
+.propchip{background:var(--accent-soft)!important;color:var(--accent);font-weight:800}
+.nyrow{border:2px solid var(--line);border-radius:var(--radius);padding:10px;margin-top:10px}
+.nyrow .nyname{font-weight:800;font-size:15px}
+.nyrow .segmented{margin-top:6px}
+.nyrow .field{margin:8px 0 0}
 /* ===================== Editor ===================== */
 .editor-body{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0}
 .stage-wrap{flex:1;position:relative;overflow:hidden;touch-action:none;background:var(--paper);min-height:0}
@@ -621,18 +651,9 @@ body.selfmode .item.t-desk.empty{background:transparent}
 .ptable.square{border-radius:6px}
 .ptable.dim{opacity:.42}
 .ptable .tlbl{color:var(--table-ink);font-weight:750;white-space:nowrap}
-/* Feier */
+/* Aula */
 .t-stage{background:linear-gradient(180deg,#6B4532,#46291C);color:#F6E7D2;border-color:#2A1A10;border-width:2px;font-weight:700}
 .t-stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:repeating-linear-gradient(90deg,#3B2318 0 18px,#55362A 18px 20px)}
-.t-dancefloor{background:repeating-conic-gradient(#ECE6F6 0 25%,#D9CFEE 0 50%) 0 0/50px 50px;color:#3C2F5C;
-  border-color:#9A86C9;border-width:2px;font-weight:650}
-.t-buffet{background:radial-gradient(circle,#FFFFFF 0 9px,transparent 10px) 10px 50%/44px 100% repeat-x,#FFF1D9;
-  color:#6B4C14;border-color:#B88A3C}
-.t-bar{background:linear-gradient(180deg,#3E4D5E,#273340);color:#E6F0F7;border-color:#151C23;border-width:2px}
-.t-headtable{background:#FDEBF0;color:#8A2F47;border-color:#D77A92;border-width:2px;font-weight:700}
-.t-gifttable{background:#E9F6E9;color:#2F6B2F;border-color:#6AA86A}
-.t-dj{background:linear-gradient(180deg,#2C2C38,#1A1A22);color:#9EE7FF;border-color:#000;border-width:2px}
-.t-cake{background:radial-gradient(circle at 40% 35%,#FFFFFF,#F6E5CC);border-radius:50%;color:#7A5530;border-color:#D8B48A;font-size:10px}
 .t-coatrack{background:repeating-linear-gradient(90deg,#F1EBE1 0 12px,#D9CFBF 12px 14px);color:#5A4A33;border-color:#9C8663}
 .t-pillar{background:radial-gradient(circle at 38% 32%,#EEF1F3,#AEB7BE);border-radius:50%;color:transparent;border-color:#78838B;border-width:2px}
 .t-label{background:transparent;border:1px dashed var(--line);color:var(--ink-soft);
@@ -755,7 +776,7 @@ body.presenting .lockbtn{display:flex}
 
 /* Vorführmodus */
 body.presenting .topbar,body.presenting .panels,body.presenting .stagehint,
-body.presenting .lessonbar,body.viewlocked .zoombar,body.viewlocked .selbar,
+body.presenting .lessonbar,body.presenting .checkbar,body.presenting .gradebar,body.viewlocked .zoombar,body.viewlocked .selbar,
 body.viewlocked .rothandle{display:none!important}
 body.presenting .selbar{right:62px}
 body.presenting .item{font-size:15px;font-weight:600}
@@ -781,7 +802,7 @@ body.presenting #exitPresent{display:flex}
   .panel{max-height:none;flex:1}
   .panelgrip{display:none}
   body.panels-min .panel.on{display:block!important}
-  .gradebar{order:0;width:330px;flex:0 0 330px;border-top:0;border-right:2px solid var(--border);overflow-y:auto}
+  .gradebar,.checkbar{order:0;width:330px;flex:0 0 330px;border-top:0;border-right:2px solid var(--border);overflow-y:auto}
 }
 @media (min-width:860px){
   .board-inner,.scroll{padding-left:max(24px,var(--safe-l));padding-right:max(24px,var(--safe-r))}
@@ -876,13 +897,6 @@ body.presenting #exitPresent{display:flex}
 <symbol id="i-wall" viewBox="0 0 24 24"><path d="M3 10h18v4H3z"/><path d="M8 10v4M14 10v4"/></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></symbol>
 <symbol id="i-stage" viewBox="0 0 24 24"><rect x="2" y="13" width="20" height="6" rx="1"/><path d="M4 13V5h16v8"/><path d="M8 5v8M16 5v8"/></symbol>
-<symbol id="i-dancefloor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></symbol>
-<symbol id="i-buffet" viewBox="0 0 24 24"><path d="M2 16h20M4 16v4M20 16v4"/><path d="M5 16a3.5 3.5 0 0 1 7 0M12 16a3.5 3.5 0 0 1 7 0"/><path d="M8.5 11.5v-1M15.5 11.5v-1"/></symbol>
-<symbol id="i-bar" viewBox="0 0 24 24"><path d="M6 4h12l-6 8z"/><path d="M12 12v7M8 20h8"/></symbol>
-<symbol id="i-headtable" viewBox="0 0 24 24"><rect x="2" y="15" width="20" height="5" rx="1"/><path d="M12 12.5s-4-2.5-4-5.2a2 2 0 0 1 4-1 2 2 0 0 1 4 1c0 2.7-4 5.2-4 5.2z"/></symbol>
-<symbol id="i-gifttable" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="1"/><path d="M3 9h18M12 9v11"/><path d="M12 9c-1.5-3.5-5.5-4-5.5-1.5S12 9 12 9s5.5 1 5.5-1.5S13.5 5.5 12 9"/></symbol>
-<symbol id="i-dj" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="11" rx="2"/><circle cx="8" cy="12.5" r="3"/><path d="M15 10h4M15 13h4M15 16h2"/></symbol>
-<symbol id="i-cake" viewBox="0 0 24 24"><path d="M5 20h14v-7H5z"/><path d="M5 16.5h14"/><path d="M12 13V9.5"/><path d="M12 7c.8 0 1.2-.8 1.2-1.4S12 3.5 12 3.5s-1.2 1.5-1.2 2.1.4 1.4 1.2 1.4z"/></symbol>
 <symbol id="i-coatrack" viewBox="0 0 24 24"><path d="M10 6a2 2 0 1 1 2.6 1.9c-.4.2-.6.6-.6 1.1v1"/><path d="M12 10l-9 7h18z"/></symbol>
 <symbol id="i-pillar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></symbol>
 <symbol id="i-ruler" viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="8" rx="1"/><path d="M6 8v3M10 8v4M14 8v3M18 8v4"/></symbol>
@@ -1067,7 +1081,6 @@ body.presenting #exitPresent{display:flex}
           <button class="iconbtn danger" id="btn-delete-class" aria-label="Delete"><svg class="i"><use href="#i-trash"></use></svg></button>
         </div>
         <div class="eyebrow" id="names-count"></div>
-        <div class="lvlstats" id="guest-stats" style="display:none"></div>
         <textarea class="field" id="student-input" data-ph="namesPh"></textarea>
         <button class="cbtn green" id="btn-add-students" style="width:100%;margin-top:8px"><svg class="i"><use href="#i-plus"></use></svg><span data-i="addNames"></span></button>
         <div class="hint" data-i="namesHint2"></div>
@@ -1197,6 +1210,7 @@ body.presenting #exitPresent{display:flex}
         <button id="lb-pick"><svg class="i"><use href="#i-dice"></use></svg><span data-i="pickOne"></span></button>
         <button id="lb-reset"><svg class="i"><use href="#i-history"></use></svg><span data-i="lessonReset"></span></button>
         <button id="lb-grade"><svg class="i"><use href="#i-grade"></use></svg><span data-i="gRate"></span></button>
+        <button id="lb-check"><svg class="i"><use href="#i-check"></use></svg><span data-i="ckTitle"></span></button>
         <button id="lb-self" class="lb-self"><svg class="i"><use href="#i-users"></use></svg><span data-i="selfTitle"></span></button>
         <button id="lb-exit"><svg class="i"><use href="#i-close"></use></svg><span data-i="close"></span></button>
       </div>
@@ -1225,6 +1239,14 @@ body.presenting #exitPresent{display:flex}
       </div>
       <div class="gb-who" id="gb-who"></div>
       <div class="keypad" id="gb-pad"></div>
+    </div>
+    <div class="checkbar" id="checkbar">
+      <div class="gb-head">
+        <div class="gb-tx"><b id="cb-title"></b><span id="cb-meta"></span></div>
+        <button class="minibtn" id="cb-list"><svg class="i"><use href="#i-note"></use></svg><span data-i="ckList"></span></button>
+        <button class="iconbtn" id="cb-exit" data-al="close"><svg class="i"><use href="#i-close"></use></svg></button>
+      </div>
+      <div class="gb-who" id="cb-hint" data-i="ckTap"></div>
     </div>
     <aside class="panels">
       <button class="panelgrip" id="panel-grip" data-al="panelToggle"><span></span><svg class="i"><use href="#i-back"></use></svg></button>
@@ -1301,21 +1323,13 @@ const I18N = {
   de:{
     tagline:"Klassenräume planen — offline, ohne Cloud",
     yourClasses:"Deine Klassen", yourRooms:"Deine Räume", backup:"Sicherung",
-    ev_yourClasses:"Deine Veranstaltungen", ev_newClass:"Neue Veranstaltung",
-    ev_className:"Name der Veranstaltung", ev_classPh:"z. B. Hochzeit Meier",
-    ev_students:"Gäste", ev_nStudents:"Gäste", ev_addNames:"Gäste hinzufügen",
-    ev_namesPh:"Ein Name pro Zeile\nAnna Meier\nBen Klein\nCem Yilmaz",
     
-    ev_editStudent:"Gast", ev_nDesks:"Plätze", ev_pnSeats:"Plätze", ev_tabSeats:"Plätze",
-    ev_placeAll:"Alle Gäste setzen", ev_emptyDesk:"Leerer Platz", ev_noStudents:"Lege zuerst Gäste an",
-    ev_noDesks:"Es sind noch keine Plätze auf dem Plan",
-    ev_noClasses:"Noch keine Veranstaltung angelegt. Beginne mit „Neue Veranstaltung“ — zum Beispiel „Hochzeit Meier“ oder „Teamtag Vertrieb“.",
-    ev_deleteClassQ:"Veranstaltung löschen?",
-    ev_deleteClassT:"Alle Sitzpläne dieser Veranstaltung werden mitgelöscht. Das lässt sich nicht rückgängig machen.",
     
-    ev_sitFront:"Platz nahe der Bühne", ev_sitFrontSub:"Bekommt einen Platz in den vorderen Reihen",
-    ev_pnSeatsHint:"Plätze anordnen und Gäste verteilen.",
-    ev_placed:"Plätze gesetzt", ev_seatedFrom:"{a} von {b} Plätzen belegt",
+    
+    
+    
+    
+    
     addItemPh:"Objekt hinzufügen …",
     loadDemo:"Beispielklasse laden", demoLoaded:"Beispielklasse angelegt — probier eine Vorlage aus",
     demoClass:"Beispielklasse 7a", demoPlan:"Standard", demoRoom:"Musterraum 204",
@@ -1336,7 +1350,6 @@ const I18N = {
     conflictTogether:"{a} und {b} sitzen nicht nebeneinander",
     conflictNoSeat:"{a} hat keinen Platz",
     conflictTag:"{a}: {tag} nicht erfüllt",
-    
     allPdf:"Alle Sitzpläne (PDF)", allPdfSub:"Jeder Plan der Klasse plus Namensliste",
     nameList:"Namensliste", notSeated:"ohne Platz",
     searchClasses:"Klasse suchen …", noMatch:"Keine Klasse gefunden",
@@ -1353,8 +1366,7 @@ const I18N = {
     grpBoards:"Tafeln & Präsentation", grpFurniture:"Möbel",
     grpRoom:"Raum & Wände", grpOther:"Sonstiges",
     infoTitle:"Über die App", settingsTitle:"Einstellungen",
-    setMode:"Einsatzbereich", setModeSchool:"Schule", setModeEvent:"Veranstaltung",
-    setModeHint:"Ändert nur die Bezeichnungen: aus Klasse wird Veranstaltung, aus Schüler:in wird Gast.",
+    
     setFeatures:"Funktionen", setFeaturesHint:"Ausgeschaltete Funktionen verschwinden aus der Oberfläche. Deine Daten bleiben erhalten.",
     setRules:"Regeln", setRulesSub:"Wer nicht oder unbedingt nebeneinander sitzen soll",
     setTags:"Sitzwünsche", setTagsSub:"Nähe zur Tafel, zur Tür oder ein ruhiger Platz",
@@ -1379,12 +1391,9 @@ const I18N = {
     backupSave:"Sicherung speichern", backupLoad:"Sicherung laden",
     privacy:"Alle Daten bleiben auf diesem Gerät. Keine Anmeldung, kein Server, keine Übertragung von Namen. Die App funktioniert vollständig offline. Erstelle regelmäßig eine Sicherung — beim Deinstallieren der App werden sonst alle Sitzpläne gelöscht.",
     noClasses:"Noch keine Klasse angelegt. Beginne mit „Neue Klasse“ — zum Beispiel „5b“ oder „Deutsch Q1“.",
-    
     students:"Schüler:innen", plans:"Sitzpläne", rules:"Regeln",
-    
     newPlan:"Neuer Sitzplan", addNames:"Namen hinzufügen",
     namesPh:"Ein Name pro Zeile\nAnna\nBen\nCem",
-    
     nPlans:"Sitzpläne", nStudents:"Schüler:innen", nDesks:"Tische", 
     pnSeats:"Plätze", pnSeatsHint:"Tische anordnen und Namen verteilen.",
     autoSeat:"Automatisch setzen", placeAll:"Alle Namen setzen", shuffle:"Namen mischen",
@@ -1395,7 +1404,6 @@ const I18N = {
     roomHintPlan:"Die Ausstattung gehört zum Raum und gilt für alle Sitzpläne, die ihn nutzen.",
     roomHintEdit:"Du bearbeitest gerade den Raum. Tische sind ausgeblendet.",
     tabSeats:"Plätze", tabRoom:"Raum", tabPresets:"Vorlagen",
-    
     deskSize:"Größe", deskSizeTitle:"Tischgröße",
     deskSizeHint:"Gilt für die ausgewählten Tische — ohne Auswahl für alle Tische des Plans.",
     sizeSingle:"Einzeltisch", sizeDouble:"Doppeltisch", sizeGroup:"Gruppentisch",
@@ -1407,7 +1415,6 @@ const I18N = {
     tplSpecial:"Fachraum", tplSpecialSub:"Waschbecken, Schränke, Pinnwand, Trennwand",
     tplApplied:"Raum eingerichtet",
     lockOn:"Ansicht gesperrt — Wischen verschiebt nichts mehr", lockOff:"Ansicht entsperrt",
-    
     rotate:"Drehen", group:"Gruppieren", ungroup:"Lösen", rename:"Umbenennen",
     duplicate:"Kopieren", delete:"Löschen",
     cancel:"Abbrechen", save:"Speichern", create:"Anlegen", close:"Schließen",
@@ -1418,7 +1425,6 @@ const I18N = {
     deletePlanQ:"Sitzplan löschen?", deletePlanT:"Dieser Sitzplan wird dauerhaft entfernt.",
     deleteRoomQ:"Raum löschen?", deleteRoomT:"Sitzpläne, die diesen Raum nutzen, verlieren ihre Ausstattung.",
     roomInUse:"Der Raum wird noch von Sitzplänen verwendet und kann nicht gelöscht werden.",
-    
     noRules:"Noch keine Regeln.",
     labelText:"Beschriftung",
     grouped:"Gruppe gebildet", ungrouped:"Gruppe gelöst",
@@ -1446,7 +1452,6 @@ const I18N = {
     asPng:"Als Bild (PNG)", asPdf:"Als PDF (A4 quer)",
     asPngSub:"Für Chat, Notizen oder Mail", asPdfSub:"Zum Ausdrucken und Abheften",
     editStudent:"Schüler:in", sitFront:"Sitzt vorne", sitFrontSub:"Bekommt einen Platz in den ersten Reihen",
-    
     rulePerson1:"Erste Person", rulePerson2:"Zweite Person",
     needTwoStudents:"Dafür braucht es mindestens zwei Namen",
     unseated:"Ohne Platz", seatedFrom:"{a} von {b} Plätzen belegt",
@@ -1457,10 +1462,8 @@ const I18N = {
       computer:"PC-Platz",plant:"Pflanze",carpet:"Sitzkreis",label:"Beschriftung",
       roundtable:"Runder Tisch",whiteboard:"Whiteboard",screen:"Leinwand",
       pinboard:"Pinnwand",flipchart:"Flipchart",wall:"Trennwand",clock:"Uhr",trash:"Papierkorb",
-      stage:"Bühne",dancefloor:"Tanzfläche",buffet:"Buffet",bar:"Bar",headtable:"Brautpaartisch",
-      gifttable:"Geschenketisch",dj:"DJ-Pult",cake:"Tortentisch",coatrack:"Garderobe",pillar:"Säule"},
-    /* Im Veranstaltungsmodus heißen nur wenige Dinge anders – für Feiern gibt es eigene Möbel */
-    ev_items:{desk:"Platz",teacherdesk:"Rednerpult"},
+      stage:"Bühne",
+      coatrack:"Garderobe",pillar:"Säule"},
     presets:{rows:"Reihen",groups4:"Tischgruppen (4)",groups6:"Tischgruppen (6)",
       u:"U-Form",doubleU:"Doppel-U",circle:"Sitzkreis",exam:"Prüfung",cinema:"Kinobestuhlung",
       rounds:"Runde Tische",longtables:"Lange Tafeln",boardroom:"Konferenztisch",
@@ -1468,13 +1471,13 @@ const I18N = {
     presetsSub:{rows:"Doppeltische zur Tafel",groups4:"Vierergruppen",groups6:"Sechsergruppen",
       u:"Offenes U zur Tafel",doubleU:"Zwei Reihen im U",circle:"Runder Kreis",
       exam:"Einzeln, weit auseinander",cinema:"Leicht gebogene Reihen",
-      rounds:"Gäste rund um Tische — weicht Bühne & Tanzfläche aus",longtables:"Tafeln mit Plätzen auf beiden Seiten",
+      rounds:"Plätze rund um Tische — weicht Bühne & Säulen aus",longtables:"Tafeln mit Plätzen auf beiden Seiten",
       boardroom:"Umlaufend um einen langen Tisch",
       squares:"Plätze auf allen vier Seiten",ovals:"Gestreckt rund, viel Beinfreiheit",
-      utable:"Kopftafel vorne, Gäste außen mit Blick in die Mitte",ttable:"Kopftafel vorne, lange Tafel davor"},
+      utable:"Kopftafel vorne, Plätze außen mit Blick in die Mitte",ttable:"Kopftafel vorne, lange Tafel davor"},
     info:[
       { h:"Was die App macht",
-        p:["Du legst deine Klassen oder Veranstaltungen an, gibst die Namen ein und ziehst die Plätze frei auf der Fläche zusammen. Fertige Pläne kannst du ausdrucken, teilen und für jede Gruppe mehrfach anlegen."] },
+        p:["Du legst deine Klassen an, gibst die Namen ein und ziehst die Plätze frei auf der Fläche zusammen. Fertige Pläne kannst du ausdrucken, teilen und für jede Gruppe mehrfach anlegen."] },
       { h:"In vier Schritten zum Sitzplan",
         ol:["Klasse anlegen und Namen eintragen.",
             "Sitzplan erstellen und einen Raum wählen.",
@@ -1487,9 +1490,8 @@ const I18N = {
         p:["Mehrere Plätze auswählen und auf „Gruppieren“ tippen. Danach bewegen sich die Tische gemeinsam und lassen sich als Einheit drehen. Beim automatischen Setzen gelten gruppierte Tische als Nachbarn."] },
       { h:"Automatisch setzen",
         p:["Die App verteilt die Namen so, dass deine Regeln und Sitzwünsche möglichst erfüllt werden. Wenn sich nicht alles erfüllen lässt, sagt sie dir, wie viele Regeln offen blieben — statt still eine schlechte Lösung zu liefern."] },
-      { h:"Auch für Feiern und Besprechungen",
-        p:["Stelle in den Einstellungen auf „Veranstaltung“ um: Aus Klassen werden Veranstaltungen, aus Schüler:innen Gäste. Es gibt eigene Räume (Festsaal, Partyraum, Konferenzraum, Aula) und Möbel wie Bühne, Tanzfläche, Buffet, Bar und Brautpaartisch.",
-           "„Runde Tische“ und „Lange Tafeln“ stellen Tische mit 4 bis 12 Plätzen auf und weichen dabei Bühne, Tanzfläche und Säulen aus. „Nie zusammen“ heißt dort: nicht am selben Tisch."] },
+      { h:"Aula, Mensa und Konferenz",
+        p:["Für Prüfungen in der Aula, Elternabende oder Konferenzen gibt es eigene Raumvorlagen. „Runde Tische“ und „Lange Tafeln“ stellen Tische mit 4 bis 12 Plätzen auf und weichen dabei Bühne und Säulen aus. „Nie zusammen“ heißt dort: nicht am selben Tisch."] },
       { h:"Datenschutz",
         p:["Alle Namen bleiben auf diesem Gerät. Es gibt keine Anmeldung, kein Nutzerkonto und keine Übertragung an einen Server. Die App braucht kein Internet.",
            "Weil nichts in einer Cloud liegt, sind deine Sitzpläne bei einer Deinstallation oder einem Gerätewechsel verloren. Erstelle deshalb ab und zu eine Sicherung über die Startseite.",
@@ -1507,21 +1509,13 @@ const I18N = {
   en:{
     tagline:"Plan your classroom — offline, no cloud",
     yourClasses:"Your classes", yourRooms:"Your rooms", backup:"Backup",
-    ev_yourClasses:"Your events", ev_newClass:"New event",
-    ev_className:"Event name", ev_classPh:"e.g. Meier wedding",
-    ev_students:"Guests", ev_nStudents:"guests", ev_addNames:"Add guests",
-    ev_namesPh:"One name per line\nAnna Meier\nBen Klein\nCem Yilmaz",
     
-    ev_editStudent:"Guest", ev_nDesks:"seats", ev_pnSeats:"Seats", ev_tabSeats:"Seats",
-    ev_placeAll:"Place all guests", ev_emptyDesk:"Empty seat", ev_noStudents:"Add guests first",
-    ev_noDesks:"There are no seats on the plan yet",
-    ev_noClasses:"No events yet. Start with “New event” — for example “Meier wedding” or “Sales offsite”.",
-    ev_deleteClassQ:"Delete event?",
-    ev_deleteClassT:"Every seating plan for this event goes with it. This cannot be undone.",
     
-    ev_sitFront:"Seat near the stage", ev_sitFrontSub:"Gets a seat in the front rows",
-    ev_pnSeatsHint:"Arrange seats and hand out names.",
-    ev_placed:"Seats placed", ev_seatedFrom:"{a} of {b} seats taken",
+    
+    
+    
+    
+    
     addItemPh:"Add an object …",
     loadDemo:"Load a sample class", demoLoaded:"Sample class created — try a template",
     demoClass:"Sample class 7a", demoPlan:"Standard", demoRoom:"Sample room 204",
@@ -1542,7 +1536,6 @@ const I18N = {
     conflictTogether:"{a} and {b} are not sitting next to each other",
     conflictNoSeat:"{a} has no seat",
     conflictTag:"{a}: {tag} not met",
-    
     allPdf:"All seating plans (PDF)", allPdfSub:"Every plan of the class plus a name list",
     nameList:"Name list", notSeated:"no seat",
     searchClasses:"Search classes …", noMatch:"No class found",
@@ -1559,8 +1552,7 @@ const I18N = {
     grpBoards:"Boards & presentation", grpFurniture:"Furniture",
     grpRoom:"Room & walls", grpOther:"Other",
     infoTitle:"About the app", settingsTitle:"Settings",
-    setMode:"Used for", setModeSchool:"School", setModeEvent:"Events",
-    setModeHint:"Changes wording only: classes become events, students become guests.",
+    
     setFeatures:"Features", setFeaturesHint:"Switched-off features disappear from the interface. Your data is kept.",
     setRules:"Rules", setRulesSub:"Who must not — or must — sit together",
     setTags:"Seating needs", setTagsSub:"Near the board, near the door, or a quiet spot",
@@ -1585,12 +1577,9 @@ const I18N = {
     backupSave:"Save backup", backupLoad:"Load backup",
     privacy:"All data stays on this device. No account, no server, no names sent anywhere. The app works fully offline. Save a backup from time to time — uninstalling the app deletes every seating plan otherwise.",
     noClasses:"No classes yet. Start with “New class” — for example “5b” or “English 10”.",
-    
     students:"Students", plans:"Seating plans", rules:"Rules",
-    
     newPlan:"New seating plan", addNames:"Add names",
     namesPh:"One name per line\nAnna\nBen\nCem",
-    
     nPlans:"plans", nStudents:"students", nDesks:"desks", 
     pnSeats:"Seats", pnSeatsHint:"Arrange desks and hand out names.",
     autoSeat:"Seat automatically", placeAll:"Place all names", shuffle:"Shuffle names",
@@ -1601,7 +1590,6 @@ const I18N = {
     roomHintPlan:"Furniture belongs to the room and applies to every plan using it.",
     roomHintEdit:"You are editing the room. Desks are hidden.",
     tabSeats:"Seats", tabRoom:"Room", tabPresets:"Templates",
-    
     deskSize:"Size", deskSizeTitle:"Desk size",
     deskSizeHint:"Applies to the selected desks — with nothing selected, to every desk on the plan.",
     sizeSingle:"Single desk", sizeDouble:"Double desk", sizeGroup:"Group table",
@@ -1613,7 +1601,6 @@ const I18N = {
     tplSpecial:"Specialist room", tplSpecialSub:"Sink, cupboards, pinboard, partition",
     tplApplied:"Room furnished",
     lockOn:"View locked — swiping no longer moves anything", lockOff:"View unlocked",
-    
     rotate:"Rotate", group:"Group", ungroup:"Ungroup", rename:"Rename",
     duplicate:"Duplicate", delete:"Delete",
     cancel:"Cancel", save:"Save", create:"Create", close:"Close",
@@ -1624,7 +1611,6 @@ const I18N = {
     deletePlanQ:"Delete seating plan?", deletePlanT:"This plan will be removed permanently.",
     deleteRoomQ:"Delete room?", deleteRoomT:"Plans using this room lose their furniture.",
     roomInUse:"This room is still used by seating plans and cannot be deleted.",
-    
     noRules:"No rules yet.",
     labelText:"Label",
     grouped:"Group created", ungrouped:"Group released",
@@ -1652,7 +1638,6 @@ const I18N = {
     asPng:"As image (PNG)", asPdf:"As PDF (A4 landscape)",
     asPngSub:"For chat, notes or email", asPdfSub:"For printing and filing",
     editStudent:"Student", sitFront:"Sits at the front", sitFrontSub:"Gets a seat in the first rows",
-    
     rulePerson1:"First person", rulePerson2:"Second person",
     needTwoStudents:"You need at least two names for that",
     unseated:"Without a seat", seatedFrom:"{a} of {b} seats taken",
@@ -1663,9 +1648,8 @@ const I18N = {
       computer:"Computer",plant:"Plant",carpet:"Circle rug",label:"Label",
       roundtable:"Round table",whiteboard:"Whiteboard",screen:"Projector screen",
       pinboard:"Pinboard",flipchart:"Flipchart",wall:"Partition",clock:"Clock",trash:"Bin",
-      stage:"Stage",dancefloor:"Dance floor",buffet:"Buffet",bar:"Bar",headtable:"Head table",
-      gifttable:"Gift table",dj:"DJ booth",cake:"Cake table",coatrack:"Cloakroom",pillar:"Pillar"},
-    ev_items:{desk:"Seat",teacherdesk:"Lectern"},
+      stage:"Stage",
+      coatrack:"Cloakroom",pillar:"Pillar"},
     presets:{rows:"Rows",groups4:"Table groups (4)",groups6:"Table groups (6)",
       u:"U-shape",doubleU:"Double U",circle:"Circle",exam:"Exam",cinema:"Theatre style",
       rounds:"Round tables",longtables:"Long tables",boardroom:"Boardroom",
@@ -1673,13 +1657,13 @@ const I18N = {
     presetsSub:{rows:"Paired desks facing the board",groups4:"Groups of four",groups6:"Groups of six",
       u:"Open U facing the board",doubleU:"Two nested U rows",circle:"Full circle",
       exam:"Single desks, spread out",cinema:"Gently curved rows",
-      rounds:"Guests around tables — avoids stage & dance floor",longtables:"Banquet tables seated on both sides",
+      rounds:"Seats around tables — avoids stage & pillars",longtables:"Banquet tables seated on both sides",
       boardroom:"All around one long table",
       squares:"Seats on all four sides",ovals:"Stretched round, plenty of legroom",
-      utable:"Head table at the front, guests outside facing in",ttable:"Head table at the front, long table in front of it"},
+      utable:"Head table at the front, seats outside facing in",ttable:"Head table at the front, long table in front of it"},
     info:[
       { h:"What the app does",
-        p:["Set up your classes or events, type in the names, and drag the seats around freely. Finished plans can be printed, shared, and kept in several versions per group."] },
+        p:["Set up your classes, type in the names, and drag the seats around freely. Finished plans can be printed, shared, and kept in several versions per group."] },
       { h:"Four steps to a seating plan",
         ol:["Create a class and enter the names.",
             "Create a seating plan and pick a room.",
@@ -1692,9 +1676,8 @@ const I18N = {
         p:["Select several seats and tap “Group”. From then on they move together and rotate as one unit. When seating automatically, grouped desks count as neighbours."] },
       { h:"Seating automatically",
         p:["The app hands out names so that your rules and seating needs are met as far as possible. If something cannot be satisfied, it tells you how many rules were left open instead of quietly delivering a poor result."] },
-      { h:"Also for parties and meetings",
-        p:["Switch to “Events” in the settings: classes become events and students become guests. There are dedicated rooms (banquet hall, party room, conference room, assembly hall) and furniture such as stage, dance floor, buffet, bar and head table.",
-           "“Round tables” and “Long tables” set up tables with 4 to 12 seats and keep clear of the stage, dance floor and pillars. There, “never together” means: not at the same table."] },
+      { h:"Assembly hall, canteen and meetings",
+        p:["There are room templates for exams in the assembly hall, parents' evenings or staff meetings. “Round tables” and “Long tables” set up tables with 4 to 12 seats and keep clear of the stage and pillars. There, “never together” means: not at the same table."] },
       { h:"Privacy",
         p:["Every name stays on this device. There is no account, no login and nothing sent to a server. The app needs no internet connection.",
            "Because nothing lives in a cloud, your plans are gone if you uninstall the app or switch devices. Save a backup now and then from the start screen.",
@@ -1746,7 +1729,7 @@ Object.assign(I18N.de, {
   wizLayout:"Tische für {n} Namen", wizEmpty:"Selbst zusammenstellen", wizEmptySub:"Tische frei anordnen",
   wizFmTitle:"Nach FairMix-Gruppen", 
   wizGroupsSub:"{g} Gruppen · {n} Tische", wizTablesSub:"{g} Tische · {n} Plätze",
-  wizExtra:"Zusätzliche freie Tische", wizExtraSub:"z. B. für Neue oder Gäste",
+  wizExtra:"Zusätzliche freie Tische", wizExtraSub:"z. B. für Neue oder Besuch",
   wizDist:"Namen verteilen",
   wizRandom:"Zufällig", wizRandomSub:"Beachtet immer und nie zusammen, Stufen und Sitzwünsche",
   wizManual:"Selbst zuordnen", wizManualSub:"Namen per Drag & Drop auf die Tische ziehen",
@@ -1758,17 +1741,14 @@ Object.assign(I18N.de, {
   seatedGroups:"Gruppen gesetzt", seatedMissing:"Gesetzt — {n} Namen ohne Platz",
   presetFmSub:"Tischgruppen in den Größen der FairMix-Gruppen",
   byGroupsSub:"„Automatisch setzen“ hält die Gruppen zusammen",
-  dragHint:"Namen auf einen Tisch ziehen — oder antippen und dann den Tisch antippen.",
-  placeName:"{a} platzieren", armedHint:"{a}: jetzt auf einen Tisch tippen",
-  
-  
+  dragHint:"Namen auf einen Tisch ziehen – oder auf eine freie Stelle, dann entsteht dort ein Tisch. Alternativ antippen und dann Tisch oder freie Stelle antippen.",
+  placeName:"{a} platzieren", armedHint:"{a}: jetzt auf einen Tisch oder eine freie Stelle tippen",
   
   fmImportTitle:"Aus FairMix übernehmen", fmImportPick:"Welche Klassen sollen übernommen werden? Gleichnamige Klassen werden ergänzt, nicht ersetzt.",
   fmMerge:"wird ergänzt", fmNew:"neu", fmImportGo:"Übernehmen", fmImportNone:"Bitte mindestens eine Klasse wählen",
   fmImported:"{c} Klassen übernommen, {n} neue Namen", fmImportedGroups:"{g} Gruppen",
   fmBad:"Das ist keine FairMix-Sicherung", fmEmpty:"In der Sicherung stehen keine Namen",
   nStudent:"Schüler:in", nPlan:"Sitzplan", nDesk:"Tisch", nObject:"Objekt",
-  ev_nStudent:"Gast", ev_nDesk:"Platz",
   usedNone:"noch ungenutzt", usedOne:"in 1 Sitzplan", usedMany:"in {n} Sitzplänen",
   legalTitle:"Rechtliches", legalPrivacy:"Datenschutz", legalImprint:"Impressum",
   fmHistory:"Partnerhistorie", toPlans:"Weiter zu den Sitzplänen", toNames:"Namen, Stufen und Regeln bearbeiten",
@@ -1786,28 +1766,21 @@ Object.assign(I18N.de, {
   restoreUndo:"Vorherigen Stand zurückholen", restoreKeep:"Behalten",
   restoreUndoQ:"Vorherigen Stand zurückholen?", restoreUndoT:"Der Stand vor dem Laden der Sicherung ersetzt den jetzigen.",
   restoreUndone:"Vorheriger Stand wiederhergestellt",
-  grpEvent:"Feier",
   roomSizeRange:"Bitte eine Größe zwischen 4 und 40 m angeben",
   roomSize:"Größe & Boden", roomSizeTitle:"Raumgröße und Boden", roomWidth:"Breite (m)", roomDepth:"Tiefe (m)",
   roomSizeHint:"Die Kästchen im Raum sind 50 cm groß. Was beim Verkleinern außerhalb läge, rückt an den Rand.",
   roomSizeSub:"{w} × {h} m", floorTitle:"Boden",
   floor_plain:"Schlicht", floor_parquet:"Parkett", floor_tiles:"Fliesen", floor_carpet:"Teppich", floor_stone:"Stein",
-  tplCatSchool:"Schule", tplCatEvent:"Feier & Veranstaltung",
-  tplHall:"Festsaal", tplHallSub:"20 × 14 m · Bühne, Tanzfläche, Buffet, Bar, Brautpaartisch",
-  tplParty:"Partyraum", tplPartySub:"12 × 9 m · Bar, Buffet, Tanzfläche, DJ-Pult",
+  
   tplConference:"Konferenzraum", tplConferenceSub:"10 × 7 m · Leinwand, Whiteboard, Flipchart",
   tplAula:"Aula", tplAulaSub:"18 × 14 m · Bühne, zwei Eingänge, Säulen",
   seatsPerTable:"Plätze pro Tisch", tableNo:"Tisch {n}", sizeSeat:"Stuhl (rund)", sizeSeatSub:"Ein Platz an runden Tischen oder Tafeln",
   paletteHint:"Antippen setzt das Objekt in die Mitte, Ziehen legt es genau ab. Türen, Fenster und Tafeln rasten an der Wand ein.",
   wallSnapped:"An der Wand eingerastet",
-  welcomeTitle:"Willkommen bei FairSeat", welcomeText:"Wofür möchtest du FairSeat nutzen? Das passt Bezeichnungen und Vorlagen an und lässt sich jederzeit in den Einstellungen ändern.",
-  welcomeSchool:"Schule & Unterricht", welcomeSchoolSub:"Klassen, Schüler:innen, Klassenräume",
-  welcomeEvent:"Hochzeit, Feier & Veranstaltung", welcomeEventSub:"Gäste, Festsäle, runde Tische",
-  ev_loadDemo:"Beispielhochzeit laden", ev_demoLoaded:"Beispielhochzeit angelegt — tippe einen Gast an",
-  ev_demoClass:"Hochzeit Lena & Tom", ev_demoPlan:"Tischplan", ev_demoRoom:"Festsaal Lindenhof",
-  ev_tileNames:"Gäste verwalten", ev_tilePlans:"Tischpläne", ev_toPlans:"Weiter zu den Tischplänen",
-  ev_toNames:"Gäste und Regeln bearbeiten", ev_newPlan:"Neuer Tischplan", ev_plans:"Tischpläne",
-  ev_wizLayout:"Tische für {n} Gäste", ev_planDefault:"Tischplan",
+  welcomeTitle:"Willkommen bei FairSeat", welcomeText:"Sitzpläne, Stundenplan, Bewertungen und Anwesenheit – alles für deinen Unterricht, offline auf diesem Gerät.", welcomeGo:"Los geht’s",
+  
+  
+  
   searchSeat:"Wo sitzt …? Namen suchen", searchNone:"Kein Platz mit diesem Namen",
   swapWith:"Tauschen", clearSeat:"Leeren", noteAbsent:"Notiz & Anwesenheit",
   swapPick:"Jetzt den Platz antippen, mit dem getauscht wird", hintSwapWith:"Tauschen — Zielplatz antippen",
@@ -1834,10 +1807,8 @@ Object.assign(I18N.de, {
   subColNo:"Platz", subColName:"Name", subColTags:"Sitzwunsch", subNotes:"Hinweise",
   lockSeat:"Festhalten", unlockSeat:"Lösen", lockedOn:"{n} Plätze festgehalten — bleiben beim Setzen und Mischen stehen",
   lockedOff:"Plätze wieder frei", lockedKept:"{n} festgehalten", absentSkipped:"{n} Abwesende ausgelassen",
-  ev_tagline:"Gäste, Räume und Tischpläne — offline",
-  ev_classLabel:"Veranstaltung", ev_tileNamesSub:"Veranstaltungen, Gäste, immer und nie zusammen",
-  ev_tilePlansSub:"Gäste den Plätzen zuordnen", ev_needClassFirst:"Lege zuerst eine Veranstaltung mit Gästen an",
-  ev_noClassYet:"Noch keine Veranstaltung", ev_noNamesYet:"Noch keine Gäste eingetragen.",
+  
+  
   fmIsOwnBackup:"Das ist eine FairSeat-Sicherung — bitte auf der Startseite unter „Sicherung laden“ öffnen"
 });
 Object.assign(I18N.en, {
@@ -1875,7 +1846,7 @@ Object.assign(I18N.en, {
   wizLayout:"Desks for {n} names", wizEmpty:"Build it yourself", wizEmptySub:"Arrange desks freely",
   wizFmTitle:"By FairMix groups", 
   wizGroupsSub:"{g} groups · {n} desks", wizTablesSub:"{g} tables · {n} seats",
-  wizExtra:"Extra free desks", wizExtraSub:"e.g. for new students or guests",
+  wizExtra:"Extra free desks", wizExtraSub:"e.g. for new students or visitors",
   wizDist:"Assign names",
   wizRandom:"Random", wizRandomSub:"Respects always/never together, levels and seating wishes",
   wizManual:"Assign yourself", wizManualSub:"Drag the names onto the desks",
@@ -1887,17 +1858,14 @@ Object.assign(I18N.en, {
   seatedGroups:"Groups seated", seatedMissing:"Seated — {n} names without a seat",
   presetFmSub:"Table groups sized like the FairMix groups",
   byGroupsSub:"“Auto-seat” keeps the groups together",
-  dragHint:"Drag a name onto a desk — or tap it, then tap the desk.",
-  placeName:"Place {a}", armedHint:"{a}: now tap a desk",
-  
-  
+  dragHint:"Drag a name onto a desk – or onto a free spot to create a desk there. Or tap it, then tap a desk or a free spot.",
+  placeName:"Place {a}", armedHint:"{a}: now tap a desk or a free spot",
   
   fmImportTitle:"Import from FairMix", fmImportPick:"Which classes should be imported? Classes with the same name are extended, not replaced.",
   fmMerge:"will be extended", fmNew:"new", fmImportGo:"Import", fmImportNone:"Please choose at least one class",
   fmImported:"{c} classes imported, {n} new names", fmImportedGroups:"{g} groups",
   fmBad:"This is not a FairMix backup", fmEmpty:"The backup contains no names",
   nStudent:"student", nPlan:"seating plan", nDesk:"desk", nObject:"object",
-  ev_nStudent:"guest", ev_nDesk:"seat",
   usedNone:"not used yet", usedOne:"in 1 seating plan", usedMany:"in {n} seating plans",
   legalTitle:"Legal", legalPrivacy:"Privacy policy", legalImprint:"Legal notice",
   fmHistory:"partner history", toPlans:"Go to seating plans", toNames:"Edit names, levels and rules",
@@ -1915,28 +1883,21 @@ Object.assign(I18N.en, {
   restoreUndo:"Restore previous state", restoreKeep:"Keep",
   restoreUndoQ:"Restore previous state?", restoreUndoT:"The state from before loading the backup replaces the current one.",
   restoreUndone:"Previous state restored",
-  grpEvent:"Celebration",
   roomSizeRange:"Please enter a size between 4 and 40 m",
   roomSize:"Size & floor", roomSizeTitle:"Room size and floor", roomWidth:"Width (m)", roomDepth:"Depth (m)",
   roomSizeHint:"Grid squares are 50 cm. Anything outside after shrinking moves to the edge.",
   roomSizeSub:"{w} × {h} m", floorTitle:"Floor",
   floor_plain:"Plain", floor_parquet:"Parquet", floor_tiles:"Tiles", floor_carpet:"Carpet", floor_stone:"Stone",
-  tplCatSchool:"School", tplCatEvent:"Celebration & event",
-  tplHall:"Banquet hall", tplHallSub:"20 × 14 m · stage, dance floor, buffet, bar, head table",
-  tplParty:"Party room", tplPartySub:"12 × 9 m · bar, buffet, dance floor, DJ booth",
+  
   tplConference:"Conference room", tplConferenceSub:"10 × 7 m · screen, whiteboard, flipchart",
   tplAula:"Assembly hall", tplAulaSub:"18 × 14 m · stage, two entrances, pillars",
   seatsPerTable:"Seats per table", tableNo:"Table {n}", sizeSeat:"Chair (round)", sizeSeatSub:"One seat at round or long tables",
   paletteHint:"Tap to place in the middle, drag to drop exactly. Doors, windows and boards snap to the wall.",
   wallSnapped:"Snapped to the wall",
-  welcomeTitle:"Welcome to FairSeat", welcomeText:"What would you like to use FairSeat for? This adjusts labels and templates and can be changed any time in the settings.",
-  welcomeSchool:"School & teaching", welcomeSchoolSub:"Classes, students, classrooms",
-  welcomeEvent:"Wedding, party & event", welcomeEventSub:"Guests, banquet halls, round tables",
-  ev_loadDemo:"Load sample wedding", ev_demoLoaded:"Sample wedding created — tap a guest",
-  ev_demoClass:"Wedding Lena & Tom", ev_demoPlan:"Seating chart", ev_demoRoom:"Lindenhof Hall",
-  ev_tileNames:"Manage guests", ev_tilePlans:"Seating charts", ev_toPlans:"Go to seating charts",
-  ev_toNames:"Edit guests and rules", ev_newPlan:"New seating chart", ev_plans:"Seating charts",
-  ev_wizLayout:"Tables for {n} guests", ev_planDefault:"Seating chart",
+  welcomeTitle:"Welcome to FairSeat", welcomeText:"Seating plans, timetable, assessments and attendance – everything for your lessons, offline on this device.", welcomeGo:"Let’s go",
+  
+  
+  
   searchSeat:"Where is …? Search a name", searchNone:"No seat with this name",
   swapWith:"Swap", clearSeat:"Clear", noteAbsent:"Note & attendance",
   swapPick:"Now tap the seat to swap with", hintSwapWith:"Swap — tap the target seat",
@@ -1963,53 +1924,37 @@ Object.assign(I18N.en, {
   subColNo:"Seat", subColName:"Name", subColTags:"Seating need", subNotes:"Notes",
   lockSeat:"Keep", unlockSeat:"Release", lockedOn:"{n} seats kept — they stay put when seating and shuffling",
   lockedOff:"Seats released", lockedKept:"{n} kept", absentSkipped:"{n} absent left out",
-  ev_tagline:"Guests, rooms and seating charts — offline",
-  ev_classLabel:"Event", ev_tileNamesSub:"Events, guests, always and never together",
-  ev_tilePlansSub:"Assign guests to seats", ev_needClassFirst:"Create an event with guests first",
-  ev_noClassYet:"No event yet", ev_noNamesYet:"No guests yet.",
+  
+  
   fmIsOwnBackup:"This is a FairSeat backup — open it on the start page under “Load backup”"
 });
 Object.assign(I18N.de, {
-  rsvpTitle:"Zusage", rsvpOpen:"Offen", rsvpYes:"Zugesagt", rsvpNo:"Abgesagt",
-  menuTitle:"Menü", menu_meat:"Fleisch", menu_fish:"Fisch", menu_veg:"Vegetarisch", menu_vegan:"Vegan", menu_kids:"Kinderteller",
-  menuShort_meat:"Fleisch", menuShort_fish:"Fisch", menuShort_veg:"Veg.", menuShort_vegan:"Vegan", menuShort_kids:"Kind",
-  menuNone:"ohne Angabe",
-  kitchenNote:"Hinweis für die Küche", kitchenNotePh:"z. B. ohne Nüsse, laktosefrei",
-  addCompanion:"+ Begleitung hinzufügen", companionOf:"Begleitung von {a}", companionAdded:"Begleitung hinzugefügt – sitzt immer daneben",
+  
+  
+  
   fmGroupsClear:"Alle Gruppen löschen", fmGroupsClearT:"Alle Gruppen werden gelöscht. Namen und Regeln bleiben.",
   groupsHint:"Gruppen kannst du selbst anlegen oder aus FairMix übernehmen. Unter Sitzpläne setzt „Gruppen zusammenhalten“ jede Gruppe an eine eigene Tischgruppe.",
-  ev_groupsHint:"Familie, Freunde, Kollegen … Jede Gruppe bekommt eine Farbe und sitzt beim automatischen Setzen am selben Tisch.",
   groupNew:"Neue Gruppe", groupEdit:"Gruppe bearbeiten", groupColor:"Farbe", groupMembers:"Mitglieder ({n})",
-  groupNamePh:"z. B. Team Blau", ev_groupNamePh:"z. B. Familie der Braut",
+  groupNamePh:"z. B. Team Blau", 
   groupMoveHint:"Jede Person ist höchstens in einer Gruppe. Wer schon in einer anderen Gruppe ist, wechselt beim Speichern hierher.",
   groupDelete:"Gruppe löschen", groupEmpty:"Wähle mindestens eine Person aus", groupLimit:"Höchstens {n} Gruppen",
-  seatNo:"Platz {n}", eventNoneSeated:"Noch niemand sitzt – erst Plätze zuordnen",
-  cardsTitle:"Tisch- und Platzkarten", cardsSub:"Klappkarten zum Ausschneiden, vier je Seite",
-  cardsFile:"Platzkarten", escortTitle:"Wer sitzt wo?", escortSub:"Alphabetische Liste mit Tischnummer für den Eingang",
-  escortDoc:"{c} – Wer sitzt wo?", escortFile:"Wer sitzt wo",
-  kitchenTitle:"Küchenliste", kitchenSub:"Menüs und Küchenhinweise je Tisch",
-  kitchenDoc:"{c} – Küchenliste", kitchenFile:"Kuechenliste", kitchenTotal:"{n} Gäste mit Platz", kitchenNoTable:"Ohne Tisch"
+  
+  
+  
 });
 Object.assign(I18N.en, {
-  rsvpTitle:"RSVP", rsvpOpen:"Pending", rsvpYes:"Attending", rsvpNo:"Declined",
-  menuTitle:"Meal", menu_meat:"Meat", menu_fish:"Fish", menu_veg:"Vegetarian", menu_vegan:"Vegan", menu_kids:"Kids' meal",
-  menuShort_meat:"Meat", menuShort_fish:"Fish", menuShort_veg:"Veg.", menuShort_vegan:"Vegan", menuShort_kids:"Kids",
-  menuNone:"not specified",
-  kitchenNote:"Note for the kitchen", kitchenNotePh:"e.g. no nuts, lactose-free",
-  addCompanion:"+ Add plus-one", companionOf:"Guest of {a}", companionAdded:"Plus-one added – always seated next to them",
+  
+  
+  
   fmGroupsClear:"Delete all groups", fmGroupsClearT:"All groups are deleted. Names and rules stay.",
   groupsHint:"Create groups yourself or take them from FairMix. Under Seating plans, “Keep groups together” gives each group its own table group.",
-  ev_groupsHint:"Family, friends, colleagues … Each group gets a colour and sits at the same table when auto-seating.",
   groupNew:"New group", groupEdit:"Edit group", groupColor:"Colour", groupMembers:"Members ({n})",
-  groupNamePh:"e.g. Team Blue", ev_groupNamePh:"e.g. Bride's family",
+  groupNamePh:"e.g. Team Blue", 
   groupMoveHint:"Each person is in one group at most. Anyone already in another group moves here when you save.",
   groupDelete:"Delete group", groupEmpty:"Pick at least one person", groupLimit:"At most {n} groups",
-  seatNo:"Seat {n}", eventNoneSeated:"Nobody is seated yet – assign seats first",
-  cardsTitle:"Table and place cards", cardsSub:"Tent cards to cut out, four per page",
-  cardsFile:"Place cards", escortTitle:"Who sits where?", escortSub:"Alphabetical list with table numbers for the entrance",
-  escortDoc:"{c} – Who sits where?", escortFile:"Who sits where",
-  kitchenTitle:"Kitchen list", kitchenSub:"Meals and kitchen notes per table",
-  kitchenDoc:"{c} – Kitchen list", kitchenFile:"Kitchen list", kitchenTotal:"{n} seated guests", kitchenNoTable:"No table"
+  
+  
+  
 });
 Object.assign(I18N.de, {
   backupTitle:"Sicherung speichern", backupEncHint:"Schütze die Sicherung mit einem Passwort. Dann kann niemand die Namen lesen, der die Datei findet – wichtig, wenn sie in einer Cloud, auf einem Stick oder im Mailpostfach landet.",
@@ -2024,7 +1969,6 @@ Object.assign(I18N.de, {
   privSchool2:"Für Schülerdaten auf privaten Geräten brauchen Lehrkräfte in vielen Bundesländern eine schriftliche Genehmigung der Schulleitung, in Niedersachsen zum Beispiel nach dem Erlass zur Datenverarbeitung auf privaten IT-Systemen von Lehrkräften. Bitte kläre das vor dem Eintragen echter Namen.",
   privSchool3:"Üblich sind dabei: Gerätesperre mit PIN oder Code, verschlüsselte Sicherungen (beim Sichern ein Passwort wählen), Vornamen oder Kürzel statt voller Namen und das Löschen alter Klassen zum Schuljahresende. Keine Gesundheitsdaten oder Diagnosen eintragen.",
   privSchoolOk:"Verstanden",
-  kitchenNoteHint:"Freiwillig. Unverträglichkeiten und Allergien sind Gesundheitsdaten – nur eintragen, wenn der Gast einverstanden ist. Bleibt auf diesem Gerät."
 });
 Object.assign(I18N.en, {
   backupTitle:"Save backup", backupEncHint:"Protect the backup with a password. Then nobody who finds the file can read the names – important if it ends up in a cloud, on a USB stick or in your mailbox.",
@@ -2039,20 +1983,17 @@ Object.assign(I18N.en, {
   privSchool2:"In many places, teachers need written approval from their head teacher to keep pupils' data on a private device (in Lower Saxony, Germany, for example, under the ministry's decree on private IT systems). Please check this before entering real names.",
   privSchool3:"Usual conditions: a device lock with PIN or passcode, encrypted backups (choose a password when saving), first names or initials instead of full names, and deleting old classes at the end of the school year. Do not enter health data or diagnoses.",
   privSchoolOk:"Got it",
-  kitchenNoteHint:"Optional. Intolerances and allergies are health data – only enter them if the guest agrees. Stays on this device."
 });
 I18N.de.info.push({ h:"Stundenplan und Bewertungen",
-  p:["Im Schulmodus gibt es zwei weitere Kacheln. Im Stundenplan trägst du Fach, Klasse und Raum ein; Zeiten, Pausen und A/B-Wochen stellst du mit der Uhr ein, Farben je Fach mit dem Etikett. Auf der Startseite steht dann die laufende Stunde – ein Tipp öffnet den passenden Sitzplan.",
+  p:["Auf der Startseite gibt es zwei weitere Kacheln. Im Stundenplan trägst du Fach, Klasse und Raum ein; Zeiten, Pausen und A/B-Wochen stellst du mit der Uhr ein, Farben je Fach mit dem Etikett. Auf der Startseite steht dann die laufende Stunde – ein Tipp öffnet den passenden Sitzplan.",
      "Unter Bewertungen legst du je Klasse und Fach Bewertungen an (Noten, Punkte oder Smileys), trägst sie über die Liste oder direkt im Sitzplan ein (Plätze antippen, Wert im Tastenfeld wählen) und siehst Durchschnitte, Notenspiegel und Verläufe. Im Sitzplan tippst du einen Namen an und wählst „Bewerten“ – im Unterrichtsmodus erscheint das Tastenfeld direkt beim Antippen. Ob dabei Noten, Punkte oder Smileys verwendet werden, legst du in den Einstellungen fest. Mit „Selbsteinschätzung“ in der Unterrichtsleiste schätzen sich die Schülerinnen und Schüler am Stundenende selbst ein: violetter Sitzplan, Name antippen, Smiley wählen. Beenden mit ✕ zwei Sekunden halten. Beides lässt sich in den Einstellungen ausblenden."] });
 I18N.en.info.push({ h:"Timetable and assessments",
-  p:["In school mode there are two more tiles. In the timetable you enter subject, class and room; set times, breaks and A/B weeks with the clock and colours per subject with the tag. The start page then shows the current period – one tap opens the matching seating plan.",
+  p:["The start page has two more tiles. In the timetable you enter subject, class and room; set times, breaks and A/B weeks with the clock and colours per subject with the tag. The start page then shows the current period – one tap opens the matching seating plan.",
      "Under Assessments you create assessments per class and subject (grades, points or smileys), enter them in the list or right on the seating plan (tap seats, pick a value on the keypad) and see averages, distributions and trends. On the seating plan, tap a name and choose “Mark” – in lesson mode the keypad appears as soon as you tap. Whether grades, points or smileys are used is set in the settings. With “Self-assessment” in the lesson bar, pupils rate themselves at the end of the lesson: purple seating plan, tap your name, pick a smiley. To end, hold ✕ for two seconds. Both can be hidden in the settings."] });
 I18N.de.info.forEach(sec => { if(sec.h === "Datenschutz") sec.p.splice(1, 0,
-  "Für Lehrkräfte: Wer Schülerdaten auf einem privaten Gerät verarbeitet, braucht dafür in vielen Bundesländern eine schriftliche Genehmigung der Schulleitung (in Niedersachsen z. B. nach dem Erlass zu privaten IT-Systemen von Lehrkräften). Kläre das bitte vor der Nutzung mit echten Namen. Sichere das Gerät mit PIN oder Code, schütze Sicherungen mit einem Passwort und lösche Klassen, die du nicht mehr brauchst.",
-  "Für Feiern: Zusagen, Menüs und Küchenhinweise sind freiwillig. Allergien und Unverträglichkeiten gelten als Gesundheitsdaten – trage sie nur mit Einverständnis des Gastes ein."); });
+  "Für Lehrkräfte: Wer Schülerdaten auf einem privaten Gerät verarbeitet, braucht dafür in vielen Bundesländern eine schriftliche Genehmigung der Schulleitung (in Niedersachsen z. B. nach dem Erlass zu privaten IT-Systemen von Lehrkräften). Kläre das bitte vor der Nutzung mit echten Namen. Sichere das Gerät mit PIN oder Code, schütze Sicherungen mit einem Passwort und lösche Klassen, die du nicht mehr brauchst. In den Einstellungen kannst du Bewertungen und Beobachtungen zusätzlich mit Face ID, Fingerabdruck oder Geräte-PIN sperren."); });
 I18N.en.info.forEach(sec => { if(sec.h === "Privacy") sec.p.splice(1, 0,
-  "For teachers: processing pupils' data on a private device often needs written approval from the head teacher (in Lower Saxony, Germany, for example, under the ministry's decree on teachers' private IT systems). Please check this before using real names. Lock the device with a PIN or passcode, protect backups with a password and delete classes you no longer need.",
-  "For events: RSVPs, meals and kitchen notes are optional. Allergies and intolerances count as health data – only enter them with the guest's consent."); });
+  "For teachers: processing pupils' data on a private device often needs written approval from the head teacher (in Lower Saxony, Germany, for example, under the ministry's decree on teachers' private IT systems). Please check this before using real names. Lock the device with a PIN or passcode, protect backups with a password and delete classes you no longer need. In the settings you can additionally lock assessments and observations with Face ID, fingerprint or the device PIN."); });
 Object.assign(I18N.de, {
   tileTT:"Stundenplan", tileTTSub:"Fächer, Klassen, Räume – mit Sitzplan verknüpft",
   tileGrades:"Bewertungen", tileGradesSub:"Noten, Punkte, Smileys – mit Übersicht",
@@ -2092,7 +2033,7 @@ Object.assign(I18N.de, {
   gW:"schr.", gO:"münd.", gTotal:"Gesamt", gPdf:"Übersicht als PDF", gPdfTitle:"Notenübersicht",
   gPdfCut:"Es sind nur die letzten {n} Bewertungen abgedruckt; die Durchschnitte enthalten alle.",
   gOverviewHint:"Smileys zählen nicht in Durchschnitte. Mischt ein Fach Punkte und Noten, wird umgerechnet wie in der Oberstufe: 15 P = 1+, 14 P = 1 … 1 P = 5−, 0 P = 6. Ein Tipp auf einen Namen zeigt den Verlauf.",
-  gTrend:"Verlauf", gQuick:"Mitarbeit bewerten", gQuickSaved:"{a}: {v} gespeichert",
+  gTrend:"Verlauf", gTrendTop:"{v} oben", gQuick:"Mitarbeit bewerten", gQuickSaved:"{a}: {v} gespeichert",
   gQuickHint:"Wird in der Bewertung „Mitarbeit“ von heute gespeichert (mündlich & sonstige)."
 });
 Object.assign(I18N.en, {
@@ -2134,7 +2075,7 @@ Object.assign(I18N.en, {
   gW:"wr.", gO:"oral", gTotal:"Total", gPdf:"Overview as PDF", gPdfTitle:"Grade overview",
   gPdfCut:"Only the last {n} assessments are printed; the averages include all of them.",
   gOverviewHint:"Smileys do not count towards averages. When a subject mixes points and grades, points are converted as in German upper school: 15 = 1+, 14 = 1 … 1 = 5−, 0 = 6. Tap a name to see the trend.",
-  gTrend:"Trend", gQuick:"Mark participation", gQuickSaved:"{a}: {v} saved",
+  gTrend:"Trend", gTrendTop:"{v} at top", gQuick:"Mark participation", gQuickSaved:"{a}: {v} saved",
   gQuickHint:"Saved in today's “Participation” assessment (oral & other)."
 });
 Object.assign(I18N.de, {
@@ -2197,6 +2138,82 @@ Object.assign(I18N.en, {
   gToday:"today", gQuickHintDate:"Saved in that day's “Participation” assessment (oral & other). A different date applies to all further quick marks until you change it back.",
   gNewDay:"Participation on {d}", gContinueDay:"Continue participation on {d}"
 });
+Object.assign(I18N.de, {
+  classColor:"Farbe der Klasse", classColorNone:"Keine Farbe",
+  classColorHint:"Erscheint als Rand der Stunden im Stundenplan – so unterscheidest du z. B. zwei Mathekurse auf einen Blick.",
+  limitDesks:"Höchstens {n} Tische in einem Plan"
+});
+Object.assign(I18N.en, {
+  classColor:"Class colour", classColorNone:"No colour",
+  classColorHint:"Shown as the border of its periods in the timetable – so you can tell two maths classes apart at a glance.",
+  limitDesks:"At most {n} desks in a plan"
+});
+Object.assign(I18N.de, { dropOnTable:"Auf einen Stuhl ziehen – oder neben den Tisch", noRoomHere:"Hier ist kein Platz frei" });
+Object.assign(I18N.en, { dropOnTable:"Drop onto a chair – or next to the table", noRoomHere:"No free space here" });
+Object.assign(I18N.de, {
+  gProposal:"Vorschlag", gProposalShort:"Vorschl.", gRoundLabel:"Rundung bei genau ,5", gRoundFav:"Zugunsten", gRoundMath:"Kaufmännisch",
+  gTendLabel:"Notenvorschlag", gTendOn:"Mit Tendenz (2−)", gTendOff:"Ganze Noten",
+  gRoundHint:"Der Vorschlag ist nur eine Rechenhilfe aus den Durchschnitten – die Zeugnisnote legst du fest. Ganze Noten: „zugunsten“ rundet 2,5 zu 2, „kaufmännisch“ zu 3. Mit Tendenz wird die nächste Stufe gewählt (2,15 → 2 bzw. 2−). Punkte werden immer bei ,5 aufgerundet.",
+  gCsv:"Übersicht als Tabelle (CSV, z. B. für Excel)", gCsvOk:"Tabelle gespeichert",
+  absMissedShort:"Fehlst.", absMissed:"Fehlstunden im Fach: {n}", absMissedTitle:"Fehlstunden laut Stundenplan",
+  absMissedHint:"Gezählt werden Stunden aus dem Stundenplan, in denen der Unterrichtsmodus lief und die Schülerin bzw. der Schüler als abwesend markiert war. Doppelstunden zählen doppelt.",
+  absNoSubject:"ohne Fach",
+  talkTitle:"Gesprächsblatt", talkFile:"Gespraechsblatt", talkNoGrades:"Noch keine Bewertungen.", talkAbsence:"Fehlzeiten",
+  talkAbsDays:"{n} Tage mit Fehlzeit", talkAbsDay1:"1 Tag mit Fehlzeit", talkAbsLessons:"{n} Fehlstunden", talkAbsLesson1:"1 Fehlstunde", talkNotes:"Notizen zum Gespräch",
+  nyTitle:"Neues Schuljahr", nyHint:"Für jede Klasse: weiterführen (mit neuem Namen), archivieren oder löschen. Sitzpläne, Räume, Namen und Regeln bleiben bei weitergeführten Klassen erhalten. Archivierte Klassen bleiben vollständig erhalten. Vorher am besten eine Sicherung speichern – das lässt sich nicht rückgängig machen.",
+  nyBackup:"Vorher Sicherung speichern", nyKeep:"Weiterführen", nyArchive:"Archivieren", nyDelete:"Löschen", nyNewName:"Neuer Name für {c}",
+  nyOptions:"Bei weitergeführten Klassen löschen", nyOptGrades:"Bewertungen und Selbsteinschätzungen", nyOptAbsence:"Anwesenheit, Fehlstunden und Notizen",
+  nyOptObs:"Beobachtungen und Abhaklisten",
+  lockSet:"Sperre für Noten & Beobachtungen", lockSetSub:"Face ID oder Fingerabdruck, ersatzweise die Geräte-PIN. Nach 5 Minuten im Hintergrund und nach einer Selbsteinschätzung wird wieder gesperrt. Gilt nur für dieses Gerät.",
+  lockBrokenQ:"Sperre ausschalten?", lockBrokenT:"Auf diesem Gerät ist keine Entsperrung mit Face ID oder Fingerabdruck mehr eingerichtet. Ohne sie kommst du nicht an Noten und Beobachtungen.", lockBrokenOk:"Sperre ausschalten",
+  lockTitle:"FairSeat entsperren", lockDesc:"Für Bewertungen und Beobachtungen", lockFallback:"Geräte-PIN verwenden",
+  lockOpenBtn:"Entsperren, um zu bewerten", lockOn:"Sperre eingeschaltet", lockOff:"Sperre ausgeschaltet",
+  lockNoBio:"Auf diesem Gerät ist keine Bildschirmsperre bzw. kein Face ID oder Fingerabdruck eingerichtet.",
+  lockLockedOut:"Zu viele Versuche – bitte das Gerät einmal neu entsperren.", lockCancelled:"Nicht entsperrt",
+  ttCancel:"Fällt aus am {d}", ttCancelSub:"Zählt nicht für Fehlstunden", ttCancelled:"fällt aus", ttOffShort:"Ausfall", ttCancelBtn:"Fällt aus", ttCancelUndo:"Findet statt",
+  obsTitle:"Beobachtungen", obsHint:"Kurze Notizen mit Datum – sie bleiben das ganze Schuljahr erhalten und erscheinen im Gesprächsblatt.",
+  obsPh:"z. B. arbeitet seit den Ferien deutlich konzentrierter", obsAdd:"Beobachtung speichern", obsEmpty:"Noch keine Beobachtungen.",
+  obsLesson:"Beobachtung (bleibt dauerhaft)", obsDeleteQ:"Beobachtung löschen?", obsCount:"Beobachtungen ({n})",
+  ckTitle:"Abhaken", ckLists:"Abhaklisten", ckHint:"Zum Beispiel „Einverständnis abgegeben“ oder „Buch zurückgegeben“. Danach im Sitzplan einfach die Namen antippen.",
+  ckNewPh:"Titel der Liste", ckNew:"Neue Liste starten", ckDone:"{a} von {b} erledigt", ckTap:"Namen antippen zum Abhaken – noch einmal tippen nimmt den Haken weg.",
+  ckList:"Liste", ckName:"Titel", ckDelete:"Liste löschen", ckDeleteQ:"Liste löschen?", ckDeleteT:"„{t}“ und alle Haken werden gelöscht.",
+  ckNeedTitle:"Bitte einen Titel eingeben.", ckLimit:"Höchstens 100 Listen je Klasse.", ckOpen:"Noch nicht abgehakt", ckOk:"Fertig",
+  nyOptHistory:"Gemerkte Sitzordnungen", nyOptTT:"Stunden im Stundenplan (Zeiten und Fächer bleiben)",
+  nyApply:"Schuljahr wechseln", nyConfirmQ:"Schuljahr wechseln?", nyConfirmT:"{n} Klassen werden umgestellt, davon {d} gelöscht (30 Tage im Papierkorb). Gewählte Daten werden endgültig entfernt.",
+  nyDone:"Neues Schuljahr eingerichtet"
+});
+Object.assign(I18N.en, {
+  gProposal:"Suggested", gProposalShort:"Sugg.", gRoundLabel:"Rounding at exactly .5", gRoundFav:"In pupil's favour", gRoundMath:"Standard",
+  gTendLabel:"Suggested grade", gTendOn:"With +/−", gTendOff:"Whole grades",
+  gRoundHint:"The suggestion is only a calculation aid based on the averages – you decide the report grade. Whole grades: “in pupil's favour” rounds 2.5 to 2, “standard” to 3. With +/− the nearest step is chosen (2.15 → 2 or 2−). Points are always rounded up at .5.",
+  gCsv:"Overview as spreadsheet (CSV, e.g. for Excel)", gCsvOk:"Spreadsheet saved",
+  absMissedShort:"Missed", absMissed:"Missed lessons in subject: {n}", absMissedTitle:"Missed lessons from the timetable",
+  absMissedHint:"Counted are timetable lessons in which lesson mode was used and the pupil was marked absent. Double lessons count twice.",
+  absNoSubject:"no subject",
+  talkTitle:"Conversation sheet", talkFile:"Conversation sheet", talkNoGrades:"No assessments yet.", talkAbsence:"Absences",
+  talkAbsDays:"{n} days with absence", talkAbsDay1:"1 day with absence", talkAbsLessons:"{n} missed lessons", talkAbsLesson1:"1 missed lesson", talkNotes:"Notes for the conversation",
+  nyTitle:"New school year", nyHint:"For each class: continue (with a new name), archive or delete. Seating plans, rooms, names and rules stay with continued classes. Archived classes are kept complete. Best save a backup first – this cannot be undone.",
+  nyBackup:"Save a backup first", nyKeep:"Continue", nyArchive:"Archive", nyDelete:"Delete", nyNewName:"New name for {c}",
+  nyOptions:"Delete for continued classes", nyOptGrades:"Assessments and self-assessments", nyOptAbsence:"Attendance, missed lessons and notes",
+  nyOptObs:"Observations and checklists",
+  lockSet:"Lock for grades & observations", lockSetSub:"Face ID or fingerprint, with the device PIN as a fallback. Locks again after 5 minutes in the background and after a self-assessment. Applies to this device only.",
+  lockBrokenQ:"Turn off the lock?", lockBrokenT:"Face ID or fingerprint unlock is no longer set up on this device. Without it you cannot reach grades and observations.", lockBrokenOk:"Turn off lock",
+  lockTitle:"Unlock FairSeat", lockDesc:"For assessments and observations", lockFallback:"Use device PIN",
+  lockOpenBtn:"Unlock to mark", lockOn:"Lock turned on", lockOff:"Lock turned off",
+  lockNoBio:"This device has no screen lock, Face ID or fingerprint set up.",
+  lockLockedOut:"Too many attempts – please unlock the device once.", lockCancelled:"Not unlocked",
+  ttCancel:"Cancelled on {d}", ttCancelSub:"Does not count for missed lessons", ttCancelled:"cancelled", ttOffShort:"Off", ttCancelBtn:"Cancelled", ttCancelUndo:"Takes place",
+  obsTitle:"Observations", obsHint:"Short dated notes – they are kept for the whole school year and appear on the conference sheet.",
+  obsPh:"e.g. works with much more focus since the holidays", obsAdd:"Save observation", obsEmpty:"No observations yet.",
+  obsLesson:"Observation (kept)", obsDeleteQ:"Delete observation?", obsCount:"Observations ({n})",
+  ckTitle:"Check off", ckLists:"Checklists", ckHint:"For example “consent form returned” or “book returned”. Then simply tap the names on the seating plan.",
+  ckNewPh:"List title", ckNew:"Start new list", ckDone:"{a} of {b} done", ckTap:"Tap names to check off – tap again to remove the tick.",
+  ckList:"List", ckName:"Title", ckDelete:"Delete list", ckDeleteQ:"Delete list?", ckDeleteT:"“{t}” and all ticks will be deleted.",
+  ckNeedTitle:"Please enter a title.", ckLimit:"At most 100 lists per class.", ckOpen:"Not yet ticked", ckOk:"Done",
+  nyOptHistory:"Remembered seating arrangements", nyOptTT:"Periods in the timetable (times and subjects stay)",
+  nyApply:"Switch school year", nyConfirmQ:"Switch school year?", nyConfirmT:"{n} classes will be switched, {d} of them deleted (30 days in the bin). Selected data is removed for good.",
+  nyDone:"New school year set up"
+});
 I18N.de.info[1] = { h:"In drei Schritten zum Sitzplan",
   ol:["Namen verwalten: Klasse anlegen, Namen eintragen oder aus FairMix übernehmen, Stufen und Regeln festlegen.",
       "Räume: eine Vorlage anpassen oder einen eigenen Raum mit Tafel, Tür, Fenstern und Möbeln gestalten.",
@@ -2213,15 +2230,12 @@ I18N.en.info.splice(2, 0, { h:"Working with FairMix",
      "For a new seating plan, choose “By FairMix groups”: each group gets a table group of matching size."] });
 
 let LANG = "de";
-/* Im Veranstaltungsmodus greifen die ev_-Varianten: aus "Klasse" wird "Veranstaltung" */
 const t = k => {
   const L = I18N[LANG] || I18N.de;
-  if(DB && DB.settings && DB.settings.mode === "event" && L["ev_" + k] !== undefined) return L["ev_" + k];
   return L[k] ?? k;
 };
 const tItem = type => {
   const L = I18N[LANG] || I18N.de;
-  if(DB && DB.settings && DB.settings.mode === "event" && L.ev_items && L.ev_items[type]) return L.ev_items[type];
   return (L.items[type] || type);
 };
 const tTag = tag => (I18N[LANG].tags[tag] || tag);
@@ -2295,12 +2309,12 @@ const Store = {
 
 /* Standard-Datensatz */
 function defaultSettings(){
-  return { mode:"school", rules:true, tags:true, history:true, lesson:true, timetable:true, grades:true, quickScale:"grade" };
+  return { lock:false, rules:true, tags:true, history:true, lesson:true, timetable:true, grades:true, quickScale:"grade" };
 }
 function emptyDB(){
   return { v:2, lang:"de", theme:"light", settings:defaultSettings(),
            rooms:[], classes:[], trash:[], lastBackup:"", lastClass:"", onboarded:false,
-           subjects:[], lessons:[], tt:defaultTT(), gradesAck:false };
+           subjects:[], lessons:[], cancelled:[], tt:defaultTT(), gradesAck:false };
 }
 const TRASH_DAYS = 30;
 let DB = emptyDB();
@@ -2340,7 +2354,7 @@ function sanitizeDB(raw){
   out.theme = (raw.theme === "dark") ? "dark" : "light";
   const st = (raw.settings && typeof raw.settings === "object") ? raw.settings : {};
   out.settings = {
-    mode: st.mode === "event" ? "event" : "school",
+    lock:    st.lock    === true,
     rules:   st.rules   !== false,
     tags:    st.tags    !== false,
     history: st.history !== false,
@@ -2385,6 +2399,10 @@ function sanitizeDB(raw){
     classId: typeof L.classId === "string" ? L.classId.slice(0, 40) : "", roomId: typeof L.roomId === "string" ? L.roomId.slice(0, 40) : "",
     planId: typeof L.planId === "string" ? L.planId.slice(0, 40) : ""
   })).slice(0, MAX_LESSONS) : [];
+  /* Ausgefallene Stunden: "JJJJ-MM-TT|StundenID", nur zu vorhandenen Stunden */
+  const lessonIds = new Set(out.lessons.map(L => L.id));
+  out.cancelled = Array.isArray(raw.cancelled) ? raw.cancelled.filter((x, i, a) => typeof x === "string" && /^\d{4}-\d{2}-\d{2}\|/.test(x)
+    && lessonIds.has(x.slice(11)) && a.indexOf(x) === i).slice(-500) : [];
   out.gradesAck = raw.gradesAck === true;
   out.panelsMin = raw.panelsMin === true;
   const sl = raw.selfLock;
@@ -2416,10 +2434,6 @@ function sanitizeDB(raw){
         name: typeof s?.name === "string" ? s.name.slice(0,40) : "?",
         tags: tags.slice(0, TAGS.length),
         level: (lv >= 1 && lv <= 3) ? lv : 0,           // Stufe wie in FairMix: 0 = ohne, 1–3 = A–C
-        /* Gäste: Zusage, Menü, Hinweis für die Küche (nur im Veranstaltungsmodus sichtbar) */
-        rsvp: s?.rsvp === "yes" || s?.rsvp === "no" ? s.rsvp : "open",
-        menu: MENUS.indexOf(s?.menu) >= 0 ? s.menu : "",
-        note: typeof s?.note === "string" ? s.note.slice(0, 120) : ""
       };
     }).slice(0, MAX_STUDENTS) : [];
     const ids = new Set(students.map(s => s.id));
@@ -2430,6 +2444,7 @@ function sanitizeDB(raw){
       students,
       levelMode: (c?.levelMode === "hetero" || c?.levelMode === "homo") ? c.levelMode : "off",
       subNote: typeof c?.subNote === "string" ? c.subNote.slice(0, 1200) : "",
+      color: typeof c?.color === "string" && /^#[0-9a-fA-F]{6}$/.test(c.color) ? c.color.toUpperCase() : "",
       /* Bewertungen je Fach */
       assess: Array.isArray(c?.assess) ? c.assess.filter(a => a && typeof a.subjectId === "string" && own(SCALE_TOKS, a.scale)).map(a => {
         const okTok = v => v === "x" || SCALE_TOKS[a.scale].indexOf(v) >= 0;
@@ -2445,6 +2460,23 @@ function sanitizeDB(raw){
       gradeSubjects: Array.isArray(c?.gradeSubjects) ? c.gradeSubjects.filter(x => typeof x === "string").slice(0, MAX_SUBJECTS) : [],
       lastSubject: typeof c?.lastSubject === "string" ? c.lastSubject.slice(0, 40) : "",
       lastGradePlan: typeof c?.lastGradePlan === "string" ? c.lastGradePlan.slice(0, 40) : "",
+      gradeRound: (c?.gradeRound && typeof c.gradeRound === "object") ? Object.keys(c.gradeRound).reduce((o, k) => {
+        const r = c.gradeRound[k]; if(!(k in Object.prototype) && r && typeof r === "object") o[k.slice(0, 40)] = { fav: r.fav !== false, tend: r.tend === true }; return o; }, {}) : {},
+      absLog: Array.isArray(c?.absLog) ? c.absLog.filter(e => e && typeof e.d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(e.d) && Array.isArray(e.ids)).map(e => ({
+        d: e.d, p: Number.isInteger(e.p) && e.p >= -1 && e.p <= 11 ? e.p : -1, n: e.n === 2 ? 2 : 1,
+        s: typeof e.s === "string" ? e.s.slice(0, 40) : "", ids: e.ids.filter(x => ids.has(x)).slice(0, MAX_STUDENTS)
+      })).slice(-3000) : [],
+      /* Beobachtungen je Schüler (dauerhaft) und Abhaklisten */
+      obs: Array.isArray(c?.obs) ? c.obs.filter(o => o && typeof o.sid === "string" && ids.has(o.sid) && typeof o.text === "string" && o.text.trim()
+        && typeof o.d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(o.d)).map(o => ({
+        id: typeof o.id === "string" && o.id ? o.id.slice(0, 40) : uid(), sid: o.sid, d: o.d,
+        s: typeof o.s === "string" ? o.s.slice(0, 40) : "", text: o.text.slice(0, 300)
+      })).slice(-2000) : [],
+      checks: Array.isArray(c?.checks) ? c.checks.filter(k => k && typeof k.title === "string" && k.title.trim()).map(k => ({
+        id: typeof k.id === "string" && k.id ? k.id.slice(0, 40) : uid(), title: k.title.slice(0, 60),
+        date: typeof k.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(k.date) ? k.date : "",
+        done: Array.isArray(k.done) ? k.done.filter((x, i, a) => typeof x === "string" && ids.has(x) && a.indexOf(x) === i).slice(0, MAX_STUDENTS) : []
+      })).slice(0, MAX_CHECKS) : [],
       /* Aus FairMix übernommene Gruppen: Mitglieder als Schüler-IDs */
       groups: Array.isArray(c?.groups) ? c.groups.filter(g => g && Array.isArray(g.members)).map(g => ({
         id: typeof g.id === "string" && g.id ? g.id : uid(),
@@ -2663,15 +2695,8 @@ const ITEMS = {
   clock:        { w:36,  h:36 },
   trash:        { w:38,  h:38 },
   label:        { w:130, h:40 },
-  /* Feier */
+  /* Aula */
   stage:        { w:450, h:150 },
-  dancefloor:   { w:450, h:360 },
-  buffet:       { w:330, h:75 },
-  bar:          { w:260, h:80 },
-  headtable:    { w:330, h:80 },
-  gifttable:    { w:170, h:70 },
-  dj:           { w:150, h:80 },
-  cake:         { w:80,  h:80 },
   coatrack:     { w:200, h:40 },
   pillar:       { w:45,  h:45 }
 };
@@ -2679,17 +2704,15 @@ const ITEMS = {
    Tafeln nur in Wandnähe (eine Tafel darf auch frei im Raum stehen). */
 const WALL_ALWAYS = ["door", "window"];
 const WALL_NEAR = ["board", "digitalboard", "whiteboard", "screen", "pinboard"];
-const ROUND_TYPES = ["plant", "clock", "roundtable", "cake", "pillar", "carpet"];
+const ROUND_TYPES = ["plant", "clock", "roundtable", "pillar", "carpet"];
 const FURNITURE = Object.keys(ITEMS).filter(k => k !== "desk");
 const ITEM_GROUPS = [
   { key:"grpBoards",    types:["board","whiteboard","digitalboard","screen","pinboard","flipchart","teacherdesk"] },
   { key:"grpFurniture", types:["cabinet","shelf","computer","roundtable","sink","trash"] },
-  { key:"grpRoom",      types:["door","window","wall","carpet","plant","clock","pillar"] },
-  { key:"grpEvent",     types:["stage","dancefloor","buffet","bar","headtable","gifttable","dj","cake","coatrack"] },
+  { key:"grpRoom",      types:["door","window","wall","carpet","plant","clock","pillar","stage","coatrack"] },
   { key:"grpOther",     types:["label"] }
 ];
 const TAGS = ["front", "teacher", "door", "quiet"];
-const MENUS = ["meat", "fish", "veg", "vegan", "kids"];
 const GROUP_PALETTE = ["#E0533D","#2E86DE","#20A464","#E08A00","#8E44AD","#D63384","#16A2B8","#7A5C3E"];
 const DESK_SIZES = {
   single: { w:90,  h:55 },
@@ -2844,6 +2867,7 @@ $$("[data-nav]").forEach(b => b.onclick = () => {
 $("#btn-editor-back").onclick = () => {
   if(presenting){ setPresenting(false); return; }
   if(selfMode) return;
+  if(checkMode){ endCheckMode(); return; }
   if(gradeMode){ $("#gb-exit").onclick(); return; }
   if(lessonMode){ setLesson(false); return; }
   if(editMode === "room" && curPlanId){ setEditMode("desks"); return; }
@@ -2959,6 +2983,7 @@ document.addEventListener("keydown", e => {
 function sheetBase(title){
   const sheet = $("#sheet");
   sheet.textContent = "";
+  delete sheet.dataset.sens;                           // „sensibel“ setzen nur Blätter mit Noten oder Beobachtungen
   const h = document.createElement("h3");
   h.textContent = title;
   sheet.appendChild(h);
@@ -3142,50 +3167,7 @@ function renderBackupReminder(){
 const DEMO_NAMES = ["Amelie","Ben","Clara","David","Elif","Finn","Greta","Hannes","Ida","Jonas",
   "Karla","Leon","Mila","Noah","Olivia","Paul","Quirin","Rosa","Samu","Tara",
   "Ulrich","Vera","Wanja","Yusuf"];
-/* Beispielhochzeit: 56 Gäste an runden Achtertischen im Festsaal */
-const DEMO_GUESTS = ["Lena Berger","Tom Krüger","Anna Berger","Peter Berger","Sabine Krüger","Klaus Krüger",
-  "Marie Wolf","Jonas Wolf","Sophie Hahn","Lukas Hahn","Clara Braun","Felix Braun","Ida Neumann","Paul Neumann",
-  "Emma Schulz","Ben Schulz","Mia Fischer","Noah Fischer","Hanna Weber","Elias Weber","Lea Becker","Finn Becker",
-  "Laura Koch","Leon Koch","Nina Richter","Max Richter","Julia Klein","David Klein","Sarah Lang","Jan Lang",
-  "Oma Erika","Opa Heinz","Tante Gisela","Onkel Rolf","Ayşe Yılmaz","Mehmet Yılmaz","Carla Romano","Marco Romano",
-  "Johanna Vogt","Tim Vogt","Pia Schwarz","Nils Schwarz","Greta Roth","Ole Roth","Frieda Busch","Karl Busch",
-  "Lotte Kaiser","Theo Kaiser","Mila Frank","Erik Frank","Ella Lorenz","Jakob Lorenz","Rosa Engel","Moritz Engel",
-  "Luisa Sommer","Henri Sommer"];
-function loadEventDemo(){
-  const room = buildRoomFromTemplate("hall", t("demoRoom"));
-  DB.rooms.push(room);
-  const guests = DEMO_GUESTS.map(n => ({ id: uid(), name: n, tags: [], level: 0 }));
-  const cls = newClassObj(t("demoClass"));
-  cls.students = guests;
-  const by = n => guests.find(g => g.name === n).id;
-  cls.rules = [
-    { id: uid(), type: "together", a: by("Oma Erika"), b: by("Opa Heinz") },
-    { id: uid(), type: "apart",    a: by("Tante Gisela"), b: by("Onkel Rolf") },
-    { id: uid(), type: "together", a: by("Anna Berger"), b: by("Peter Berger") }
-  ];
-  guests.find(g => g.name === "Oma Erika").tags = ["front"];
-  guests.find(g => g.name === "Opa Heinz").tags = ["front"];
-  /* Das Brautpaar sitzt am Brautpaartisch, nicht an den runden Tischen */
-  const couple = [by("Lena Berger"), by("Tom Krüger")];
-  const plan = { id: uid(), name: t("demoPlan"), roomId: room.id, deskSize: "seat", seatsPerTable: 8,
-    desks: guests.filter(g => couple.indexOf(g.id) < 0).map(() => ({ id: uid(), type:"desk", w: 64, h: 64, rot: 0, x: 0, y: 0 })) };
-  cls.plans.push(plan);
-  DB.classes.push(cls);
-  setCurClass(cls.id);
-  save();
-  openPlan(plan.id);
-  layoutDesks("rounds", true);
-  const head = room.items.find(i => i.type === "headtable");
-  couple.forEach((id, k) => {                            // zwei Plätze hinter dem Brautpaartisch
-    plan.desks.push({ id: uid(), type: "desk", studentId: id, w: 64, h: 64, rot: 0, locked: true,
-      x: Math.round(head.x + head.w / 2 - 70 + k * 76), y: Math.round(head.y - 70) });
-  });
-  autoSeat(true);
-  renderStage(false); renderUnseated(); fitToScreen();
-  toast(t("demoLoaded"));
-}
 function loadDemo(){
-  if(DB.settings.mode === "event"){ loadEventDemo(); return; }
   const room = { id: uid(), name: t("demoRoom"), w: ROOM_DEF_W, h: ROOM_DEF_H, floor: "plain", items: [] };
   const add = (type, x, y, rot) => room.items.push({
     id: uid(), type, x, y, rot: rot || 0, w: ITEMS[type].w, h: ITEMS[type].h
@@ -3256,9 +3238,6 @@ function renderNames(){
   const c = curClass();
   renderClassCards();
   $("#btn-demo").style.display = DB.classes.length ? "none" : "flex";
-  const evMode = DB.settings.mode === "event";
-  $("#btn-fm-import").style.display = evMode ? "none" : "";
-  $("[data-i='fmImportHint']").style.display = evMode ? "none" : "";
   $("#names-body").style.display = c ? "" : "none";
   if(c) $("#names-title").textContent = c.name;
 
@@ -3302,24 +3281,11 @@ function renderNames(){
     nm.onclick = () => editStudent(s.id);
     const gi = groupIndexOf(c, s.id);
     if(gi >= 0){ const dot = document.createElement("span"); dot.className = "gdot"; dot.style.background = groupColor(c, gi); tg.appendChild(dot); }
-    if(DB.settings.mode === "event"){
-      if(s.menu){ const m = document.createElement("span"); m.className = "menutag"; m.textContent = t("menuShort_" + s.menu); tg.appendChild(m); }
-      const rv = document.createElement("button");
-      const paintR = () => { rv.className = "rsvp r-" + (s.rsvp || "open"); rv.textContent = s.rsvp === "yes" ? "✓" : s.rsvp === "no" ? "✕" : "?";
-        rv.setAttribute("aria-label", s.name + ": " + t(s.rsvp === "yes" ? "rsvpYes" : s.rsvp === "no" ? "rsvpNo" : "rsvpOpen")); };
-      rv.onclick = () => { s.rsvp = s.rsvp === "open" ? "yes" : s.rsvp === "yes" ? "no" : "open"; paintR(); save(); renderGuestStats(c); };
-      paintR();
-      li.appendChild(nr); li.appendChild(nm); li.appendChild(tg); li.appendChild(rv); li.appendChild(ed);
-    } else {
-      li.appendChild(nr); li.appendChild(nm); li.appendChild(tg); li.appendChild(lv); li.appendChild(ed);
-    }
+    li.appendChild(nr); li.appendChild(nm); li.appendChild(tg); li.appendChild(lv); li.appendChild(ed);
     list.appendChild(li);
   });
   $("#names-actions").style.display = c.students.length ? "" : "none";
-  renderGuestStats(c);
-  /* Stufen und FairMix sind Unterrichtswerkzeuge – bei Feiern ausgeblendet */
-  const school = DB.settings.mode !== "event";
-  $("#levels-box").style.display = c.students.length && school ? "" : "none";
+  $("#levels-box").style.display = c.students.length ? "" : "none";
   renderLevelStats(c);
 
   /* Regeln: Auswahl wie in FairMix — zwei Namen wählen, dann grün oder rot */
@@ -3372,7 +3338,7 @@ function renderNames(){
   const groups = Array.isArray(c.groups) ? c.groups : [];
   $("#groups-box").style.display = c.students.length ? "" : "none";
   $("#fm-group-badge").style.display = groups.some(g => g.fm) ? "" : "none";
-  $("#groups-hint").textContent = t(DB.settings.mode === "event" ? "ev_groupsHint" : "groupsHint");
+  $("#groups-hint").textContent = t("groupsHint");
   $("#btn-clear-groups").style.display = groups.length ? "" : "none";
   const gl = $("#fm-group-list"); gl.textContent = "";
   groups.forEach((g, i) => {
@@ -3391,23 +3357,11 @@ function renderNames(){
   updateUndoButtons();
   applyFeatureVisibility();
 }
-/* Übersicht für Feiern: Zusagen und Menüs */
-function renderGuestStats(c){
-  const box = $("#guest-stats"); if(!box) return;
-  box.textContent = "";
-  const ev = DB.settings.mode === "event" && c.students.length;
-  box.style.display = ev ? "" : "none";
-  if(!ev) return;
-  const n = k => c.students.filter(s => (s.rsvp || "open") === k).length;
-  const add = (txt, cls) => { const sp = document.createElement("span"); sp.textContent = txt; if(cls) sp.className = cls; box.appendChild(sp); };
-  add(t("rsvpYes") + ": " + n("yes"), "r-yes"); add(t("rsvpOpen") + ": " + n("open"), "r-open"); add(t("rsvpNo") + ": " + n("no"), "r-no");
-  MENUS.forEach(m => { const k = c.students.filter(s => s.menu === m && s.rsvp !== "no").length; if(k) add(t("menu_" + m) + ": " + k); });
-}
-/* Farbpunkt am Platz: bei Feiern immer, in der Schule nur bei „Gruppen zusammenhalten“ */
+/* Farbpunkt am Platz: nur bei „Gruppen zusammenhalten“ */
 function seatGroupColor(id){
   const c = curClass(), p = curPlan();
   if(!c || !c.groups || !c.groups.length) return null;
-  if(DB.settings.mode !== "event" && !(p && p.byGroups)) return null;
+  if(!(p && p.byGroups)) return null;
   const gi = groupIndexOf(c, id);
   return gi < 0 ? null : groupColor(c, gi);
 }
@@ -3447,6 +3401,7 @@ function renderClassCards(){
   list.forEach(c => {
     const b = document.createElement("button");
     b.className = "ccard" + (c.id === curClassId ? " on" : "");
+    if(c.color) b.style.boxShadow = "inset 6px 0 0 " + c.color;
     const txt = document.createElement("span");
     const n = document.createElement("span"); n.className = "cn"; n.style.display = "block"; n.textContent = c.name;
     const m = document.createElement("span"); m.className = "cm"; m.style.display = "block";
@@ -3498,7 +3453,7 @@ function editGroup(c, g){
   const sheet = sheetBase(isNew ? t("groupNew") : t("groupEdit"));
   const inp = document.createElement("input");
   inp.className = "field"; inp.type = "text"; inp.maxLength = 40;
-  inp.placeholder = t(DB.settings.mode === "event" ? "ev_groupNamePh" : "groupNamePh");
+  inp.placeholder = t("groupNamePh");
   inp.value = g ? g.name : "";
   sheet.appendChild(inp);
   sheetLabel(sheet, t("groupColor"));
@@ -3831,15 +3786,15 @@ $("#btn-add-students").onclick = () => {
     if(addStudentNames(names)) $("#student-input").value = "";
   });
 };
-function editStudent(id){
+function editStudent(id, draft){
   const c = curClass();
   const s = studentById(c, id); if(!s) return;
   const sheet = sheetBase(t("editStudent"));
   const inp = document.createElement("input");
-  inp.className = "field"; inp.type = "text"; inp.value = s.name; inp.maxLength = 40;
+  inp.className = "field"; inp.type = "text"; inp.value = draft ? draft.name : s.name; inp.maxLength = 40;
   sheet.appendChild(inp);
 
-  const chosen = Array.isArray(s.tags) ? s.tags.slice() : [];
+  const chosen = draft ? draft.tags.slice() : Array.isArray(s.tags) ? s.tags.slice() : [];
   if(DB.settings.tags){
     const lab = document.createElement("div");
     lab.className = "eyebrow"; lab.style.marginTop = "14px"; lab.textContent = t("tagsTitle");
@@ -3872,52 +3827,12 @@ function editStudent(id){
     });
   }
 
-  /* Gäste: Zusage, Menü, Küchenhinweis, Begleitung */
-  let rsvp = s.rsvp || "open", menu = s.menu || "";
-  let noteInp = null;
-  if(DB.settings.mode === "event"){
-    const seg = (labelKey, opts, get, set) => {
-      const lab = document.createElement("div"); lab.className = "eyebrow"; lab.style.marginTop = "14px"; lab.textContent = t(labelKey);
-      sheet.appendChild(lab);
-      const row = document.createElement("div"); row.className = "segmented wrap";
-      opts.forEach(([v, k]) => {
-        const b = document.createElement("button"); b.textContent = t(k); b.dataset.v = v;
-        b.classList.toggle("on", get() === v);
-        b.onclick = () => { set(get() === v && labelKey === "menuTitle" ? "" : v); Array.from(row.children).forEach(x => x.classList.toggle("on", x.dataset.v === get())); };
-        row.appendChild(b);
-      });
-      sheet.appendChild(row);
-    };
-    seg("rsvpTitle", [["open","rsvpOpen"],["yes","rsvpYes"],["no","rsvpNo"]], () => rsvp, v => rsvp = v);
-    seg("menuTitle", MENUS.map(m => [m, "menu_" + m]), () => menu, v => menu = v);
-    const lab = document.createElement("div"); lab.className = "eyebrow"; lab.style.marginTop = "14px"; lab.textContent = t("kitchenNote");
-    sheet.appendChild(lab);
-    noteInp = document.createElement("input");
-    noteInp.className = "field"; noteInp.type = "text"; noteInp.maxLength = 120; noteInp.value = s.note || "";
-    noteInp.placeholder = t("kitchenNotePh");
-    sheet.appendChild(noteInp);
-    const nh = document.createElement("div"); nh.className = "hint"; nh.textContent = t("kitchenNoteHint");
-    sheet.appendChild(nh);
-    const plus = document.createElement("button");
-    plus.className = "ghost"; plus.style.width = "100%"; plus.style.marginTop = "10px";
-    plus.textContent = t("addCompanion");
-    plus.onclick = () => {
-      if(c.students.length >= MAX_STUDENTS){ closeModal(); toast(t("limitStudents").replace("{n}", String(MAX_STUDENTS))); return; }
-      const v = inp.value.trim();
-      if(v){ s.name = v; s.tags = chosen.slice(); }
-      s.rsvp = rsvp; s.menu = menu; s.note = noteInp.value.trim().slice(0, 120);
-      closeModal();
-      if(c.students.length >= MAX_STUDENTS){ toast(t("limitStudents").replace("{n}", String(MAX_STUDENTS))); return; }
-      pushUndo();
-      const g = { id: uid(), name: t("companionOf").replace("{a}", s.name).slice(0, 40), tags: [], level: 0, rsvp: s.rsvp || "open", menu: "", note: "" };
-      c.students.splice(c.students.indexOf(s) + 1, 0, g);
-      c.rules.push({ id: uid(), type: "together", a: s.id, b: g.id });
-      (c.groups || []).forEach(gr => { if(gr.members.indexOf(s.id) >= 0) gr.members.push(g.id); });
-      save(); renderNames(); toast(t("companionAdded"));
-    };
-    sheet.appendChild(plus);
+  {
+    const ob = document.createElement("button"); ob.className = "cbtn outline"; ob.id = "student-obs"; ob.style.width = "100%"; ob.style.marginTop = "12px";
+    ob.appendChild(icon("note")); const obt = document.createElement("span"); obt.textContent = lockedNow() ? t("obsTitle") : t("obsCount").replace("{n}", String(studentObs(c, id).length)); ob.appendChild(obt);
+    ob.onclick = () => { const dr = { name: inp.value, tags: chosen.slice() }; openObservations(c, s, () => editStudent(id, dr)); };
+    sheet.appendChild(ob);
   }
-
   const delBtn = document.createElement("button");
   delBtn.className = "ghost"; delBtn.style.marginTop = "10px"; delBtn.style.width = "100%";
   delBtn.style.color = "var(--warn)"; delBtn.textContent = t("delete");
@@ -3937,7 +3852,6 @@ function editStudent(id){
     const v = inp.value.trim(); if(!v){ inp.focus(); return; }
     pushUndo();
     s.name = v; s.tags = chosen.slice();
-    if(noteInp){ s.rsvp = rsvp; s.menu = menu; s.note = noteInp.value.trim().slice(0, 120); }
     closeModal(); save(); renderClassScreen();
   });
 }
@@ -3992,9 +3906,31 @@ $("#btn-rename-class").onclick = () => {
   };
   sheet.appendChild(arch);
 
+  /* Klassenfarbe: Rand der Stunden im Stundenplan – unterscheidet z. B. zwei Mathekurse */
+  sheetLabel(sheet, t("classColor"));
+  let ccol = c.color || "";
+  const csw = document.createElement("div"); csw.className = "swatches"; csw.id = "class-colors";
+  const none = document.createElement("button"); none.className = "nocolor"; none.dataset.c = ""; none.setAttribute("aria-label", t("classColorNone")); none.textContent = "–";
+  csw.appendChild(none);
+  CLASS_COLORS.forEach((col, k) => {
+    const b = document.createElement("button"); b.style.background = col; b.dataset.c = col;
+    b.setAttribute("aria-label", t("classColor") + " " + (k + 1)); csw.appendChild(b);
+  });
+  const cpick = document.createElement("input"); cpick.type = "color"; cpick.className = "colorpick"; cpick.setAttribute("aria-label", t("subjCustomColor"));
+  csw.appendChild(cpick);
+  const paintC = () => {
+    Array.from(csw.querySelectorAll("button")).forEach(b => { b.classList.toggle("on", b.dataset.c === ccol); b.setAttribute("aria-pressed", String(b.dataset.c === ccol)); });
+    const custom = !!ccol && CLASS_COLORS.indexOf(ccol) < 0;
+    cpick.classList.toggle("on", custom); if(ccol) cpick.value = ccol;
+  };
+  Array.from(csw.querySelectorAll("button")).forEach(b => b.onclick = () => { ccol = b.dataset.c; paintC(); });
+  cpick.oninput = () => { ccol = cpick.value.toUpperCase(); paintC(); };
+  sheet.appendChild(csw); paintC();
+  const ch = document.createElement("div"); ch.className = "hint"; ch.textContent = t("classColorHint"); sheet.appendChild(ch);
+
   sheetButtons(sheet, t("save"), () => {
     const v = inp.value.trim(); if(!v){ inp.focus(); return; }
-    c.name = v; closeModal(); save(); renderNames();
+    c.name = v; c.color = ccol; closeModal(); save(); renderNames();
   });
 };
 $("#btn-delete-class").onclick = () => askConfirm(t("deleteClassQ"), t("deleteClassT"), t("delete"), () => {
@@ -4005,7 +3941,6 @@ $("#btn-delete-class").onclick = () => askConfirm(t("deleteClassQ"), t("deleteCl
 });
 /* ---- Neuer Sitzplan: Raum, Tischvorlage nach Namensanzahl, Verteilung ---- */
 const WIZ_LAYOUTS = ["rows","groups4","groups6","u","doubleU","circle","exam","cinema","rounds","longtables"];
-const WIZ_LAYOUTS_EVENT = ["rounds","longtables","squares","ovals","utable","ttable","cinema","boardroom","u","rows"];
 function groupSizes(c){
   return (c.groups || []).map(g => g.members.filter(id => studentById(c, id)).length).filter(n => n > 0);
 }
@@ -4041,11 +3976,10 @@ $("#btn-add-plan").onclick = () => {
   const gs = groupSizes(c);
   const hasGroups = gs.length > 0;
   const hasLevels = c.students.some(s => s.level);
-  const isEventMode = DB.settings.mode === "event";
-  const st = { layout: isEventMode ? "rounds" : hasGroups ? "fmgroups" : "rows", extra: 0, seats: 8,
-               dist: hasGroups && !isEventMode ? "groups" : "random",
+  const st = { layout: hasGroups ? "fmgroups" : "rows", extra: 0, seats: 8,
+               dist: hasGroups ? "groups" : "random",
                room: wizRoomHint && DB.rooms.some(r => r.id === wizRoomHint) ? wizRoomHint
-                   : DB.rooms.length ? DB.rooms[DB.rooms.length - 1].id : (isEventMode ? "__tpl_hall" : "__tpl_classic"),
+                   : DB.rooms.length ? DB.rooms[DB.rooms.length - 1].id : "__tpl_classic",
                levelMode: c.levelMode || "off" };
   const sheet = sheetBase(t("newPlan"));
 
@@ -4057,8 +3991,7 @@ $("#btn-add-plan").onclick = () => {
   sheetLabel(sheet, t("chooseRoom"));
   const sel = document.createElement("select"); sel.className = "field";
   DB.rooms.forEach(r => { const o = document.createElement("option"); o.value = r.id; o.textContent = r.name; sel.appendChild(o); });
-  const catOrder = isEventMode ? ["event", "school"] : ["school", "event"];
-  ROOM_TPL_LIST.slice().sort((a, b) => catOrder.indexOf(ROOM_TEMPLATES[a[0]].cat) - catOrder.indexOf(ROOM_TEMPLATES[b[0]].cat)).forEach(([key, tk]) => {
+  ROOM_TPL_LIST.forEach(([key, tk]) => {
     const o = document.createElement("option"); o.value = "__tpl_" + key;
     o.textContent = t("newRoomFrom").replace("{tpl}", t(tk)); sel.appendChild(o);
   });
@@ -4081,7 +4014,7 @@ $("#btn-add-plan").onclick = () => {
   };
   const layoutItems = [];
   if(hasGroups) layoutItems.push({ key: "fmgroups", title: t("wizFmTitle") });
-  (isEventMode ? WIZ_LAYOUTS_EVENT : WIZ_LAYOUTS).forEach(k => layoutItems.push({ key: k, title: I18N[LANG].presets[k] }));
+  WIZ_LAYOUTS.forEach(k => layoutItems.push({ key: k, title: I18N[LANG].presets[k] }));
   layoutItems.push({ key: "empty", title: t("wizEmpty") });
   layoutItems.forEach(it => it.sub = subFor(it.key));
   let distBtns = null;
@@ -4194,6 +4127,7 @@ function openPlan(id){
   }
   editMode = "desks"; selected.clear();
   if(gradeMode) endGradeMode(true);
+  if(checkMode) endCheckMode(true);
   if(selfMode) endSelfMode(true);
   quickDate = null;                                   // neues Öffnen eines Plans: Schnellbewertung wieder für heute
   lessonMode = false; pickedId = null;
@@ -4251,7 +4185,7 @@ $("#plan-title").onclick = () => {
   }
 };
 function setEditMode(mode){
-  editMode = mode; selected.clear();
+  editMode = mode; selected.clear(); armedStudent = null;
   updateEditorChrome(); renderStage(true);
 }
 function updateEditorChrome(){
@@ -4338,6 +4272,7 @@ function renderStage(full){
   applyTransform();
   const list = allItems();
   const seen = new Set();
+  const kc = checkMode ? checkCur() : null, kSet = kc ? new Set(kc.done) : null;   // Abhakliste einmal je Durchlauf
   list.forEach(it => {
     seen.add(it.id);
     let el = elCache.get(it.id);
@@ -4411,6 +4346,11 @@ function renderStage(full){
     else if(!gTok && gm) gm.remove();
     if(gTok){ gm.textContent = tokLabel(gTok); gm.classList.toggle("miss", gTok === "x"); gm.classList.toggle("sm", !!SMILEY[gTok]); }
     el.classList.toggle("gsel", !!ga && isDesk && !!it.studentId && it.studentId === gradeSel);
+    let ck = el.querySelector(".ckmark");
+    const kOn = !!kSet && isDesk && !!it.studentId && kSet.has(it.studentId);
+    if(kOn && !ck){ ck = document.createElement("i"); ck.className = "ckmark"; ck.textContent = "✓"; ck.setAttribute("aria-hidden", "true"); el.appendChild(ck); }
+    else if(!kOn && ck) ck.remove();
+    el.classList.toggle("ckdone", kOn);
     let pd = el.querySelector(".pdot");
     const pc = isDesk && it.studentId ? seatGroupColor(it.studentId) : null;
     if(pc && !pd){ pd = document.createElement("i"); pd.className = "pdot"; el.appendChild(pd); }
@@ -4509,7 +4449,10 @@ $("#btn-lock").onclick = () => {
   toast(presentLocked ? t("lockOn") : t("lockOff"));
 };
 function setPresenting(on){
-  presenting = on;
+  /* Haken und Noten gehören nicht an den Beamer */
+  if(on && checkMode) endCheckMode(true);
+  if(on && gradeMode){ endGradeMode(true); lessonMode = false; updateEditorChrome(); }
+  presenting = on; armedStudent = null;
   if(!on){ presentLocked = false; $("#btn-lock").classList.remove("on"); }
   document.body.classList.toggle("presenting", on);
   document.body.classList.toggle("viewlocked", on && presentLocked);
@@ -4858,8 +4801,12 @@ function endPointer(e){
       if(it && it.type === "desk" && it.studentId && e.type === "pointerup"){
         if(e.pointerType !== "mouse") stageTouchUpAt = Date.now();   // Geisterklick-Schutz nur für Fenster, die ein Tipp auf den Plan öffnet
         if(selfMode) selfTap(it.studentId);
+        else if(checkMode) toggleCheck(it.studentId);
         else if(gradeMode) pickGradeSeat(it.studentId); else openLessonSheet(it);
       }
+    } else if(!movedFar && !onItem && armedStudent && editMode === "desks" && !lessonMode && !presenting && e.type === "pointerup"
+              && stageFreeAt(e.clientX, e.clientY) && deskFromName(armedStudent, e.clientX, e.clientY)){
+      /* neuer Tisch aus dem aufgenommenen Namen */
     } else if(!movedFar && !onItem && !(e.target.closest && e.target.closest(".selbar"))){
       selected.clear(); renderStage(false);
     }
@@ -5228,20 +5175,10 @@ const ROOM_TEMPLATES = {
     ["door",150,66,90],["window",1240,300,90],["window",1240,560,90],
     ["sink",1170,840,0],["cabinet",180,860,0],["cabinet",300,860,0],
     ["wall",700,880,0],["trash",1060,880,0]] },
-  hall: { cat:"event", w:3000, h:2100, floor:"parquet", items:[
-    ["stage",2700,105,0],["headtable",1500,190,0],["cake",1785,190,0],["gifttable",1190,190,0],
-    ["dancefloor",1500,525,0,600,450],["buffet",75,900,90],["bar",2925,1450,90],
-    ["coatrack",420,2065,0],["door",760,2091,0],["door",2260,2091,0],
-    ["window",7,420,90],["window",7,1550,90],["window",2993,520,90],["window",2993,950,90],
-    ["pillar",1000,1050,0],["pillar",2000,1050,0],["plant",60,60,0],["plant",2940,2040,0]] },
-  party: { cat:"event", w:1800, h:1350, floor:"tiles", items:[
-    ["dj",900,55,0],["dancefloor",900,300,0,450,360],["bar",1715,520,90],["buffet",75,600,90],
-    ["coatrack",700,1315,0],["door",300,1341,0],["window",1793,1000,90],["window",7,1100,90],
-    ["plant",1740,1290,0],["plant",60,60,0]] },
-  conference: { cat:"event", w:1500, h:1050, floor:"carpet", items:[
+  conference: { cat:"school", w:1500, h:1050, floor:"carpet", items:[
     ["screen",750,9,0],["whiteboard",330,12,0],["flipchart",1310,130,0],["clock",1100,22,0],
     ["door",1300,1041,0],["window",1493,360,90],["window",1493,720,90],["plant",60,990,0]] },
-  aula: { cat:"event", w:2700, h:2100, floor:"stone", items:[
+  aula: { cat:"school", w:2700, h:2100, floor:"stone", items:[
     ["stage",1350,110,0,900,200],["door",700,2091,0],["door",2000,2091,0],
     ["window",7,600,90],["window",7,1350,90],["window",2693,600,90],["window",2693,1350,90],
     ["pillar",700,900,0],["pillar",2000,900,0],["pillar",700,1500,0],["pillar",2000,1500,0],
@@ -5249,7 +5186,6 @@ const ROOM_TEMPLATES = {
 };
 const ROOM_TPL_LIST = [
   ["classic","tplClassic","tplClassicSub"], ["modern","tplModern","tplModernSub"], ["special","tplSpecial","tplSpecialSub"],
-  ["hall","tplHall","tplHallSub"], ["party","tplParty","tplPartySub"],
   ["conference","tplConference","tplConferenceSub"], ["aula","tplAula","tplAulaSub"]
 ];
 function templateItems(key){
@@ -5315,16 +5251,10 @@ function miniPlan(room, cls){
   });
   return svg;
 }
-/* Vorlagenwahl mit Vorschau, nach Schule und Feier getrennt – die Kategorie des
-   eingestellten Einsatzbereichs steht oben */
+/* Vorlagenwahl mit Vorschau */
 function templatePicker(sheet, onPick){
-  const cats = DB.settings.mode === "event" ? ["event", "school"] : ["school", "event"];
-  cats.forEach(cat => {
-    const lab = document.createElement("div");
-    lab.className = "eyebrow"; lab.style.marginTop = "14px";
-    lab.textContent = t(cat === "event" ? "tplCatEvent" : "tplCatSchool");
-    sheet.appendChild(lab);
-    ROOM_TPL_LIST.filter(([key]) => ROOM_TEMPLATES[key].cat === cat).forEach(([key, tk, sk]) => {
+  {
+    ROOM_TPL_LIST.forEach(([key, tk, sk]) => {
       const tpl = ROOM_TEMPLATES[key];
       const b = document.createElement("button");
       b.className = "tile wide tplpick"; b.style.width = "100%"; b.style.marginTop = "8px";
@@ -5338,7 +5268,7 @@ function templatePicker(sheet, onPick){
       b.onclick = () => onPick(key, tk);
       sheet.appendChild(b);
     });
-  });
+  }
 }
 function openRoomTemplates(){
   if(!curRoom()) return;
@@ -5432,9 +5362,7 @@ function snapToWall(it, force){
 function buildItemGrid(){
   const pal = $("#item-palette"); if(!pal) return;
   pal.textContent = "";
-  const groups = DB.settings.mode === "event"
-    ? ITEM_GROUPS.slice().sort((a, b) => (b.key === "grpEvent") - (a.key === "grpEvent"))
-    : ITEM_GROUPS;
+  const groups = ITEM_GROUPS;
   groups.forEach(grp => {
     const lab = document.createElement("div");
     lab.className = "eyebrow"; lab.style.marginTop = "12px"; lab.textContent = t(grp.key);
@@ -5717,6 +5645,7 @@ function onNameDragMove(e){
   nameDrag.ghost.style.top = e.clientY + "px";
   const it = deskUnder(e.clientX, e.clientY);
   setDropTarget(it && it.id !== nameDrag.from ? it : null);
+  nameDrag.ghost.classList.toggle("newdesk", !it && !nameDrag.from && canCreateDeskAt(e.clientX, e.clientY));
 }
 function endNameDrag(){
   document.removeEventListener("pointermove", onNameDragMove, true);
@@ -5739,12 +5668,95 @@ function onNameDragEnd(e){
     const el = document.elementFromPoint(e.clientX, e.clientY);
     return !!(el && el.closest && el.closest(".panels"));
   })();
+  const onFree = !target && !overPanel && !d.from && stageFreeAt(e.clientX, e.clientY) && editMode === "desks" && !lessonMode;
   endNameDrag();
   const from = d.from ? findItem(d.from) : null;
   if(target) placeStudent(d.id, target, from);
+  else if(onFree) deskFromName(d.id, e.clientX, e.clientY);
   else if(from && overPanel) unseatDesk(from);
 }
 /* Setzt einen Namen auf einen Tisch. Kommt er von einem anderen Tisch, wird getauscht. */
+/* Name auf eine freie Stelle im Raum: dort entsteht ein Tisch mit diesem Namen.
+   Liegt ein Tisch in der Nähe, rastet der neue bündig daneben ein – so wachsen Tischgruppen von selbst. */
+function stageFreeAt(x, y){
+  const el = document.elementFromPoint(x, y);
+  if(!el || !el.closest) return false;
+  if(!el.closest("#stage-wrap")) return false;
+  return !el.closest(".item, .zoombar, .selbar, .lessonbar, .coach, .stagehint, .rothandle, .lockbtn, .gradebar, .checkbar");
+}
+/* Darf an dieser Stelle ein neuer Tisch entstehen? (gleiche Regeln für Vorschau und Ablegen) */
+function canCreateDeskAt(clientX, clientY){
+  const p = curPlan();
+  if(!p || editMode !== "desks" || lessonMode || presenting || viewLocked()) return false;
+  if(p.desks.length >= MAX_DESKS || !stageFreeAt(clientX, clientY)) return false;
+  return !tableAt(screenToRoom(clientX, clientY));
+}
+/* Liegt der Punkt auf einer Tischplatte (runde Tische, Tafeln)? Die Platten fangen keine Zeigerereignisse. */
+function tableAt(pt){
+  return tableShapes(planDesks()).find(sh => {
+    if(sh.kind === "round") return Math.hypot(pt.x - sh.cx, pt.y - sh.cy) <= sh.r;
+    const a = -(sh.rot || 0) * Math.PI / 180, dx = pt.x - sh.cx, dy = pt.y - sh.cy;
+    const u = dx * Math.cos(a) - dy * Math.sin(a), v = dx * Math.sin(a) + dy * Math.cos(a);
+    if(sh.kind === "oval") return (u * u) / (sh.len * sh.len / 4) + (v * v) / (sh.dep * sh.dep / 4) <= 1;
+    return Math.abs(u) <= sh.len / 2 && Math.abs(v) <= sh.dep / 2;
+  }) || null;
+}
+const boxHit = (a, b) => a.x < b.x + b.w - 2 && b.x < a.x + a.w - 2 && a.y < b.y + b.h - 2 && b.y < a.y + a.h - 2;
+function deskFromName(studentId, clientX, clientY){
+  const c = curClass(), p = curPlan();
+  if(!c || !p || !studentById(c, studentId)) return null;
+  if(editMode !== "desks" || lessonMode || presenting || viewLocked()) return null;
+  if(p.desks.length >= MAX_DESKS){ toast(t("limitDesks").replace("{n}", String(MAX_DESKS))); return null; }
+  const pt = screenToRoom(clientX, clientY);
+  if(tableAt(pt)){ toast(t("dropOnTable")); return null; }
+  const size = deskSizeOf(p);
+  const d = { id: uid(), type: "desk", x: Math.round(pt.x - size.w / 2), y: Math.round(pt.y - size.h / 2), w: size.w, h: size.h, rot: 0 };
+  const boxes = p.desks.map(o => ({ o, b: itemBox(o) }));             // Hüllboxen – auch gedrehte Tische zählen
+  const free = q => !boxes.some(x => boxHit(q, x.b));
+  /* Bündig an den nächsten Tisch (näher als 40 cm) – nicht bei Klassenarbeiten, dort soll Abstand bleiben */
+  let snapped = null;
+  if(!p.exam){
+    const near = boxes.filter(x => !(((x.o.rot || 0) % 180 + 180) % 180)).map(x => {
+      const b = x.b, gx = Math.max(b.x - (d.x + d.w), d.x - (b.x + b.w), 0), gy = Math.max(b.y - (d.y + d.h), d.y - (b.y + b.h), 0);
+      return { x, gap: Math.max(gx, gy) };
+    }).filter(n => n.gap < 60).sort((m, n) => m.gap - n.gap)[0];
+    if(near){
+      const b = near.x.b, cx = d.x + d.w / 2, cy = d.y + d.h / 2, ocx = b.x + b.w / 2, ocy = b.y + b.h / 2;
+      const cand = Math.abs(cx - ocx) / (b.w + d.w) >= Math.abs(cy - ocy) / (b.h + d.h)
+        ? { x: cx < ocx ? b.x - d.w : b.x + b.w, y: b.y }
+        : { x: b.x, y: cy < ocy ? b.y - d.h : b.y + b.h };
+      const q = Object.assign({}, d, cand); keepInRoom(q);
+      if(free(q)){ d.x = q.x; d.y = q.y; snapped = near.x.o; }
+    }
+  }
+  keepInRoom(d);
+  /* Belegt? Nächste freie Stelle rund um den Ablagepunkt suchen – in alle Richtungen */
+  if(!free(d)){
+    const step = Math.max(20, Math.round(Math.min(size.w, size.h) / 2)), x0 = d.x, y0 = d.y;
+    let best = null;
+    for(let r = 1; r <= 12 && !best; r++){
+      for(let i = -r; i <= r; i++) for(let j = -r; j <= r; j++){
+        if(Math.max(Math.abs(i), Math.abs(j)) !== r) continue;
+        const q = Object.assign({}, d, { x: x0 + i * step, y: y0 + j * step }); keepInRoom(q);
+        if(!free(q)) continue;
+        const dist = Math.hypot(q.x - x0, q.y - y0);
+        if(!best || dist < best.dist) best = { q, dist };
+      }
+    }
+    if(!best){ toast(t("noRoomHere")); return null; }
+    d.x = best.q.x; d.y = best.q.y; snapped = null;
+  }
+  pushUndo();
+  planDesks().forEach(x => { if(x.studentId === studentId) delete x.studentId; });
+  d.studentId = studentId;
+  /* Bündig an eine Tischgruppe gelegt: gehört dann dazu und wandert mit */
+  if(snapped && snapped.groupId && !snapped.tbl) d.groupId = snapped.groupId;
+  p.desks.push(d);
+  if(p.exam) assignExamGroups(p);                      // A/B auch für den neuen Platz
+  armedStudent = null; swapSrc = null; clearConflicts();
+  save(); renderStage(false); renderUnseated(); haptic(12);
+  return d;
+}
 function placeStudent(studentId, desk, fromDesk){
   if(!desk || desk === fromDesk) return;
   /* Festgehaltene Plätze ändern sich nur nach „Lösen“ – sonst wanderte die Sperre zum neuen Namen */
@@ -5769,11 +5781,7 @@ function unseatDesk(desk){
 
 /* ============ 18. Vorlagen ============ */
 const PRESET_KEYS = ["rows","groups4","groups6","u","doubleU","circle","exam","cinema","rounds","longtables","squares","ovals","utable","ttable","boardroom"];
-/* Im Veranstaltungsmodus stehen die Feier-Anordnungen vorne */
-function presetOrder(){
-  if(DB.settings.mode !== "event") return PRESET_KEYS;
-  return ["rounds","longtables","squares","ovals","utable","ttable","cinema","boardroom","u","rows","circle","doubleU","groups4","groups6","exam"];
-}
+function presetOrder(){ return PRESET_KEYS; }
 function applyPreset(k){
   if(PER_TABLE_LAYOUTS.indexOf(k) >= 0) askSeatsPerTable(() => layoutDesks(k));
   else layoutDesks(k);
@@ -5842,9 +5850,7 @@ function renderSeatOptions(){
   box.textContent = "";
   const c = curClass(), p = curPlan();
   if(!c || !p) return;
-  if(DB.settings.mode !== "event"){
-    optTile(box, "check", t("examTitle"), p.exam ? t("examActiveSub") : t("examSub"), !!p.exam, openExamSheet, "btn-exam");
-  }
+  optTile(box, "check", t("examTitle"), p.exam ? t("examActiveSub") : t("examSub"), !!p.exam, openExamSheet, "btn-exam");
   if(c.students.some(s => s.level)){
     const lab = document.createElement("div");
     lab.className = "eyebrow"; lab.style.marginTop = "14px"; lab.textContent = t("levelMix");
@@ -6261,7 +6267,7 @@ function renderTables(){
   tableEls.forEach((el, id) => { if(!seen.has(id)){ el.remove(); tableEls.delete(id); } });
 }
 
-/* ---- Anordnungen für Feiern ----
+/* ---- Anordnungen an Tischen (Aula, Mensa, Konferenz) ----
    Tische weichen Möbeln aus (Bühne, Tanzfläche, Buffet, Säulen …): Das Raster
    wird so lange enger gezogen, bis genug freie Felder da sind. Reicht der
    Raum nicht, werden belegte Felder mitbenutzt – layoutDesks meldet dann die
@@ -6298,7 +6304,7 @@ function freeCells(cellW, cellH, count){
   }
   return cells.slice(0, count);
 }
-/* 9 Gäste bei 8 Plätzen: 5 + 4 statt 8 + 1 – sonst entsteht ein Tisch mit einem einzelnen Stuhl */
+/* 9 Personen bei 8 Plätzen: 5 + 4 statt 8 + 1 – sonst entsteht ein Tisch mit einem einzelnen Stuhl */
 function tableCounts(n, per){
   const tables = Math.max(1, Math.ceil(n / per)), base = Math.floor(n / tables), extra = n % tables;
   return Array.from({ length: tables }, (_, i) => base + (i < extra ? 1 : 0));
@@ -6407,7 +6413,7 @@ function pOvals(n){
   return res;
 }
 /* U-Tafel: Kopftafel vorne, zwei Seitentafeln; Plätze außen, damit alle in die Mitte schauen.
-   Werden die Seitentafeln für den Raum zu lang, sitzen Gäste auch innen. */
+   Werden die Seitentafeln für den Raum zu lang, sitzen Personen auch innen. */
 function pUTable(n){
   const S = DESK_SIZES.seat.w, SP = 84, DEP = 120;
   const room = ROOM_H - 60 - (S + TABLE_GAP + DEP);
@@ -6614,7 +6620,7 @@ function neighbourMatrix(desks){
   }
   return m;
 }
-const FRONT_TYPES = ["board", "digitalboard", "whiteboard", "screen", "pinboard", "stage", "headtable"];
+const FRONT_TYPES = ["board", "digitalboard", "whiteboard", "screen", "pinboard", "stage"];
 /* Wo ist vorne? Nicht zwangsläufig oben — maßgeblich ist, wo die Tafel hängt. */
 function frontAxis(){
   const boards = roomItems().filter(i => FRONT_TYPES.indexOf(i.type) >= 0);
@@ -6986,10 +6992,13 @@ function pdfWrap(text, maxChars){
   const out = [];
   String(text || "").split(/\r?\n/).forEach(par => {
     let line = "";
-    par.split(/\s+/).forEach(w => {
-      if(!w) return;
+    par.split(/\s+/).forEach(w0 => {
+      if(!w0) return;
+      const parts = []; for(let i = 0; i < w0.length; i += maxChars) parts.push(w0.slice(i, i + maxChars));
+      parts.forEach(w => {
       if((line + " " + w).trim().length > maxChars){ if(line) out.push(line); line = w; }
       else line = (line + " " + w).trim();
+      });
     });
     out.push(line);
   });
@@ -7074,146 +7083,12 @@ function exportSubstitute(withTags){
   }catch(e){ toast(t("exportFail")); }
 }
 
-/* ============ 19d. Feier: Tischkarten, „Wer sitzt wo?“, Küchenliste ============
-   Alles als PDF im Hochformat. Tischnummern stammen aus tableShapes, ohne Tische
-   gilt die Platznummer. */
+/* A4 hoch – für das Gesprächsblatt */
 const A4P_W = 595, A4P_H = 842;
-function guestSeats(c, p){
-  const shapes = tableShapes(p.desks);
-  const tno = new Map(shapes.map(sh => [sh.id, sh.no]));
-  const nums = seatOrder(p.desks).no;
-  const declined = id => DB.settings.mode === "event" && (studentById(c, id) || {}).rsvp === "no";
-  return p.desks.filter(d => d.studentId && studentById(c, d.studentId) && !declined(d.studentId)).map(d => ({
-    st: studentById(c, d.studentId), desk: d,
-    table: d.groupId && tno.has(d.groupId) ? tno.get(d.groupId) : null,
-    seat: nums.get(d.id) || 0
-  }));
-}
-function seatWhere(e){
-  return e.table ? t("tableNo").replace("{n}", String(e.table)) : t("seatNo").replace("{n}", String(e.seat));
-}
 function pdfText(x, y, size, txt, rgb){
   return (rgb || "0.086 0.137 0.169") + " rg BT /F1 " + size.toFixed(1) + " Tf " + x.toFixed(2) + " " + y.toFixed(2) + " Td (" + pdfEscape(txt) + ") Tj ET";
 }
 function pdfTextW(txt, size){ return pdfPlain(txt).length * size * 0.52; }
-function pdfCentered(cx, y, size, txt, rgb){ return pdfText(cx - pdfTextW(txt, size) / 2, y, size, txt, rgb); }
-/* Klappkarten: vier je Seite (2 × 2), jede Karte 297 × 421 pt, Falz in der Mitte.
-   Die obere Hälfte steht auf dem Kopf – gefaltet ist der Text von beiden Seiten lesbar. */
-function tentCardPages(cards){
-  const pages = [], cw = A4P_W / 2, ch = A4P_H / 2;
-  for(let i = 0; i < cards.length; i += 4){
-    const c = [];
-    c.push("0.75 0.78 0.82 RG 0.5 w [4 4] 0 d");
-    c.push(cw.toFixed(1) + " 0 m " + cw.toFixed(1) + " " + A4P_H + " l S");
-    c.push("0 " + ch.toFixed(1) + " m " + A4P_W + " " + ch.toFixed(1) + " l S");
-    c.push("[1 3] 0 d");
-    [ch / 2, ch + ch / 2].forEach(y => c.push("0 " + y.toFixed(1) + " m " + A4P_W + " " + y.toFixed(1) + " l S"));
-    c.push("[] 0 d");
-    cards.slice(i, i + 4).forEach((card, k) => {
-      const x0 = (k % 2) * cw, y0 = (k < 2 ? 1 : 0) * ch;              // oben links zuerst
-      const face = (cx, cy) => {
-        const out = [];
-        const fs = Math.max(12, Math.min(card.big || 30, (cw - 40) / Math.max(1, pdfPlain(card.main).length * 0.55)));
-        out.push(pdfCentered(cx, cy + 4, fs, card.main));
-        if(card.sub) out.push(pdfCentered(cx, cy - fs * 0.5 - 14, 12, card.sub, "0.353 0.420 0.459"));
-        return out.join("\n");
-      };
-      const cx = x0 + cw / 2, fold = y0 + ch / 2;
-      c.push(face(cx, y0 + ch / 4));                                   // Vorderseite unten
-      c.push("q -1 0 0 -1 " + (2 * cx).toFixed(2) + " " + (2 * (fold + ch / 4)).toFixed(2) + " cm");
-      c.push(face(cx, fold + ch / 4));                                 // Rückseite oben, auf dem Kopf
-      c.push("Q");
-    });
-    pages.push({ content: c.join("\n"), w: A4P_W, h: A4P_H });
-  }
-  return pages;
-}
-function placeCardPages(c, p){
-  const list = guestSeats(c, p).sort((a, b) => (a.table || 0) - (b.table || 0) || a.seat - b.seat);
-  const cards = list.map(e => ({ main: e.st.name, sub: e.table ? seatWhere(e) : "" }));   // ohne Tisch (z. B. Brautpaar) nur der Name
-  const tables = tableShapes(p.desks);
-  tables.forEach(sh => cards.push({ main: t("tableNo").replace("{n}", String(sh.no)), sub: c.name, big: 46 }));
-  return tentCardPages(cards);
-}
-function escortPages(c, p){
-  const list = guestSeats(c, p).sort((a, b) => a.st.name.localeCompare(b.st.name, LANG));
-  const M = 40, colW = (A4P_W - 2 * M - 20) / 2, lineH = 19;
-  const title = t("escortDoc").replace("{c}", c.name);
-  const pages = [];
-  let cur = [], y = 0, col = 0;
-  const start = () => { cur = [pdfText(M, A4P_H - M - 10, 18, title)]; y = A4P_H - M - 50; col = 0; };
-  const finish = () => pages.push({ content: cur.join("\n"), w: A4P_W, h: A4P_H });
-  start();
-  const top = A4P_H - M - 50;
-  let letter = "";
-  list.forEach(e => {
-    const L0 = (e.st.name[0] || "").toLocaleUpperCase();
-    const need = L0 !== letter ? 2 : 1;
-    if(y - (need - 1) * lineH < M){ if(col === 0){ col = 1; y = top; } else { finish(); start(); } }
-    const x = M + col * (colW + 20);
-    if(L0 !== letter){ letter = L0; cur.push(pdfText(x, y, 12, letter, "0.169 0.420 0.733")); y -= lineH; }
-    const where = seatWhere(e);
-    const fs = 11, nameMax = colW - pdfTextW(where, fs) - 14;
-    let nm = e.st.name;
-    while(nm.length > 3 && pdfTextW(nm, fs) > nameMax) nm = nm.slice(0, -2) + "…";
-    cur.push(pdfText(x, y, fs, nm));
-    cur.push(pdfText(x + colW - pdfTextW(where, fs), y, fs, where, "0.169 0.420 0.733"));
-    cur.push("0.85 0.87 0.9 RG 0.4 w " + x.toFixed(1) + " " + (y - 5).toFixed(1) + " m " + (x + colW).toFixed(1) + " " + (y - 5).toFixed(1) + " l S");
-    y -= lineH;
-  });
-  finish();
-  return pages;
-}
-function kitchenPages(c, p){
-  const list = guestSeats(c, p);
-  const M = 40, title = t("kitchenDoc").replace("{c}", c.name);
-  const pages = [];
-  let cur = [], y = 0;
-  const start = () => { cur = [pdfText(M, A4P_H - M - 10, 18, title)]; y = A4P_H - M - 46; };
-  const need = h => { if(y - h < M){ pages.push({ content: cur.join("\n"), w: A4P_W, h: A4P_H }); start(); } };
-  start();
-  const count = arr => { const o = {}; arr.forEach(e => { const k = e.st.menu || "none"; o[k] = (o[k] || 0) + 1; }); return o; };
-  const fmt = o => MENUS.concat(["none"]).filter(k => o[k]).map(k => o[k] + " × " + (k === "none" ? t("menuNone") : t("menu_" + k))).join("   ");
-  cur.push(pdfText(M, y, 12, t("kitchenTotal").replace("{n}", String(list.length))));
-  y -= 18;
-  pdfWrap(fmt(count(list)), 80).forEach(l => { cur.push(pdfText(M, y, 11, l)); y -= 15; });
-  y -= 10;
-  const groups = new Map();
-  list.forEach(e => { const k = e.table ? "t" + e.table : "s"; if(!groups.has(k)) groups.set(k, []); groups.get(k).push(e); });
-  const keys = Array.from(groups.keys()).sort((a, b) => (a === "s" ? 1e9 : +a.slice(1)) - (b === "s" ? 1e9 : +b.slice(1)));
-  keys.forEach(k => {
-    const arr = groups.get(k).sort((a, b) => a.seat - b.seat);
-    need(40);
-    cur.push("0.93 0.95 0.97 rg " + M + " " + (y - 5).toFixed(1) + " " + (A4P_W - 2 * M) + " 19 re f");
-    cur.push(pdfText(M + 6, y, 12, (k === "s" ? t("kitchenNoTable") : t("tableNo").replace("{n}", k.slice(1))) + " · " + arr.length));
-    const sm = fmt(count(arr));
-    cur.push(pdfText(A4P_W - M - 6 - pdfTextW(sm, 9.5), y, 9.5, sm, "0.353 0.420 0.459"));
-    y -= 22;
-    arr.filter(e => e.st.menu || e.st.note).forEach(e => {
-      const ls = e.st.note ? pdfWrap(e.st.note, 40) : [];
-      need(16 + Math.max(0, ls.length - 1) * 13);         // Name und Hinweis bleiben auf einer Seite
-      cur.push(pdfText(M + 10, y, 10.5, e.st.name));
-      cur.push(pdfText(M + 200, y, 10.5, e.st.menu ? t("menu_" + e.st.menu) : "–"));
-      ls.forEach((l, i) => { if(i) y -= 13; cur.push(pdfText(M + 300, y, 10, l, "0.6 0.15 0.1")); });
-      y -= 15;
-    });
-    y -= 6;
-  });
-  pages.push({ content: cur.join("\n"), w: A4P_W, h: A4P_H });
-  return pages;
-}
-function exportEventPdf(kind){
-  try{
-    const c = curClass(), p = curPlan();
-    if(!c || !p){ toast(t("noDesks")); return; }
-    if(!p.desks.some(d => d.studentId)){ toast(t("eventNoneSeated")); return; }
-    const pages = kind === "cards" ? placeCardPages(c, p) : kind === "escort" ? escortPages(c, p) : kitchenPages(c, p);
-    const file = t(kind === "cards" ? "cardsFile" : kind === "escort" ? "escortFile" : "kitchenFile");
-    if(download(buildPDF(pages), safeName(file + " " + c.name) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
-    else toast(t("exportFail"));
-  }catch(e){ toast(t("exportFail")); }
-}
-
 /* ============ 19b. Unterrichtsmodus ============ */
 let lessonMode = false, pickedId = null, pickTimer = null;
 let hintTimer = null;
@@ -7236,12 +7111,11 @@ function ensureLesson(c){
   return c.lesson;
 }
 /* Wer heute im Unterrichtsmodus als abwesend markiert ist */
-/* Wer heute nicht da ist: im Unterricht als abwesend markiert, bei Feiern abgesagt */
+/* Wer heute nicht da ist: im Unterricht als abwesend markiert */
 function absentToday(c){
   const out = new Set();
   if(!c) return out;
   if(c.lesson && c.lesson.date === todayKey() && Array.isArray(c.lesson.absent)) c.lesson.absent.forEach(id => out.add(id));
-  if(DB.settings.mode === "event") c.students.forEach(s => { if(s.rsvp === "no") out.add(s.id); });
   return out;
 }
 function lessonAbsent(id){
@@ -7256,14 +7130,15 @@ function lessonNote(id){
 function setLesson(on){
   if(on && (!curPlanId || (!DB.settings.lesson && !gradeMode))) return;
   if(!on && gradeMode) endGradeMode(true);
+  if(!on && checkMode) endCheckMode(true);
   if(!on && selfMode) endSelfMode(true);
   lessonMode = !!on;
-  selected.clear();
+  selected.clear(); armedStudent = null;
   pickedId = null;
   clearTimeout(pickTimer);
   if(on){
     const c = curClass();
-    if(c) ensureLesson(c);
+    if(c){ ensureLesson(c); recordLessonAbsence(c); }
     if(presenting){ presenting = false; document.body.classList.remove("presenting"); }
   }
   updateEditorChrome();
@@ -7316,13 +7191,29 @@ function openLessonSheet(it){
     const lab2 = document.createElement("div");
     lab2.className = "eyebrow"; lab2.style.marginTop = "14px"; lab2.textContent = t("gQuick") + " · " + t("gToday");
     sheet.appendChild(lab2);
-    const qp = quickPad(sheet, c, st, () => { absent = false; commitLesson(); }, isoDay(new Date()));   // im Unterricht: immer heute   // wer bewertet wird, ist da; Notiz wird mitgespeichert
-    qp.id = "lesson-quickmark";
+    const qbox = document.createElement("div"); sheet.appendChild(qbox);
+    const pad = () => { qbox.textContent = ""; sheet.dataset.sens = "1";
+      const qp = quickPad(qbox, c, st, () => { absent = false; commitLesson(); }, isoDay(new Date()));
+      qp.id = "lesson-quickmark"; };
+    if(lockedNow()) lockButton(qbox, pad); else pad();
+  }
+  let obsArea = null;
+  {
+    const lab3 = document.createElement("div");
+    lab3.className = "eyebrow"; lab3.style.marginTop = "14px";
+    const nObs = lockedNow() ? 0 : studentObs(c, st.id).length;
+    lab3.textContent = t("obsLesson") + (nObs ? " · " + t("obsCount").replace("{n}", String(nObs)) : "");
+    sheet.appendChild(lab3);
+    obsArea = document.createElement("textarea");
+    obsArea.className = "field"; obsArea.placeholder = t("obsPh"); obsArea.maxLength = 300; obsArea.id = "lesson-obs";
+    sheet.appendChild(obsArea);
   }
   function commitLesson(){
     const i = L.absent.indexOf(st.id);
     if(absent && i < 0) L.absent.push(st.id);
     if(!absent && i >= 0) L.absent.splice(i, 1);
+    recordLessonAbsence(c);
+    if(obsArea && obsArea.value.trim()) addObs(c, st.id, obsArea.value, lessonSubjectNow(c));
     const note = area.value.trim();
     if(note) L.notes[st.id] = note; else delete L.notes[st.id];
     closeModal(); save(); renderStage(false); updateLessonCount();
@@ -7356,6 +7247,7 @@ $("#lb-reset").onclick = () => askConfirm(t("lessonResetQ"), t("lessonResetT"), 
   const c = curClass(); if(!c) return;
   const L = ensureLesson(c);
   L.absent = []; L.picked = [];
+  recordLessonAbsence(c);
   save(); renderStage(false); updateLessonCount();
 });
 $("#btn-remember").onclick = () => recordSeating(false);
@@ -7369,8 +7261,10 @@ function attendanceRows(c){
   return rows.sort((a,b) => a.date.localeCompare(b.date));
 }
 function csvCell(v){
-  const x = String(v == null ? "" : v);
-  return /[";\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x;
+  let x = String(v == null ? "" : v);
+  /* Excel würde „=…“, „+…“, „-…“, „@…“ als Formel ausführen – mit Apostroph bleibt es Text */
+  if(/^[=+\-@\t\r]/.test(x)) x = "'" + x;
+  return /[";\r\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x;
 }
 function exportAttendance(){
   const c = curClass(); if(!c) return;
@@ -7401,6 +7295,19 @@ $("#btn-attendance").onclick = () => {
   info.className = "hint";
   info.textContent = rows.length ? t("attendanceDays").replace("{n}", String(rows.length)) : t("attendanceEmpty");
   sheet.appendChild(info);
+  const miss = c.students.map(st => ({ st, m: missedLessons(c, st.id) })).filter(x => x.m.total);
+  if(miss.length){
+    sheetLabel(sheet, t("absMissedTitle"));
+    const box2 = document.createElement("div"); box2.className = "previewbox"; box2.id = "abs-missed";
+    miss.sort((a, b) => b.m.total - a.m.total).forEach(x => {
+      const line = document.createElement("div");
+      const parts = Object.keys(x.m.bySubject).map(id => (subjectById(id) ? subjectById(id).short || subjectById(id).name : t("absNoSubject")) + " " + x.m.bySubject[id]);
+      line.textContent = x.st.name + ": " + x.m.total + (parts.length ? " (" + parts.join(", ") + ")" : "");
+      box2.appendChild(line);
+    });
+    sheet.appendChild(box2);
+    const hh = document.createElement("div"); hh.className = "hint"; hh.textContent = t("absMissedHint"); sheet.appendChild(hh);
+  }
   if(rows.length){
     const box = document.createElement("div");
     box.className = "previewbox";
@@ -7489,25 +7396,8 @@ function renderSettings(){
   box.textContent = "";
   const S = DB.settings;
 
-  const l1 = document.createElement("div");
-  l1.className = "eyebrow"; l1.textContent = t("setMode");
-  box.appendChild(l1);
-  const seg = document.createElement("div");
-  seg.className = "segmented";
-  [["school", t("setModeSchool")], ["event", t("setModeEvent")]].forEach(([val, label]) => {
-    const b = document.createElement("button");
-    b.textContent = label;
-    b.className = S.mode === val ? "on" : "";
-    b.onclick = () => { S.mode = val; save(); applyLang(); show("settings"); };
-    seg.appendChild(b);
-  });
-  box.appendChild(seg);
-  const h1 = document.createElement("div");
-  h1.className = "hint"; h1.textContent = t("setModeHint");
-  box.appendChild(h1);
-
   const l2 = document.createElement("div");
-  l2.className = "eyebrow"; l2.style.marginTop = "26px"; l2.textContent = t("setFeatures");
+  l2.className = "eyebrow"; l2.textContent = t("setFeatures");
   box.appendChild(l2);
   const h2 = document.createElement("div");
   h2.className = "hint"; h2.style.marginBottom = "10px"; h2.textContent = t("setFeaturesHint");
@@ -7525,7 +7415,7 @@ function renderSettings(){
     box.appendChild(row);
   });
 
-  if(S.mode !== "event"){
+  {
     const l5 = document.createElement("div");
     l5.className = "eyebrow"; l5.style.marginTop = "26px"; l5.textContent = t("setSchoolTools");
     box.appendChild(l5);
@@ -7534,6 +7424,12 @@ function renderSettings(){
     const tb = document.createElement("button"); tb.className = "ghost"; tb.id = "set-tt-times"; tb.style.width = "100%"; tb.style.marginBottom = "8px";
     tb.textContent = t("ttTimes"); tb.onclick = openTimes; box.appendChild(tb);
     box.appendChild(switchRow(t("tileGrades"), t("setGradesSub"), () => S.grades !== false, () => { S.grades = S.grades === false; save(); renderStart(); renderSettings(); }));
+    if(window.Fingerprint || S.lock){
+      const lr = switchRow(t("lockSet"), t("lockSetSub"), () => S.lock === true, () => toggleLock());
+      lr.id = "set-lock"; box.appendChild(lr);
+    }
+    const ny = document.createElement("button"); ny.className = "ghost"; ny.id = "set-newyear"; ny.style.width = "100%"; ny.style.margin = "4px 0 8px";
+    ny.textContent = t("nyTitle") + " …"; ny.onclick = openNewYear; box.appendChild(ny);
     if(S.grades !== false){
       const ql = document.createElement("div"); ql.className = "hint"; ql.style.margin = "4px 0 0"; ql.textContent = t("setQuickScale");
       box.appendChild(ql);
@@ -7715,9 +7611,9 @@ const PRINT_FILL = { desk:"#FFFDF7", teacherdesk:"#E7EEF1", board:"#2E4034", dig
   computer:"#E4E4EA", plant:"#DCE9D8", carpet:"#F1E7E7", label:"#FFFFFF",
   roundtable:"#F4ECDD", whiteboard:"#F4F7F9", screen:"#E9EEF1", pinboard:"#C29365",
   flipchart:"#FFFEF8", wall:"#D2D8DC", clock:"#F2F5F7", trash:"#E0E5E8",
-  stage:"#5B3A29", dancefloor:"#E3DCF2", buffet:"#FFF1D9", bar:"#33404D", headtable:"#FCE8EE",
-  gifttable:"#E6F4E6", dj:"#2A2A35", cake:"#FFF6E8", coatrack:"#ECE5D9", pillar:"#C9D0D5" };
-const PRINT_TEXT = { board:"#EDEDE4", digitalboard:"#8FD3E8", stage:"#F6E7D2", bar:"#E6F0F7", dj:"#9EE7FF" };
+  stage:"#5B3A29",    
+     coatrack:"#ECE5D9", pillar:"#C9D0D5" };
+const PRINT_TEXT = { board:"#EDEDE4", digitalboard:"#8FD3E8", stage:"#F6E7D2",   };
 const PRINT_TABLE = "#F3E6CF", PRINT_TABLE_LINE = "#B0915F", PRINT_TABLE_INK = "#7A5B30";
 
 function exportPNG(){
@@ -8032,12 +7928,7 @@ $("#btn-share").onclick = () => {
     mk("copy", t("allPdf"), t("allPdfSub"), exportAllPDF);
   }
   mk("image", t("asPng"), t("asPngSub"), exportPNG);
-  if(cls && curPlan() && DB.settings.mode !== "event") mk("note", t("subTitle"), t("subSub"), openSubstituteSheet);
-  if(cls && curPlan() && DB.settings.mode === "event"){
-    mk("note", t("cardsTitle"), t("cardsSub"), () => exportEventPdf("cards"));
-    mk("users", t("escortTitle"), t("escortSub"), () => exportEventPdf("escort"));
-    mk("pdf", t("kitchenTitle"), t("kitchenSub"), () => exportEventPdf("kitchen"));
-  }
+  if(cls && curPlan()) mk("note", t("subTitle"), t("subSub"), openSubstituteSheet);
   const close = document.createElement("button");
   close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "14px";
   close.textContent = t("close"); close.onclick = closeModal;
@@ -8070,7 +7961,7 @@ async function decryptBackup(enc, pw){
   return new TextDecoder().decode(pt);
 }
 /* Gelöschtes (Papierkorb) gehört nicht in eine Sicherung, die das Gerät verlässt */
-function backupData(){ const d = sanitizeDB(clone(DB)) || clone(DB); d.trash = []; return d; }   // entfernt auch Noten und Notizen gelöschter Schüler
+function backupData(){ const d = sanitizeDB(clone(DB)) || clone(DB); d.trash = []; d.settings.lock = false; return d; }   // Sperre gehört zum Gerät, nicht in die Sicherung   // entfernt auch Noten und Notizen gelöschter Schüler
 function writeBackup(obj, encrypted){
   const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
   const stamp = new Date().toISOString().slice(0, 10);
@@ -8080,6 +7971,7 @@ function writeBackup(obj, encrypted){
   else toast(t("exportFail"));
 }
 $("#btn-backup").onclick = () => {
+  if(needUnlock(() => $("#btn-backup").onclick())) return;      // die Sicherung enthält alle Noten und Beobachtungen
   const plain = () => { try{ writeBackup({ app: "fairseat", v: 2, exported: new Date().toISOString(), data: backupData() }, false); }catch(e){ toast(t("exportFail")); } };
   if(!hasCrypto()){ plain(); return; }
   const sheet = sheetBase(t("backupTitle"));
@@ -8141,7 +8033,7 @@ function askBackupPassword(enc, done){
   sheetButtons(sheet, t("restore"), go);
   setTimeout(() => f.focus(), 60);
 }
-$("#btn-restore").onclick = () => $("#filepick").click();
+$("#btn-restore").onclick = () => { if(needUnlock(() => $("#filepick").click())) return; $("#filepick").click(); };
 $("#filepick").addEventListener("change", e => {
   if(selfMode){ e.target.value = ""; return; }
   const file = e.target.files && e.target.files[0];
@@ -8173,7 +8065,8 @@ function restoreParsed(parsed){
       flushSave();
       const prev = Store.get(KEY);
       if(prev) Store.set(KEY_PREV, JSON.stringify({ at: new Date().toISOString(), data: prev }));
-      DB = clean; LANG = DB.lang;
+      const keepLock = DB.settings.lock === true;        // Sperre gilt für dieses Gerät, nicht für die Datei
+      DB = clean; LANG = DB.lang; DB.settings.lock = keepLock;
       curClassId = null; curPlanId = null; curRoomId = null;
       undoStack = []; redoStack = []; updateUndoButtons();
       /* Reicht der Speicher nicht für beide Stände, hat der neue Vorrang */
@@ -8375,39 +8268,34 @@ $("#fmpick").addEventListener("change", e => {
   reader.readAsText(file);
 });
 
-/* ============ 21c. Erster Start: Schule oder Feier? ============ */
+/* ============ 21c. Erster Start ============ */
 function showWelcome(){
   const sheet = sheetBase(t("welcomeTitle"));
   sheet.classList.add("welcome");
   const p = document.createElement("div"); p.className = "hint"; p.style.fontSize = "14px"; p.textContent = t("welcomeText");
   sheet.appendChild(p);
-  [["school", "welcomeSchool", "welcomeSchoolSub", "teach"], ["event", "welcomeEvent", "welcomeEventSub", "roundtable"]].forEach(([mode, tk, sk, ic]) => {
-    const b = document.createElement("button");
-    b.className = "choice"; b.dataset.mode = mode;
-    b.appendChild(icon(ic));
-    const txt = document.createElement("span"); txt.className = "txt";
-    const h = document.createElement("b"); h.textContent = t(tk);
-    const sub = document.createElement("span"); sub.className = "sub"; sub.textContent = t(sk);
-    txt.appendChild(h); txt.appendChild(sub);
-    b.appendChild(txt);
-    b.onclick = () => {
-      DB.settings.mode = mode; DB.onboarded = true;
-      sheet.classList.remove("welcome");
-      closeModal(); flushSave(); applyLang(); goHome();
-      if(mode === "school") setTimeout(showSchoolPrivacy, 120);
-    };
-    sheet.appendChild(b);
-  });
+  const b = document.createElement("button");
+  b.className = "primary"; b.id = "welcome-ok"; b.style.width = "100%"; b.style.marginTop = "14px";
+  b.textContent = t("welcomeGo");
+  b.onclick = () => {
+    DB.onboarded = true;
+    sheet.classList.remove("welcome");
+    closeModal(); flushSave(); applyLang(); goHome();
+    setTimeout(showSchoolPrivacy, 120);
+  };
+  sheet.appendChild(b);
 }
 
 /* ============ 23. Stundenplan ============
-   Nur im Schulmodus. Zeiten und Pausen in DB.tt, Fächer in DB.subjects,
+   Zeiten und Pausen in DB.tt, Fächer in DB.subjects,
    Stunden in DB.lessons. Jede Stunde kann auf Klasse, Raum und Sitzplan zeigen. */
+/* Klassenfarben: kräftig, damit sie als Rand auf jeder Fachfarbe auffallen */
+const CLASS_COLORS = ["#E11D48","#D97706","#16A34A","#2563EB","#9333EA","#0D9488","#DB2777","#78716C"];
 const SUBJECT_COLORS = ["#2E86DE","#E0533D","#20A464","#E08A00","#8E44AD","#D63384","#16A2B8","#7A5C3E","#5C6B7A","#C9A400"];
 const MAX_SUBJECTS = 40, MAX_LESSONS = 400, MAX_ASSESS = 300;
 function defaultTT(){ return { start: "08:00", len: 45, count: 8, days: 5, breaks: [0, 20, 0, 15, 0, 30, 0], ab: false, abRef: "" }; }
-function ttOn(){ return DB.settings.mode !== "event" && DB.settings.timetable !== false; }
-function gradesOn(){ return DB.settings.mode !== "event" && DB.settings.grades !== false; }
+function ttOn(){ return DB.settings.timetable !== false; }
+function gradesOn(){ return DB.settings.grades !== false; }
 const hm = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || "")); return m ? Math.min(23, +m[1]) * 60 + Math.min(59, +m[2]) : 480; };
 const fmtHM = m => String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
 function periodTimes(){
@@ -8485,7 +8373,11 @@ function renderNowCard(){
     const tx = document.createElement("div"); tx.className = "nowtx";
     const a = document.createElement("div"); a.className = "nowk";
     a.textContent = t(k) + " · " + (L.period + 1) + ". " + t("ttPeriod") + " · " + fmtHM(x.start) + "–" + fmtHM(x.end);
-    const b = document.createElement("div"); b.className = "nowt"; b.textContent = lessonLabel(L) || t("ttEmpty");
+    const off = isCancelled(L, isoDay(new Date()));
+    const b = document.createElement("div"); b.className = "nowt"; b.textContent = (lessonLabel(L) || t("ttEmpty")) + (off ? " · " + t("ttCancelled") : "");
+    row.classList.toggle("cancelled", off);
+    const lc = classById(L.classId);
+    if(lc && lc.color){ row.style.boxShadow = "inset 0 0 0 3px " + lc.color; }
     tx.appendChild(a); tx.appendChild(b); row.appendChild(tx);
     if(L.classId && classById(L.classId)){
       const go = document.createElement("button"); go.className = "minibtn"; go.appendChild(icon("grid"));
@@ -8499,6 +8391,12 @@ function renderNowCard(){
         row.appendChild(gr);
       }
     }
+    /* Stunde fällt heute aus – ein Tipp, und sie zählt nicht für Fehlstunden */
+    const cx = document.createElement("button"); cx.className = "minibtn nowoff"; cx.id = "now-cancel-" + k;
+    cx.appendChild(icon(off ? "undo" : "close"));
+    const cxs = document.createElement("span"); cxs.textContent = off ? t("ttCancelUndo") : t("ttCancelBtn"); cx.appendChild(cxs);
+    cx.onclick = () => { setCancelled(L, isoDay(new Date()), !off); save(); renderNowCard(); };
+    row.appendChild(cx);
     box.appendChild(row);
   });
 }
@@ -8510,10 +8408,10 @@ function renderTimetable(){
   const abBar = $("#tt-ab");
   abBar.style.display = T.ab ? "" : "none";
   if(T.ab){
-    if(!ttWeekView) ttWeekView = abWeek(new Date()) || "A";
+    if(!ttWeekView) ttWeekView = abWeek(ttRefMonday()) || "A";
     abBar.textContent = "";
     ["A", "B"].forEach(w => {
-      const b = document.createElement("button"); b.textContent = t("ttWeek").replace("{w}", w) + (abWeek(new Date()) === w ? " · " + t("ttThisWeek") : "");
+      const b = document.createElement("button"); b.textContent = t("ttWeek").replace("{w}", w) + (abWeek(ttRefMonday()) === w ? " · " + t("ttThisWeek") : "");
       b.classList.toggle("on", ttWeekView === w);
       b.onclick = () => { ttWeekView = w; renderTimetable(); };
       abBar.appendChild(b);
@@ -8550,14 +8448,20 @@ function renderTimetable(){
     const span = Math.min(L.span, T.count - L.period);
     const s = subjectById(L.subjectId), c = classById(L.classId), rm = roomById(L.roomId);
     const cell = document.createElement("button"); cell.className = "tt-cell";
+    const off = isCancelled(L, ttDateFor(L));
+    if(off) cell.classList.add("cancelled");
+    if(c && c.color){ cell.classList.add("hascls"); cell.style.setProperty("--cc", c.color); }
     if(s){ cell.style.background = s.color; cell.style.borderColor = s.color; cell.style.color = inkOn(s.color);
       cell.style.textShadow = inkOn(s.color) === "#fff" ? "" : "none"; }
     const a = document.createElement("b"); a.textContent = s ? (s.short || s.name) : "–";
     const b = document.createElement("span"); b.textContent = c ? c.name : "";
+    /* Klassenname als Schild in der Klassenfarbe – Schrift hell oder dunkel, je nachdem, was lesbar ist */
+    if(c && c.color){ b.className = "ccbadge"; b.style.background = c.color; b.style.color = inkOn(c.color); b.style.textShadow = "none"; }
     const d = document.createElement("span"); d.textContent = rm ? rm.name : "";
     cell.appendChild(a); cell.appendChild(b); cell.appendChild(d);
     if(L.week){ const w = document.createElement("i"); w.textContent = L.week; cell.appendChild(w); }
-    cell.setAttribute("aria-label", days[L.day] + " " + (L.period + 1) + ": " + lessonLabel(L));
+    if(off){ const x = document.createElement("span"); x.className = "ttoff"; x.textContent = t("ttOffShort"); cell.appendChild(x); }
+    cell.setAttribute("aria-label", days[L.day] + " " + (L.period + 1) + ": " + lessonLabel(L) + (off ? " – " + t("ttCancelled") : ""));
     cell.onclick = () => editLesson(L);
     const endRow = rowOf[L.period + span - 1];
     put(cell, rowOf[L.period], L.day + 2, endRow - rowOf[L.period] + 1);
@@ -8624,11 +8528,17 @@ function editLesson(L, day, period, draft){
   };
   if(cur.period < DB.tt.count - 1) segRow("ttLength", [[1, t("ttSingle")], [2, t("ttDouble")]], () => cur.span, v => cur.span = v);
   if(DB.tt.ab) segRow("ttWeeks", [["", t("ttEveryWeek")], ["A", t("ttWeek").replace("{w}", "A")], ["B", t("ttWeek").replace("{w}", "B")]], () => cur.week, v => cur.week = v);
+  if(!isNew && DB.lessons.indexOf(L) >= 0){
+    /* Ausfall gilt nur für diesen einen Tag in der angezeigten Woche */
+    const dk = ttDateFor(L);
+    const cr = switchRow(t("ttCancel").replace("{d}", fmtDateLong(dk)), t("ttCancelSub"), () => isCancelled(L, dk), () => { setCancelled(L, dk, !isCancelled(L, dk)); save(); renderTimetable(); renderNowCard(); });
+    cr.id = "tt-cancel"; cr.style.marginTop = "12px"; sheet.appendChild(cr);
+  }
   if(!isNew){
     const del = document.createElement("button");
     del.className = "ghost"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
     del.textContent = t("ttDelete");
-    del.onclick = () => { DB.lessons = DB.lessons.filter(x => x.id !== L.id); closeModal(); save(); renderTimetable(); };
+    del.onclick = () => { DB.lessons = DB.lessons.filter(x => x.id !== L.id); DB.cancelled = (DB.cancelled || []).filter(x => x.slice(11) !== L.id); closeModal(); save(); renderTimetable(); };
     sheet.appendChild(del);
   }
   sheetButtons(sheet, t("save"), () => {
@@ -8639,7 +8549,9 @@ function editLesson(L, day, period, draft){
     const overl = x => x.id !== cur.id && x.day === cur.day && (!x.week || !cur.week || x.week === cur.week) &&
       x.period < cur.period + span && cur.period < x.period + x.span;
     const doSave = () => {
+      const gone = new Set(DB.lessons.filter(overl).map(x => x.id));
       DB.lessons = DB.lessons.filter(x => !overl(x));
+      if(gone.size) DB.cancelled = (DB.cancelled || []).filter(x => !gone.has(x.slice(11)));
       if(isNew) DB.lessons.push(cur); else Object.assign(L, cur);
       closeModal(); save(); renderTimetable();
     };
@@ -8839,6 +8751,7 @@ function assessAverage(a, c){
 }
 let gradeSubject = null, gradeTab = "list", curAssessId = null, assessSel = null;
 function goGrades(subjectId){
+  if(needUnlock(() => goGrades(subjectId))) return;
   if(!DB.gradesAck){ showGradesPrivacy(() => goGrades(subjectId)); return; }
   ensureCurClass();
   if(subjectId && subjectById(subjectId)){
@@ -8943,6 +8856,7 @@ function pickCourseSubject(c){
 }
 function editWeight(c, s){
   let W = own(c.gradeW || {}, s.id) ? c.gradeW[s.id] : 50;
+  const R = Object.assign({}, roundRule(c, s.id));
   const sheet = sheetBase(t("gWeight") + " – " + s.name);
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gWeightHint"); sheet.appendChild(h);
   const out = document.createElement("div"); out.className = "wout";
@@ -8954,7 +8868,22 @@ function editWeight(c, s){
   [30, 40, 50, 60, 70].forEach(v => { const b = document.createElement("button"); b.textContent = v + ":" + (100 - v);
     b.onclick = () => { W = v; rng.value = v; paint(); }; quick.appendChild(b); });
   sheet.appendChild(quick);
-  sheetButtons(sheet, t("save"), () => { c.gradeW = Object.assign({}, c.gradeW, { [s.id]: W }); save(); closeModal(); renderGrades(); });
+  /* Rundung für den Notenvorschlag */
+  const seg = (labelKey, opts, key, id) => {
+    sheetLabel(sheet, t(labelKey));
+    const row = document.createElement("div"); row.className = "segmented"; row.id = id;
+    opts.forEach(([v, lk]) => { const b = document.createElement("button"); b.textContent = t(lk); b.classList.toggle("on", R[key] === v);
+      b.onclick = () => { R[key] = v; Array.from(row.children).forEach(x => x.classList.toggle("on", x === b)); }; row.appendChild(b); });
+    sheet.appendChild(row);
+  };
+  seg("gRoundLabel", [[true, "gRoundFav"], [false, "gRoundMath"]], "fav", "g-round");
+  seg("gTendLabel", [[false, "gTendOff"], [true, "gTendOn"]], "tend", "g-tend");
+  const rh = document.createElement("div"); rh.className = "hint"; rh.textContent = t("gRoundHint"); sheet.appendChild(rh);
+  sheetButtons(sheet, t("save"), () => {
+    c.gradeW = Object.assign({}, c.gradeW, { [s.id]: W });
+    c.gradeRound = Object.assign({}, c.gradeRound, { [s.id]: { fav: !!R.fav, tend: !!R.tend } });
+    save(); closeModal(); renderGrades();
+  });
 }
 function assessForm(sheet, a){
   sheetLabel(sheet, t("gTitle"));
@@ -9140,7 +9069,7 @@ function renderOverview(body, c, s, list){
   const th = txt => { const e = document.createElement("th"); e.textContent = txt; hr.appendChild(e); return e; };
   th(t("subColName"));
   list.forEach(a => { const e = th(fmtDate(a.date)); e.title = a.title; const k = document.createElement("small"); k.textContent = a.kind === "written" ? t("gW") : t("gO"); e.appendChild(k); });
-  th("Ø " + t("gW")); th("Ø " + t("gO")); th(t("gTotal")).className = "tot";
+  th("Ø " + t("gW")); th("Ø " + t("gO")); th(t("gTotal")).className = "tot"; th(t("gProposal")).className = "tot"; th(t("absMissedShort"));
   tb.appendChild(hr);
   c.students.forEach(st => {
     const tr = document.createElement("tr");
@@ -9149,6 +9078,8 @@ function renderOverview(body, c, s, list){
     list.forEach(a => { const d = document.createElement("td"); d.textContent = a.marks[st.id] ? tokLabel(a.marks[st.id]) : ""; if(a.marks[st.id] === "x") d.className = "miss"; tr.appendChild(d); });
     const av = studentAverages(c, s.id, st.id);
     [av.written, av.other, av.total].forEach((v, k) => { const d = document.createElement("td"); d.textContent = v === null ? "" : fmtNum(v, dg); d.className = k === 2 ? "tot" : "avg"; tr.appendChild(d); });
+    const pr = document.createElement("td"); pr.className = "tot prop"; pr.textContent = proposeGrade(c, s.id, av) || ""; tr.appendChild(pr);
+    const ms = document.createElement("td"); ms.className = "avg"; const mc = missedLessons(c, st.id).bySubject[s.id] || 0; ms.textContent = mc ? String(mc) : ""; tr.appendChild(ms);
     tb.appendChild(tr);
   });
   wrap.appendChild(tb); body.appendChild(wrap);
@@ -9156,6 +9087,10 @@ function renderOverview(body, c, s, list){
   ex.appendChild(icon("pdf")); const es = document.createElement("span"); es.textContent = t("gPdf"); ex.appendChild(es);
   ex.onclick = () => exportGradesPdf(c, s);
   body.appendChild(ex);
+  const cx = document.createElement("button"); cx.className = "cbtn outline"; cx.id = "g-csv"; cx.style.width = "100%"; cx.style.marginTop = "8px";
+  cx.appendChild(icon("share")); const cs = document.createElement("span"); cs.textContent = t("gCsv"); cx.appendChild(cs);
+  cx.onclick = () => exportGradesCsv(c, s);
+  body.appendChild(cx);
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gOverviewHint"); body.appendChild(h);
 }
 function studentDetail(c, s, st){
@@ -9163,7 +9098,19 @@ function studentDetail(c, s, st){
   const sheet = sheetBase(st.name + " – " + s.name);
   const sum = document.createElement("div"); sum.className = "lvlstats";
   [[t("gW"), av.written], [t("gO"), av.other], [t("gTotal"), av.total]].forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + fmtNum(v, dg); sum.appendChild(sp); });
+  const pv = proposeGrade(c, s.id, av);
+  if(pv){ const sp = document.createElement("span"); sp.className = "propchip"; sp.textContent = t("gProposal") + ": " + pv; sum.appendChild(sp); }
+  const mi = missedLessons(c, st.id);
+  if(mi.bySubject[s.id]){ const sp = document.createElement("span"); sp.textContent = t("absMissed").replace("{n}", String(mi.bySubject[s.id] || 0)); sum.appendChild(sp); }
   sheet.appendChild(sum);
+  const tb = document.createElement("button"); tb.className = "cbtn outline"; tb.id = "talk-sheet"; tb.style.width = "100%"; tb.style.marginTop = "10px";
+  tb.appendChild(icon("pdf")); const tbs = document.createElement("span"); tbs.textContent = t("talkTitle"); tb.appendChild(tbs);
+  tb.onclick = () => { closeModal(); setTimeout(() => exportTalkSheet(c, st), 60); };
+  sheet.appendChild(tb);
+  const ob = document.createElement("button"); ob.className = "cbtn outline"; ob.id = "obs-open"; ob.style.width = "100%"; ob.style.marginTop = "8px";
+  ob.appendChild(icon("note")); const obs = document.createElement("span"); obs.textContent = t("obsCount").replace("{n}", String(studentObs(c, st.id).length)); ob.appendChild(obs);
+  ob.onclick = () => openObservations(c, st, () => studentDetail(c, s, st), s.id);
+  sheet.appendChild(ob);
   const pts = list.map(a => ({ label: fmtDate(a.date), v: valIn(a, a.marks[st.id], sc) })).filter(p => p.v !== null);
   if(pts.length) sheet.appendChild(lineChart(pts, sc, t("gTrend")));
   list.slice().reverse().forEach(a => {
@@ -9193,7 +9140,7 @@ function gradesPdfPages(c, s){
   const list = courseAssess(c, s.id), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
   const cols = list.slice(-14);                                  // höchstens 14 Spalten passen auf A4 quer
   const M = PDF_M, title = c.name + " · " + s.name + " – " + t("gPdfTitle");
-  const nameW = 170, colW = Math.min(44, (PDF_W - 2 * M - nameW - 3 * 46) / Math.max(1, cols.length));
+  const nameW = 170, colW = Math.min(44, (PDF_W - 2 * M - nameW - 4 * 46) / Math.max(1, cols.length));
   const pages = []; let cur = [], y = 0;
   const head = () => {
     cur = [pdfText(M, PDF_H - M - 12, 15, title), pdfText(M, PDF_H - M - 28, 9, t("printDate") + " " + new Date().toLocaleDateString(), "0.353 0.420 0.459")];
@@ -9201,7 +9148,7 @@ function gradesPdfPages(c, s){
     cur.push(pdfText(M, y, 8.5, t("subColName"), "0.353 0.420 0.459"));
     cols.forEach((a, i) => { const x = M + nameW + i * colW; cur.push(pdfText(x, y + 9, 7.5, fmtDate(a.date), "0.353 0.420 0.459")); cur.push(pdfText(x, y, 7.5, (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " x" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : ""), "0.353 0.420 0.459")); });
     const x0 = M + nameW + cols.length * colW;
-    ["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal")].forEach((h, k) => cur.push(pdfText(x0 + k * 46, y, 8.5, h, "0.353 0.420 0.459")));
+    ["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposalShort")].forEach((h, k) => cur.push(pdfText(x0 + k * 46, y, 8.5, h, "0.353 0.420 0.459")));
     y -= 16;
   };
   head();
@@ -9212,6 +9159,7 @@ function gradesPdfPages(c, s){
     cols.forEach((a, i) => { const tok = a.marks[st.id]; if(tok) cur.push(pdfText(M + nameW + i * colW, y, 9.5, tokLabel(tok, true))); });
     const av = studentAverages(c, s.id, st.id), x0 = M + nameW + cols.length * colW;
     [av.written, av.other, av.total].forEach((v, k) => { if(v !== null) cur.push(pdfText(x0 + k * 46, y, 9.5, fmtNum(v, dg))); });
+    const pv = proposeGrade(c, s.id, av); if(pv) cur.push(pdfText(x0 + 3 * 46, y, 9.5, pv));
     y -= 15;
   });
   if(list.length > cols.length){ y -= 8; cur.push(pdfText(M, Math.max(M, y), 8, t("gPdfCut").replace("{n}", String(cols.length)), "0.353 0.420 0.459")); }
@@ -9288,7 +9236,7 @@ function quickPad(parent, c, st, onSaved, date){
 function quickMark(st){
   const c = curClass(); if(!c) return;
   if(!DB.subjects.length){ toast(t("subjNeed")); return; }
-  const sheet = sheetBase(st.name + " – " + t("gQuick"));
+  const sheet = sheetBase(st.name + " – " + t("gQuick")); sheet.dataset.sens = "1";
   const dl = document.createElement("label"); dl.className = "qdate";
   const ds = document.createElement("span"); ds.textContent = t("gDate");
   const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "quick-date"; di.value = quickDay();
@@ -9307,6 +9255,7 @@ function quickMark(st){
 }
 /* Im normalen Sitzplan: Platz antippen → „Bewerten“ in der Auswahlleiste */
 function gradeSelectedSeat(){
+  if(needUnlock(gradeSelectedSeat)) return;
   const d = selectedSeat(); if(!d || !d.studentId) return;
   const st = studentById(curClass(), d.studentId); if(!st) return;
   const go = () => quickMark(st);
@@ -9331,6 +9280,7 @@ const gradeAssess = () => { const c = curClass(); return c && gradeMode ? (c.ass
 /* Startet das Bewerten auf dem gerade offenen Plan */
 function startGradeMode(assessId){
   const c = curClass(), p = curPlan(); if(!c || !p) return;
+  if(checkMode) endCheckMode(true);
   gradeMode = assessId;
   gradeWasLesson = lessonMode;
   if(!lessonMode){ lessonMode = true; selected.clear(); const cl = curClass(); if(cl) ensureLesson(cl); }
@@ -9532,6 +9482,7 @@ function startSelfSetup(){
 function startSelfMode(id){
   if(!curPlan()) return;
   if(gradeMode) endGradeMode(true);
+  if(checkMode) endCheckMode(true);
   if(!lessonMode){ lessonMode = true; const c = curClass(); if(c) ensureLesson(c); }
   if(presenting) setPresenting(false);
   selfMode = id; selected.clear();
@@ -9545,6 +9496,7 @@ function endSelfMode(silent){
   if(!selfMode) return;
   selfMode = null;
   delete DB.selfLock; flushSave();
+  lockOpen = false;
   document.body.classList.remove("selfmode");
   if(!silent){ updateEditorChrome(); renderStage(false); requestAnimationFrame(fitToScreen); toast(t("selfEnded")); }
 }
@@ -9602,6 +9554,7 @@ function openSelfSheet(sid){
 })();
 /* Vor dem ersten Mal: Datenschutzhinweis, und ohne Fach gleich eines anlegen */
 function withGradesReady(fn){
+  if(needUnlock(() => withGradesReady(fn))) return;
   const go = () => DB.subjects.length ? fn() : editSubject(null, () => fn());
   if(!DB.gradesAck){ showGradesPrivacy(go); return; }
   go();
@@ -9669,7 +9622,513 @@ function selfDetail(c, s, a){
   close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
 }
 
-/* Einmal beim ersten Start im Schulmodus: Hinweis auf die Genehmigung der Schulleitung */
+
+/* ============ 27. Zeugnisvorschlag, CSV, Gesprächsblatt, Fehlstunden, Schuljahreswechsel ============ */
+/* Rundungsregel je Klasse und Fach: zugunsten der Schülerin/des Schülers bei ,5 und mit Tendenzen (+/−) */
+function roundRule(c, sid){ const r = own(c.gradeRound || {}, sid) ? c.gradeRound[sid] : null; return { fav: !r || r.fav !== false, tend: !!r && r.tend === true }; }
+function proposeGrade(c, sid, av){
+  if(!av || av.total === null || av.total === undefined) return null;
+  const R = roundRule(c, sid), v = av.total, eps = 1e-9;
+  if(av.scale === "points"){
+    /* Punkte: höher ist besser – „zugunsten“ rundet ,5 auf, kaufmännisch ebenfalls */
+    return String(Math.max(0, Math.min(15, Math.floor(v + 0.5 + eps))));
+  }
+  if(!R.tend){
+    const f = Math.floor(v), frac = v - f;
+    let n = Math.abs(frac - 0.5) < eps ? (R.fav ? f : f + 1) : Math.round(v);
+    return String(Math.max(1, Math.min(6, n)));
+  }
+  /* Mit Tendenz: nächster Wert aus 1+ … 6; bei Gleichstand entscheidet die Regel */
+  let best = null;
+  GRADE_TOKS.forEach(tok => {
+    const x = tokNum(tok, "grade"), d = Math.abs(x - v);
+    if(!best || d < best.d - eps || (Math.abs(d - best.d) < eps && (R.fav ? x < best.x : x > best.x))) best = { tok, x, d };
+  });
+  return best.tok;
+}
+const smileyWord = tok => t("gSm_" + tok);
+function csvValue(tok){ return tok === "x" ? t("gMissing") : SMILEY[tok] ? smileyWord(tok) : String(tok || ""); }
+function exportGradesCsv(c, s){
+  try{
+    const list = courseAssess(c, s.id), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
+    const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + ")"))
+      .concat(["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposal"), t("absMissedShort")]);
+    const lines = [head.map(csvCell).join(";")];
+    c.students.forEach(st => {
+      const av = studentAverages(c, s.id, st.id);
+      const cells = [st.name].concat(list.map(a => csvValue(a.marks[st.id])))
+        .concat([av.written, av.other, av.total].map(v => v === null ? "" : fmtNum(v, dg)))
+        .concat([proposeGrade(c, s.id, av) || "", String(missedLessons(c, st.id).bySubject[s.id] || 0)]);
+      lines.push(cells.map(csvCell).join(";"));
+    });
+    const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    if(download(blob, safeName(c.name + " " + s.name + " " + t("gPdfTitle")) + ".csv", "text/csv")) toast(t("gCsvOk"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
+/* ---- Fehlstunden je Unterrichtsstunde (aus dem Stundenplan) ----
+   Beim Start des Unterrichtsmodus und bei jeder Änderung der Anwesenheit wird für die laufende
+   Stunde festgehalten, wer fehlt. Ohne passende Stunde im Stundenplan zählt der Eintrag als eine Stunde. */
+function currentLessonFor(c, date){
+  date = date || new Date();
+  const day = (date.getDay() + 6) % 7;
+  if(!c || day >= DB.tt.days) return null;
+  const wk = abWeek(date), times = periodTimes(), m = date.getHours() * 60 + date.getMinutes();
+  /* Direkt nach der Klasse filtern: Überschneidungen (A/B ohne Bezugswoche) liefern sonst die falsche Stunde */
+  const dk = isoDay(date);
+  return DB.lessons.find(L => L.classId === c.id && L.day === day && (!L.week || !wk || L.week === wk) && times[L.period]
+    && !isCancelled(L, dk) && times[L.period].start <= m && m < times[Math.min(times.length - 1, L.period + L.span - 1)].end) || null;
+}
+function recordLessonAbsence(c){
+  if(!c || !c.lesson) return false;
+  /* Gezählt wird nur eine Stunde aus dem Stundenplan – außerhalb (Pause, Nachmittag) entsteht keine Phantomstunde */
+  const L = currentLessonFor(c); if(!L) return false;
+  const d = c.lesson.date || todayKey(), p = L.period;
+  c.absLog = Array.isArray(c.absLog) ? c.absLog : [];
+  const e = c.absLog.find(x => x.d === d && x.p === p);
+  const ids = c.lesson.absent.slice();
+  if(!e){
+    if(!ids.length) return false;                   // nichts zu notieren
+    c.absLog.push({ d, p, n: L.span, s: L.subjectId, ids });
+    while(c.absLog.length > 3000) c.absLog.shift();
+    return true;
+  }
+  if(e.ids.join() === ids.join()) return false;
+  e.ids = ids; return true;
+}
+/* Läuft der Unterrichtsmodus über den Stundenwechsel, wird auch die nächste Stunde erfasst */
+setInterval(() => { if(lessonMode){ const c = curClass(); if(recordLessonAbsence(c)) save(); } }, 60000);
+function missedLessons(c, sid){
+  const out = { total: 0, bySubject: {}, dates: [] }, off = cancelledSlots(c);
+  (c.absLog || []).forEach(e => {
+    if(e.ids.indexOf(sid) < 0 || off.has(e.d + "|" + e.p)) return;
+    out.total += e.n; out.bySubject[e.s || ""] = (out.bySubject[e.s || ""] || 0) + e.n; out.dates.push(e.d);
+  });
+  return out;
+}
+/* ---- Gesprächsblatt: eine Seite (oder mehr) je Schüler für Elterngespräche ---- */
+function talkSheetPages(c, st){
+  const W = A4P_W, H = A4P_H, M = 44, pages = [];
+  let cur = [], y = 0;
+  const grey = "0.353 0.420 0.459";
+  const start = () => {
+    cur = [];
+    cur.push(pdfText(M, H - M - 10, 18, st.name));
+    cur.push(pdfText(M, H - M - 30, 10.5, c.name + " · " + t("talkTitle") + " · " + new Date().toLocaleDateString(LANG === "en" ? "en-GB" : "de-DE"), grey));
+    y = H - M - 62;
+  };
+  const need = h => { if(y - h < M + 10){ pages.push({ content: cur.join("\n"), w: W, h: H }); start(); } };
+  start();
+  const subjects = courseSubjects(c).filter(s => courseAssess(c, s.id).some(a => a.marks[st.id]) || selfAssess(c, s.id).some(a => a.marks[st.id]));
+  if(!subjects.length){ cur.push(pdfText(M, y, 11, t("talkNoGrades"), grey)); y -= 22; }
+  subjects.forEach(s => {
+    const list = courseAssess(c, s.id), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
+    const av = studentAverages(c, s.id, st.id), pv = proposeGrade(c, s.id, av);
+    const mine = list.filter(a => a.marks[st.id]);
+    need(70);
+    cur.push("0.93 0.95 0.97 rg " + M + " " + (y - 6).toFixed(1) + " " + (W - 2 * M) + " 22 re f");
+    cur.push(pdfText(M + 6, y, 13, s.name));
+    const sumTxt = "Ø " + t("gW") + " " + fmtNum(av.written, dg) + "   Ø " + t("gO") + " " + fmtNum(av.other, dg) + "   " + t("gTotal") + " " + fmtNum(av.total, dg) + (pv ? "   " + t("gProposal") + " " + pv : "");
+    cur.push(pdfText(W - M - 6 - pdfTextW(sumTxt, 9.5), y + 1, 9.5, sumTxt, grey));
+    y -= 26;
+    /* Verlauf als kleine Linie (bessere Werte oben) */
+    const pts = mine.map(a => valIn(a, a.marks[st.id], sc)).filter(v => v !== null);
+    if(pts.length >= 2){
+      need(70);
+      const cx0 = M + 10, cw = 220, ch = 50, top = y - 4, lo = sc === "points" ? 0 : 1, hi = sc === "points" ? 15 : 6;
+      const yOf = v => sc === "points" ? top - ch + ch * (v - lo) / (hi - lo) : top - ch * (v - lo) / (hi - lo);
+      [lo, hi].forEach(v => {
+        cur.push("0.85 0.87 0.9 RG 0.5 w " + cx0 + " " + yOf(v).toFixed(1) + " m " + (cx0 + cw) + " " + yOf(v).toFixed(1) + " l S");
+        cur.push(pdfText(cx0 - 9, yOf(v) - 3, 7.5, String(v), grey));
+      });
+      cur.push("0.169 0.420 0.733 RG 1.6 w " + pts.map((v, i) => (cx0 + cw * i / (pts.length - 1)).toFixed(1) + " " + yOf(v).toFixed(1) + (i ? " l" : " m")).join(" ") + " S");
+      pts.forEach((v, i) => cur.push("0.169 0.420 0.733 rg " + pdfEllipse(cx0 + cw * i / (pts.length - 1), yOf(v), 2.4, 2.4) + " f"));
+      cur.push(pdfText(cx0 + cw + 10, top - ch / 2, 8.5, t("gTrend") + " (" + t("gTrendTop").replace("{v}", sc === "points" ? "15" : "1") + ")", grey));
+      y -= ch + 24;
+    }
+    mine.forEach(a => {
+      need(15);
+      cur.push(pdfText(M + 10, y, 10, fmtDate(a.date)));
+      let ti = a.title; while(ti.length > 3 && pdfTextW(ti, 10) > 240) ti = ti.slice(0, -2) + "…";
+      cur.push(pdfText(M + 60, y, 10, ti));
+      cur.push(pdfText(M + 310, y, 9, a.kind === "written" ? t("gWritten") : t("gOther"), grey));
+      cur.push(pdfText(M + 430, y, 10.5, tokLabel(a.marks[st.id], true)));
+      y -= 14;
+    });
+    const selfs = selfAssess(c, s.id).filter(a => a.marks[st.id]);
+    if(selfs.length){
+      need(30); y -= 4;
+      cur.push(pdfText(M + 10, y, 10.5, t("selfTitle"), "0.357 0.176 0.620")); y -= 15;
+      selfs.forEach(a => {
+        need(15);
+        const tm = teacherSameDay(c, s.id, a.date, st.id);
+        cur.push(pdfText(M + 10, y, 10, fmtDate(a.date)));
+        cur.push(pdfText(M + 60, y, 10, t("selfShort") + ": " + smileyWord(a.marks[st.id]) + (tm ? "   " + t("selfTeacher") + ": " + tokLabel(tm, true) : "")));
+        y -= 14;
+      });
+    }
+    y -= 10;
+  });
+  /* Beobachtungen (älteste zuerst) und offene Abhaklisten */
+  const ob = (c.obs || []).filter(o => o.sid === st.id).slice().sort((a, b) => a.d.localeCompare(b.d));
+  if(ob.length){
+    need(40);
+    cur.push(pdfText(M, y, 13, t("obsTitle"))); y -= 18;
+    ob.forEach(o => {
+      const sj = subjectById(o.s);
+      const lines = pdfWrap(o.text, 78);
+      need(14 * lines.length + 4);
+      cur.push(pdfText(M + 10, y, 9.5, fmtDate(o.d) + (sj ? " " + (sj.short || sj.name) : ""), grey));
+      lines.forEach(l => { cur.push(pdfText(M + 80, y, 10, l)); y -= 13; });
+      y -= 3;
+    });
+    y -= 8;
+  }
+  const openChecks = (c.checks || []).filter(k => k.done.indexOf(st.id) < 0);
+  if(openChecks.length){
+    need(36);
+    cur.push(pdfText(M, y, 13, t("ckOpen"))); y -= 17;
+    pdfWrap(openChecks.map(k => k.title + (k.date ? " (" + fmtDate(k.date) + ")" : "")).join(", "), 90).forEach(l => { need(14); cur.push(pdfText(M + 10, y, 10, l)); y -= 13; });
+    y -= 10;
+  }
+  /* Fehlzeiten */
+  const mi = missedLessons(c, st.id);
+  const days = attendanceRows(c).filter(r => r.absent.indexOf(st.id) >= 0).map(r => r.date);
+  need(60);
+  cur.push(pdfText(M, y, 13, t("talkAbsence"))); y -= 18;
+  const nTxt = (one, many, n) => n === 1 ? t(one) : t(many).replace("{n}", String(n));
+  cur.push(pdfText(M + 10, y, 10.5, nTxt("talkAbsDay1", "talkAbsDays", days.length) + (mi.total ? "   ·   " + nTxt("talkAbsLesson1", "talkAbsLessons", mi.total) : ""))); y -= 15;
+  if(mi.total){
+    const parts = Object.keys(mi.bySubject).map(id => (subjectById(id) ? subjectById(id).name : t("absNoSubject")) + " " + mi.bySubject[id]).join(", ");
+    pdfWrap(parts, 90).forEach(l => { need(14); cur.push(pdfText(M + 10, y, 9.5, l, grey)); y -= 13; });
+  }
+  if(days.length){ pdfWrap(days.map(fmtDate).join(", "), 95).forEach(l => { need(14); cur.push(pdfText(M + 10, y, 9.5, l, grey)); y -= 13; }); }
+  /* Platz für Notizen im Gespräch */
+  y -= 10; need(120);
+  cur.push(pdfText(M, y, 13, t("talkNotes"))); y -= 10;
+  for(let k = 0; k < 6 && y - 22 > M; k++){ y -= 22; cur.push("0.8 0.82 0.85 RG 0.5 w " + M + " " + y.toFixed(1) + " m " + (W - M) + " " + y.toFixed(1) + " l S"); }
+  pages.push({ content: cur.join("\n"), w: W, h: H });
+  return pages;
+}
+function exportTalkSheet(c, st){
+  try{
+    if(download(buildPDF(talkSheetPages(c, st)), safeName(t("talkFile") + " " + st.name) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
+/* ---- Neues Schuljahr ---- */
+function bumpClassName(n){ return String(n).replace(/\d+/, m => String(+m + 1)); }
+function openNewYear(){
+  if(needUnlock(openNewYear)) return;
+  const list = DB.classes.filter(c => !c.archived);
+  const sheet = sheetBase(t("nyTitle"));
+  const h = document.createElement("div"); h.className = "hint"; h.style.fontSize = "14px"; h.textContent = t("nyHint"); sheet.appendChild(h);
+  const bk = document.createElement("button"); bk.className = "cbtn blue"; bk.style.width = "100%"; bk.style.marginTop = "8px";
+  bk.textContent = t("nyBackup"); bk.onclick = () => { closeModal(); setTimeout(() => $("#btn-backup").click(), 60); };
+  sheet.appendChild(bk);
+  const plan = list.map(c => ({ c, action: "keep", name: bumpClassName(c.name) }));
+  if(!list.length){ const n = document.createElement("div"); n.className = "hint"; n.textContent = t("noClasses"); sheet.appendChild(n); }
+  plan.forEach((x, i) => {
+    const box = document.createElement("div"); box.className = "nyrow";
+    const top = document.createElement("div"); top.className = "nyname"; top.textContent = x.c.name;
+    const inp = document.createElement("input"); inp.className = "field"; inp.maxLength = 60; inp.value = x.name; inp.id = "ny-name-" + i;
+    inp.setAttribute("aria-label", t("nyNewName").replace("{c}", x.c.name));
+    inp.oninput = () => { x.name = inp.value; };
+    const seg = document.createElement("div"); seg.className = "segmented"; seg.id = "ny-act-" + i;
+    [["keep", "nyKeep"], ["archive", "nyArchive"], ["delete", "nyDelete"]].forEach(([v, k]) => {
+      const b = document.createElement("button"); b.textContent = t(k); b.dataset.v = v; b.classList.toggle("on", x.action === v);
+      b.onclick = () => { x.action = v; Array.from(seg.children).forEach(y => y.classList.toggle("on", y === b)); inp.style.display = v === "keep" ? "" : "none"; };
+      seg.appendChild(b);
+    });
+    box.appendChild(top); box.appendChild(seg); box.appendChild(inp);
+    sheet.appendChild(box);
+  });
+  const opt = { grades: true, absence: true, obs: true, history: false, timetable: true };
+  sheetLabel(sheet, t("nyOptions"));
+  [["grades", "nyOptGrades"], ["absence", "nyOptAbsence"], ["obs", "nyOptObs"], ["history", "nyOptHistory"], ["timetable", "nyOptTT"]].forEach(([k, lk]) => {
+    const r = switchRow(t(lk), "", () => opt[k], () => { opt[k] = !opt[k]; });
+    r.id = "ny-opt-" + k; sheet.appendChild(r);
+  });
+  sheetButtons(sheet, t("nyApply"), () => {
+    closeModal();
+    const nDel = plan.filter(x => x.action === "delete").length;
+    askConfirm(t("nyConfirmQ"), t("nyConfirmT").replace("{n}", String(plan.length)).replace("{d}", String(nDel)), t("nyApply"), () => {
+      plan.forEach(x => {
+        const c = x.c;
+        if(x.action === "delete"){ trashPush("class", c.name, c); DB.classes = DB.classes.filter(y => y !== c); return; }
+        if(x.action === "archive"){ c.archived = true; return; }     // Archiv bleibt als Nachweis vollständig
+        if(opt.grades){ c.assess = []; c.gradeSubjects = []; c.lastSubject = ""; }
+        if(opt.absence){ c.attendance = []; c.absLog = []; c.lesson = { date: "", absent: [], picked: [], notes: {} }; c.subNote = ""; }
+        if(opt.history) c.history = [];
+        if(opt.obs){ c.obs = []; c.checks = []; }
+        c.plans.forEach(p => { if(p.exam){ p.exam = false; delete p.examPrev; p.desks.forEach(d => { delete d.var; }); } });
+        if(x.name.trim()) c.name = x.name.trim().slice(0, 60);
+      });
+      if(opt.timetable){ DB.lessons = []; DB.cancelled = []; DB.tt.ab = false; DB.tt.abRef = ""; }
+      curClassId = null; ensureCurClass(); undoStack = []; redoStack = []; updateUndoButtons();
+      save(); renderStart(); renderSettings(); toast(t("nyDone"));
+    });
+  });
+}
+
+/* ============ 28. Stundenausfall, Beobachtungen, Abhaklisten ============ */
+const MAX_CHECKS = 100;
+const cancelKey = (L, d) => d + "|" + L.id;
+function isCancelled(L, d){ return Array.isArray(DB.cancelled) && DB.cancelled.indexOf(cancelKey(L, d)) >= 0; }
+function setCancelled(L, d, on){
+  const k = cancelKey(L, d);
+  DB.cancelled = (Array.isArray(DB.cancelled) ? DB.cancelled : []).filter(x => x !== k);
+  if(!on) return;
+  DB.cancelled.push(k);
+  while(DB.cancelled.length > 500) DB.cancelled.shift();
+}
+/* "Datum|Stunde" aller ausgefallenen Stunden einer Klasse – schon gezählte Fehlstunden bleiben gespeichert,
+   zählen aber nicht mit. Nimmt man den Ausfall zurück, sind sie wieder da. */
+function cancelledSlots(c){
+  const byId = new Map(DB.lessons.map(L => [L.id, L])), out = new Set();
+  (DB.cancelled || []).forEach(x => { const L = byId.get(x.slice(11)); if(L && L.classId === c.id) out.add(x.slice(0, 10) + "|" + L.period); });
+  return out;
+}
+/* Datum einer Stunde in der angezeigten Woche (bei A/B die Woche, die gerade gewählt ist) */
+/* Montag der Woche, die der Stundenplan meint: am Wochenende schon die kommende */
+function ttRefMonday(){
+  const now = new Date(), d = mondayOf(now);
+  if((now.getDay() + 6) % 7 >= DB.tt.days) d.setDate(d.getDate() + 7);
+  return d;
+}
+function ttDateFor(L){
+  const d = ttRefMonday();
+  let add = L.day;
+  if(DB.tt.ab && ttWeekView){ const wk = abWeek(d); if(wk && wk !== ttWeekView) add += 7; }
+  d.setDate(d.getDate() + add);
+  return isoDay(d);
+}
+function fmtDateLong(iso){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); if(!m) return "";
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return I18N[LANG].ttDays[(d.getDay() + 6) % 7] + ", " + fmtDate(iso);
+}
+/* ---- Beobachtungen ---- */
+function studentObs(c, sid){ return (c.obs || []).filter(o => o.sid === sid).sort((a, b) => b.d.localeCompare(a.d)); }
+function addObs(c, sid, text, subj, date){
+  text = String(text || "").trim().slice(0, 300); if(!text || !studentById(c, sid)) return null;
+  c.obs = Array.isArray(c.obs) ? c.obs : [];
+  const o = { id: uid(), sid, d: /^\d{4}-\d{2}-\d{2}$/.test(date || "") ? date : isoDay(new Date()), s: subj || "", text };
+  c.obs.push(o);
+  while(c.obs.length > 2000) c.obs.shift();
+  return o;
+}
+function lessonSubjectNow(c){ const L = currentLessonFor(c); return L ? L.subjectId : (subjectById(c.lastSubject) ? c.lastSubject : ""); }
+function openObservations(c, st, back, subj){
+  if(needUnlock(() => openObservations(c, st, back, subj))) return;
+  const sheet = sheetBase(t("obsTitle") + " – " + st.name); sheet.dataset.sens = "1";
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("obsHint"); sheet.appendChild(h);
+  const area = document.createElement("textarea"); area.className = "field"; area.id = "obs-text"; area.maxLength = 300; area.placeholder = t("obsPh");
+  area.style.marginTop = "8px"; sheet.appendChild(area);
+  const row = document.createElement("div"); row.className = "obsform";
+  const subjSel = selectField(row, [["", t("absNoSubject")]].concat(DB.subjects.map(x => [x.id, x.name])), subj || lessonSubjectNow(c));
+  subjSel.id = "obs-subj";
+  const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "obs-date"; di.value = isoDay(new Date()); di.max = isoDay(new Date());
+  row.appendChild(di); sheet.appendChild(row);
+  const add = document.createElement("button"); add.className = "primary"; add.id = "obs-add"; add.style.width = "100%"; add.style.marginTop = "8px";
+  add.textContent = t("obsAdd");
+  add.onclick = () => {
+    if(!area.value.trim()){ area.focus(); return; }
+    addObs(c, st.id, area.value, subjSel.value, di.value <= isoDay(new Date()) ? di.value : isoDay(new Date()));
+    save(); haptic(6); openObservations(c, st, back, subjSel.value);
+  };
+  sheet.appendChild(add);
+  const list = studentObs(c, st.id);
+  const box = document.createElement("div"); box.id = "obs-list"; box.style.marginTop = "10px";
+  if(!list.length){ const e = document.createElement("div"); e.className = "hint"; e.textContent = t("obsEmpty"); box.appendChild(e); }
+  list.forEach(o => {
+    const r = document.createElement("div"); r.className = "obsrow";
+    const m = document.createElement("span"); m.className = "obsm"; const sj = subjectById(o.s);
+    m.textContent = fmtDate(o.d) + (sj ? " · " + (sj.short || sj.name) : "");
+    const tx = document.createElement("span"); tx.className = "obst"; tx.textContent = o.text;
+    const del = document.createElement("button"); del.className = "iconbtn"; del.appendChild(icon("trash")); del.setAttribute("aria-label", t("delete"));
+    const sv = subjSel.value;
+    del.onclick = () => askConfirm(t("obsDeleteQ"), o.text.length > 80 ? o.text.slice(0, 80) + "…" : o.text, t("delete"),
+      () => { c.obs = (c.obs || []).filter(x => x !== o); save(); openObservations(c, st, back, sv); },
+      () => openObservations(c, st, back, sv));
+    r.appendChild(m); r.appendChild(tx); r.appendChild(del); box.appendChild(r);
+  });
+  sheet.appendChild(box);
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "12px";
+  close.textContent = back ? t("back") : t("close");
+  close.onclick = () => { if(back) back(); else closeModal(); };
+  sheet.appendChild(close);
+}
+/* ---- Abhaklisten: im Sitzplan Namen antippen ---- */
+let checkMode = null;
+const checkCur = () => { const c = curClass(); return c && checkMode ? (c.checks || []).find(k => k.id === checkMode) || null : null; };
+function startCheckMode(id){
+  const c = curClass(); if(!c || !curPlan()) return;
+  if(gradeMode) endGradeMode(true);
+  checkMode = id;
+  if(!lessonMode){ lessonMode = true; selected.clear(); ensureLesson(c); }
+  if(presenting) setPresenting(false);
+  document.body.classList.add("checking");
+  updateEditorChrome(); renderCheckBar(); renderStage(false);
+  requestAnimationFrame(fitToScreen);
+}
+function endCheckMode(silent){
+  if(!checkMode) return;
+  checkMode = null;
+  document.body.classList.remove("checking");
+  if(!silent){ updateEditorChrome(); renderStage(false); requestAnimationFrame(fitToScreen); }
+}
+function renderCheckBar(){
+  const k = checkCur(), c = curClass(); if(!k || !c) return;
+  $("#cb-title").textContent = k.title;
+  const done = c.students.filter(st => k.done.indexOf(st.id) >= 0).length;
+  $("#cb-meta").textContent = (k.date ? fmtDate(k.date) + " · " : "") + t("ckDone").replace("{a}", String(done)).replace("{b}", String(c.students.length));
+}
+function toggleCheck(sid){
+  const k = checkCur(); if(!k) return;
+  const i = k.done.indexOf(sid);
+  if(i >= 0) k.done.splice(i, 1); else k.done.push(sid);
+  save(); haptic(i >= 0 ? 4 : 8);
+  renderCheckBar(); renderStage(false);
+}
+function openChecks(){
+  const c = curClass(); if(!c) return;
+  c.checks = Array.isArray(c.checks) ? c.checks : [];
+  const sheet = sheetBase(t("ckLists"));
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("ckHint"); sheet.appendChild(h);
+  const inp = document.createElement("input"); inp.className = "field"; inp.id = "ck-new-title"; inp.maxLength = 60; inp.placeholder = t("ckNewPh");
+  inp.style.marginTop = "8px"; sheet.appendChild(inp);
+  const nb = document.createElement("button"); nb.className = "primary"; nb.id = "ck-new"; nb.style.width = "100%"; nb.style.marginTop = "8px";
+  nb.textContent = t("ckNew");
+  nb.onclick = () => {
+    const title = inp.value.trim().slice(0, 60);
+    if(!title){ toast(t("ckNeedTitle")); inp.focus(); return; }
+    if(c.checks.length >= MAX_CHECKS){ toast(t("ckLimit")); return; }
+    const k = { id: uid(), title, date: isoDay(new Date()), done: [] };
+    c.checks.unshift(k); save(); closeModal(); startCheckMode(k.id);
+  };
+  sheet.appendChild(nb);
+  c.checks.forEach(k => {
+    const b = document.createElement("button"); b.className = "grpcard ckcard";
+    const hb = document.createElement("b"); hb.textContent = k.title;
+    const done = c.students.filter(st => k.done.indexOf(st.id) >= 0).length;
+    const d = document.createElement("div"); d.textContent = (k.date ? fmtDate(k.date) + " · " : "") + t("ckDone").replace("{a}", String(done)).replace("{b}", String(c.students.length));
+    b.appendChild(hb); b.appendChild(d);
+    b.onclick = () => { closeModal(); startCheckMode(k.id); };
+    sheet.appendChild(b);
+  });
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
+}
+/* Liste bearbeiten: Titel, Haken auch für Schüler ohne Platz, löschen */
+function openCheckList(){
+  const k = checkCur(), c = curClass(); if(!k || !c) return;
+  const sheet = sheetBase(k.title);
+  sheetLabel(sheet, t("ckName"));
+  const inp = document.createElement("input"); inp.className = "field"; inp.id = "ck-title"; inp.maxLength = 60; inp.value = k.title; sheet.appendChild(inp);
+  const box = document.createElement("div"); box.id = "ck-names"; box.style.marginTop = "10px";
+  c.students.forEach(st => {
+    const r = switchRow(st.name, "", () => k.done.indexOf(st.id) >= 0, () => {
+      const i = k.done.indexOf(st.id); if(i >= 0) k.done.splice(i, 1); else k.done.push(st.id); save();
+      renderCheckBar(); renderStage(false);             // stimmt auch, wenn das Blatt anders geschlossen wird
+    });
+    box.appendChild(r);
+  });
+  sheet.appendChild(box);
+  const del = document.createElement("button"); del.className = "ghost"; del.id = "ck-delete"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
+  del.textContent = t("ckDelete");
+  del.onclick = () => { closeModal(); askConfirm(t("ckDeleteQ"), t("ckDeleteT").replace("{t}", k.title), t("delete"), () => {
+    c.checks = (c.checks || []).filter(x => x !== k); save(); endCheckMode();
+  }, () => openCheckList()); };
+  sheet.appendChild(del);
+  const ok = document.createElement("button"); ok.className = "primary"; ok.id = "ck-ok"; ok.style.width = "100%"; ok.style.marginTop = "10px";
+  ok.textContent = t("ckOk");
+  ok.onclick = () => { const v = inp.value.trim().slice(0, 60); if(v) k.title = v; save(); closeModal(); renderCheckBar(); renderStage(false); };
+  sheet.appendChild(ok);
+}
+$("#lb-check").onclick = openChecks;
+$("#cb-list").onclick = openCheckList;
+$("#cb-exit").onclick = () => endCheckMode();
+
+/* ============ 29. Sperre für Bewertungen und Beobachtungen ============
+   Face ID, Fingerabdruck oder Geräte-PIN über die Entsperrung des Geräts. Die App erfährt nur
+   „entsperrt“ oder „nicht“. Nach dem Entsperren bleibt alles offen, bis die App 5 Minuten im
+   Hintergrund war oder eine Selbsteinschätzung lief (Gerät in Schülerhand). */
+const LOCK_GRACE = 5 * 60 * 1000;
+let lockOpen = false, lockPausedAt = 0, lockBusy = false;
+/* Nur in der App: im Browser gibt es keine Entsperrung des Geräts */
+const lockedNow = () => DB.settings.lock === true && !lockOpen && !!window.cordova;
+let lockBusyTimer = null;
+function bioAuth(ok, fail){
+  if(lockBusy) return;                                   // Abfrage läuft schon – zweiten Tipp ignorieren
+  const F = window.Fingerprint;
+  if(!F){ if(fail) fail({ code: "noplugin" }); return; }
+  lockBusy = true;
+  clearTimeout(lockBusyTimer);
+  lockBusyTimer = setTimeout(() => { lockBusy = false; }, 60000);   // falls die Antwort verloren geht
+  const android = !!(window.cordova && window.cordova.platformId === "android");
+  const done = () => { lockBusy = false; clearTimeout(lockBusyTimer); };
+  try{
+    F.show({ title: t("lockTitle"), description: t("lockDesc"), disableBackup: false, confirmationRequired: false,
+             fallbackButtonTitle: t("lockFallback"),
+             /* Android: der einzige Knopf führt zur Geräte-PIN – so beschriften */
+             cancelButtonTitle: android ? t("lockFallback") : t("cancel") },
+      () => { done(); lockOpen = true; ok(); },
+      e => { done(); if(fail) fail(e || {}); });
+  }catch(e){ done(); if(fail) fail({ code: "noplugin" }); }
+}
+/* Ohne nutzbare Entsperrung (Biometrie entfernt, Plugin fehlt) bietet die App an, die Sperre
+   auszuschalten – das kann nur, wer das Gerät selbst entsperrt hat und die Einstellungen ändern konnte */
+const LOCK_UNUSABLE = [-101, -104, -106, -110, "noplugin"];
+function lockError(e){
+  const c = e && e.code;
+  if(LOCK_UNUSABLE.indexOf(c) >= 0 && DB.settings.lock === true){
+    askConfirm(t("lockBrokenQ"), t("lockBrokenT"), t("lockBrokenOk"), () => { DB.settings.lock = false; save(); renderSettings(); toast(t("lockOff")); });
+    return;
+  }
+  toast(t(LOCK_UNUSABLE.indexOf(c) >= 0 ? "lockNoBio" : c === -111 || c === -112 ? "lockLockedOut" : "lockCancelled"));
+}
+/* true: gesperrt – die Entsperrung läuft, danach geht es mit retry weiter */
+function needUnlock(retry){
+  if(!lockedNow()) return false;
+  bioAuth(retry, lockError);
+  return true;
+}
+function lockButton(parent, retry){
+  const b = document.createElement("button"); b.className = "cbtn outline lockbtn2"; b.id = "lock-open"; b.style.width = "100%"; b.style.marginTop = "6px";
+  b.appendChild(icon("lock")); const sp = document.createElement("span"); sp.textContent = t("lockOpenBtn"); b.appendChild(sp);
+  b.onclick = () => bioAuth(retry, lockError);
+  parent.appendChild(b);
+  return b;
+}
+function toggleLock(){
+  const S = DB.settings;
+  if(S.lock){
+    /* Ausschalten nur nach Entsperren – sonst könnte es jeder mit dem Gerät in der Hand */
+    bioAuth(() => { S.lock = false; save(); renderSettings(); toast(t("lockOff")); }, lockError);
+    return;
+  }
+  const F = window.Fingerprint;
+  if(!F){ toast(t("lockNoBio")); return; }
+  F.isAvailable(() => bioAuth(() => { S.lock = true; save(); renderSettings(); toast(t("lockOn")); }, lockError),
+    () => toast(t("lockNoBio")), { allowBackup: true });
+}
+/* Beim Sperren sensible Ansichten schließen */
+function relock(){
+  if(DB.settings.lock !== true || !lockOpen) return;
+  lockOpen = false;
+  if(gradeMode) endGradeMode();
+  const onGrades = $("#screen-grades").classList.contains("active") || $("#screen-assess").classList.contains("active");
+  if($("#modal").classList.contains("on") && !selfMode && (onGrades || $("#sheet").dataset.sens === "1")) closeModal();
+  if(onGrades) goHome();
+}
+function lockPause(){ lockPausedAt = Date.now(); }
+function lockResume(){ if(lockPausedAt && Date.now() - lockPausedAt >= LOCK_GRACE) relock(); lockPausedAt = 0; }
+document.addEventListener("pause", lockPause, false);
+document.addEventListener("resume", lockResume, false);
+document.addEventListener("visibilitychange", () => { if(document.hidden) lockPause(); else lockResume(); });
+
+/* Einmal beim ersten Start: Hinweis auf die Genehmigung der Schulleitung */
 function showSchoolPrivacy(){
   const sheet = sheetBase(t("privSchoolTitle"));
   ["privSchool1", "privSchool2", "privSchool3"].forEach(k => {
@@ -9731,6 +10190,7 @@ function navBack(){
   if($("#screen-editor").classList.contains("active")){
     if(presenting){ setPresenting(false); return true; }
     if(selfMode) return true;                         // Selbsteinschätzung: nur über langes Drücken auf ✕
+    if(checkMode){ endCheckMode(); return true; }
     if(gradeMode){ $("#gb-exit").onclick(); return true; }
     if(lessonMode){ setLesson(false); return true; }
     if(editMode === "room" && curPlanId){ setEditMode("desks"); return true; }

@@ -10,7 +10,7 @@
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
 
     <name>FairSeat</name>
-    <description>Sitzpläne für Klasse, Hochzeit und Feier: Namen verwalten, Räume gestalten, Plätze zuordnen. Läuft vollständig offline.</description>
+    <description>Sitzpläne, Stundenplan, Bewertungen und Anwesenheit für Lehrkräfte. Läuft vollständig offline.</description>
     <author email="smaehlmann.appdev@gmail.com">Wisdompeak Apps – Simon Mählmann</author>
 
     <content src="index.html" />
@@ -49,6 +49,8 @@
     <platform name="ios">
         <!-- Wie FairMix: Apple nimmt ab Frühjahr 2027 nichts unter 15.0 an -->
         <preference name="deployment-target" value="15.0" />
+        <!-- Die Entsperr-Erweiterung (Face ID / Touch ID) ist in Swift geschrieben -->
+        <preference name="SwiftVersion" value="5.0" />
 
         <!-- iPhone und iPad. Auf dem iPad laufen alle vier Lagen sowie
              Split View und Slide Over; die App passt sich jeder Breite an
@@ -103,4 +105,9 @@
          Ankerpunkt für das Popover. -->
     <plugin name="cordova-plugin-x-socialsharing" spec="^6.0.4" />
     <plugin name="cordova-plugin-statusbar" spec="^4.0.0" />
+    <!-- Optionale Sperre für Bewertungen und Beobachtungen: Face ID, Fingerabdruck
+         oder Geräte-PIN. Die App erfährt nur, ob entsperrt wurde. -->
+    <plugin name="cordova-plugin-fingerprint-aio" spec="6.0.1">
+        <variable name="FACEID_USAGE_DESCRIPTION" value="FairSeat nutzt Face ID nur, um deine Bewertungen und Beobachtungen zu entsperren. Es werden keine Gesichtsdaten an die App übermittelt." />
+    </plugin>
 </widget>
