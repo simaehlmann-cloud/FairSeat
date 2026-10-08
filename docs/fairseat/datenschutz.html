@@ -69,7 +69,8 @@
     <li>optional Ihr Stundenplan (Fächer mit Farben, Zeiten, Pausen und die Zuordnung von
         Klassen, Räumen und Sitzplänen)</li>
     <li>optional Bewertungen je Klasse und Fach (Titel, Datum, Art, Gewichtung und die
-        eingetragenen Noten, Punkte oder Smileys je Schülerin bzw. Schüler)</li>
+        eingetragenen Noten, Punkte oder Smileys je Schülerin bzw. Schüler), bei Klassenarbeiten optional
+        die Aufgaben mit Höchstpunkten, der Notenschlüssel und die erreichten Punkte je Aufgabe</li>
     <li>optional Selbsteinschätzungen der Schülerinnen und Schüler (Frage, Datum und gewählter
         Smiley), getrennt von Ihren Bewertungen gespeichert und nicht in Durchschnitte eingerechnet</li>
     <li>bei Klassenarbeiten optional Platznummern und die Aufgabengruppe A/B je Platz sowie
@@ -78,9 +79,15 @@
         Zuordnung von Namen zu Plätzen, einschließlich festgehaltener Plätze</li>
     <li>optional frühere Sitzordnungen, damit neue Nachbarschaften entstehen</li>
     <li>optional im Unterrichtsmodus die Anwesenheit je Tag und kurze Notizen zu einzelnen Namen,
-        die daraus gezählten Fehlstunden je Stunde des Stundenplans sowie als ausgefallen markierte Stunden</li>
+        die daraus gezählten Fehlstunden je Stunde des Stundenplans sowie als ausgefallen markierte Stunden,
+        optional Verspätungen (Datum, Stunde, Minuten) und welche Fehltage entschuldigt sind</li>
+    <li>optional ein Kursheft je Klasse (Datum, Stunde, Fach, Thema und Hausaufgabe – ohne Namen)</li>
     <li>optional dauerhafte Beobachtungen zu einzelnen Namen (Datum, Fach und kurzer Text)</li>
-    <li>optional Abhaklisten (Titel, Datum und wer bereits abgehakt ist)</li>
+    <li>optional Abhaklisten (Titel, Datum und wer bereits abgehakt ist) und Strichlisten wie
+        „Hausaufgaben vergessen“ (Titel und je Name die Tage mit Strich)</li>
+    <li>zu jedem Eintrag der Zeitpunkt seiner letzten Änderung sowie für bis zu 400 Tage die internen
+        Kennungen gelöschter Einträge (ohne Namen oder Inhalte) – damit sich Sicherungen von zwei Geräten
+        zusammenführen lassen, ohne dass Gelöschtes zurückkehrt</li>
     <li>der Zeitpunkt Ihres letzten Backups, damit die App daran erinnern kann</li>
     <li>nach dem Laden einer Sicherung für 14 Tage eine Kopie des vorherigen Stands,
         damit sich ein versehentliches Laden rückgängig machen lässt</li>
@@ -88,7 +95,8 @@
   </ul>
   <p>
     Diese Daten werden über die Browser-Technik <em>localStorage</em> im geschützten
-    App-Verzeichnis abgelegt. Sie werden zu keinem Zeitpunkt übertragen.
+    App-Verzeichnis abgelegt. Die App selbst überträgt sie zu keinem Zeitpunkt; Dateien verlassen
+    das Gerät nur, wenn Sie sie selbst teilen (siehe Abschnitt 5).
     Beim Deinstallieren der App werden sie vollständig entfernt. Innerhalb der App
     lassen sich Namen, Klassen, Räume und Sitzpläne jederzeit löschen; Gelöschtes liegt
     noch 30 Tage im Papierkorb der App und wird danach automatisch entfernt.
@@ -145,7 +153,9 @@
     Entsperrfunktion Ihres Geräts (Face ID, Fingerabdruck oder Geräte-PIN). Die Prüfung übernimmt
     das Betriebssystem; die App erhält nur die Information, ob die Entsperrung gelungen ist.
     Biometrische Daten werden von der App weder verarbeitet noch gespeichert.
-    Beim Export eines PDFs, eines Bildes, einer Anwesenheitsliste oder eines Backups wird die Datei
+    Beim Export eines PDFs, eines Bildes, einer Anwesenheitsliste, einer Tabelle (CSV oder Excel, z. B.
+    Bewertungen, Fehlzeiten, Aufgabenauswertung, Kursheft), eines Backups oder einer
+    Übertragungsdatei für ein weiteres Gerät wird die Datei
     in einem temporären App-Verzeichnis abgelegt und über die Teilen-Funktion Ihres Geräts
     weitergegeben. Wohin die Datei anschließend gelangt, entscheiden allein Sie. Beim Import
     (Backup oder FairMix-Sicherung) liest die App nur die Datei, die Sie selbst auswählen.
