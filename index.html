@@ -13,7 +13,7 @@
 <style>
 /* ===================== Design-Tokens =====================
    Farbwelt wie FairMix: hellblauer Grund, dunkelblaue Kopfzeile,
-   kräftige Kacheln. Grün = Namen, Blau = Räume, Lila = Sitzpläne. */
+   kräftige Kacheln. Grün = Klassen, Lila = Sitzpläne (mit Räumen). */
 :root{
   --board:#003366; --board-dark:#002247; --chalk:#FFFFFF;
   --paper:#bcdcff; --surface:#FFFFFF; --surface-2:#EEF5FD;
@@ -106,7 +106,7 @@ svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.8;
 .home-tile .ht-s{font-size:13.5px;opacity:.9;display:block;margin-top:3px;line-height:1.4}
 .home-tile .ht-n{margin-left:auto;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);
   padding:4px 10px;border-radius:99px;white-space:nowrap}
-.bg-green{background:var(--c-green)} .bg-blue{background:var(--c-blue)}
+.bg-green{background:var(--c-green)}
 .bg-purple{background:var(--c-purple)} .bg-orange{background:var(--c-orange)} .bg-grey{background:var(--c-grey)} .bg-teal{background:var(--c-teal)}
 .board-card{background:var(--surface);border:2px solid var(--border);
   border-radius:var(--radius);padding:13px 14px;margin-bottom:9px;display:flex;align-items:center;
@@ -369,6 +369,42 @@ select.field{-webkit-appearance:none;appearance:none;
 .keypad.k-grade{grid-template-columns:repeat(6,minmax(0,1fr))}
 .keypad.k-points{grid-template-columns:repeat(6,minmax(0,1fr))}
 .keypad.k-smiley{grid-template-columns:repeat(6,minmax(0,1fr))}
+.keypad.k-tasks{grid-template-columns:2fr 1fr 1fr}
+.prtabs{margin:0 0 12px}
+.prtabs .pr-tab{display:flex;align-items:center;justify-content:center;gap:6px}
+.prtabs .pr-tab svg.i{width:17px;height:17px}
+.keypad button.kpts{font-size:15px;background:var(--accent);border-color:var(--accent);color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px}
+/* Klassenarbeit: Aufgaben, Schlüssel, Punkte */
+.tkrow{display:flex;align-items:center;gap:8px;margin:6px 0}
+.tkrow .field{margin:0;min-width:0}
+.tkrow input[id^="tk-name"]{flex:1.2}.tkrow input[id^="tk-max"]{flex:0 0 76px;text-align:right}
+.tkrow input[id^="tk-th"]{flex:0 0 76px;text-align:right}
+.tkg{flex:0 0 30px;font-size:16px;text-align:center}.tku{font-size:13px;color:var(--ink-soft);flex:1;min-width:0}
+.ptsgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:4px}
+.ptcell{display:flex;flex-direction:column;gap:3px;font-size:12.5px;font-weight:650;color:var(--ink-soft)}
+.ptcell .field{margin:0;text-align:center;font-size:18px;font-weight:700}
+.field.bad{border-color:var(--warn)!important;color:var(--warn)}
+.ptsres{margin:10px 0 4px;font-size:15px;font-weight:750;color:var(--ink)}.ptsres.bad{color:var(--warn)}
+.arow .apts{font-size:12.5px;color:var(--ink-soft);margin-left:auto;margin-right:10px;white-space:nowrap}
+.tkbar{display:grid;grid-template-columns:minmax(40px,auto) 1fr auto;gap:8px;align-items:center;font-size:13px;margin:4px 0}
+.tkbl{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px}
+.tkbt{height:10px;border-radius:5px;background:var(--line);overflow:hidden;display:block}
+.tkbt i{display:block;height:100%;background:var(--accent);border-radius:5px}.tkbt i.low{background:var(--warn)}
+.tkbv{color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+.jcard .jhw{font-weight:650;color:var(--ink)}
+.latechips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.latechips button{flex:1;min-width:52px;min-height:40px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700}
+.latechips button.on{background:#B45309;border-color:#B45309;color:#fff}
+.item .latemark{position:absolute;left:-6px;top:-8px;min-width:22px;height:20px;padding:0 4px;border-radius:10px;background:#B45309;color:#fff;
+  font-style:normal;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--surface);
+  transform:scale(var(--gz,1));transform-origin:0 0;z-index:4}
+.item .tlmark{position:absolute;right:-6px;top:-8px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:#B45309;color:#fff;
+  font-style:normal;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--surface);
+  transform:scale(var(--gz,1));transform-origin:100% 0;z-index:4}
+.item .tlmark.old{background:var(--ink-soft)}
+[data-theme="dark"] .item .tlmark.old{background:#4F5868}
+.item.t-desk.tltoday{background:#FDECD8;border-color:#B45309;color:#4A2604}
+[data-theme="dark"] .item.t-desk.tltoday{background:#4A2B0C;border-color:#F0A35E;color:#FBE8D3}
 .keypad button{min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:17px;font-weight:750}
 .keypad.k-smiley button{font-size:26px;min-height:54px}
 .keypad button.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -461,6 +497,12 @@ body.selfmode .item.t-desk.empty{background:transparent}
 [data-theme="dark"] body.selfmode #stage-wrap{background:#221735}
 [data-theme="dark"] body.selfmode .item.t-desk{background:#3D2A63;border-color:#B48CF2;color:#F1E8FF}
 .lockbtn2{color:var(--ink)}
+/* Sicherung laden: Vergleich */
+.synccmp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.synccmp > div{border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--ink-soft)}
+.synccmp b{font-size:14px;color:var(--ink)}
+.syncwarn{margin-top:10px;padding:10px 12px;border-radius:10px;background:#FFF1E0;color:#8A4B00;font-weight:650;font-size:13.5px;border:1.5px solid #E7A65A}
+[data-theme="dark"] .syncwarn{background:#3A2A12;color:#FFD8A8;border-color:#A8742F}
 /* Abhaklisten im Sitzplan */
 .checkbar{display:none;flex:0 0 auto;background:var(--surface);border-top:2px solid var(--border);
   padding:8px 10px calc(8px + var(--safe-b));flex-direction:column;gap:4px}
@@ -846,6 +888,7 @@ body.presenting #exitPresent{display:flex}
 <symbol id="i-zoomin" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M11 8v6M8 11h6M20 20l-4.5-4.5"/></symbol>
 <symbol id="i-zoomout" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M8 11h6M20 20l-4.5-4.5"/></symbol>
 <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v13M8 7l4-4 4 4M4 15v5h16v-5"/></symbol>
+<symbol id="i-transfer" viewBox="0 0 24 24"><rect x="2.5" y="4" width="7" height="13" rx="1.5"/><rect x="14.5" y="7" width="7" height="13" rx="1.5"/><path d="M8 20.5c2.5 1 6 1 8-1M16 3.5c-2.5-1-6-1-8 1"/><path d="M14.5 18.2l1.5 1.3-1.2 1.6M9.5 5.8L8 4.5l1.2-1.6"/></symbol>
 <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h4M10 17h4"/></symbol>
 <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></symbol>
 <symbol id="i-angle" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M4 20L17 6"/><path d="M12 20a8 8 0 0 0-1.6-4.8"/></symbol>
@@ -943,11 +986,6 @@ body.presenting #exitPresent{display:flex}
       <span class="ht-ico"><svg class="i"><use href="#i-users"></use></svg></span>
       <span><span class="ht-t" data-i="tileNames"></span><span class="ht-s" data-i="tileNamesSub"></span></span>
     </button>
-    <button class="home-tile bg-blue" id="tile-rooms">
-      <span class="ht-ico"><svg class="i"><use href="#i-room"></use></svg></span>
-      <span><span class="ht-t" data-i="tileRooms"></span><span class="ht-s" data-i="tileRoomsSub"></span></span>
-      <span class="ht-n" id="tile-rooms-n"></span>
-    </button>
     <button class="home-tile bg-purple" id="tile-plans">
       <span class="ht-ico"><svg class="i"><use href="#i-grid"></use></svg></span>
       <span><span class="ht-t" data-i="tilePlans"></span><span class="ht-s" data-i="tilePlansSub"></span></span>
@@ -973,6 +1011,9 @@ body.presenting #exitPresent{display:flex}
     <div class="minirow">
       <button class="minibtn outline" id="btn-backup"><svg class="i"><use href="#i-share"></use></svg><span data-i="backupSave"></span></button>
       <button class="minibtn outline" id="btn-restore"><svg class="i"><use href="#i-copy"></use></svg><span data-i="backupLoad"></span></button>
+    </div>
+    <div class="minirow">
+      <button class="minibtn outline" id="btn-transfer"><svg class="i"><use href="#i-transfer"></use></svg><span data-i="transferBtn"></span></button>
     </div>
 
     <div id="trash-wrap" style="display:none">
@@ -1133,12 +1174,17 @@ body.presenting #exitPresent{display:flex}
 <section id="screen-rooms" class="screen">
   <div class="topbar">
     <button class="iconbtn" data-nav="start" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
-    <h2 data-i="tileRooms"></h2>
+    <h2 data-i="tilePlans"></h2>
   </div>
   <div class="scroll"><div class="wrapc">
+    <div class="segmented prtabs" role="tablist">
+      <button class="pr-tab" data-pr="plans" role="tab" aria-selected="false"><svg class="i"><use href="#i-grid"></use></svg><span data-i="tilePlans"></span></button>
+      <button class="pr-tab on" data-pr="rooms" role="tab" aria-selected="true"><svg class="i"><use href="#i-room"></use></svg><span data-i="tileRooms"></span></button>
+    </div>
     <div class="box">
       <div class="eyebrow" data-i="roomsNew"></div>
       <div class="hint" data-i="roomsNewHint"></div>
+      <div class="hint" data-i="roomsAllClasses"></div>
       <div class="btnrow">
         <button class="cbtn blue" id="btn-room-from-tpl"><svg class="i"><use href="#i-grid"></use></svg><span data-i="roomFromTpl"></span></button>
         <button class="cbtn outline" id="btn-add-room"><svg class="i"><use href="#i-plus"></use></svg><span data-i="roomEmpty"></span></button>
@@ -1156,6 +1202,10 @@ body.presenting #exitPresent{display:flex}
     <h2 data-i="tilePlans"></h2>
   </div>
   <div class="scroll"><div class="wrapc">
+    <div class="segmented prtabs" role="tablist">
+      <button class="pr-tab on" data-pr="plans" role="tab" aria-selected="true"><svg class="i"><use href="#i-grid"></use></svg><span data-i="tilePlans"></span></button>
+      <button class="pr-tab" data-pr="rooms" role="tab" aria-selected="false"><svg class="i"><use href="#i-room"></use></svg><span data-i="tileRooms"></span></button>
+    </div>
     <div class="box">
       <div class="eyebrow" data-i="classLabel"></div>
       <select class="field" id="plans-class"></select>
@@ -1211,6 +1261,7 @@ body.presenting #exitPresent{display:flex}
         <button id="lb-reset"><svg class="i"><use href="#i-history"></use></svg><span data-i="lessonReset"></span></button>
         <button id="lb-grade"><svg class="i"><use href="#i-grade"></use></svg><span data-i="gRate"></span></button>
         <button id="lb-check"><svg class="i"><use href="#i-check"></use></svg><span data-i="ckTitle"></span></button>
+        <button id="lb-journal"><svg class="i"><use href="#i-note"></use></svg><span data-i="jTitle"></span></button>
         <button id="lb-self" class="lb-self"><svg class="i"><use href="#i-users"></use></svg><span data-i="selfTitle"></span></button>
         <button id="lb-exit"><svg class="i"><use href="#i-close"></use></svg><span data-i="close"></span></button>
       </div>
@@ -1388,8 +1439,8 @@ const I18N = {
     remembered:"Sitzordnung gemerkt ({n} gespeichert)", historyCleared:"Historie gelöscht",
     clearHistory:"Historie löschen", historyCount:"{n} gespeicherte Sitzordnungen",
     newClass:"Neue Klasse", 
-    backupSave:"Sicherung speichern", backupLoad:"Sicherung laden",
-    privacy:"Alle Daten bleiben auf diesem Gerät. Keine Anmeldung, kein Server, keine Übertragung von Namen. Die App funktioniert vollständig offline. Erstelle regelmäßig eine Sicherung — beim Deinstallieren der App werden sonst alle Sitzpläne gelöscht.",
+    backupSave:"Sicherung speichern", backupLoad:"Sicherung laden", transferBtn:"Auf anderes Gerät übertragen",
+    privacy:"Alle Daten bleiben auf diesem Gerät, solange du sie nicht selbst teilst. Keine Anmeldung, kein Server, keine Verbindung ins Internet. Die App funktioniert vollständig offline. Erstelle regelmäßig eine Sicherung — beim Deinstallieren der App werden sonst alle Sitzpläne gelöscht.",
     noClasses:"Noch keine Klasse angelegt. Beginne mit „Neue Klasse“ — zum Beispiel „5b“ oder „Deutsch Q1“.",
     students:"Schüler:innen", plans:"Sitzpläne", rules:"Regeln",
     newPlan:"Neuer Sitzplan", addNames:"Namen hinzufügen",
@@ -1484,7 +1535,7 @@ const I18N = {
             "Eine Vorlage antippen — Reihen, Tischgruppen, U-Form oder Kreis.",
             "Plätze frei verschieben, gruppieren und als PDF sichern."] },
       { h:"Räume einmal einrichten",
-        p:["Tafel, Tür, Fenster und Schränke gehören zum Raum, nicht zum einzelnen Sitzplan. Einmal eingerichtet, nutzt du denselben Raum für jede Klasse, die darin unterrichtet wird.",
+        p:["Räume findest du unter „Sitzpläne → Räume“. Tafel, Tür, Fenster und Schränke gehören zum Raum, nicht zum einzelnen Sitzplan. Einmal eingerichtet, nutzt du denselben Raum für jede Klasse, die darin unterrichtet wird.",
            "Unter „Größe & Boden“ stellst du die Maße in Metern ein; ein Kästchen im Raster sind 50 cm. Möbel ziehst du aus der Palette in den Raum, Türen, Fenster und Tafeln rasten dabei an der nächsten Wand ein."] },
       { h:"Gruppentische",
         p:["Mehrere Plätze auswählen und auf „Gruppieren“ tippen. Danach bewegen sich die Tische gemeinsam und lassen sich als Einheit drehen. Beim automatischen Setzen gelten gruppierte Tische als Nachbarn."] },
@@ -1493,8 +1544,8 @@ const I18N = {
       { h:"Aula, Mensa und Konferenz",
         p:["Für Prüfungen in der Aula, Elternabende oder Konferenzen gibt es eigene Raumvorlagen. „Runde Tische“ und „Lange Tafeln“ stellen Tische mit 4 bis 12 Plätzen auf und weichen dabei Bühne und Säulen aus. „Nie zusammen“ heißt dort: nicht am selben Tisch."] },
       { h:"Datenschutz",
-        p:["Alle Namen bleiben auf diesem Gerät. Es gibt keine Anmeldung, kein Nutzerkonto und keine Übertragung an einen Server. Die App braucht kein Internet.",
-           "Weil nichts in einer Cloud liegt, sind deine Sitzpläne bei einer Deinstallation oder einem Gerätewechsel verloren. Erstelle deshalb ab und zu eine Sicherung über die Startseite.",
+        p:["Alle Namen bleiben auf diesem Gerät, solange du sie nicht selbst teilst (Sicherung, Übertragung, Export). Es gibt keine Anmeldung, kein Nutzerkonto und keine Übertragung an einen Server. Die App braucht kein Internet.",
+           "Weil nichts in einer Cloud liegt, sind deine Sitzpläne bei einer Deinstallation verloren. Erstelle deshalb ab und zu eine Sicherung über die Startseite. Für ein zweites oder neues Gerät gibt es dort „Auf anderes Gerät übertragen“.",
            "Ein Hinweis zu Notizen und Sitzwünschen: Notiere dort Organisatorisches, keine Gesundheitsdaten oder Diagnosen."] },
       { h:"Tipps",
         ul:["Zwei Finger zum Zoomen, ein Finger zum Verschieben der Fläche.", "Der kleine Balken über dem Menü unter dem Plan klappt es ein und aus – eingeklappt hat der Plan mehr Platz.",
@@ -1574,8 +1625,8 @@ const I18N = {
     remembered:"Seating remembered ({n} stored)", historyCleared:"History cleared",
     clearHistory:"Clear history", historyCount:"{n} stored seatings",
     newClass:"New class", 
-    backupSave:"Save backup", backupLoad:"Load backup",
-    privacy:"All data stays on this device. No account, no server, no names sent anywhere. The app works fully offline. Save a backup from time to time — uninstalling the app deletes every seating plan otherwise.",
+    backupSave:"Save backup", backupLoad:"Load backup", transferBtn:"Transfer to another device",
+    privacy:"All data stays on this device unless you share it yourself. No account, no server, no internet connection. The app works fully offline. Save a backup from time to time — uninstalling the app deletes every seating plan otherwise.",
     noClasses:"No classes yet. Start with “New class” — for example “5b” or “English 10”.",
     students:"Students", plans:"Seating plans", rules:"Rules",
     newPlan:"New seating plan", addNames:"Add names",
@@ -1670,7 +1721,7 @@ const I18N = {
             "Tap a template — rows, table groups, U-shape or circle.",
             "Move seats around, group them, and save as PDF."] },
       { h:"Set up rooms once",
-        p:["Board, door, windows and cupboards belong to the room, not to a single plan. Set a room up once and reuse it for every class taught there.",
+        p:["You find rooms under “Seating plans → Rooms”. Board, door, windows and cupboards belong to the room, not to a single plan. Set a room up once and reuse it for every class taught there.",
            "Under “Size & floor” you set the dimensions in metres; one grid square is 50 cm. Drag furniture from the palette into the room — doors, windows and boards snap to the nearest wall."] },
       { h:"Table groups",
         p:["Select several seats and tap “Group”. From then on they move together and rotate as one unit. When seating automatically, grouped desks count as neighbours."] },
@@ -1679,8 +1730,8 @@ const I18N = {
       { h:"Assembly hall, canteen and meetings",
         p:["There are room templates for exams in the assembly hall, parents' evenings or staff meetings. “Round tables” and “Long tables” set up tables with 4 to 12 seats and keep clear of the stage and pillars. There, “never together” means: not at the same table."] },
       { h:"Privacy",
-        p:["Every name stays on this device. There is no account, no login and nothing sent to a server. The app needs no internet connection.",
-           "Because nothing lives in a cloud, your plans are gone if you uninstall the app or switch devices. Save a backup now and then from the start screen.",
+        p:["Every name stays on this device unless you share it yourself (backup, transfer, export). There is no account, no login and nothing sent to a server. The app needs no internet connection.",
+           "Because nothing lives in a cloud, your plans are gone if you uninstall the app. Save a backup now and then from the start screen. For a second or new device, use “Transfer to another device” there.",
            "One note on notes and seating needs: keep them organisational — no health data or diagnoses."] },
       { h:"Tips",
         ul:["Two fingers to zoom, one finger to move the canvas.", "The small bar above the menu below the plan folds it away and back – folded, the plan gets more room.",
@@ -1693,13 +1744,13 @@ const I18N = {
     ]
   }
 };
-/* ---- Ergänzungen für die Kachel-Gliederung (Namen · Räume · Sitzpläne) ---- */
+/* ---- Ergänzungen für die Kachel-Gliederung (Klassen · Sitzpläne mit Räumen) ---- */
 Object.assign(I18N.de, {
-  tagline:"Namen, Räume und Sitzpläne — offline",
+  tagline:"Sitzplan, Noten, Stundenplan — offline",
   classLabel:"Klasse", noClassYet:"Noch keine Klasse",
-  tileNames:"Namen verwalten", tileNamesSub:"Klassen, Stufen, immer und nie zusammen",
-  tileRooms:"Räume", tileRoomsSub:"Vorlagen bearbeiten oder eigene Räume gestalten",
-  tilePlans:"Sitzpläne", tilePlansSub:"Namen den Plätzen zuordnen",
+  tileNames:"Klassen verwalten", tileNamesSub:"Namen, Stufen, immer und nie zusammen",
+  tileRooms:"Räume",
+  tilePlans:"Sitzpläne", tilePlansSub:"Namen den Plätzen zuordnen – mit Räumen und Vorlagen", roomsAllClasses:"Räume gelten für alle Klassen: einmal einrichten, in jedem Sitzplan nutzen.",
   needClassFirst:"Lege zuerst eine Klasse mit Namen an",
   fmImport:"Aus FairMix", fmImportHint:"Übernimmt Namen, Stufen, Regeln, Gruppen und Partnerhistorie aus einer FairMix-Sicherung. In FairMix: Einstellungen → Backup exportieren.",
   namesHint2:"Ein Name pro Zeile, auch direkt aus Excel kopiert. Das Feld hinter dem Namen schaltet die Stufe um.",
@@ -1760,7 +1811,7 @@ Object.assign(I18N.de, {
   limitPlans:"Höchstens {n} Sitzpläne je Klasse", seatLocked:"Platz ist festgehalten – erst „Lösen“",
   absentToday:"{n} fehlen heute", absentShort:"fehlt",
   roomTooSmall:"So viele Tische passen nicht überlappungsfrei in den Raum – kleinere Tische oder weniger Plätze wählen",
-  fmUseImport:"Das ist eine FairMix-Sicherung – bitte unter „Namen verwalten → Aus FairMix“ öffnen",
+  fmUseImport:"Das ist eine FairMix-Sicherung – bitte unter „Klassen verwalten → Aus FairMix“ öffnen",
   restoreT2:"Alle aktuellen Klassen, Räume und Sitzpläne werden durch die Sicherung ersetzt. Der bisherige Stand bleibt 14 Tage lang wiederherstellbar.",
   restoreUndoText:"Du hast eine Sicherung geladen. Der Stand davor ist noch aufgehoben.",
   restoreUndo:"Vorherigen Stand zurückholen", restoreKeep:"Behalten",
@@ -1812,11 +1863,11 @@ Object.assign(I18N.de, {
   fmIsOwnBackup:"Das ist eine FairSeat-Sicherung — bitte auf der Startseite unter „Sicherung laden“ öffnen"
 });
 Object.assign(I18N.en, {
-  tagline:"Names, rooms and seating plans — offline",
+  tagline:"Seating, grades, timetable — offline",
   classLabel:"Class", noClassYet:"No class yet",
-  tileNames:"Manage names", tileNamesSub:"Classes, levels, always and never together",
-  tileRooms:"Rooms", tileRoomsSub:"Edit templates or design your own rooms",
-  tilePlans:"Seating plans", tilePlansSub:"Assign names to seats",
+  tileNames:"Manage classes", tileNamesSub:"Names, levels, always and never together",
+  tileRooms:"Rooms",
+  tilePlans:"Seating plans", tilePlansSub:"Assign names to seats – with rooms and templates", roomsAllClasses:"Rooms apply to all classes: set them up once, use them in every seating plan.",
   needClassFirst:"Create a class with names first",
   fmImport:"From FairMix", fmImportHint:"Takes names, levels, rules, groups and partner history from a FairMix backup. In FairMix: Settings → Export backup.",
   namesHint2:"One name per line, also pasted straight from Excel. The box after a name switches its level.",
@@ -1877,7 +1928,7 @@ Object.assign(I18N.en, {
   limitPlans:"At most {n} seating plans per class", seatLocked:"This seat is kept – release it first",
   absentToday:"{n} absent today", absentShort:"absent",
   roomTooSmall:"That many desks don't fit into the room without overlapping – choose smaller desks or fewer seats",
-  fmUseImport:"This is a FairMix backup – please open it under “Manage names → From FairMix”",
+  fmUseImport:"This is a FairMix backup – please open it under “Manage classes → From FairMix”",
   restoreT2:"All current classes, rooms and seating plans are replaced by the backup. The previous state can be restored for 14 days.",
   restoreUndoText:"You loaded a backup. The state before it has been kept.",
   restoreUndo:"Restore previous state", restoreKeep:"Keep",
@@ -1959,13 +2010,19 @@ Object.assign(I18N.en, {
 Object.assign(I18N.de, {
   backupTitle:"Sicherung speichern", backupEncHint:"Schütze die Sicherung mit einem Passwort. Dann kann niemand die Namen lesen, der die Datei findet – wichtig, wenn sie in einer Cloud, auf einem Stick oder im Mailpostfach landet.",
   backupPw1:"Passwort (mindestens 8 Zeichen)", backupPw2:"Passwort wiederholen",
-  backupPwWarn:"Ohne das Passwort lässt sich die Sicherung nicht mehr öffnen – es gibt keine Wiederherstellung.",
+  backupPwWarn:"Ohne das Passwort lässt sich die Datei nicht mehr öffnen – es gibt keine Wiederherstellung.",
   backupEncBtn:"Verschlüsselt sichern", backupPlainBtn:"Ohne Passwort sichern",
   backupPwShort:"Das Passwort braucht mindestens 8 Zeichen", backupPwMismatch:"Die Passwörter stimmen nicht überein",
   backupOkEnc:"Verschlüsselte Sicherung gespeichert", backupPwTitle:"Geschützte Sicherung öffnen",
   backupPwWrong:"Passwort falsch oder Datei beschädigt", backupNoCrypto:"Dieses Gerät kann geschützte Sicherungen nicht öffnen",
+  transferTitle:"Auf anderes Gerät übertragen",
+  transferStep1:"Passwort festlegen – die Datei wird damit verschlüsselt.",
+  transferStep2:"Im Teilen-Menü das Ziel wählen: AirDrop (iPhone/iPad), Quick Share (Android) oder zwischen iOS und Android per Mail oder Messenger.",
+  transferStep3:"Auf dem anderen Gerät die Datei sichern, in FairSeat „Sicherung laden“ tippen, das Passwort eingeben und „Zusammenführen“ wählen. So bleibt nichts verloren, was dort schon eingetragen ist.",
+  transferSend:"Verschlüsseln und teilen", transferOk:"Übertragungsdatei erstellt",
+  transferNoCrypto:"Dieses Gerät kann keine verschlüsselte Übertragungsdatei erstellen",
   privSchoolTitle:"Kurz zum Datenschutz",
-  privSchool1:"Alle Namen bleiben auf diesem Gerät. FairSeat hat keinen Server, kein Konto und überträgt nichts.",
+  privSchool1:"Alle Namen bleiben auf diesem Gerät. FairSeat hat keinen Server und kein Konto; Dateien verlassen das Gerät nur, wenn du sie selbst teilst.",
   privSchool2:"Für Schülerdaten auf privaten Geräten brauchen Lehrkräfte in vielen Bundesländern eine schriftliche Genehmigung der Schulleitung, in Niedersachsen zum Beispiel nach dem Erlass zur Datenverarbeitung auf privaten IT-Systemen von Lehrkräften. Bitte kläre das vor dem Eintragen echter Namen.",
   privSchool3:"Üblich sind dabei: Gerätesperre mit PIN oder Code, verschlüsselte Sicherungen (beim Sichern ein Passwort wählen), Vornamen oder Kürzel statt voller Namen und das Löschen alter Klassen zum Schuljahresende. Keine Gesundheitsdaten oder Diagnosen eintragen.",
   privSchoolOk:"Verstanden",
@@ -1973,13 +2030,19 @@ Object.assign(I18N.de, {
 Object.assign(I18N.en, {
   backupTitle:"Save backup", backupEncHint:"Protect the backup with a password. Then nobody who finds the file can read the names – important if it ends up in a cloud, on a USB stick or in your mailbox.",
   backupPw1:"Password (at least 8 characters)", backupPw2:"Repeat password",
-  backupPwWarn:"Without the password the backup can no longer be opened – there is no recovery.",
+  backupPwWarn:"Without the password the file can no longer be opened – there is no recovery.",
   backupEncBtn:"Save encrypted", backupPlainBtn:"Save without password",
   backupPwShort:"The password needs at least 8 characters", backupPwMismatch:"The passwords do not match",
   backupOkEnc:"Encrypted backup saved", backupPwTitle:"Open protected backup",
   backupPwWrong:"Wrong password or damaged file", backupNoCrypto:"This device cannot open protected backups",
+  transferTitle:"Transfer to another device",
+  transferStep1:"Choose a password – the file is encrypted with it.",
+  transferStep2:"Pick the target in the share menu: AirDrop (iPhone/iPad), Quick Share (Android) or, between iOS and Android, email or a messenger.",
+  transferStep3:"On the other device, save the file, tap “Load backup” in FairSeat, enter the password and choose “Merge”. That way nothing already entered there gets lost.",
+  transferSend:"Encrypt and share", transferOk:"Transfer file created",
+  transferNoCrypto:"This device cannot create an encrypted transfer file",
   privSchoolTitle:"A quick word on privacy",
-  privSchool1:"Every name stays on this device. FairSeat has no server, no account and sends nothing anywhere.",
+  privSchool1:"Every name stays on this device. FairSeat has no server and no account; files only leave the device when you share them yourself.",
   privSchool2:"In many places, teachers need written approval from their head teacher to keep pupils' data on a private device (in Lower Saxony, Germany, for example, under the ministry's decree on private IT systems). Please check this before entering real names.",
   privSchool3:"Usual conditions: a device lock with PIN or passcode, encrypted backups (choose a password when saving), first names or initials instead of full names, and deleting old classes at the end of the school year. Do not enter health data or diagnoses.",
   privSchoolOk:"Got it",
@@ -1996,8 +2059,8 @@ I18N.en.info.forEach(sec => { if(sec.h === "Privacy") sec.p.splice(1, 0,
   "For teachers: processing pupils' data on a private device often needs written approval from the head teacher (in Lower Saxony, Germany, for example, under the ministry's decree on teachers' private IT systems). Please check this before using real names. Lock the device with a PIN or passcode, protect backups with a password and delete classes you no longer need. In the settings you can additionally lock assessments and observations with Face ID, fingerprint or the device PIN."); });
 Object.assign(I18N.de, {
   tileTT:"Stundenplan", tileTTSub:"Fächer, Klassen, Räume – mit Sitzplan verknüpft",
-  tileGrades:"Bewertungen", tileGradesSub:"Noten, Punkte, Smileys – mit Übersicht",
-  ttDays:["Mo","Di","Mi","Do","Fr","Sa"], ttPeriod:"Stunde", ttNow:"Jetzt", ttNext:"Als Nächstes",
+  tileGrades:"Bewertungen", tileGradesSub:"Noten, Klassenarbeiten mit Notenschlüssel, Übersicht",
+  ttDays:["Mo","Di","Mi","Do","Fr","Sa"], weekdays7:["So","Mo","Di","Mi","Do","Fr","Sa"], ttPeriod:"Stunde", ttNow:"Jetzt", ttNext:"Als Nächstes",
   ttOpenPlan:"Sitzplan", ttEmpty:"Freie Stunde", ttNoClass:"Dieser Stunde ist keine Klasse zugeordnet",
   ttWeek:"{w}-Woche", ttThisWeek:"diese Woche", ttBreak:"Pause {n} min", ttAdd:"Stunde eintragen",
   ttLimit:"Der Stundenplan ist voll", ttSubject:"Fach", ttClass:"Klasse", ttRoom:"Raum", ttPlan:"Sitzplan",
@@ -2017,7 +2080,7 @@ Object.assign(I18N.de, {
   setSchoolTools:"Stundenplan und Bewertungen", setTTSub:"Kachel auf der Startseite, aktuelle Stunde mit Sitzplan",
   setGradesSub:"Kachel auf der Startseite und Bewerten im Unterrichtsmodus",
   gMissing:"fehlt", gPrivTitle:"Bewertungen und Datenschutz",
-  gPriv1:"Noten sind Leistungsdaten deiner Schülerinnen und Schüler. Sie bleiben ausschließlich auf diesem Gerät – FairSeat überträgt nichts.",
+  gPriv1:"Noten sind Leistungsdaten deiner Schülerinnen und Schüler. Sie bleiben auf diesem Gerät – FairSeat selbst überträgt nichts. Das Gerät verlassen sie nur in Sicherungen oder Exporten, die du selbst teilst.",
   gPriv2:"Ob du Noten auf einem privaten Gerät führen darfst, regelt deine Genehmigung der Schulleitung (in Niedersachsen nach dem Erlass zu privaten IT-Systemen von Lehrkräften). Bitte prüfe das vorher.",
   gPriv3:"Sichere das Gerät mit PIN oder Code, speichere Sicherungen mit Passwort und lösche Bewertungen, sobald du sie nicht mehr brauchst. Bewertungen erscheinen nie auf Sitzplänen, im Vollbild oder in der Vertretungsmappe.",
   gNoSubject:"Wähle oben ein Fach oder lege eines an. Fächer aus dem Stundenplan erscheinen hier automatisch.",
@@ -2038,8 +2101,8 @@ Object.assign(I18N.de, {
 });
 Object.assign(I18N.en, {
   tileTT:"Timetable", tileTTSub:"Subjects, classes, rooms – linked to seating plans",
-  tileGrades:"Assessments", tileGradesSub:"Grades, points, smileys – with overview",
-  ttDays:["Mon","Tue","Wed","Thu","Fri","Sat"], ttPeriod:"period", ttNow:"Now", ttNext:"Next",
+  tileGrades:"Assessments", tileGradesSub:"Grades, tests with grading key, overview",
+  ttDays:["Mon","Tue","Wed","Thu","Fri","Sat"], weekdays7:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], ttPeriod:"period", ttNow:"Now", ttNext:"Next",
   ttOpenPlan:"Seating", ttEmpty:"Free period", ttNoClass:"No class is linked to this period",
   ttWeek:"Week {w}", ttThisWeek:"this week", ttBreak:"Break {n} min", ttAdd:"Add period",
   ttLimit:"The timetable is full", ttSubject:"Subject", ttClass:"Class", ttRoom:"Room", ttPlan:"Seating plan",
@@ -2059,7 +2122,7 @@ Object.assign(I18N.en, {
   setSchoolTools:"Timetable and assessments", setTTSub:"Tile on the start page, current period with seating plan",
   setGradesSub:"Tile on the start page and quick marks in lesson mode",
   gMissing:"absent", gPrivTitle:"Assessments and privacy",
-  gPriv1:"Grades are performance data about your pupils. They stay on this device only – FairSeat sends nothing anywhere.",
+  gPriv1:"Grades are performance data about your pupils. They stay on this device – FairSeat itself sends nothing anywhere. They only leave it in backups or exports you share yourself.",
   gPriv2:"Whether you may keep grades on a private device depends on your head teacher's approval (in Lower Saxony, Germany, under the decree on teachers' private IT systems). Please check this first.",
   gPriv3:"Lock the device with a PIN or passcode, save backups with a password and delete assessments once you no longer need them. Assessments never appear on seating plans, in full screen or in the cover pack.",
   gNoSubject:"Pick a subject above or create one. Subjects from your timetable appear here automatically.",
@@ -2154,7 +2217,8 @@ Object.assign(I18N.de, {
   gProposal:"Vorschlag", gProposalShort:"Vorschl.", gRoundLabel:"Rundung bei genau ,5", gRoundFav:"Zugunsten", gRoundMath:"Kaufmännisch",
   gTendLabel:"Notenvorschlag", gTendOn:"Mit Tendenz (2−)", gTendOff:"Ganze Noten",
   gRoundHint:"Der Vorschlag ist nur eine Rechenhilfe aus den Durchschnitten – die Zeugnisnote legst du fest. Ganze Noten: „zugunsten“ rundet 2,5 zu 2, „kaufmännisch“ zu 3. Mit Tendenz wird die nächste Stufe gewählt (2,15 → 2 bzw. 2−). Punkte werden immer bei ,5 aufgerundet.",
-  gCsv:"Übersicht als Tabelle (CSV, z. B. für Excel)", gCsvOk:"Tabelle gespeichert",
+  gCsv:"Dieses Fach als CSV", gCsvOk:"Tabelle gespeichert",
+  gXlsx:"Alle Fächer als Excel-Datei (.xlsx)", gXlsxOk:"Excel-Datei gespeichert", gXlsxFile:"Bewertungen", gXlsxAbs:"Fehlzeiten", gXlsxDays:"Fehltage", gXlsxTotal:"Fehlstunden gesamt",
   absMissedShort:"Fehlst.", absMissed:"Fehlstunden im Fach: {n}", absMissedTitle:"Fehlstunden laut Stundenplan",
   absMissedHint:"Gezählt werden Stunden aus dem Stundenplan, in denen der Unterrichtsmodus lief und die Schülerin bzw. der Schüler als abwesend markiert war. Doppelstunden zählen doppelt.",
   absNoSubject:"ohne Fach",
@@ -2162,8 +2226,26 @@ Object.assign(I18N.de, {
   talkAbsDays:"{n} Tage mit Fehlzeit", talkAbsDay1:"1 Tag mit Fehlzeit", talkAbsLessons:"{n} Fehlstunden", talkAbsLesson1:"1 Fehlstunde", talkNotes:"Notizen zum Gespräch",
   nyTitle:"Neues Schuljahr", nyHint:"Für jede Klasse: weiterführen (mit neuem Namen), archivieren oder löschen. Sitzpläne, Räume, Namen und Regeln bleiben bei weitergeführten Klassen erhalten. Archivierte Klassen bleiben vollständig erhalten. Vorher am besten eine Sicherung speichern – das lässt sich nicht rückgängig machen.",
   nyBackup:"Vorher Sicherung speichern", nyKeep:"Weiterführen", nyArchive:"Archivieren", nyDelete:"Löschen", nyNewName:"Neuer Name für {c}",
-  nyOptions:"Bei weitergeführten Klassen löschen", nyOptGrades:"Bewertungen und Selbsteinschätzungen", nyOptAbsence:"Anwesenheit, Fehlstunden und Notizen",
+  nyOptions:"Bei weitergeführten Klassen löschen", nyOptGrades:"Bewertungen und Selbsteinschätzungen", nyOptAbsence:"Anwesenheit, Fehlzeiten, Notizen und Kursheft",
   nyOptObs:"Beobachtungen und Abhaklisten",
+  syncTitle:"Sicherung laden", syncFile:"Datei", syncDevice:"Dieses Gerät", syncState:"Stand: {d}", syncUnknown:"unbekannt",
+  syncWords:"Klasse|Klassen|Name|Namen|Bewertung|Bewertungen|Note|Noten|Beobachtung|Beobachtungen",
+  syncOlder:"Achtung: Die Datei ist älter als der Stand auf diesem Gerät.",
+  syncMergeLabel:"Beim Zusammenführen ändert sich", syncSame:"Auf diesem Gerät ändert sich nichts.",
+  syncConflicts:"{n} Einträge wurden auf beiden Geräten geändert – jeweils der neuere wird übernommen.", syncConflict1:"1 Eintrag wurde auf beiden Geräten geändert – der neuere wird übernommen.",
+  syncAdd:"{n} neu", syncUpd:"{n} geändert", syncRem:"{n} entfernt", syncRules:"Regeln", syncGroups:"Gruppen", syncLesson:"Unterricht heute",
+  syncHistory:"Gemerkte Sitzordnungen", syncSettings:"Einstellungen", syncOther:"Sonstiges",
+  syncClock:"Die Uhr des anderen Geräts scheint falsch zu gehen (Datum in der Zukunft). Bitte dort Datum und Uhrzeit prüfen.",
+  syncOwnClock:"Die letzte Änderung auf diesem Gerät liegt in der Zukunft. Bitte Datum und Uhrzeit hier prüfen, bevor du zusammenführst – sonst kann die Reihenfolge der Änderungen verloren gehen.",
+  syncV1:"Diese Sicherung stammt aus einer sehr alten Version und kann nur geladen, nicht zusammengeführt werden.",
+  syncFail:"Zusammenführen ist mit dieser Datei nicht möglich – sie kann nur geladen werden.",
+  syncNoUndo:"für ein Rückgängigmachen war nicht genug Speicher frei",
+  syncMergeHint:"Zusammenführen ergänzt, was in der Datei neu ist, und übernimmt jeweils den neueren Eintrag – dafür sollten Datum und Uhrzeit auf beiden Geräten stimmen. Unabhängig voneinander angelegte Klassen erscheinen doppelt. Ersetzen übernimmt nur die Datei. Beides lässt sich 14 Tage lang rückgängig machen.",
+  syncMerge:"Zusammenführen (empfohlen)", syncReplace:"Gerät durch Datei ersetzen",
+  syncReplaceOlder:"Die Datei ist älter als der Stand auf diesem Gerät. Alles, was seitdem hier eingetragen wurde, geht verloren (14 Tage rückgängig machbar).",
+  syncMerged:"Zusammengeführt: {a} neu, {u} geändert, {r} entfernt",
+  syncClasses:"Klassen", syncStudents:"Namen", syncAssess:"Bewertungen", syncMarks:"Noten", syncObs:"Beobachtungen", syncAbs:"Fehlzeiten",
+  syncPlans:"Sitzpläne", syncChecks:"Abhaklisten", syncRooms:"Räume", syncTT:"Stundenplan",
   lockSet:"Sperre für Noten & Beobachtungen", lockSetSub:"Face ID oder Fingerabdruck, ersatzweise die Geräte-PIN. Nach 5 Minuten im Hintergrund und nach einer Selbsteinschätzung wird wieder gesperrt. Gilt nur für dieses Gerät.",
   lockBrokenQ:"Sperre ausschalten?", lockBrokenT:"Auf diesem Gerät ist keine Entsperrung mit Face ID oder Fingerabdruck mehr eingerichtet. Ohne sie kommst du nicht an Noten und Beobachtungen.", lockBrokenOk:"Sperre ausschalten",
   lockTitle:"FairSeat entsperren", lockDesc:"Für Bewertungen und Beobachtungen", lockFallback:"Geräte-PIN verwenden",
@@ -2174,7 +2256,7 @@ Object.assign(I18N.de, {
   obsTitle:"Beobachtungen", obsHint:"Kurze Notizen mit Datum – sie bleiben das ganze Schuljahr erhalten und erscheinen im Gesprächsblatt.",
   obsPh:"z. B. arbeitet seit den Ferien deutlich konzentrierter", obsAdd:"Beobachtung speichern", obsEmpty:"Noch keine Beobachtungen.",
   obsLesson:"Beobachtung (bleibt dauerhaft)", obsDeleteQ:"Beobachtung löschen?", obsCount:"Beobachtungen ({n})",
-  ckTitle:"Abhaken", ckLists:"Abhaklisten", ckHint:"Zum Beispiel „Einverständnis abgegeben“ oder „Buch zurückgegeben“. Danach im Sitzplan einfach die Namen antippen.",
+  ckTitle:"Abhaken", ckLists:"Abhak- und Strichlisten", ckHint:"Abhakliste: einmal je Name, z. B. „Einverständnis abgegeben“. Strichliste: zählt mit, z. B. „Hausaufgaben vergessen“. Danach im Sitzplan einfach die Namen antippen.",
   ckNewPh:"Titel der Liste", ckNew:"Neue Liste starten", ckDone:"{a} von {b} erledigt", ckTap:"Namen antippen zum Abhaken – noch einmal tippen nimmt den Haken weg.",
   ckList:"Liste", ckName:"Titel", ckDelete:"Liste löschen", ckDeleteQ:"Liste löschen?", ckDeleteT:"„{t}“ und alle Haken werden gelöscht.",
   ckNeedTitle:"Bitte einen Titel eingeben.", ckLimit:"Höchstens 100 Listen je Klasse.", ckOpen:"Noch nicht abgehakt", ckOk:"Fertig",
@@ -2186,7 +2268,8 @@ Object.assign(I18N.en, {
   gProposal:"Suggested", gProposalShort:"Sugg.", gRoundLabel:"Rounding at exactly .5", gRoundFav:"In pupil's favour", gRoundMath:"Standard",
   gTendLabel:"Suggested grade", gTendOn:"With +/−", gTendOff:"Whole grades",
   gRoundHint:"The suggestion is only a calculation aid based on the averages – you decide the report grade. Whole grades: “in pupil's favour” rounds 2.5 to 2, “standard” to 3. With +/− the nearest step is chosen (2.15 → 2 or 2−). Points are always rounded up at .5.",
-  gCsv:"Overview as spreadsheet (CSV, e.g. for Excel)", gCsvOk:"Spreadsheet saved",
+  gCsv:"This subject as CSV", gCsvOk:"Spreadsheet saved",
+  gXlsx:"All subjects as Excel file (.xlsx)", gXlsxOk:"Excel file saved", gXlsxFile:"Assessments", gXlsxAbs:"Absences", gXlsxDays:"Days absent", gXlsxTotal:"Missed lessons total",
   absMissedShort:"Missed", absMissed:"Missed lessons in subject: {n}", absMissedTitle:"Missed lessons from the timetable",
   absMissedHint:"Counted are timetable lessons in which lesson mode was used and the pupil was marked absent. Double lessons count twice.",
   absNoSubject:"no subject",
@@ -2194,8 +2277,26 @@ Object.assign(I18N.en, {
   talkAbsDays:"{n} days with absence", talkAbsDay1:"1 day with absence", talkAbsLessons:"{n} missed lessons", talkAbsLesson1:"1 missed lesson", talkNotes:"Notes for the conversation",
   nyTitle:"New school year", nyHint:"For each class: continue (with a new name), archive or delete. Seating plans, rooms, names and rules stay with continued classes. Archived classes are kept complete. Best save a backup first – this cannot be undone.",
   nyBackup:"Save a backup first", nyKeep:"Continue", nyArchive:"Archive", nyDelete:"Delete", nyNewName:"New name for {c}",
-  nyOptions:"Delete for continued classes", nyOptGrades:"Assessments and self-assessments", nyOptAbsence:"Attendance, missed lessons and notes",
+  nyOptions:"Delete for continued classes", nyOptGrades:"Assessments and self-assessments", nyOptAbsence:"Attendance, absences, notes and course log",
   nyOptObs:"Observations and checklists",
+  syncTitle:"Load backup", syncFile:"File", syncDevice:"This device", syncState:"As of: {d}", syncUnknown:"unknown",
+  syncWords:"class|classes|name|names|assessment|assessments|mark|marks|observation|observations",
+  syncOlder:"Caution: the file is older than the data on this device.",
+  syncMergeLabel:"Merging will change", syncSame:"Nothing changes on this device.",
+  syncConflicts:"{n} entries were changed on both devices – the newer one is kept each time.", syncConflict1:"1 entry was changed on both devices – the newer one is kept.",
+  syncAdd:"{n} new", syncUpd:"{n} changed", syncRem:"{n} removed", syncRules:"Rules", syncGroups:"Groups", syncLesson:"Today's lesson",
+  syncHistory:"Remembered seating", syncSettings:"Settings", syncOther:"Other",
+  syncClock:"The other device's clock seems to be wrong (date in the future). Please check its date and time.",
+  syncOwnClock:"The last change on this device lies in the future. Please check the date and time here before merging – otherwise the order of changes may be lost.",
+  syncV1:"This backup comes from a very old version and can only be loaded, not merged.",
+  syncFail:"Merging is not possible with this file – it can only be loaded.",
+  syncNoUndo:"there was not enough storage to keep an undo copy",
+  syncMergeHint:"Merging adds what is new in the file and keeps the newer version of each entry – date and time should be correct on both devices. Classes created separately on each device appear twice. Replacing takes the file only. Both can be undone for 14 days.",
+  syncMerge:"Merge (recommended)", syncReplace:"Replace device with file",
+  syncReplaceOlder:"The file is older than the data on this device. Everything entered here since then will be lost (can be undone for 14 days).",
+  syncMerged:"Merged: {a} new, {u} changed, {r} removed",
+  syncClasses:"Classes", syncStudents:"Names", syncAssess:"Assessments", syncMarks:"Marks", syncObs:"Observations", syncAbs:"Absences",
+  syncPlans:"Seating plans", syncChecks:"Checklists", syncRooms:"Rooms", syncTT:"Timetable",
   lockSet:"Lock for grades & observations", lockSetSub:"Face ID or fingerprint, with the device PIN as a fallback. Locks again after 5 minutes in the background and after a self-assessment. Applies to this device only.",
   lockBrokenQ:"Turn off the lock?", lockBrokenT:"Face ID or fingerprint unlock is no longer set up on this device. Without it you cannot reach grades and observations.", lockBrokenOk:"Turn off lock",
   lockTitle:"Unlock FairSeat", lockDesc:"For assessments and observations", lockFallback:"Use device PIN",
@@ -2206,7 +2307,7 @@ Object.assign(I18N.en, {
   obsTitle:"Observations", obsHint:"Short dated notes – they are kept for the whole school year and appear on the conference sheet.",
   obsPh:"e.g. works with much more focus since the holidays", obsAdd:"Save observation", obsEmpty:"No observations yet.",
   obsLesson:"Observation (kept)", obsDeleteQ:"Delete observation?", obsCount:"Observations ({n})",
-  ckTitle:"Check off", ckLists:"Checklists", ckHint:"For example “consent form returned” or “book returned”. Then simply tap the names on the seating plan.",
+  ckTitle:"Check off", ckLists:"Checklists and tally lists", ckHint:"Checklist: once per name, e.g. “consent form returned”. Tally list: keeps counting, e.g. “homework forgotten”. Then simply tap the names on the seating plan.",
   ckNewPh:"List title", ckNew:"Start new list", ckDone:"{a} of {b} done", ckTap:"Tap names to check off – tap again to remove the tick.",
   ckList:"List", ckName:"Title", ckDelete:"Delete list", ckDeleteQ:"Delete list?", ckDeleteT:"“{t}” and all ticks will be deleted.",
   ckNeedTitle:"Please enter a title.", ckLimit:"At most 100 lists per class.", ckOpen:"Not yet ticked", ckOk:"Done",
@@ -2215,18 +2316,18 @@ Object.assign(I18N.en, {
   nyDone:"New school year set up"
 });
 I18N.de.info[1] = { h:"In drei Schritten zum Sitzplan",
-  ol:["Namen verwalten: Klasse anlegen, Namen eintragen oder aus FairMix übernehmen, Stufen und Regeln festlegen.",
-      "Räume: eine Vorlage anpassen oder einen eigenen Raum mit Tafel, Tür, Fenstern und Möbeln gestalten.",
+  ol:["Klassen verwalten: Klasse anlegen, Namen eintragen oder aus FairMix übernehmen, Stufen und Regeln festlegen.",
+      "Sitzpläne → Räume (optional): eine Vorlage anpassen oder einen eigenen Raum mit Tafel, Tür, Fenstern und Möbeln gestalten. Räume gelten für alle Klassen.",
       "Sitzpläne: Raum und Tischvorlage wählen, die Namen zufällig verteilen oder per Drag & Drop zuordnen."] };
 I18N.en.info[1] = { h:"Three steps to a seating plan",
-  ol:["Manage names: create a class, enter names or import them from FairMix, set levels and rules.",
-      "Rooms: adapt a template or design your own room with board, door, windows and furniture.",
+  ol:["Manage classes: create a class, enter names or import them from FairMix, set levels and rules.",
+      "Seating plans → Rooms (optional): adapt a template or design your own room with board, door, windows and furniture. Rooms apply to all classes.",
       "Seating plans: choose a room and a desk layout, then seat names at random or by drag and drop."] };
 I18N.de.info.splice(2, 0, { h:"Zusammenspiel mit FairMix",
-  p:["Exportiere in FairMix unter Einstellungen ein Backup und öffne die Datei hier unter „Namen verwalten → Aus FairMix“. Übernommen werden Namen, Stufen, „immer zusammen“, „nie zusammen“ und die zuletzt gebildeten Gruppen. FairMix selbst bleibt unverändert.",
+  p:["Exportiere in FairMix unter Einstellungen ein Backup und öffne die Datei hier unter „Klassen verwalten → Aus FairMix“. Übernommen werden Namen, Stufen, „immer zusammen“, „nie zusammen“ und die zuletzt gebildeten Gruppen. FairMix selbst bleibt unverändert.",
      "Beim neuen Sitzplan wählst du dann „Nach FairMix-Gruppen“: Jede Gruppe bekommt eine Tischgruppe in passender Größe."] });
 I18N.en.info.splice(2, 0, { h:"Working with FairMix",
-  p:["Export a backup in FairMix settings and open the file here under “Manage names → From FairMix”. Names, levels, “always together”, “never together” and the most recent groups are imported. FairMix itself stays untouched.",
+  p:["Export a backup in FairMix settings and open the file here under “Manage classes → From FairMix”. Names, levels, “always together”, “never together” and the most recent groups are imported. FairMix itself stays untouched.",
      "For a new seating plan, choose “By FairMix groups”: each group gets a table group of matching size."] });
 
 let LANG = "de";
@@ -2244,6 +2345,66 @@ const tTag = tag => (I18N[LANG].tags[tag] || tag);
    Cache-Namen in sw.js ab – wer anhebt, muss alle drei Stellen ändern. */
 const APP_VERSION = "2.0.0";
 
+Object.assign(I18N.de, {
+  tkTitle:"Aufgaben & Notenschlüssel", tkSetup:"Punkte je Aufgabe und Notenschlüssel", tkSetupSub:"Für Klassenarbeiten: Punkte eintragen, die Note rechnet der Schlüssel aus",
+  tkInfo:"{n} Aufgaben · {m} Punkte", tkTendShort:"mit Tendenz",
+  tkHint:"Lege die Aufgaben mit ihren Höchstpunkten an (halbe Punkte möglich). Die Note ergibt sich aus der Summe über den Notenschlüssel.",
+  tkTasks:"Aufgaben", tkName:"Aufgabe", tkMax:"Höchstpunkte", tkP:"P", tkSum:"Zusammen {n} Punkte", tkAdd:"Aufgabe", tkLimit:"Höchstens 40 Aufgaben",
+  tkKey:"Notenschlüssel", tkFrom:"Mindestanteil für {g} in Prozent", tkPts:"ab {n} P", tkBelow:"Darunter (unter {p} %): {g}", tkFromPts:"ab Punkte",
+  tkPre_grade_ihk:"50 % = ausreichend", tkPre_grade_epa:"40 % = ausreichend", tkPre_points_epa:"Abitur-Raster",
+  tkTend:"Mit Tendenz (+/−)", tkTendSub:"Jede Notenstufe wird gedrittelt: oberes Drittel „+“, unteres „−“",
+  tkKeyHint:"Welcher Schlüssel gilt, legt meist die Fachkonferenz fest. Die Grenzen werden auf halbe Punkte aufgerundet.",
+  tkOff:"Aufgaben entfernen", tkOffQ:"Aufgaben entfernen?", tkOffT:"Die Punkte je Aufgabe werden gelöscht. Die bisher berechneten Noten bleiben stehen.", tkOffBtn:"Entfernen",
+  tkNeedTask:"Mindestens eine Aufgabe mit Punkten anlegen", tkOrder:"Die Grenzen müssen von oben nach unten kleiner werden",
+  tkStats:"Lösungsquote je Aufgabe", tkExport:"Auswertung als Excel-Datei (.xlsx)", tkQuote:"Lösungsquote %",
+  ptSum:"{s} von {m} Punkten ({p} %)", ptGrade:"Note", ptEmpty:"Noch keine Punkte", ptBad:"Aufgabe {t}: höchstens {m} Punkte", ptNext:"Weiter",
+  ptTotal:"Summe", ptEnter:"Punkte für {n}",
+  gFail:"{p} % mangelhaft oder ungenügend ({b} von {n}). In Niedersachsen wird eine Arbeit mit mehr als 30 % „mangelhaft“ oder „ungenügend“ nicht gewertet, außer die Schulleitung stimmt zu (Erlass „Schriftliche Arbeiten“, Nr. 8; Arbeiten zieldifferent unterrichteter Schülerinnen und Schüler zählen dabei nicht mit). Andere Länder regeln das anders.",
+  jTitle:"Kursheft", jLast:"Letzte Stunde – {d}", jTopic:"Thema", jHw:"Hausaufgabe", jTopicPh:"Was wurde gemacht?", jHwPh:"Bis wann, was genau?",
+  jAll:"Alle Einträge ({n})", jDelete:"Eintrag löschen", jDeleteQ:"Eintrag löschen?", jSaved:"Im Kursheft gespeichert", jAllSubjects:"Alle Fächer",
+  jNew:"Neuer Eintrag", jEmpty:"Noch keine Einträge.", jExport:"Kursheft als Excel-Datei (.xlsx)", jPeriod:"Stunde", jDay:"Tag",
+  absTitle:"Fehlzeiten", absDaysLabel:"Tage mit Fehlzeit", absExcused:"entschuldigt", absExcShort:"entsch.", absExcN:"{n} entschuldigt", absNone:"Keine Fehltage erfasst.",
+  lateLabel:"Verspätet (Minuten)", lateList:"Verspätungen", lateMin:"{m} Min. zu spät", lateN:"{n}× verspätet ({m} Min.)", attendanceExc:"entschuldigt",
+  gXlsxDaysUnexc:"davon unentschuldigt", gXlsxUnexc:"Fehlstunden unentschuldigt", gXlsxLate:"Verspätungen", gXlsxLateMin:"Minuten zu spät",
+  tlTitle:"Strichlisten", tlNew:"Als Strichliste anlegen", tlHw:"Hausaufgaben vergessen", tlMat:"Material vergessen", tlCard:"Strichliste · {n} Striche",
+  tlMeta:"heute {a} · insgesamt {b}", tlHint:"Namen antippen: ein Strich für heute – noch einmal tippen nimmt ihn weg. Die Zahl zeigt die Summe.",
+  tlListHint:"Je Name die Summe und die letzten Tage. „Heute“ setzt oder entfernt den Strich für heute.", tlToday:"Heute", tlDelete:"Strichliste löschen",
+  syncJournal:"Kursheft",
+});
+Object.assign(I18N.en, {
+  tkTitle:"Tasks & grading key", tkSetup:"Points per task and grading key", tkSetupSub:"For class tests: enter points, the key works out the grade",
+  tkInfo:"{n} tasks · {m} points", tkTendShort:"with +/−",
+  tkHint:"Add the tasks with their maximum points (half points allowed). The grade follows from the total via the grading key.",
+  tkTasks:"Tasks", tkName:"Task", tkMax:"Maximum points", tkP:"pts", tkSum:"{n} points in total", tkAdd:"Task", tkLimit:"At most 40 tasks",
+  tkKey:"Grading key", tkFrom:"Minimum share for {g} in percent", tkPts:"from {n} pts", tkBelow:"Below ({p} %): {g}", tkFromPts:"from points",
+  tkPre_grade_ihk:"50 % = pass", tkPre_grade_epa:"40 % = pass", tkPre_points_epa:"Abitur scale",
+  tkTend:"With tendency (+/−)", tkTendSub:"Each grade band is split into thirds: top third “+”, bottom third “−”",
+  tkKeyHint:"Which key applies is usually decided by your department. Thresholds are rounded up to half points.",
+  tkOff:"Remove tasks", tkOffQ:"Remove tasks?", tkOffT:"The points per task are deleted. The grades worked out so far stay.", tkOffBtn:"Remove",
+  tkNeedTask:"Add at least one task with points", tkOrder:"Thresholds must get smaller from top to bottom",
+  tkStats:"Success rate per task", tkExport:"Analysis as Excel file (.xlsx)", tkQuote:"Success rate %",
+  ptSum:"{s} of {m} points ({p} %)", ptGrade:"Grade", ptEmpty:"No points yet", ptBad:"Task {t}: at most {m} points", ptNext:"Next",
+  ptTotal:"Total", ptEnter:"Points for {n}",
+  gFail:"{p} % marked 5 or 6 ({b} of {n}). In Lower Saxony, a test with more than 30 % “mangelhaft” or “ungenügend” does not count unless the head teacher agrees (decree on written tests, no. 8; tests of pupils taught to different targets do not count). Other states have other rules.",
+  jTitle:"Course log", jLast:"Last lesson – {d}", jTopic:"Topic", jHw:"Homework", jTopicPh:"What did you do?", jHwPh:"What exactly, and by when?",
+  jAll:"All entries ({n})", jDelete:"Delete entry", jDeleteQ:"Delete entry?", jSaved:"Saved in the course log", jAllSubjects:"All subjects",
+  jNew:"New entry", jEmpty:"No entries yet.", jExport:"Course log as Excel file (.xlsx)", jPeriod:"Period", jDay:"Day",
+  absTitle:"Absences", absDaysLabel:"Days with absence", absExcused:"excused", absExcShort:"exc.", absExcN:"{n} excused", absNone:"No absences recorded.",
+  lateLabel:"Late (minutes)", lateList:"Late arrivals", lateMin:"{m} min late", lateN:"{n}× late ({m} min)", attendanceExc:"excused",
+  gXlsxDaysUnexc:"of which unexcused", gXlsxUnexc:"Missed lessons unexcused", gXlsxLate:"Times late", gXlsxLateMin:"Minutes late",
+  tlTitle:"Tally lists", tlNew:"Create as tally list", tlHw:"Homework forgotten", tlMat:"Materials forgotten", tlCard:"Tally list · {n} marks",
+  tlMeta:"today {a} · total {b}", tlHint:"Tap names: one mark for today – tap again to remove it. The number shows the total.",
+  tlListHint:"Total and recent days per name. “Today” sets or removes today's mark.", tlToday:"Today", tlDelete:"Delete tally list",
+  syncJournal:"Course log",
+});
+I18N.de.info.push({ h:"Klassenarbeiten, Kursheft und Fehlzeiten",
+  p:["In einer Bewertung legst du unter „Punkte je Aufgabe und Notenschlüssel“ die Aufgaben mit Höchstpunkten an. Danach trägst du je Name die Punkte ein, die Note rechnet der Schlüssel aus (mit oder ohne Tendenz). Darunter siehst du den Notenspiegel und die Lösungsquote je Aufgabe; die Auswertung lässt sich als Excel-Datei teilen.",
+     "Im Unterrichtsmodus hält „Kursheft“ Thema und Hausaufgabe der Stunde fest und zeigt dabei, was in der letzten Stunde aufgegeben wurde. Im Blatt eines Namens kannst du eine Verspätung in Minuten antippen. Unter „Anwesenheit“ öffnet ein Tipp auf einen Namen die Fehlzeiten; dort markierst du entschuldigte Tage.",
+     "Unter „Abhaken“ gibt es neben Abhaklisten auch Strichlisten wie „Hausaufgaben vergessen“: Jeder Tipp auf einen Namen setzt einen Strich für heute, die Zahl am Platz zeigt die Summe. Strichlisten stehen auch im Gesprächsblatt."] });
+I18N.en.info.push({ h:"Class tests, course log and absences",
+  p:["In an assessment, “Points per task and grading key” lets you add the tasks with their maximum points. Then you enter the points per name and the key works out the grade (with or without +/−). Below you see the distribution and the success rate per task; the analysis can be shared as an Excel file.",
+     "In lesson mode, “Course log” records the topic and homework of the lesson and shows what was set last time. In a name's sheet you can tap how many minutes someone was late. Under “Attendance”, tapping a name opens their absences, where you mark excused days.",
+     "Under “Check off” there are tally lists such as “homework forgotten” as well as checklists: each tap on a name adds a mark for today, and the number on the seat shows the total. Tally lists also appear in the conversation sheet."] });
 /* ============ 2. Helfer ============ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
@@ -2450,10 +2611,12 @@ function sanitizeDB(raw){
         const okTok = v => v === "x" || SCALE_TOKS[a.scale].indexOf(v) >= 0;
         const marks = {};
         if(a.marks && typeof a.marks === "object") Object.keys(a.marks).forEach(k => { if(ids.has(k) && own(a.marks, k) && okTok(a.marks[k])) marks[k] = a.marks[k]; });
-        return { id: typeof a.id === "string" && a.id ? a.id.slice(0, 40) : uid(), subjectId: a.subjectId.slice(0, 40),
+        const out = { id: typeof a.id === "string" && a.id ? a.id.slice(0, 40) : uid(), subjectId: a.subjectId.slice(0, 40),
           title: typeof a.title === "string" ? a.title.slice(0, 100) : "", date: typeof a.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(a.date) ? a.date : "",
           kind: a.kind === "written" ? "written" : a.kind === "self" && a.scale === "smiley" ? "self" : "other", scale: a.scale, weight: [0.5, 1, 2, 3].indexOf(a.weight) >= 0 ? a.weight : 1,
           marks, ...(a.auto === true ? { auto: true } : {}) };
+        sanTasks(out, a, ids);                        // Aufgabenpunkte und Notenschlüssel (nur wenn vorhanden)
+        return out;
       }).slice(0, MAX_ASSESS) : [],
       gradeW: (c?.gradeW && typeof c.gradeW === "object") ? Object.keys(c.gradeW).reduce((o, k) => {
         const v = c.gradeW[k]; if(!(k in Object.prototype) && Number.isInteger(v) && v >= 0 && v <= 100) o[k.slice(0, 40)] = v; return o; }, {}) : {},
@@ -2475,8 +2638,14 @@ function sanitizeDB(raw){
       checks: Array.isArray(c?.checks) ? c.checks.filter(k => k && typeof k.title === "string" && k.title.trim()).map(k => ({
         id: typeof k.id === "string" && k.id ? k.id.slice(0, 40) : uid(), title: k.title.slice(0, 60),
         date: typeof k.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(k.date) ? k.date : "",
-        done: Array.isArray(k.done) ? k.done.filter((x, i, a) => typeof x === "string" && ids.has(x) && a.indexOf(x) === i).slice(0, MAX_STUDENTS) : []
+        done: k.type === "tally" ? [] : Array.isArray(k.done) ? k.done.filter((x, i, a) => typeof x === "string" && ids.has(x) && a.indexOf(x) === i).slice(0, MAX_STUDENTS) : [],
+        /* Strichliste: je Schüler höchstens ein Strich pro Tag, als "Datum|ID" */
+        ...(k.type === "tally" ? { type: "tally", ticks: sanDayIds(k.ticks, ids, MAX_TICKS) } : {})
       })).slice(0, MAX_CHECKS) : [],
+      /* Kursheft, entschuldigte Tage und Verspätungen */
+      journal: sanJournal(c?.journal),
+      exc: sanDayIds(c?.exc, ids, 5000),
+      late: sanLate(c?.late, ids),
       /* Aus FairMix übernommene Gruppen: Mitglieder als Schüler-IDs */
       groups: Array.isArray(c?.groups) ? c.groups.filter(g => g && Array.isArray(g.members)).map(g => ({
         id: typeof g.id === "string" && g.id ? g.id : uid(),
@@ -2534,6 +2703,12 @@ function sanitizeDB(raw){
       } : { date:"", absent:[], picked:[], notes:{} }
     };
   }) : [];
+  /* Abgleich: Änderungszeit je Eintrag (Sekunden), Löschliste, letzte Änderung, letzter Abgleich dieses Geräts */
+  out.stamps = syncStampMap(raw.stamps, 0, SYNC_MAX_STAMPS, SYNC_PREFIX);
+  out.del = syncStampMap(raw.del, SYNC_DEL_DAYS * 86400, SYNC_MAX_DEL, SYNC_HASH);
+  const tOk = v => Number.isInteger(v) && v >= 0 && v < 4e9 ? v : 0;
+  out.mod = tOk(raw.mod);
+  out.syncAt = tOk(raw.syncAt);
   return out;
 }
 
@@ -2582,6 +2757,7 @@ function load(){
     if(old){ try{ clean = sanitizeDB(migrateV1(JSON.parse(old))); }catch(e){ broken = true; } }
   }
   DB = clean || emptyDB();
+  syncReset();
   purgeTrash();
   prevState();                                        // räumt eine abgelaufene Kopie vor der Sicherung weg
   LANG = DB.lang;
@@ -2593,7 +2769,8 @@ let saveTimer = null, warnedFull = false;
 function flushSave(){
   clearTimeout(saveTimer); saveTimer = null;
   DB.lang = LANG;
-  const ok = Store.set(KEY, JSON.stringify(DB));
+  try{ syncStamp(); }catch(e){}                      // Zeitstempel für den Abgleich – darf das Speichern nie verhindern
+  const ok = Store.set(KEY, JSON.stringify(Object.assign({}, DB, { stamps: packStamps(DB.stamps), del: packStamps(DB.del) })));
   if(!ok && !warnedFull){ warnedFull = true; toast(t("storageFull")); }
   if(ok) warnedFull = false;
   return ok;
@@ -2627,14 +2804,17 @@ function trashRestore(entryId){
   const e = DB.trash[i];
   if(e.kind === "class"){
     const c = sanitizeDB({ v:2, classes:[e.payload] }).classes[0];
+    if(c && DB.classes.some(x => x.id === c.id)) c.id = uid();      // z. B. durch einen Abgleich schon wieder da
     if(c) DB.classes.push(c);
   } else if(e.kind === "room"){
     const r = sanitizeDB({ v:2, rooms:[e.payload] }).rooms[0];
+    if(r && DB.rooms.some(x => x.id === r.id)) r.id = uid();
     if(r) DB.rooms.push(r);
   } else if(e.kind === "plan"){
     const host = DB.classes.find(c => c.id === e.classId) || DB.classes[0];
     if(!host) return;                                  // ohne Klasse gibt es keinen Ort dafür
     const p = sanitizeDB({ v:2, classes:[{ name:"x", students:[], plans:[e.payload] }] }).classes[0].plans[0];
+    if(p && DB.classes.some(c => c.plans.some(x => x.id === p.id))) p.id = uid();
     if(p) host.plans.push(p);
   }
   DB.trash.splice(i, 1);
@@ -2875,11 +3055,17 @@ $("#btn-editor-back").onclick = () => {
   else goRooms();
 };
 $("#tile-names").onclick = goNames;
-$("#tile-rooms").onclick = goRooms;
 $("#tile-plans").onclick = () => {
   if(!DB.classes.length){ toast(t("needClassFirst")); goNames(); return; }
   goPlans();
 };
+/* Räume liegen als Reiter unter „Sitzpläne“ – sie gelten für alle Klassen */
+$$(".pr-tab").forEach(b => b.onclick = () => {
+  if(b.dataset.pr === "rooms") goRooms();
+  else if(!DB.classes.length){ toast(t("needClassFirst")); goNames(); return; }
+  else goPlans();
+  const on = $("#screen-" + b.dataset.pr + " .pr-tab.on"); if(on) on.focus();   // Fokus bleibt auf dem Reiter
+});
 /* Die gewählte Klasse gilt für alle drei Bereiche — wie in FairMix */
 function activeClasses(){ return DB.classes.filter(c => !c.archived); }
 function ensureCurClass(){
@@ -2912,7 +3098,7 @@ function fillClassSelect(sel){
 }
 function newClassObj(name){
   return { id: uid(), name, archived: false, students: [], rules: [], plans: [], groups: [], levelMode: "off",
-           history: [], attendance: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
+           history: [], attendance: [], journal: [], exc: [], late: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
 }
 
 /* ============ 9. Modale Dialoge ============ */
@@ -3051,10 +3237,8 @@ function renderStart(){
   const c = curClass();
   $("#home-count").textContent = c ? cnt(c.students.length, "nStudents") : "";
   $("#home-classbar").style.display = DB.classes.length ? "" : "none";
-  $("#tile-rooms-n").textContent = DB.rooms.length ? String(DB.rooms.length) : "";
   $("#tile-plans-n").textContent = c && c.plans.length ? String(c.plans.length) : "";
   $("#tile-plans-n").style.display = c && c.plans.length ? "" : "none";
-  $("#tile-rooms-n").style.display = DB.rooms.length ? "" : "none";
   $("#tile-timetable").style.display = ttOn() ? "" : "none";
   $("#tile-grades").style.display = gradesOn() ? "" : "none";
   renderNowCard();
@@ -3112,7 +3296,7 @@ function undoRestore(){
   try{ parsed = JSON.parse(o.data); }catch(e){ toast(t("backupBad")); return; }
   const clean = sanitizeDB(parsed);
   if(!clean){ toast(t("backupBad")); return; }
-  DB = clean; LANG = DB.lang;
+  DB = clean; LANG = DB.lang; syncReset();
   curClassId = null; curPlanId = null; curRoomId = null;
   undoStack = []; redoStack = []; updateUndoButtons();
   try{ window.localStorage.removeItem(KEY_PREV); }catch(e){}
@@ -4272,7 +4456,15 @@ function renderStage(full){
   applyTransform();
   const list = allItems();
   const seen = new Set();
-  const kc = checkMode ? checkCur() : null, kSet = kc ? new Set(kc.done) : null;   // Abhakliste einmal je Durchlauf
+  const kc0 = checkMode ? checkCur() : null, kc = isTally(kc0) ? null : kc0, kSet = kc ? new Set(kc.done) : null;   // Abhakliste einmal je Durchlauf
+  const tl = isTally(kc0) ? kc0 : null, tlCount = new Map(), tlToday = new Set(), tday = isoDay(new Date());
+  if(tl) (tl.ticks || []).forEach(x => { const sid = x.slice(11); tlCount.set(sid, (tlCount.get(sid) || 0) + 1); if(x.slice(0, 10) === tday) tlToday.add(sid); });
+  /* Verspätungen dieser Stunde einmal je Durchlauf – nicht am Beamer */
+  const lateNow = new Map();
+  if(lessonMode && !selfMode && !checkMode && !presenting && curClass()){
+    const c0 = curClass(), L0 = currentLessonFor(c0), p0 = L0 ? L0.period : -1;
+    (c0.late || []).forEach(e => { if(e.d === tday && e.p === p0) lateNow.set(e.sid, e.min); });
+  }
   list.forEach(it => {
     seen.add(it.id);
     let el = elCache.get(it.id);
@@ -4346,6 +4538,20 @@ function renderStage(full){
     else if(!gTok && gm) gm.remove();
     if(gTok){ gm.textContent = tokLabel(gTok); gm.classList.toggle("miss", gTok === "x"); gm.classList.toggle("sm", !!SMILEY[gTok]); }
     el.classList.toggle("gsel", !!ga && isDesk && !!it.studentId && it.studentId === gradeSel);
+    /* Verspätet in dieser Stunde */
+    let lm = el.querySelector(".latemark");
+    const lt = isDesk && it.studentId ? lateNow.get(it.studentId) || 0 : 0;
+    if(lt && !lm){ lm = document.createElement("i"); lm.className = "latemark"; lm.setAttribute("aria-hidden", "true"); el.appendChild(lm); }
+    else if(!lt && lm) lm.remove();
+    if(lt) lm.textContent = "+" + lt;
+    /* Strichliste: Summe je Schüler, heute markiert */
+    let tm = el.querySelector(".tlmark");
+    const tn = tl && isDesk && it.studentId ? (tlCount.get(it.studentId) || 0) : 0, tOn = tn > 0 && tlToday.has(it.studentId);
+    if(tn && !tm){ tm = document.createElement("i"); tm.className = "tlmark"; tm.setAttribute("aria-hidden", "true"); el.appendChild(tm); }
+    else if(!tn && tm) tm.remove();
+    if(tn){ tm.textContent = String(tn); tm.classList.toggle("old", !tOn); }
+    el.classList.toggle("tltoday", tOn);
+    if(lt || tn) el.setAttribute("aria-label", el.getAttribute("aria-label") + (lt ? ", " + t("lateMin").replace("{m}", String(lt)) : "") + (tn ? ", " + tl.title + " " + tn + "×" : ""));
     let ck = el.querySelector(".ckmark");
     const kOn = !!kSet && isDesk && !!it.studentId && kSet.has(it.studentId);
     if(kOn && !ck){ ck = document.createElement("i"); ck.className = "ckmark"; ck.textContent = "✓"; ck.setAttribute("aria-hidden", "true"); el.appendChild(ck); }
@@ -7175,9 +7381,22 @@ function openLessonSheet(it){
     toggle.style.background = absent ? "var(--surface)" : "var(--accent-soft)";
   };
   toggle.appendChild(icon("check")); toggle.appendChild(txt); toggle.appendChild(mark);
-  toggle.onclick = () => { absent = !absent; paint(); };
+  /* Verspätung in dieser Stunde: Minuten antippen, noch einmal tippen nimmt sie weg */
+  const lt0 = lateToday(c, st.id);
+  let lateMin = lt0 ? lt0.min : 0;
+  const chips = document.createElement("div"); chips.className = "latechips"; chips.id = "lesson-late";
+  const paintLate = () => Array.from(chips.children).forEach(b => { const on = +b.dataset.m === lateMin; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+  toggle.onclick = () => { absent = !absent; if(absent) lateMin = 0; paint(); paintLate(); };
   paint();
   sheet.appendChild(toggle);
+  const ll = document.createElement("div"); ll.className = "eyebrow"; ll.style.marginTop = "12px"; ll.textContent = t("lateLabel"); sheet.appendChild(ll);
+  [5, 10, 15, 20, 30].forEach(m => {
+    const b = document.createElement("button"); b.dataset.m = String(m); b.textContent = m === 30 ? "30+" : String(m);
+    b.setAttribute("aria-label", t("lateMin").replace("{m}", String(m)));
+    b.onclick = () => { lateMin = lateMin === m ? 0 : m; if(lateMin){ absent = false; paint(); } paintLate(); };
+    chips.appendChild(b);
+  });
+  sheet.appendChild(chips); paintLate();
 
   const lab = document.createElement("div");
   lab.className = "eyebrow"; lab.style.marginTop = "14px"; lab.textContent = t("note");
@@ -7212,6 +7431,7 @@ function openLessonSheet(it){
     const i = L.absent.indexOf(st.id);
     if(absent && i < 0) L.absent.push(st.id);
     if(!absent && i >= 0) L.absent.splice(i, 1);
+    if(lateMin !== (lt0 ? lt0.min : 0) || (absent && lt0)) setLateToday(c, st.id, absent ? 0 : lateMin);
     recordLessonAbsence(c);
     if(obsArea && obsArea.value.trim()) addObs(c, st.id, obsArea.value, lessonSubjectNow(c));
     const note = area.value.trim();
@@ -7278,7 +7498,7 @@ function exportAttendance(){
     const cells = rows.map(r => {
       const absent = r.absent.indexOf(st.id) >= 0;
       if(absent) sum++;
-      return absent ? t("attendanceAbsent") : "";
+      return absent ? (isExcused(c, r.date, st.id) ? t("attendanceExc") : t("attendanceAbsent")) : "";
     });
     lines.push([csvCell(st.name)].concat(cells.map(csvCell)).concat([String(sum)]).join(";"));
   });
@@ -7295,14 +7515,17 @@ $("#btn-attendance").onclick = () => {
   info.className = "hint";
   info.textContent = rows.length ? t("attendanceDays").replace("{n}", String(rows.length)) : t("attendanceEmpty");
   sheet.appendChild(info);
-  const miss = c.students.map(st => ({ st, m: missedLessons(c, st.id) })).filter(x => x.m.total);
+  const miss = c.students.map(st => ({ st, m: missedLessons(c, st.id), d: absenceDays(c, st.id).length, l: lateOf(c, st.id).length })).filter(x => x.m.total || x.d || x.l);
   if(miss.length){
     sheetLabel(sheet, t("absMissedTitle"));
-    const box2 = document.createElement("div"); box2.className = "previewbox"; box2.id = "abs-missed";
-    miss.sort((a, b) => b.m.total - a.m.total).forEach(x => {
-      const line = document.createElement("div");
+    const box2 = document.createElement("div"); box2.id = "abs-missed";
+    miss.sort((a, b) => b.m.total - a.m.total || b.d - a.d || b.l - a.l).forEach(x => {
+      const line = document.createElement("button"); line.className = "grpcard"; line.dataset.sid = x.st.id;
+      const hb = document.createElement("b"); hb.textContent = x.st.name; line.appendChild(hb);
       const parts = Object.keys(x.m.bySubject).map(id => (subjectById(id) ? subjectById(id).short || subjectById(id).name : t("absNoSubject")) + " " + x.m.bySubject[id]);
-      line.textContent = x.st.name + ": " + x.m.total + (parts.length ? " (" + parts.join(", ") + ")" : "");
+      const d1 = document.createElement("div"); d1.textContent = absenceLine(c, x.st.id) + (parts.length ? " · " + parts.join(", ") : "");
+      line.appendChild(d1);
+      line.onclick = () => openAbsences(c, x.st, () => $("#btn-attendance").onclick());
       box2.appendChild(line);
     });
     sheet.appendChild(box2);
@@ -7565,22 +7788,28 @@ function shareAnchor(){
   if(!r) return Math.round(w / 2) + "," + Math.round(h / 2) + ",1,1";
   return [r.left, r.top, r.width, r.height].map(v => Math.max(0, Math.round(v))).join(",");
 }
-function cordovaShare(blob, filename){
+function cordovaShare(blob, filename, mime){
   const sharer = window.plugins && window.plugins.socialsharing;
   if(!window.cordova || !sharer || !sharer.shareWithOptions) return false;
   const r = new FileReader();
   r.onerror = () => toast(t("exportFail"));
   r.onload = () => {
+    /* „df:Name;data:…“ – so übernehmen iOS und Android den Dateinamen samt Endung */
+    let uri = String(r.result);
+    const b64 = uri.indexOf(";base64,");
+    /* nur der reine Typ – „text/csv;charset=utf-8“ passt unter Android zu keinem Tabellenprogramm */
+    if(b64 > 0) uri = "data:" + ((mime || blob.type || "").split(";")[0].trim() || "application/octet-stream") + uri.slice(b64);
+    const name = String(filename).replace(/[;,]/g, "_");
     sharer.shareWithOptions({
-      subject: filename, files: [String(r.result)], chooserTitle: filename,
-      iPadPopupCoordinates: shareAnchor()
+      subject: filename, files: ["df:" + name + ";" + uri], chooserTitle: filename,
+      iPadCoordinates: shareAnchor()
     }, () => {}, () => toast(t("exportFail")));
   };
   r.readAsDataURL(blob);
   return true;
 }
 function download(blob, filename, mime){
-  if(window.cordova) return cordovaShare(blob, filename);
+  if(window.cordova) return cordovaShare(blob, filename, mime);
   const okNow = downloadBlob(blob, filename);
   /* Native Wege laufen asynchron nach; schlägt der Download fehl, greifen sie als Ersatz. */
   (async () => {
@@ -7961,7 +8190,34 @@ async function decryptBackup(enc, pw){
   return new TextDecoder().decode(pt);
 }
 /* Gelöschtes (Papierkorb) gehört nicht in eine Sicherung, die das Gerät verlässt */
-function backupData(){ const d = sanitizeDB(clone(DB)) || clone(DB); d.trash = []; d.settings.lock = false; return d; }   // Sperre gehört zum Gerät, nicht in die Sicherung   // entfernt auch Noten und Notizen gelöschter Schüler
+function backupData(){
+  const d = sanitizeDB(clone(DB)) || clone(DB); d.trash = []; d.settings.lock = false;
+  /* Zeitstempel nur für Einträge, die es noch gibt (z. B. keine Noten gelöschter Schüler) */
+  const ents = syncEntities(d); Object.keys(d.stamps || {}).forEach(k => { if(!ents.has(k)) delete d.stamps[k]; });
+  d.stamps = packStamps(d.stamps); d.del = packStamps(d.del); delete d.syncAt;
+  return d;
+}   // Sperre gehört zum Gerät, nicht in die Sicherung   // entfernt auch Noten und Notizen gelöschter Schüler
+/* Zwei Passwortfelder samt Warnung; check() liefert das Passwort oder null (mit Hinweis) */
+function newPasswordFields(sheet, prefix, onEnter){
+  const pw1 = document.createElement("input"), pw2 = document.createElement("input");
+  [pw1, pw2].forEach((f, k) => {
+    f.className = "field"; f.type = "password"; f.autocomplete = "new-password"; f.maxLength = 128;
+    f.placeholder = t(k ? "backupPw2" : "backupPw1"); f.id = prefix + "-pw" + (k + 1);
+    f.setAttribute("aria-label", f.placeholder); f.setAttribute("aria-describedby", prefix + "-pwwarn");
+    sheet.appendChild(f);
+  });
+  pw1.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); pw2.focus(); } });
+  pw2.addEventListener("keydown", e => { if(e.key === "Enter" && onEnter){ e.preventDefault(); onEnter(); } });
+  const warn = document.createElement("div"); warn.className = "hint"; warn.id = prefix + "-pwwarn"; warn.textContent = t("backupPwWarn");
+  sheet.appendChild(warn);
+  return {
+    check(){
+      if(pw1.value.length < 8){ toast(t("backupPwShort")); pw1.focus(); return null; }
+      if(pw1.value !== pw2.value){ toast(t("backupPwMismatch")); pw2.focus(); return null; }
+      return pw1.value;
+    }
+  };
+}
 function writeBackup(obj, encrypted){
   const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
   const stamp = new Date().toISOString().slice(0, 10);
@@ -7972,19 +8228,13 @@ function writeBackup(obj, encrypted){
 }
 $("#btn-backup").onclick = () => {
   if(needUnlock(() => $("#btn-backup").onclick())) return;      // die Sicherung enthält alle Noten und Beobachtungen
-  const plain = () => { try{ writeBackup({ app: "fairseat", v: 2, exported: new Date().toISOString(), data: backupData() }, false); }catch(e){ toast(t("exportFail")); } };
+  const plain = () => { try{ flushSave(); writeBackup({ app: "fairseat", v: 2, exported: new Date().toISOString(), data: backupData() }, false); }catch(e){ toast(t("exportFail")); } };
   if(!hasCrypto()){ plain(); return; }
   const sheet = sheetBase(t("backupTitle"));
+  sheet.dataset.sens = "1";                             // bei automatischer Sperre schließen
   const hint = document.createElement("div"); hint.className = "hint"; hint.style.fontSize = "14px"; hint.textContent = t("backupEncHint");
   sheet.appendChild(hint);
-  const pw1 = document.createElement("input"), pw2 = document.createElement("input");
-  [pw1, pw2].forEach((f, k) => {
-    f.className = "field"; f.type = "password"; f.autocomplete = "new-password"; f.maxLength = 128;
-    f.placeholder = t(k ? "backupPw2" : "backupPw1"); sheet.appendChild(f);
-  });
-  pw1.id = "bk-pw1"; pw2.id = "bk-pw2";
-  const warn = document.createElement("div"); warn.className = "hint"; warn.textContent = t("backupPwWarn");
-  sheet.appendChild(warn);
+  const pw = newPasswordFields(sheet, "bk", () => enc.click());
   if(DB.classes.some(c => (c.assess || []).some(a => Object.keys(a.marks).length))){
     const g = document.createElement("div"); g.className = "hint"; g.style.color = "var(--warn)"; g.style.fontWeight = "650";
     g.textContent = t("backupHasGrades"); sheet.appendChild(g);
@@ -7993,11 +8243,13 @@ $("#btn-backup").onclick = () => {
   enc.className = "primary"; enc.id = "bk-enc"; enc.style.width = "100%"; enc.style.marginTop = "12px";
   enc.textContent = t("backupEncBtn");
   enc.onclick = async () => {
-    if(pw1.value.length < 8){ toast(t("backupPwShort")); pw1.focus(); return; }
-    if(pw1.value !== pw2.value){ toast(t("backupPwMismatch")); pw2.focus(); return; }
+    if(lockedNow()){ closeModal(); return; }
+    const pass = pw.check(); if(pass === null) return;
     enc.disabled = true;
     try{
-      const obj = await encryptBackup(JSON.stringify({ app: "fairseat", v: 2, data: backupData() }), pw1.value);
+      flushSave();
+      const obj = await encryptBackup(JSON.stringify({ app: "fairseat", v: 2, data: backupData() }), pass);
+      if(!enc.isConnected || !$("#modal").classList.contains("on") || lockedNow()) return;   // inzwischen geschlossen oder gesperrt
       closeModal(); writeBackup(obj, true);
     }catch(e){ enc.disabled = false; toast(t("exportFail")); }
   };
@@ -8005,13 +8257,51 @@ $("#btn-backup").onclick = () => {
   const pl = document.createElement("button");
   pl.className = "ghost"; pl.id = "bk-plain"; pl.style.width = "100%"; pl.style.marginTop = "8px";
   pl.textContent = t("backupPlainBtn");
-  pl.onclick = () => { closeModal(); plain(); };
+  pl.onclick = () => { const ok = !lockedNow(); closeModal(); if(ok) plain(); };
   sheet.appendChild(pl);
   const cancel = document.createElement("button");
   cancel.className = "ghost"; cancel.style.width = "100%"; cancel.style.marginTop = "8px";
   cancel.textContent = t("cancel"); cancel.onclick = closeModal;
   sheet.appendChild(cancel);
 };
+/* Übertragung auf ein anderes Gerät: immer verschlüsselt, ein Schritt bis zum Teilen-Menü.
+   Gilt nicht als Sicherung (die Datei landet auf dem anderen Gerät, nicht im eigenen Archiv),
+   daher bleibt die Erinnerung ans Sichern unberührt. */
+function openTransfer(){
+  if(!hasCrypto()){ toast(t("transferNoCrypto")); return; }
+  if(needUnlock(openTransfer)) return;                          // enthält alle Noten und Beobachtungen
+  const sheet = sheetBase(t("transferTitle"));
+  sheet.dataset.sens = "1";                             // bei automatischer Sperre schließen
+  const ol = document.createElement("ol"); ol.className = "hint"; ol.style.fontSize = "14px"; ol.style.paddingLeft = "20px"; ol.style.margin = "0 0 10px";
+  ["transferStep1", "transferStep2", "transferStep3"].forEach(k => {
+    const li = document.createElement("li"); li.textContent = t(k); li.style.marginBottom = "4px"; ol.appendChild(li);
+  });
+  sheet.appendChild(ol);
+  const pw = newPasswordFields(sheet, "tr", () => send.click());
+  const send = document.createElement("button");
+  send.className = "primary"; send.id = "tr-send"; send.style.width = "100%"; send.style.marginTop = "12px";
+  send.textContent = t("transferSend");
+  send.onclick = async () => {
+    if(lockedNow()){ closeModal(); return; }
+    const pass = pw.check(); if(pass === null) return;
+    send.disabled = true;
+    try{
+      flushSave();
+      const obj = await encryptBackup(JSON.stringify({ app: "fairseat", v: 2, data: backupData() }), pass);
+      const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
+      const name = "fairseat-uebertragung-" + new Date().toISOString().slice(0, 10) + ".json";
+      if(!send.isConnected || !$("#modal").classList.contains("on") || lockedNow()) return;   // inzwischen geschlossen, ersetzt oder gesperrt
+      closeModal();
+      toast(t(download(blob, name, "application/json") ? "transferOk" : "exportFail"));
+    }catch(e){ send.disabled = false; toast(t("exportFail")); }
+  };
+  sheet.appendChild(send);
+  const cancel = document.createElement("button");
+  cancel.className = "ghost"; cancel.style.width = "100%"; cancel.style.marginTop = "8px";
+  cancel.textContent = t("cancel"); cancel.onclick = closeModal;
+  sheet.appendChild(cancel);
+}
+$("#btn-transfer").onclick = openTransfer;
 /* Fragt das Passwort einer geschützten Sicherung ab und reicht den Inhalt weiter */
 function askBackupPassword(enc, done){
   if(!hasCrypto()){ toast(t("backupNoCrypto")); return; }
@@ -8060,20 +8350,25 @@ function restoreParsed(parsed){
     let clean = null;
     try{ clean = sanitizeDB(raw && raw.v === 2 ? raw : migrateV1(raw || {})); }catch(e){ clean = null; }
     if(!clean || (!clean.classes.length && !clean.rooms.length && !clean.subjects.length && !clean.lessons.length)){ toast(t("backupBad")); return; }
-    askConfirm(t("restoreQ"), t("restoreT2"), t("restore"), () => {
-      /* Den bisherigen Stand aufheben: eine falsch gewählte Datei darf nichts zerstören */
-      flushSave();
-      const prev = Store.get(KEY);
-      if(prev) Store.set(KEY_PREV, JSON.stringify({ at: new Date().toISOString(), data: prev }));
-      const keepLock = DB.settings.lock === true;        // Sperre gilt für dieses Gerät, nicht für die Datei
-      DB = clean; LANG = DB.lang; DB.settings.lock = keepLock;
-      curClassId = null; curPlanId = null; curRoomId = null;
-      undoStack = []; redoStack = []; updateUndoButtons();
-      /* Reicht der Speicher nicht für beide Stände, hat der neue Vorrang */
-      if(!flushSave()){ try{ window.localStorage.removeItem(KEY_PREV); }catch(e){} flushSave(); }
-      applyTheme(); applyLang(); show("start"); renderStart();
-      toast(t("restoreOk"));
-    });
+    const exp = parsed && typeof parsed.exported === "string" ? Math.floor(Date.parse(parsed.exported) / 1000) : NaN;
+    const future = !!(raw && Number.isInteger(raw.mod) && raw.mod > syncNow() + SYNC_FUTURE);
+    openRestoreChoice(clean, clean.mod || (isFinite(exp) && exp > 0 ? exp : 0), { future, v1: !(raw && raw.v === 2) });
+}
+/* Ersetzen oder Zusammenführen – vorher den bisherigen Stand aufheben (14 Tage rückgängig) */
+function applyRestore(newDB, msg){
+  flushSave();
+  const prev = Store.get(KEY);
+  if(prev) Store.set(KEY_PREV, JSON.stringify({ at: new Date().toISOString(), data: prev }));
+  const keepLock = DB.settings.lock === true;        // Sperre gilt für dieses Gerät, nicht für die Datei
+  DB = newDB; LANG = DB.lang; DB.settings.lock = keepLock; DB.syncAt = syncNow();
+  syncReset();
+  curClassId = null; curPlanId = null; curRoomId = null;
+  undoStack = []; redoStack = []; updateUndoButtons();
+  /* Reicht der Speicher nicht für beide Stände, hat der neue Vorrang */
+  let undoOk = !!prev && !!Store.get(KEY_PREV);
+  if(!flushSave()){ try{ window.localStorage.removeItem(KEY_PREV); }catch(e){} flushSave(); undoOk = false; }
+  applyTheme(); applyLang(); show("start"); renderStart();
+  toast(prev && !undoOk ? msg + " – " + t("syncNoUndo") : msg);
 }
 
 /* ============ 21b. Import aus FairMix ============ */
@@ -8934,6 +9229,17 @@ function renderAssess(){
   const m = document.createElement("div"); m.className = "hint"; m.style.marginTop = "0";
   m.textContent = (s ? s.name + " · " : "") + fmtDate(a.date) + " · " + t(a.kind === "written" ? "gWritten" : "gOther") + " · " + t("gScale_" + a.scale);
   head.appendChild(m);
+  const tasked = hasTasks(a);
+  if(a.scale !== "smiley" && !a.auto){               // Klassenarbeit mit Punkten je Aufgabe (nicht bei „Mitarbeit heute“)
+    const tb = document.createElement("button"); tb.className = "setrow"; tb.id = "a-tasks"; tb.style.marginTop = "6px";
+    const tt = document.createElement("div"); tt.style.flex = "1";
+    const t1 = document.createElement("div"); t1.className = "st"; t1.textContent = t(tasked ? "tkTitle" : "tkSetup");
+    const t2 = document.createElement("div"); t2.className = "ss";
+    t2.textContent = tasked ? t("tkInfo").replace("{n}", String(a.tasks.length)).replace("{m}", fmtNum(taskMax(a), taskMax(a) % 1 ? 1 : 0)) + (keyOf(a).tend ? " · " + t("tkTendShort") : "") : t("tkSetupSub");
+    tt.appendChild(t1); tt.appendChild(t2); tb.appendChild(tt); tb.appendChild(icon(tasked ? "edit" : "plus"));
+    tb.onclick = () => openTaskSetup(c, a);
+    head.appendChild(tb);
+  }
   const list = $("#assess-list"); list.textContent = "";
   c.students.forEach((st, i) => {
     const row = document.createElement("button"); row.className = "arow" + (st.id === assessSel ? " on" : "");
@@ -8942,8 +9248,11 @@ function renderAssess(){
     const nm = document.createElement("span"); nm.className = "an"; nm.textContent = st.name;
     const v = document.createElement("span"); v.className = "av" + (a.marks[st.id] === "x" ? " miss" : "") + (a.marks[st.id] ? "" : " empty");
     v.textContent = a.marks[st.id] ? tokLabel(a.marks[st.id]) : "–";
-    row.appendChild(n); row.appendChild(nm); row.appendChild(v);
-    row.onclick = () => { assessSel = st.id; renderAssess(); };
+    row.appendChild(n); row.appendChild(nm);
+    if(tasked){ const sp = studentPoints(a, st.id); const pe = document.createElement("span"); pe.className = "apts";
+      pe.textContent = sp === null ? "" : fmtNum(sp, sp % 1 ? 1 : 0) + " " + t("tkP"); row.appendChild(pe); }
+    row.appendChild(v);
+    row.onclick = () => { assessSel = st.id; renderAssess(); if(tasked) openPointsSheet(c, a, st.id, nextWithoutPoints(c, a)); };
     list.appendChild(row);
   });
   /* Notenspiegel und Durchschnitt */
@@ -8953,11 +9262,27 @@ function renderAssess(){
   const p = document.createElement("div"); p.className = "astat";
   p.textContent = t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) + (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
   stats.appendChild(p);
+  const fs = failShare(c, a);
+  if(fs && fs.share > 0.3){ const w = document.createElement("div"); w.className = "syncwarn"; w.id = "a-fail";
+    w.textContent = t("gFail").replace("{p}", fmtNum(fs.share * 100, 0)).replace("{b}", String(fs.bad)).replace("{n}", String(fs.n)); stats.appendChild(w); }
   if(done) stats.appendChild(distChart(a));
+  if(tasked && Object.keys(a.pts || {}).length){
+    stats.appendChild(taskChart(c, a));
+    const xb = document.createElement("button"); xb.className = "cbtn outline"; xb.id = "a-xlsx"; xb.style.width = "100%"; xb.style.marginTop = "8px";
+    xb.appendChild(icon("grid")); const xs = document.createElement("span"); xs.textContent = t("tkExport"); xb.appendChild(xs);
+    xb.onclick = () => exportTaskXlsx(c, a);
+    stats.appendChild(xb);
+  }
   /* Tastenfeld */
   const pad = $("#assess-pad"); pad.textContent = "";
-  pad.className = "keypad k-" + a.scale;
-  SCALE_TOKS[a.scale].forEach(tok => {
+  pad.className = "keypad k-" + (tasked ? "tasks" : a.scale);
+  if(tasked){
+    const st0 = assessSel ? studentById(c, assessSel) : null;
+    const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "a-pts";
+    pb.textContent = st0 ? t("ptEnter").replace("{n}", st0.name) : t("gTapSeat");
+    pb.onclick = () => { if(assessSel) openPointsSheet(c, a, assessSel, nextWithoutPoints(c, a)); };
+    pad.appendChild(pb);
+  } else SCALE_TOKS[a.scale].forEach(tok => {
     const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
     if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
     b.classList.toggle("on", !!assessSel && a.marks[assessSel] === tok); b.setAttribute("aria-pressed", String(!!assessSel && a.marks[assessSel] === tok));
@@ -8970,6 +9295,7 @@ function renderAssess(){
 }
 function setMark(tok){
   const c = curClass(), a = curAssess(); if(!c || !a || !assessSel) return;
+  if(a.pts) delete a.pts[assessSel];                  // „fehlt“ oder Löschen nimmt auch die Punkte weg
   if(tok) a.marks[assessSel] = tok; else delete a.marks[assessSel];
   save(); haptic(8);
   if(tok){                                            // weiter zum nächsten Namen
@@ -9091,6 +9417,10 @@ function renderOverview(body, c, s, list){
   cx.appendChild(icon("share")); const cs = document.createElement("span"); cs.textContent = t("gCsv"); cx.appendChild(cs);
   cx.onclick = () => exportGradesCsv(c, s);
   body.appendChild(cx);
+  const xx = document.createElement("button"); xx.className = "cbtn blue"; xx.id = "g-xlsx"; xx.style.width = "100%"; xx.style.marginTop = "8px";
+  xx.appendChild(icon("grid")); const xs = document.createElement("span"); xs.textContent = t("gXlsx"); xx.appendChild(xs);
+  xx.onclick = () => exportGradesXlsx(c);
+  body.appendChild(xx);
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gOverviewHint"); body.appendChild(h);
 }
 function studentDetail(c, s, st){
@@ -9103,6 +9433,10 @@ function studentDetail(c, s, st){
   const mi = missedLessons(c, st.id);
   if(mi.bySubject[s.id]){ const sp = document.createElement("span"); sp.textContent = t("absMissed").replace("{n}", String(mi.bySubject[s.id] || 0)); sum.appendChild(sp); }
   sheet.appendChild(sum);
+  const ab = document.createElement("button"); ab.className = "cbtn outline"; ab.id = "abs-open"; ab.style.width = "100%"; ab.style.marginTop = "10px";
+  ab.appendChild(icon("calendar")); const abs = document.createElement("span"); abs.textContent = t("absTitle") + " · " + absenceLine(c, st.id); ab.appendChild(abs);
+  ab.onclick = () => openAbsences(c, st, () => studentDetail(c, s, st));
+  sheet.appendChild(ab);
   const tb = document.createElement("button"); tb.className = "cbtn outline"; tb.id = "talk-sheet"; tb.style.width = "100%"; tb.style.marginTop = "10px";
   tb.appendChild(icon("pdf")); const tbs = document.createElement("span"); tbs.textContent = t("talkTitle"); tb.appendChild(tbs);
   tb.onclick = () => { closeModal(); setTimeout(() => exportTalkSheet(c, st), 60); };
@@ -9221,6 +9555,7 @@ function quickPad(parent, c, st, onSaved, date){
           A = { id: uid(), subjectId: subjectId(), title: t("gDefOther") + " " + fmtDate(day()), date: day(), kind: "other", scale, weight: 1, marks: {}, auto: true };
           c.assess = (c.assess || []).concat([A]);
         }
+        if(A.pts) delete A.pts[st.id];
         A.marks[st.id] = tok; c.lastSubject = subjectId(); save();
         if(onSaved) onSaved(tok);
         toast(t("gQuickSaved").replace("{a}", st.name).replace("{v}", tokLabel(tok)));
@@ -9307,7 +9642,11 @@ function leaveGradeToList(){
   endGradeMode(true); lessonMode = false; updateEditorChrome();
   if(id){ openAssess(id); } else goPlans();
 }
-function pickGradeSeat(sid){ gradeSel = sid; renderGradeBar(); renderStage(false); haptic(6); }
+function pickGradeSeat(sid){
+  gradeSel = sid; renderGradeBar(); renderStage(false); haptic(6);
+  const a = gradeAssess(), c = curClass();               // Klassenarbeit mit Aufgaben: gleich die Punkte
+  if(a && c && hasTasks(a)) openPointsSheet(c, a, sid, seatNextWithoutMark(a));
+}
 function renderGradeBar(){
   const a = gradeAssess(), c = curClass(); if(!a || !c) return;
   const s = subjectById(a.subjectId);
@@ -9318,8 +9657,13 @@ function renderGradeBar(){
   const st = gradeSel ? studentById(c, gradeSel) : null;
   $("#gb-who").textContent = st ? st.name + (a.marks[st.id] ? " · " + tokLabel(a.marks[st.id]) : "") : t("gTapSeat");
   const pad = $("#gb-pad"); pad.textContent = "";
-  pad.className = "keypad k-" + a.scale;
-  SCALE_TOKS[a.scale].forEach(tok => {
+  pad.className = "keypad k-" + (hasTasks(a) ? "tasks" : a.scale);
+  if(hasTasks(a)){
+    const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "gb-pts";
+    pb.textContent = st ? t("ptEnter").replace("{n}", st.name) : t("gTapSeat");
+    pb.onclick = () => { if(gradeSel) openPointsSheet(c, a, gradeSel, seatNextWithoutMark(a)); else toast(t("gTapSeat")); };
+    pad.appendChild(pb);
+  } else SCALE_TOKS[a.scale].forEach(tok => {
     const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
     if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
     b.classList.toggle("on", !!st && a.marks[st.id] === tok); b.setAttribute("aria-pressed", String(!!st && a.marks[st.id] === tok));
@@ -9330,6 +9674,7 @@ function renderGradeBar(){
 }
 function setGradeOnPlan(tok){
   const a = gradeAssess(), p = curPlan(); if(!a || !p || !gradeSel) { toast(t("gTapSeat")); return; }
+  if(a.pts) delete a.pts[gradeSel];
   if(tok) a.marks[gradeSel] = tok; else delete a.marks[gradeSel];
   save(); haptic(8);
   if(tok){                                     // weiter zum nächsten freien Platz von vorne nach hinten
@@ -9340,6 +9685,18 @@ function setGradeOnPlan(tok){
     if(next) gradeSel = next.studentId;
   }
   renderGradeBar(); renderStage(false);
+}
+/* Nächster Platz ohne Note, von vorne nach hinten (für die Punkte-Eingabe im Plan) */
+function seatNextWithoutMark(a){
+  return sid => {
+    const p = curPlan(); if(!p) return null;
+    const order = seatOrder(p.desks).no;
+    const seated = p.desks.filter(d => d.studentId).sort((x, y) => (order.get(x.id) || 0) - (order.get(y.id) || 0));
+    const i = seated.findIndex(d => d.studentId === sid);
+    const next = seated.slice(i + 1).find(d => !a.marks[d.studentId]);
+    if(next){ gradeSel = next.studentId; return next.studentId; }
+    return null;
+  };
 }
 /* Aus der Bewertung heraus: passenden Plan der Klasse wählen */
 function gradeOnPlan(){
@@ -9699,10 +10056,11 @@ function recordLessonAbsence(c){
 /* Läuft der Unterrichtsmodus über den Stundenwechsel, wird auch die nächste Stunde erfasst */
 setInterval(() => { if(lessonMode){ const c = curClass(); if(recordLessonAbsence(c)) save(); } }, 60000);
 function missedLessons(c, sid){
-  const out = { total: 0, bySubject: {}, dates: [] }, off = cancelledSlots(c);
+  const out = { total: 0, excused: 0, bySubject: {}, dates: [] }, off = cancelledSlots(c);
   (c.absLog || []).forEach(e => {
     if(e.ids.indexOf(sid) < 0 || off.has(e.d + "|" + e.p)) return;
     out.total += e.n; out.bySubject[e.s || ""] = (out.bySubject[e.s || ""] || 0) + e.n; out.dates.push(e.d);
+    if(isExcused(c, e.d, sid)) out.excused += e.n;
   });
   return out;
 }
@@ -9784,7 +10142,15 @@ function talkSheetPages(c, st){
     });
     y -= 8;
   }
-  const openChecks = (c.checks || []).filter(k => k.done.indexOf(st.id) < 0);
+  const tallies = (c.checks || []).filter(k => isTally(k) && tallyCount(k, st.id));
+  if(tallies.length){
+    need(36);
+    cur.push(pdfText(M, y, 13, t("tlTitle"))); y -= 17;
+    tallies.forEach(k => { const ds = tallyDates(k, st.id);
+      pdfWrap(k.title + ": " + ds.length + "×  (" + ds.map(fmtDate).join(", ") + ")", 90).forEach(l => { need(14); cur.push(pdfText(M + 10, y, 10, l)); y -= 13; }); });
+    y -= 10;
+  }
+  const openChecks = (c.checks || []).filter(k => !isTally(k) && k.done.indexOf(st.id) < 0);
   if(openChecks.length){
     need(36);
     cur.push(pdfText(M, y, 13, t("ckOpen"))); y -= 17;
@@ -9793,16 +10159,15 @@ function talkSheetPages(c, st){
   }
   /* Fehlzeiten */
   const mi = missedLessons(c, st.id);
-  const days = attendanceRows(c).filter(r => r.absent.indexOf(st.id) >= 0).map(r => r.date);
+  const days = absenceDays(c, st.id);
   need(60);
   cur.push(pdfText(M, y, 13, t("talkAbsence"))); y -= 18;
-  const nTxt = (one, many, n) => n === 1 ? t(one) : t(many).replace("{n}", String(n));
-  cur.push(pdfText(M + 10, y, 10.5, nTxt("talkAbsDay1", "talkAbsDays", days.length) + (mi.total ? "   ·   " + nTxt("talkAbsLesson1", "talkAbsLessons", mi.total) : ""))); y -= 15;
+  pdfWrap(absenceLine(c, st.id), 95).forEach(l => { need(15); cur.push(pdfText(M + 10, y, 10.5, l)); y -= 15; });
   if(mi.total){
     const parts = Object.keys(mi.bySubject).map(id => (subjectById(id) ? subjectById(id).name : t("absNoSubject")) + " " + mi.bySubject[id]).join(", ");
     pdfWrap(parts, 90).forEach(l => { need(14); cur.push(pdfText(M + 10, y, 9.5, l, grey)); y -= 13; });
   }
-  if(days.length){ pdfWrap(days.map(fmtDate).join(", "), 95).forEach(l => { need(14); cur.push(pdfText(M + 10, y, 9.5, l, grey)); y -= 13; }); }
+  if(days.length){ pdfWrap(days.map(d => fmtDate(d) + (isExcused(c, d, st.id) ? " (" + t("absExcShort") + ")" : "")).join(", "), 95).forEach(l => { need(14); cur.push(pdfText(M + 10, y, 9.5, l, grey)); y -= 13; }); }
   /* Platz für Notizen im Gespräch */
   y -= 10; need(120);
   cur.push(pdfText(M, y, 13, t("talkNotes"))); y -= 10;
@@ -9858,7 +10223,7 @@ function openNewYear(){
         if(x.action === "delete"){ trashPush("class", c.name, c); DB.classes = DB.classes.filter(y => y !== c); return; }
         if(x.action === "archive"){ c.archived = true; return; }     // Archiv bleibt als Nachweis vollständig
         if(opt.grades){ c.assess = []; c.gradeSubjects = []; c.lastSubject = ""; }
-        if(opt.absence){ c.attendance = []; c.absLog = []; c.lesson = { date: "", absent: [], picked: [], notes: {} }; c.subNote = ""; }
+        if(opt.absence){ c.attendance = []; c.absLog = []; c.exc = []; c.late = []; c.journal = []; c.lesson = { date: "", absent: [], picked: [], notes: {} }; c.subNote = ""; }
         if(opt.history) c.history = [];
         if(opt.obs){ c.obs = []; c.checks = []; }
         c.plans.forEach(p => { if(p.exam){ p.exam = false; delete p.examPrev; p.desks.forEach(d => { delete d.var; }); } });
@@ -9906,7 +10271,7 @@ function ttDateFor(L){
 function fmtDateLong(iso){
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); if(!m) return "";
   const d = new Date(+m[1], +m[2] - 1, +m[3]);
-  return I18N[LANG].ttDays[(d.getDay() + 6) % 7] + ", " + fmtDate(iso);
+  return t("weekdays7")[d.getDay()] + ", " + fmtDate(iso);   // eigene Liste mit Sonntag (ttDays endet am Samstag)
 }
 /* ---- Beobachtungen ---- */
 function studentObs(c, sid){ return (c.obs || []).filter(o => o.sid === sid).sort((a, b) => b.d.localeCompare(a.d)); }
@@ -9981,11 +10346,20 @@ function endCheckMode(silent){
 function renderCheckBar(){
   const k = checkCur(), c = curClass(); if(!k || !c) return;
   $("#cb-title").textContent = k.title;
+  if(isTally(k)){
+    const today = isoDay(new Date()), ids = new Set(c.students.map(st => st.id));
+    const ticks = (k.ticks || []).filter(x => ids.has(x.slice(11)));
+    $("#cb-meta").textContent = t("tlMeta").replace("{a}", String(ticks.filter(x => x.slice(0, 10) === today).length)).replace("{b}", String(ticks.length));
+    $("#cb-hint").textContent = t("tlHint");
+    return;
+  }
+  $("#cb-hint").textContent = t("ckTap");
   const done = c.students.filter(st => k.done.indexOf(st.id) >= 0).length;
   $("#cb-meta").textContent = (k.date ? fmtDate(k.date) + " · " : "") + t("ckDone").replace("{a}", String(done)).replace("{b}", String(c.students.length));
 }
 function toggleCheck(sid){
   const k = checkCur(); if(!k) return;
+  if(isTally(k)){ const added = toggleTally(k, sid); save(); haptic(added ? 8 : 4); renderCheckBar(); renderStage(false); return; }
   const i = k.done.indexOf(sid);
   if(i >= 0) k.done.splice(i, 1); else k.done.push(sid);
   save(); haptic(i >= 0 ? 4 : 8);
@@ -10008,11 +10382,27 @@ function openChecks(){
     c.checks.unshift(k); save(); closeModal(); startCheckMode(k.id);
   };
   sheet.appendChild(nb);
+  /* Strichliste: dieselbe Eingabe, oder eine der üblichen mit einem Tipp */
+  const tb = document.createElement("button"); tb.className = "cbtn outline"; tb.id = "tl-new"; tb.style.width = "100%"; tb.style.marginTop = "8px";
+  tb.textContent = t("tlNew");
+  tb.onclick = () => { const title = inp.value.trim().slice(0, 60); if(!title){ toast(t("ckNeedTitle")); inp.focus(); return; }
+    const k = newTally(c, title); if(k){ closeModal(); startCheckMode(k.id); } };
+  sheet.appendChild(tb);
+  const quick = ["tlHw", "tlMat"].map(t).filter(q => !c.checks.some(k => isTally(k) && k.title === q));
+  if(quick.length){
+    const qr = document.createElement("div"); qr.className = "latechips"; qr.id = "tl-quick";
+    quick.forEach(q => { const b = document.createElement("button"); b.textContent = q;
+      b.onclick = () => { const k = newTally(c, q); if(k){ closeModal(); startCheckMode(k.id); } }; qr.appendChild(b); });
+    sheet.appendChild(qr);
+  }
+  const ids = new Set(c.students.map(st => st.id));
   c.checks.forEach(k => {
-    const b = document.createElement("button"); b.className = "grpcard ckcard";
+    const b = document.createElement("button"); b.className = "grpcard ckcard" + (isTally(k) ? " tlcard" : "");
     const hb = document.createElement("b"); hb.textContent = k.title;
     const done = c.students.filter(st => k.done.indexOf(st.id) >= 0).length;
-    const d = document.createElement("div"); d.textContent = (k.date ? fmtDate(k.date) + " · " : "") + t("ckDone").replace("{a}", String(done)).replace("{b}", String(c.students.length));
+    const d = document.createElement("div");
+    d.textContent = isTally(k) ? t("tlCard").replace("{n}", String((k.ticks || []).filter(x => ids.has(x.slice(11))).length))
+      : (k.date ? fmtDate(k.date) + " · " : "") + t("ckDone").replace("{a}", String(done)).replace("{b}", String(c.students.length));
     b.appendChild(hb); b.appendChild(d);
     b.onclick = () => { closeModal(); startCheckMode(k.id); };
     sheet.appendChild(b);
@@ -10047,8 +10437,1097 @@ function openCheckList(){
   sheet.appendChild(ok);
 }
 $("#lb-check").onclick = openChecks;
-$("#cb-list").onclick = openCheckList;
+$("#lb-journal").onclick = () => { const c = curClass(); if(c) openJournal(c); };
+$("#cb-list").onclick = () => { if(isTally(checkCur())) openTallyList(); else openCheckList(); };
 $("#cb-exit").onclick = () => endCheckMode();
+
+/* ============ 32. Klassenarbeit mit Aufgaben, Kursheft, Fehlzeiten, Strichlisten ============ */
+const MAX_TASKS = 40, MAX_TICKS = 5000, MAX_JOURNAL = 1500, MAX_LATE = 3000;
+/* Notenschlüssel: Mindestanteil in % für 1 … 5 (darunter 6) bzw. 15 … 1 Punkte (darunter 0) */
+const KEY_PRESETS = {
+  grade: [["ihk", [92, 81, 67, 50, 30]], ["epa", [85, 70, 55, 40, 20]]],
+  points: [["epa", [95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 33, 27, 20]]]
+};
+const DAY_RX = /^\d{4}-\d{2}-\d{2}$/;
+const half = v => Math.round(v * 2) / 2;
+const hasTasks = a => !!a && a.scale !== "smiley" && Array.isArray(a.tasks) && a.tasks.length > 0;
+const taskMax = a => a.tasks.reduce((s, x) => s + x.max, 0);
+function defaultKey(scale){ return { th: KEY_PRESETS[scale][0][1].slice(), tend: false }; }
+function keyOf(a){ return a.key && Array.isArray(a.key.th) && KEY_PRESETS[a.scale] && a.key.th.length === KEY_PRESETS[a.scale][0][1].length ? a.key : defaultKey(a.scale); }
+/* Mindestpunkte je Stufe, auf halbe Punkte aufgerundet */
+function keyNeeds(a){ const M = taskMax(a); return keyOf(a).th.map(p => Math.ceil(M * p / 100 * 2 - 1e-9) / 2); }
+function studentPoints(a, sid){
+  const p = a.pts && a.pts[sid]; if(!p) return null;
+  let s = 0, any = false;
+  a.tasks.forEach(x => { const v = p[x.id]; if(typeof v === "number"){ s += v; any = true; } });
+  return any ? s : null;
+}
+/* Note aus der Punktsumme; mit Tendenz wird jede Stufe in Drittel geteilt (oben +, unten −) */
+function keyGrade(a, total){
+  const need = keyNeeds(a);
+  if(a.scale === "points"){ for(let i = 0; i < need.length; i++) if(total >= need[i]) return String(15 - i); return "0"; }
+  const g = need.findIndex(n => total >= n);
+  if(g < 0) return "6";
+  if(!keyOf(a).tend) return String(g + 1);
+  const lo = need[g], hi = g === 0 ? taskMax(a) : need[g - 1];
+  if(hi - lo <= 0) return String(g + 1);
+  const f = (total - lo) / (hi - lo);
+  return String(g + 1) + (f >= 2 / 3 ? "+" : f < 1 / 3 ? "-" : "");
+}
+/* Noten aller Schüler mit Punkten neu berechnen (nach Punkten, Aufgaben oder Schlüssel) */
+function applyTaskMarks(a){
+  if(!hasTasks(a)) return;
+  Object.keys(a.pts || {}).forEach(sid => { const s = studentPoints(a, sid); if(s === null) delete a.pts[sid]; else a.marks[sid] = keyGrade(a, s); });
+}
+function sanTasks(out, a, ids){
+  if(out.scale === "smiley" || !Array.isArray(a.tasks)) return;
+  const seen = new Set();
+  const src = new Map();                              // gekürzte ID -> ID in der Datei (für die Punkte)
+  const tasks = a.tasks.filter(x => x && typeof x.id === "string" && x.id && isFinite(+x.max) && +x.max > 0 && !seen.has(x.id.slice(0, 20)) && seen.add(x.id.slice(0, 20)))
+    .map(x => { src.set(x.id.slice(0, 20), x.id); return { id: x.id.slice(0, 20), name: typeof x.name === "string" ? x.name.slice(0, 20) : "", max: Math.min(999, Math.max(0.5, half(+x.max))) }; })
+    .slice(0, MAX_TASKS);
+  if(!tasks.length) return;
+  out.tasks = tasks;
+  const n = KEY_PRESETS[out.scale][0][1].length, k = a.key && typeof a.key === "object" ? a.key : {};
+  const th = Array.isArray(k.th) && k.th.length === n && k.th.every((v, i) => typeof v === "number" && isFinite(v) && v >= 0 && v <= 100 && (!i || v <= k.th[i - 1]))
+    ? k.th.map(v => Math.round(v * 10) / 10) : KEY_PRESETS[out.scale][0][1].slice();
+  out.key = { th, tend: out.scale === "grade" && k.tend === true };
+  out.pts = {};
+  if(a.pts && typeof a.pts === "object") Object.keys(a.pts).forEach(sid => {
+    const p = a.pts[sid]; if(!ids.has(sid) || !own(a.pts, sid) || !p || typeof p !== "object") return;
+    const o = {};
+    tasks.forEach(x => { const k = src.get(x.id), v = p[k]; if(typeof v === "number" && isFinite(v) && own(p, k)) o[x.id] = Math.min(x.max, Math.max(0, half(v))); });
+    /* Punkte nur noch zu entfernten Aufgaben: dann gilt auch die daraus berechnete Note nicht mehr */
+    if(Object.keys(o).length) out.pts[sid] = o; else if(out.marks[sid] !== "x") delete out.marks[sid];
+  });
+  applyTaskMarks(out);
+}
+/* Menge "Datum|Schüler-ID" (Strichlisten, entschuldigte Tage) */
+function sanDayIds(arr, ids, max){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(x => typeof x === "string" && x.length <= 60 && DAY_RX.test(x.slice(0, 10)) && x.charAt(10) === "|" && ids.has(x.slice(11)) && !seen.has(x) && seen.add(x)).slice(-max);
+}
+function sanJournal(arr){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(e => e && typeof e.d === "string" && DAY_RX.test(e.d) && (typeof e.topic === "string" || typeof e.hw === "string"))
+    .map(e => ({ id: typeof e.id === "string" && e.id ? e.id.slice(0, 40) : uid(), d: e.d, p: Number.isInteger(e.p) && e.p >= -1 && e.p <= 11 ? e.p : -1,
+      s: typeof e.s === "string" ? e.s.slice(0, 40) : "", topic: typeof e.topic === "string" ? e.topic.slice(0, 300) : "", hw: typeof e.hw === "string" ? e.hw.slice(0, 300) : "" }))
+    .filter(e => (e.topic.trim() || e.hw.trim()) && !seen.has(e.id) && seen.add(e.id))
+    .sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p).slice(-MAX_JOURNAL);
+}
+function sanLate(arr, ids){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(e => e && typeof e.d === "string" && DAY_RX.test(e.d) && typeof e.sid === "string" && ids.has(e.sid) && Number.isInteger(e.min) && e.min >= 1 && e.min <= 240)
+    .map(e => ({ d: e.d, p: Number.isInteger(e.p) && e.p >= -1 && e.p <= 11 ? e.p : -1, sid: e.sid, min: e.min, s: typeof e.s === "string" ? e.s.slice(0, 40) : "" }))
+    .filter(e => { const k = e.d + "." + e.p + "|" + e.sid; return !seen.has(k) && seen.add(k); })
+    .sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p).slice(-MAX_LATE);
+}
+
+/* ---- Aufgaben und Notenschlüssel einrichten ---- */
+function openTaskSetup(c, a){
+  const work = { tasks: hasTasks(a) ? clone(a.tasks) : [1, 2, 3].map(i => ({ id: uid().slice(0, 12), name: String(i), max: 10 })), key: clone(keyOf(a)), scale: a.scale };
+  const sheet = sheetBase(t("tkTitle")); sheet.dataset.sens = "1";
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("tkHint"); sheet.appendChild(h);
+  sheetLabel(sheet, t("tkTasks"));
+  const list = document.createElement("div"); list.id = "tk-list"; sheet.appendChild(list);
+  const sumEl = document.createElement("div"); sumEl.className = "hint"; sumEl.id = "tk-sum"; sumEl.style.fontWeight = "650";
+  const keyBox = document.createElement("div"); keyBox.id = "tk-key";
+  const parseNum = v => { const x = parseFloat(String(v).replace(",", ".")); return isFinite(x) ? x : NaN; };
+  const paintKey = () => {
+    keyBox.textContent = "";
+    const cur = work.key.th.join(",");
+    sheet.querySelectorAll("#tk-preset button").forEach(b => { const on = b.dataset.th === cur; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    const M = work.tasks.reduce((s, x) => s + (x.max > 0 ? x.max : 0), 0);
+    const labels = work.scale === "points" ? POINT_TOKS.slice(0, 15) : ["1", "2", "3", "4", "5"];
+    work.key.th.forEach((p, i) => {
+      const r = document.createElement("div"); r.className = "tkrow";
+      const l = document.createElement("b"); l.textContent = labels[i]; l.className = "tkg";
+      const f = document.createElement("input"); f.className = "field"; f.inputMode = "decimal"; f.value = fmtNum(p, p % 1 ? 1 : 0); f.id = "tk-th-" + i;
+      f.setAttribute("aria-label", t("tkFrom").replace("{g}", labels[i]));
+      const u = document.createElement("span"); u.className = "tku"; const np = Math.ceil(M * p / 100 * 2 - 1e-9) / 2;
+      u.textContent = "% · " + t("tkPts").replace("{n}", fmtNum(np, np % 1 ? 1 : 0));
+      f.onchange = () => { const v = parseNum(f.value); if(isFinite(v)){ work.key.th[i] = Math.max(0, Math.min(100, Math.round(v * 10) / 10)); } paintKey(); };
+      r.appendChild(l); r.appendChild(f); r.appendChild(u); keyBox.appendChild(r);
+    });
+    const low = document.createElement("div"); low.className = "hint"; low.style.marginTop = "2px";
+    low.textContent = t("tkBelow").replace("{g}", work.scale === "points" ? "0" : "6").replace("{p}", fmtNum(work.key.th[work.key.th.length - 1], work.key.th[work.key.th.length - 1] % 1 ? 1 : 0));
+    keyBox.appendChild(low);
+  };
+  const paintTasks = () => {
+    list.textContent = "";
+    work.tasks.forEach((x, i) => {
+      const r = document.createElement("div"); r.className = "tkrow";
+      const n = document.createElement("input"); n.className = "field"; n.maxLength = 20; n.value = x.name; n.id = "tk-name-" + i; n.placeholder = String(i + 1);
+      n.setAttribute("aria-label", t("tkName"));
+      n.oninput = () => { x.name = n.value.slice(0, 20); };
+      const m = document.createElement("input"); m.className = "field"; m.inputMode = "decimal"; m.value = fmtNum(x.max, x.max % 1 ? 1 : 0); m.id = "tk-max-" + i;
+      m.setAttribute("aria-label", t("tkMax"));
+      m.onchange = () => { const v = parseNum(m.value); x.max = isFinite(v) && v > 0 ? Math.min(999, Math.max(0.5, half(v))) : x.max; paintTasks(); };
+      const u = document.createElement("span"); u.className = "tku"; u.textContent = t("tkP");
+      const del = document.createElement("button"); del.className = "iconbtn"; del.appendChild(icon("trash")); del.setAttribute("aria-label", t("delete"));
+      del.onclick = () => { work.tasks.splice(i, 1); paintTasks(); };
+      r.appendChild(n); r.appendChild(m); r.appendChild(u); r.appendChild(del); list.appendChild(r);
+    });
+    const tot = work.tasks.reduce((s, x) => s + x.max, 0);
+    sumEl.textContent = t("tkSum").replace("{n}", fmtNum(tot, tot % 1 ? 1 : 0));
+    paintKey();
+  };
+  const add = document.createElement("button"); add.className = "cbtn outline"; add.id = "tk-add"; add.style.width = "100%"; add.style.marginTop = "6px";
+  add.textContent = "+ " + t("tkAdd");
+  add.onclick = () => { if(work.tasks.length >= MAX_TASKS){ toast(t("tkLimit")); return; } work.tasks.push({ id: uid().slice(0, 12), name: String(work.tasks.length + 1), max: 10 }); paintTasks();
+    const f = $("#tk-max-" + (work.tasks.length - 1)); if(f) f.focus(); };
+  sheet.appendChild(add); sheet.appendChild(sumEl);
+  sheetLabel(sheet, t("tkKey"));
+  const pre = document.createElement("div"); pre.className = "segmented"; pre.id = "tk-preset";
+  KEY_PRESETS[work.scale].forEach(([id, th]) => {
+    const b = document.createElement("button"); b.textContent = t("tkPre_" + work.scale + "_" + id); b.dataset.v = id;
+    b.onclick = () => { work.key.th = th.slice(); paintKey(); };
+    b.dataset.th = th.join(",");
+    pre.appendChild(b);
+  });
+  sheet.appendChild(pre);
+  sheet.appendChild(keyBox);
+  if(work.scale === "grade"){
+    const tr = switchRow(t("tkTend"), t("tkTendSub"), () => work.key.tend, () => { work.key.tend = !work.key.tend; });
+    tr.id = "tk-tend"; sheet.appendChild(tr);
+  }
+  const kh = document.createElement("div"); kh.className = "hint"; kh.textContent = t("tkKeyHint"); sheet.appendChild(kh);
+  if(hasTasks(a)){
+    const off = document.createElement("button"); off.className = "ghost"; off.id = "tk-off"; off.style.width = "100%"; off.style.marginTop = "10px"; off.style.color = "var(--warn)";
+    off.textContent = t("tkOff");
+    off.onclick = () => { closeModal(); askConfirm(t("tkOffQ"), t("tkOffT"), t("tkOffBtn"), () => {
+      delete a.tasks; delete a.key; delete a.pts; save(); renderAssessAny(); }, () => openTaskSetup(c, a));
+      $("#sheet").dataset.sens = "1"; };
+    sheet.appendChild(off);
+  }
+  sheetButtons(sheet, t("save"), () => {
+    /* Felder, die noch den Fokus haben, zählen mit */
+    list.querySelectorAll("input").forEach(f => { if(f.onchange) f.onchange(); });
+    keyBox.querySelectorAll("input").forEach(f => { if(f.onchange) f.onchange(); });
+    const tasks = work.tasks.filter(x => x.max > 0);
+    if(!tasks.length){ toast(t("tkNeedTask")); return; }
+    if(work.key.th.some((v, i) => i && v > work.key.th[i - 1])){ toast(t("tkOrder")); return; }
+    tasks.forEach((x, i) => { if(!x.name.trim()) x.name = String(i + 1); });
+    const keep = new Set(tasks.map(x => x.id));
+    a.tasks = tasks; a.key = { th: work.key.th.slice(), tend: work.scale === "grade" && !!work.key.tend };
+    a.pts = a.pts || {};
+    Object.keys(a.pts).forEach(sid => {
+      const p = a.pts[sid];
+      Object.keys(p).forEach(id => { if(!keep.has(id)) delete p[id]; else { const x = tasks.find(y => y.id === id); p[id] = Math.min(x.max, p[id]); } });
+      if(!Object.keys(p).length){ delete a.pts[sid]; delete a.marks[sid]; }
+    });
+    applyTaskMarks(a);
+    save(); closeModal(); renderAssessAny();
+  });
+  paintTasks();
+}
+/* Nach Änderungen die gerade offene Ansicht auffrischen */
+function renderAssessAny(){ if(gradeMode){ renderGradeBar(); renderStage(false); } else if($("#screen-assess").classList.contains("active")) renderAssess(); }
+
+/* ---- Punkte je Aufgabe für eine Schülerin / einen Schüler ---- */
+function openPointsSheet(c, a, sid, nextOf){
+  const st = studentById(c, sid); if(!st || !hasTasks(a)) return;
+  const sheet = sheetBase(st.name + " – " + a.title); sheet.dataset.sens = "1";
+  const cur = Object.assign({}, (a.pts || {})[sid] || {});
+  const fields = [];
+  const box = document.createElement("div"); box.className = "ptsgrid"; box.id = "pt-grid";
+  const res = document.createElement("div"); res.className = "ptsres"; res.id = "pt-res";
+  const parse = v => { const s0 = String(v).trim(); if(!s0) return null; const x = parseFloat(s0.replace(",", ".")); return isFinite(x) ? x : NaN; };
+  const paint = () => {
+    let s = 0, any = false, bad = false;
+    fields.forEach(({ f, x }) => { const v = parse(f.value); f.classList.toggle("bad", v !== null && (isNaN(v) || v < 0 || v > x.max));
+      if(v !== null && !isNaN(v) && v >= 0 && v <= x.max){ s += half(v); any = true; } else if(v !== null) bad = true; });
+    const M = taskMax(a);
+    res.textContent = any ? t("ptSum").replace("{s}", fmtNum(s, s % 1 ? 1 : 0)).replace("{m}", fmtNum(M, M % 1 ? 1 : 0)).replace("{p}", fmtNum(M ? s / M * 100 : 0, 0)) + " · " + t("ptGrade") + " " + tokLabel(keyGrade(a, s)) : t("ptEmpty");
+    res.classList.toggle("bad", bad);
+  };
+  a.tasks.forEach((x, i) => {
+    const l = document.createElement("label"); l.className = "ptcell";
+    const n = document.createElement("span"); n.textContent = (x.name || String(i + 1)) + " (" + fmtNum(x.max, x.max % 1 ? 1 : 0) + ")";
+    const f = document.createElement("input"); f.className = "field"; f.inputMode = "decimal"; f.id = "pt-" + i; f.autocomplete = "off";
+    f.value = typeof cur[x.id] === "number" ? fmtNum(cur[x.id], cur[x.id] % 1 ? 1 : 0) : "";
+    f.oninput = paint;
+    f.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); const nx = fields[i + 1]; if(nx) nx.f.focus(); else commit(true); } });
+    l.appendChild(n); l.appendChild(f); box.appendChild(l); fields.push({ f, x });
+  });
+  sheet.appendChild(box); sheet.appendChild(res);
+  const commit = goNext => {
+    const o = {};
+    for(const { f, x } of fields){
+      const v = parse(f.value);
+      if(v === null) continue;
+      if(isNaN(v) || v < 0 || v > x.max){ toast(t("ptBad").replace("{t}", x.name).replace("{m}", fmtNum(x.max, x.max % 1 ? 1 : 0))); f.focus(); return; }
+      o[x.id] = half(v);
+    }
+    a.pts = a.pts || {};
+    if(Object.keys(o).length){ a.pts[sid] = o; a.marks[sid] = keyGrade(a, studentPoints(a, sid)); }
+    else if(a.pts[sid]){ delete a.pts[sid]; delete a.marks[sid]; }
+    save(); haptic(8);
+    const nx = goNext && nextOf ? nextOf(sid) : null;
+    if(nx){ openPointsSheet(c, a, nx, nextOf); renderAssessAny(); }
+    else { closeModal(); renderAssessAny(); }
+  };
+  const row = document.createElement("div"); row.className = "row";
+  const miss = document.createElement("button"); miss.className = "ghost"; miss.id = "pt-miss"; miss.textContent = t("gMissing");
+  miss.onclick = () => { if(a.pts) delete a.pts[sid]; a.marks[sid] = "x"; save(); const nx = nextOf ? nextOf(sid) : null; if(nx) openPointsSheet(c, a, nx, nextOf); else closeModal(); renderAssessAny(); };
+  const ok = document.createElement("button"); ok.className = "ghost"; ok.id = "pt-save"; ok.textContent = t("save"); ok.onclick = () => commit(false);
+  const nxt = document.createElement("button"); nxt.className = "primary"; nxt.id = "pt-next"; nxt.textContent = t("ptNext"); nxt.onclick = () => commit(true);
+  row.appendChild(miss); row.appendChild(ok); row.appendChild(nxt); sheet.appendChild(row);
+  const cancel = document.createElement("button"); cancel.className = "ghost"; cancel.style.width = "100%"; cancel.style.marginTop = "8px";
+  cancel.textContent = t("cancel"); cancel.onclick = () => { closeModal(); renderAssessAny(); }; sheet.appendChild(cancel);
+  paint();
+  setTimeout(() => { const f = fields.find(z => !z.f.value) || fields[0]; if(f) f.f.focus(); }, 80);
+}
+/* Nächster Name ohne Punkte (Klassenliste) */
+function nextWithoutPoints(c, a){ return sid => { const i = c.students.findIndex(st => st.id === sid);
+  const rest = c.students.slice(i + 1).concat(c.students.slice(0, Math.max(0, i)));
+  const n = rest.find(st => !a.marks[st.id]); return n ? n.id : null; }; }
+/* Aufgabenauswertung: mittlere Lösungsquote je Aufgabe */
+function taskStats(c, a){
+  return a.tasks.map(x => {
+    const v = c.students.map(st => a.pts && a.pts[st.id] ? a.pts[st.id][x.id] : undefined).filter(z => typeof z === "number");
+    const avg = v.length ? v.reduce((p, q) => p + q, 0) / v.length : null;
+    return { x, n: v.length, avg, pct: avg === null ? null : avg / x.max * 100 };
+  });
+}
+function taskChart(c, a){
+  const st = taskStats(c, a);
+  const wrap = document.createElement("div"); wrap.className = "gfig"; wrap.id = "tk-stats";
+  const cap = document.createElement("div"); cap.className = "gcap"; cap.textContent = t("tkStats"); wrap.appendChild(cap);
+  st.forEach(z => {
+    const r = document.createElement("div"); r.className = "tkbar";
+    const l = document.createElement("span"); l.className = "tkbl"; l.textContent = z.x.name;
+    const tr = document.createElement("span"); tr.className = "tkbt";
+    const fill = document.createElement("i"); fill.style.width = (z.pct === null ? 0 : Math.max(0, Math.min(100, z.pct))) + "%";
+    fill.classList.toggle("low", z.pct !== null && z.pct < 50);
+    tr.appendChild(fill);
+    const v = document.createElement("span"); v.className = "tkbv";
+    v.textContent = z.pct === null ? "–" : fmtNum(z.avg, 1) + "/" + fmtNum(z.x.max, z.x.max % 1 ? 1 : 0) + " · " + fmtNum(z.pct, 0) + " %";
+    r.appendChild(l); r.appendChild(tr); r.appendChild(v); wrap.appendChild(r);
+  });
+  return wrap;
+}
+/* Niedersachsen, Erlass „Schriftliche Arbeiten“ Nr. 8: mehr als 30 % mangelhaft/ungenügend */
+function failShare(c, a){
+  if(a.kind !== "written" || a.scale !== "grade") return null;
+  const v = c.students.map(st => a.marks[st.id]).filter(x => x && x !== "x");
+  if(v.length < 3) return null;
+  const bad = v.filter(x => x.charAt(0) === "5" || x.charAt(0) === "6").length;
+  return { bad, n: v.length, share: bad / v.length };
+}
+function exportTaskXlsx(c, a){
+  try{
+    const head = [t("csvName")].concat(a.tasks.map(x => x.name + " (" + fmtNum(x.max, x.max % 1 ? 1 : 0) + ")"), [t("ptTotal"), "%", t("ptGrade")]);
+    const rows = [head];
+    c.students.forEach(st => {
+      const p = (a.pts || {})[st.id] || {}, s = studentPoints(a, st.id), M = taskMax(a);
+      rows.push([st.name].concat(a.tasks.map(x => typeof p[x.id] === "number" ? p[x.id] : ""),
+        [s === null ? "" : s, s === null || !M ? "" : Math.round(s / M * 1000) / 10, a.marks[st.id] ? csvValue(a.marks[st.id]) : ""]));
+    });
+    const ts = taskStats(c, a);
+    rows.push([]);
+    rows.push(["Ø"].concat(ts.map(z => z.avg === null ? "" : Math.round(z.avg * 100) / 100)));
+    rows.push([t("tkQuote")].concat(ts.map(z => z.pct === null ? "" : Math.round(z.pct * 10) / 10)));
+    rows.push([]);
+    /* Notenschlüssel und Notenspiegel */
+    const need = keyNeeds(a), labels = a.scale === "points" ? POINT_TOKS.slice(0, 15) : ["1", "2", "3", "4", "5"];
+    rows.push([t("tkKey"), t("tkFromPts"), "%", t("gDist")]);
+    const cnt = tok => c.students.filter(st => { const m = a.marks[st.id]; return m && m !== "x" && (a.scale === "points" ? m === tok : m.charAt(0) === tok); }).length;
+    labels.forEach((g, i) => rows.push([g, need[i], keyOf(a).th[i], cnt(g)]));
+    const lowest = a.scale === "points" ? "0" : "6";
+    rows.push([lowest, 0, 0, cnt(lowest)]);
+    const blob = buildXlsx([{ name: a.title, rows, widths: [24].concat(a.tasks.map(() => 10), [10, 8, 8]), num: {} }]);
+    if(download(blob, safeName(c.name + " " + a.title) + ".xlsx", XLSX_MIME)) toast(t("gXlsxOk"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
+
+/* ---- Kursheft: Thema und Hausaufgabe je Stunde ---- */
+function journalFor(c, subj){ return (c.journal || []).filter(e => !subj || e.s === subj).sort((x, y) => y.d.localeCompare(x.d) || y.p - x.p); }
+function openJournal(c, entry, subj){
+  c.journal = Array.isArray(c.journal) ? c.journal : [];
+  const L = currentLessonFor(c), today = isoDay(new Date());
+  subj = subj || (entry ? entry.s : lessonSubjectNow(c));
+  let e = entry || c.journal.find(x => x.d === today && x.s === subj && x.p === (L ? L.period : -1)) || null;
+  const sheet = sheetBase(t("jTitle") + " – " + c.name);
+  /* Was war zuletzt? Die Hausaufgabe der letzten Stunde zuerst */
+  const refD = e ? e.d : today, refP = e ? e.p : (L ? L.period : -1);
+  const prev = journalFor(c, subj).find(x => x !== e && (x.d < refD || (x.d === refD && x.p < refP))) || null;
+  if(prev){
+    const pv = document.createElement("div"); pv.className = "previewbox"; pv.id = "j-prev";
+    const h = document.createElement("b"); h.textContent = t("jLast").replace("{d}", fmtDateLong(prev.d)); pv.appendChild(h);
+    if(prev.topic){ const d1 = document.createElement("div"); d1.textContent = t("jTopic") + ": " + prev.topic; pv.appendChild(d1); }
+    if(prev.hw){ const d2 = document.createElement("div"); d2.style.fontWeight = "650"; d2.textContent = t("jHw") + ": " + prev.hw; pv.appendChild(d2); }
+    sheet.appendChild(pv);
+  }
+  const row = document.createElement("div"); row.className = "obsform";
+  const subjSel = selectField(row, [["", t("absNoSubject")]].concat(DB.subjects.map(x => [x.id, x.name])), subj || ""); subjSel.id = "j-subj";
+  const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "j-date"; di.value = e ? e.d : today;
+  row.appendChild(di); sheet.appendChild(row);
+  sheetLabel(sheet, t("jTopic"));
+  const tp = document.createElement("textarea"); tp.className = "field"; tp.id = "j-topic"; tp.maxLength = 300; tp.placeholder = t("jTopicPh"); tp.value = e ? e.topic : "";
+  sheet.appendChild(tp);
+  sheetLabel(sheet, t("jHw"));
+  const hw = document.createElement("textarea"); hw.className = "field"; hw.id = "j-hw"; hw.maxLength = 300; hw.placeholder = t("jHwPh"); hw.value = e ? e.hw : ""; hw.style.minHeight = "56px";
+  sheet.appendChild(hw);
+  const all = document.createElement("button"); all.className = "cbtn outline"; all.id = "j-all"; all.style.width = "100%"; all.style.marginTop = "10px";
+  all.appendChild(icon("note")); const as = document.createElement("span"); as.textContent = t("jAll").replace("{n}", String(journalFor(c, subj).length)); all.appendChild(as);
+  all.onclick = () => openJournalList(c, subjSel.value);
+  sheet.appendChild(all);
+  if(e){
+    const del = document.createElement("button"); del.className = "ghost"; del.id = "j-del"; del.style.width = "100%"; del.style.marginTop = "8px"; del.style.color = "var(--warn)";
+    del.textContent = t("jDelete");
+    del.onclick = () => askConfirm(t("jDeleteQ"), fmtDateLong(e.d), t("delete"), () => { c.journal = c.journal.filter(x => x !== e); save(); openJournalList(c, subjSel.value); }, () => openJournal(c, e));
+    sheet.appendChild(del);
+  }
+  sheetButtons(sheet, t("save"), () => {
+    const topic = tp.value.trim().slice(0, 300), hwv = hw.value.trim().slice(0, 300), d = DAY_RX.test(di.value) ? di.value : today;
+    if(!topic && !hwv){ if(e){ c.journal = c.journal.filter(x => x !== e); save(); } closeModal(); return; }
+    const p = e ? (e.d === d ? e.p : -1) : (L && d === today && subjSel.value === L.subjectId ? L.period : -1);
+    if(!e){ e = { id: uid(), d, p, s: subjSel.value, topic, hw: hwv }; c.journal.push(e); }
+    else Object.assign(e, { d, p, s: subjSel.value, topic, hw: hwv });
+    c.journal.sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p);
+    while(c.journal.length > MAX_JOURNAL) c.journal.shift();
+    save(); haptic(6); closeModal(); toast(t("jSaved"));
+  });
+  setTimeout(() => { if(!e) tp.focus(); }, 80);
+}
+function openJournalList(c, subj){
+  const sheet = sheetBase(t("jTitle") + " – " + c.name);
+  const sel = selectField(sheet, [["", t("jAllSubjects")]].concat(DB.subjects.map(x => [x.id, x.name])), subj || ""); sel.id = "j-filter";
+  sel.onchange = () => openJournalList(c, sel.value);
+  const list = journalFor(c, subj);
+  const nb = document.createElement("button"); nb.className = "cbtn green"; nb.id = "j-new"; nb.style.width = "100%"; nb.style.marginTop = "8px";
+  nb.appendChild(icon("plus")); const ns = document.createElement("span"); ns.textContent = t("jNew"); nb.appendChild(ns);
+  nb.onclick = () => openJournal(c, null, subj || lessonSubjectNow(c));
+  sheet.appendChild(nb);
+  const box = document.createElement("div"); box.id = "j-list"; box.style.marginTop = "10px";
+  if(!list.length){ const h = document.createElement("div"); h.className = "hint"; h.textContent = t("jEmpty"); box.appendChild(h); }
+  list.slice(0, 200).forEach(e => {
+    const b = document.createElement("button"); b.className = "grpcard jcard";
+    const hb = document.createElement("b"); const sj = subjectById(e.s);
+    hb.textContent = fmtDateLong(e.d) + (e.p >= 0 ? " · " + (e.p + 1) + "." : "") + (sj && !subj ? " · " + (sj.short || sj.name) : "");
+    b.appendChild(hb);
+    if(e.topic){ const d1 = document.createElement("div"); d1.textContent = e.topic; b.appendChild(d1); }
+    if(e.hw){ const d2 = document.createElement("div"); d2.className = "jhw"; d2.textContent = t("jHw") + ": " + e.hw; b.appendChild(d2); }
+    b.onclick = () => openJournal(c, e);
+    box.appendChild(b);
+  });
+  sheet.appendChild(box);
+  if(list.length){
+    const ex = document.createElement("button"); ex.className = "cbtn blue"; ex.id = "j-xlsx"; ex.style.width = "100%"; ex.style.marginTop = "10px";
+    ex.appendChild(icon("grid")); const es = document.createElement("span"); es.textContent = t("jExport"); ex.appendChild(es);
+    ex.onclick = () => exportJournal(c, subj);
+    sheet.appendChild(ex);
+  }
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
+}
+function exportJournal(c, subj){
+  try{
+    /* Datum als JJJJ-MM-TT: sortierbar und über Schuljahre eindeutig */
+    const rows = [[t("gDate"), t("jDay"), t("jPeriod"), t("ttSubject"), t("jTopic"), t("jHw")]];
+    journalFor(c, subj).slice().reverse().forEach(e => { const sj = subjectById(e.s);
+      rows.push([e.d, fmtDateLong(e.d).split(",")[0], e.p >= 0 ? e.p + 1 : "", sj ? sj.name : "", e.topic, e.hw]); });
+    const blob = buildXlsx([{ name: t("jTitle"), rows, widths: [12, 6, 8, 14, 50, 40], num: {} }]);
+    const sj = subjectById(subj);
+    if(download(blob, safeName(c.name + " " + (sj ? sj.name + " " : "") + t("jTitle")) + ".xlsx", XLSX_MIME)) toast(t("gXlsxOk"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
+
+/* ---- Fehlzeiten: entschuldigt und Verspätungen ---- */
+const excKey = (d, sid) => d + "|" + sid;
+function isExcused(c, d, sid){ return Array.isArray(c.exc) && c.exc.indexOf(excKey(d, sid)) >= 0; }
+function setExcused(c, d, sid, on){
+  c.exc = (Array.isArray(c.exc) ? c.exc : []).filter(x => x !== excKey(d, sid));
+  if(on) c.exc.push(excKey(d, sid));
+  while(c.exc.length > 5000) c.exc.shift();
+}
+function lateOf(c, sid){ return (c.late || []).filter(e => e.sid === sid); }
+function lateToday(c, sid){
+  const L = currentLessonFor(c), d = isoDay(new Date()), p = L ? L.period : -1;
+  return (c.late || []).find(e => e.sid === sid && e.d === d && e.p === p) || null;
+}
+function setLateToday(c, sid, min){
+  const L = currentLessonFor(c), d = isoDay(new Date()), p = L ? L.period : -1;
+  c.late = (Array.isArray(c.late) ? c.late : []).filter(e => !(e.sid === sid && e.d === d && e.p === p));
+  if(min > 0) c.late.push({ d, p, sid, min: Math.min(240, Math.round(min)), s: L ? L.subjectId : lessonSubjectNow(c) });
+  while(c.late.length > MAX_LATE) c.late.shift();
+}
+/* Tage mit Fehlzeit (Anwesenheit oder Fehlstunden) – für die Übersicht je Schüler */
+function absenceDays(c, sid){
+  const days = new Set(attendanceRows(c).filter(r => r.absent.indexOf(sid) >= 0).map(r => r.date));
+  const off = cancelledSlots(c);
+  (c.absLog || []).forEach(e => { if(e.ids.indexOf(sid) >= 0 && !off.has(e.d + "|" + e.p)) days.add(e.d); });
+  return Array.from(days).sort();
+}
+function absenceSummary(c, sid){
+  const mi = missedLessons(c, sid), days = absenceDays(c, sid), late = lateOf(c, sid);
+  return { days: days.length, daysExc: days.filter(d => isExcused(c, d, sid)).length, lessons: mi.total, lessonsExc: mi.excused,
+           late: late.length, lateMin: late.reduce((s, e) => s + e.min, 0) };
+}
+function absenceLine(c, sid){
+  const a = absenceSummary(c, sid), parts = [];
+  parts.push((a.days === 1 ? t("talkAbsDay1") : t("talkAbsDays").replace("{n}", String(a.days))) + (a.daysExc ? " (" + t("absExcN").replace("{n}", String(a.daysExc)) + ")" : ""));
+  if(a.lessons) parts.push((a.lessons === 1 ? t("talkAbsLesson1") : t("talkAbsLessons").replace("{n}", String(a.lessons))) + (a.lessonsExc ? " (" + t("absExcN").replace("{n}", String(a.lessonsExc)) + ")" : ""));
+  if(a.late) parts.push(t("lateN").replace("{n}", String(a.late)).replace("{m}", String(a.lateMin)));
+  return parts.join("   ·   ");
+}
+function openAbsences(c, st, back){
+  const sheet = sheetBase(t("absTitle") + " – " + st.name);
+  const sum = document.createElement("div"); sum.className = "hint"; sum.id = "abs-sum"; sum.style.fontWeight = "650"; sum.textContent = absenceLine(c, st.id);
+  sheet.appendChild(sum);
+  const days = absenceDays(c, st.id).reverse();
+  if(days.length){
+    sheetLabel(sheet, t("absDaysLabel"));
+    const box = document.createElement("div"); box.id = "abs-days";
+    days.forEach(d => {
+      const n = (c.absLog || []).filter(e => e.d === d && e.ids.indexOf(st.id) >= 0 && !cancelledSlots(c).has(e.d + "|" + e.p)).reduce((s, e) => s + e.n, 0);
+      const r = switchRow(fmtDateLong(d) + (n ? " · " + (n === 1 ? t("talkAbsLesson1") : t("talkAbsLessons").replace("{n}", String(n))) : ""), t("absExcused"),
+        () => isExcused(c, d, st.id), () => { setExcused(c, d, st.id, !isExcused(c, d, st.id)); save(); sum.textContent = absenceLine(c, st.id); });
+      r.dataset.d = d; box.appendChild(r);
+    });
+    sheet.appendChild(box);
+  } else { const e = document.createElement("div"); e.className = "hint"; e.textContent = t("absNone"); sheet.appendChild(e); }
+  const late = lateOf(c, st.id).slice().reverse();
+  if(late.length){
+    sheetLabel(sheet, t("lateList"));
+    const box = document.createElement("div"); box.id = "abs-late";
+    late.forEach(e => {
+      const r = document.createElement("div"); r.className = "obsrow";
+      const m = document.createElement("span"); m.className = "obsm"; m.textContent = fmtDate(e.d) + (e.p >= 0 ? " · " + (e.p + 1) + "." : "");
+      const sj = subjectById(e.s);
+      const tx = document.createElement("span"); tx.className = "obst"; tx.textContent = t("lateMin").replace("{m}", String(e.min)) + (sj ? " · " + sj.name : "");
+      const del = document.createElement("button"); del.className = "iconbtn"; del.appendChild(icon("trash")); del.setAttribute("aria-label", t("delete"));
+      del.onclick = () => { c.late = (c.late || []).filter(x => x !== e); save(); openAbsences(c, st, back); };
+      r.appendChild(m); r.appendChild(tx); r.appendChild(del); box.appendChild(r);
+    });
+    sheet.appendChild(box);
+  }
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "12px";
+  close.textContent = back ? t("back") : t("close"); close.onclick = () => { if(back) back(); else closeModal(); };
+  sheet.appendChild(close);
+}
+
+/* ---- Strichlisten (z. B. Hausaufgaben vergessen): ein Strich je Tag, Summe bleibt ---- */
+const isTally = k => !!k && k.type === "tally";
+const tallyCount = (k, sid) => (k.ticks || []).filter(x => x.slice(11) === sid).length;
+function tallyDates(k, sid){ return (k.ticks || []).filter(x => x.slice(11) === sid).map(x => x.slice(0, 10)).sort(); }
+function toggleTally(k, sid, day){
+  day = day || isoDay(new Date());
+  const key = day + "|" + sid, i = (k.ticks || []).indexOf(key);
+  k.ticks = k.ticks || [];
+  if(i >= 0) k.ticks.splice(i, 1); else { k.ticks.push(key); while(k.ticks.length > MAX_TICKS) k.ticks.shift(); }
+  return i < 0;
+}
+function newTally(c, title){
+  if(c.checks.length >= MAX_CHECKS){ toast(t("ckLimit")); return null; }
+  const k = { id: uid(), title: title.slice(0, 60), date: isoDay(new Date()), done: [], type: "tally", ticks: [] };
+  c.checks.unshift(k); save(); return k;
+}
+function openTallyList(){
+  const k = checkCur(), c = curClass(); if(!k || !c) return;
+  const sheet = sheetBase(k.title);
+  sheetLabel(sheet, t("ckName"));
+  const inp = document.createElement("input"); inp.className = "field"; inp.id = "ck-title"; inp.maxLength = 60; inp.value = k.title; sheet.appendChild(inp);
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("tlListHint"); sheet.appendChild(h);
+  const box = document.createElement("div"); box.id = "tl-names"; box.style.marginTop = "6px";
+  const today = isoDay(new Date());
+  c.students.slice().sort((x, y) => tallyCount(k, y.id) - tallyCount(k, x.id) || 0).forEach(st => {
+    const r = document.createElement("div"); r.className = "obsrow"; r.dataset.sid = st.id;
+    const n = document.createElement("span"); n.className = "obst"; n.textContent = st.name;
+    const ds = tallyDates(k, st.id);
+    const m = document.createElement("span"); m.className = "obsm"; m.textContent = ds.length ? ds.length + "× · " + ds.slice(-4).map(fmtDate).join(", ") + (ds.length > 4 ? " …" : "") : "–";
+    const tg = document.createElement("button"); tg.className = "minibtn" + (ds.indexOf(today) >= 0 ? " on" : ""); tg.textContent = t("tlToday");
+    tg.setAttribute("aria-pressed", String(ds.indexOf(today) >= 0));
+    tg.onclick = () => { toggleTally(k, st.id, today); save(); renderCheckBar(); renderStage(false); openTallyList(); };
+    r.appendChild(n); r.appendChild(m); r.appendChild(tg); box.appendChild(r);
+  });
+  sheet.appendChild(box);
+  const del = document.createElement("button"); del.className = "ghost"; del.id = "ck-delete"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
+  del.textContent = t("tlDelete");
+  del.onclick = () => { closeModal(); askConfirm(t("ckDeleteQ"), t("ckDeleteT").replace("{t}", k.title), t("delete"), () => {
+    c.checks = (c.checks || []).filter(x => x !== k); save(); endCheckMode();
+  }, () => openTallyList()); };
+  sheet.appendChild(del);
+  const ok = document.createElement("button"); ok.className = "primary"; ok.id = "ck-ok"; ok.style.width = "100%"; ok.style.marginTop = "10px";
+  ok.textContent = t("ckOk");
+  ok.onclick = () => { const v = inp.value.trim().slice(0, 60); if(v) k.title = v; save(); closeModal(); renderCheckBar(); renderStage(false); };
+  sheet.appendChild(ok);
+}
+
+/* ============ 31. Abgleich zwischen Geräten über die Sicherungsdatei ============
+   Jeder Eintrag (Klasse, Schüler, Bewertung, einzelne Note, Beobachtung, einzelne Fehlzeit, Raum …)
+   hat einen Schlüssel. Beim Speichern vergleicht syncStamp den Stand mit dem zuletzt gespeicherten
+   und vermerkt in DB.stamps, wann sich ein Eintrag geändert hat. Gelöschtes kommt mit Zeit in
+   DB.del – nur als Prüfsumme des Schlüssels, damit die Löschliste nichts über Personen verrät.
+   Beim Zusammenführen gewinnt je Eintrag der neuere Stand; was auf einer Seite nach der letzten
+   Änderung der anderen (samt allem, was daran hängt) gelöscht wurde, bleibt gelöscht.
+   Gerätebezogenes (Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse) wird nie übernommen. */
+const SYNC_MAX_STAMPS = 200000, SYNC_MAX_DEL = 20000, SYNC_DEL_DAYS = 400, SYNC_FUTURE = 86400;
+const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt)(\||$)/;
+const SYNC_HASH = /^[0-9a-z]{6,14}$/;
+const syncNow = () => Math.floor(Date.now() / 1000);
+const jsonOf = v => JSON.stringify(v === undefined ? null : v);
+/* IDs aus Dateien dürfen „|“ enthalten – im Schlüssel maskiert, damit nichts verwechselt wird */
+const idk = x => String(x).replace(/[%|]/g, ch => ch === "%" ? "%25" : "%7C");
+/* Prüfsumme für die Löschliste (2 × FNV-1a, 53 Bit) – aus ihr lässt sich der Schlüssel nicht zurückgewinnen */
+function hk(k){
+  let a = 0x811c9dc5, b = 0x01000193 ^ 0x5bd1e995;
+  for(let i = 0; i < k.length; i++){ const c = k.charCodeAt(i); a = Math.imul(a ^ c, 16777619) >>> 0; b = Math.imul(b ^ c, 0x5bd1e995) >>> 0; b ^= b >>> 15; }
+  return ((a >>> 0) * 2097152 + ((b >>> 0) & 0x1FFFFF)).toString(36);
+}
+/* Einträge außerhalb der Klassen */
+function syncTop(db, add){
+  (db.rooms || []).forEach(x => add("room|" + idk(x.id), x));
+  (db.subjects || []).forEach(x => add("subj|" + idk(x.id), x));
+  (db.lessons || []).forEach(L => add("les|" + idk(L.id), L, "", ["subj|" + idk(L.subjectId)]));
+  (db.cancelled || []).forEach(k => add("cx|" + idk(k), 1));
+  if(db.tt) add("tt", db.tt);
+  if(db.settings){ const st = Object.assign({}, db.settings); delete st.lock; add("set", st); }
+}
+/* Einträge einer Klasse; Verweise r: Noten, Fehlzeiten usw. hängen am Schüler, Pläne am Raum, Bewertungen am Fach */
+function syncClass(c, add){
+  const cid = idk(c.id), ck = "c|" + cid, sk = sid => "s|" + cid + "|" + idk(sid);
+  add(ck, { name: c.name, archived: !!c.archived, levelMode: c.levelMode || "off", subNote: c.subNote || "", color: c.color || "",
+    gradeW: c.gradeW || {}, gradeRound: c.gradeRound || {}, gradeSubjects: c.gradeSubjects || [] });
+  (c.students || []).forEach(x => add(sk(x.id), x, ck));
+  (c.rules || []).forEach(x => add("r|" + cid + "|" + idk(x.id), x, ck, [sk(x.a), sk(x.b)]));
+  (c.groups || []).forEach(x => add("g|" + cid + "|" + idk(x.id), x, ck));
+  (c.plans || []).forEach(x => add("p|" + cid + "|" + idk(x.id), x, ck, ["room|" + idk(x.roomId)]));
+  (c.obs || []).forEach(x => add("o|" + cid + "|" + idk(x.id), x, ck, [sk(x.sid)]));
+  (c.history || []).forEach(x => add("h|" + cid + "|" + idk((x.t || "") + "#" + (x.src || "")), x, ck));
+  /* Fehlzeiten: Tag/Stunde als Eintrag, jede Schülerin einzeln – so überlagern sich zwei Geräte nicht */
+  (c.attendance || []).forEach(x => { const k = "at|" + cid + "|" + idk(x.date); add(k, 1, ck);
+    (x.absent || []).forEach(s => add("atx|" + cid + "|" + idk(x.date) + "|" + idk(s), 1, k, [sk(s)])); });
+  (c.absLog || []).forEach(x => { const id = idk(x.d + "." + x.p), k = "al|" + cid + "|" + id; add(k, { n: x.n, s: x.s }, ck);
+    (x.ids || []).forEach(s => add("alx|" + cid + "|" + id + "|" + idk(s), 1, k, [sk(s)])); });
+  /* Unterricht heute: je Tag ein eigener Eintrag – das Löschen eines Tages bleibt erhalten */
+  if(c.lesson && c.lesson.date){
+    const d = idk(c.lesson.date), k = "ls|" + cid + "|" + d;
+    add(k, { picked: c.lesson.picked || [], notes: c.lesson.notes || {} }, ck);
+    (c.lesson.absent || []).forEach(s => add("lsx|" + cid + "|" + d + "|" + idk(s), 1, k, [sk(s)]));
+  }
+  (c.assess || []).forEach(a => {
+    const ak = "a|" + cid + "|" + idk(a.id);
+    /* Aufgaben/Schlüssel und Punkte als eigene Einträge – ältere Stände kennen sie nicht und lassen sie stehen */
+    const meta = Object.assign({}, a); delete meta.marks; delete meta.pts; delete meta.tasks; delete meta.key;
+    add(ak, meta, ck, ["subj|" + idk(a.subjectId)]);
+    if(a.tasks && a.tasks.length) add("tk|" + cid + "|" + idk(a.id), { tasks: a.tasks, key: a.key || null }, ak);
+    Object.keys(a.marks || {}).forEach(s => add("m|" + cid + "|" + idk(a.id) + "|" + idk(s), a.marks[s], ak, [sk(s)]));
+    /* Punkte je Aufgabe: je Schüler ein Eintrag */
+    Object.keys(a.pts || {}).forEach(s => add("pt|" + cid + "|" + idk(a.id) + "|" + idk(s), a.pts[s], ak, [sk(s)]));
+  });
+  (c.checks || []).forEach(x => {
+    const kk = "k|" + cid + "|" + idk(x.id);
+    add(kk, { title: x.title, date: x.date }, ck);
+    if(x.type === "tally") add("kty|" + cid + "|" + idk(x.id), "tally", kk);
+    (x.done || []).forEach(s => add("kd|" + cid + "|" + idk(x.id) + "|" + idk(s), 1, kk, [sk(s)]));
+    (x.ticks || []).forEach(v => add("kt|" + cid + "|" + idk(x.id) + "|" + idk(v), 1, kk, [sk(v.slice(11))]));
+  });
+  (c.journal || []).forEach(x => add("j|" + cid + "|" + idk(x.id), x, ck, x.s ? ["subj|" + idk(x.s)] : null));
+  (c.exc || []).forEach(v => add("ex|" + cid + "|" + idk(v), 1, ck, [sk(v.slice(11))]));
+  (c.late || []).forEach(x => add("lt|" + cid + "|" + idk(x.d + "." + x.p + "|" + x.sid), { min: x.min, s: x.s }, ck, [sk(x.sid)]));
+}
+/* Alle Einträge eines Stands: key -> { v: Inhalt als Text, p: Elternschlüssel, r: Verweise } */
+function syncEntities(db){
+  const m = new Map(), add = (k, v, p, r) => m.set(k, { v: jsonOf(v), p: p || "", r: r || null });
+  syncTop(db, add);
+  (db.classes || []).forEach(c => syncClass(c, add));
+  return m;
+}
+/* Kompakt speichern: Schlüssel nach Gruppe, Zeiten relativ zum ältesten Wert in Base 36 */
+function packStamps(o){
+  const ks = Object.keys(o || {}); if(!ks.length) return {};
+  let base = Infinity; ks.forEach(k => { if(o[k] < base) base = o[k]; });
+  const g = Object.create(null);
+  ks.forEach(k => { const i = k.lastIndexOf("|"), gk = i < 0 ? "" : k.slice(0, i), r = i < 0 ? k : k.slice(i + 1);
+    if(!g[gk]) g[gk] = Object.create(null); g[gk][r] = (o[k] - base).toString(36); });
+  return { "~": 1, b: base, g };
+}
+function unpackStamps(o){
+  if(!o || typeof o !== "object" || o["~"] !== 1) return o;
+  const out = {}, b = Number.isInteger(o.b) ? o.b : 0, g = o.g && typeof o.g === "object" ? o.g : {};
+  Object.keys(g).forEach(gk => {
+    const grp = g[gk]; if(!grp || typeof grp !== "object") return;
+    Object.keys(grp).forEach(r => { const v = parseInt(grp[r], 36), k = gk ? gk + "|" + r : r;
+      if(isFinite(v) && !(k in Object.prototype)) out[k] = b + v; });
+  });
+  return out;
+}
+/* Prüfen beim Laden: bekannte Schlüssel bzw. Prüfsummen, gültige Zeiten, begrenzte Anzahl */
+function syncStampMap(o, maxAge, max, pattern){
+  o = unpackStamps(o);
+  const r = {}; if(!o || typeof o !== "object" || Array.isArray(o)) return r;
+  const lim = maxAge ? syncNow() - maxAge : 0;
+  const ok = Object.keys(o).filter(k => k.length <= 300 && !(k in Object.prototype) && pattern.test(k) && Number.isInteger(o[k]) && o[k] >= 0 && o[k] < 4e9 && o[k] >= lim);
+  ok.sort((a, b) => o[b] - o[a]).slice(0, max).forEach(k => { r[k] = o[k]; });
+  return r;
+}
+/* Zwischenstand für das Stempeln: oben (Räume, Stundenplan …) und je Klasse getrennt –
+   unveränderte Klassen werden beim Speichern übersprungen */
+let syncTopCache = null, syncClassCache = new Map();
+function syncCollect(add){ const m = new Map(); add(m); return m; }
+function syncReset(){
+  syncTopCache = syncCollect(m => syncTop(DB, (k, v, p, r) => m.set(k, { v: jsonOf(v), p: p || "" })));
+  syncClassCache = new Map();
+  (DB.classes || []).forEach(c => syncClassCache.set(c.id, { json: JSON.stringify(c),
+    ents: syncCollect(m => syncClass(c, (k, v, p) => m.set(k, { v: jsonOf(v), p: p || "" }))) }));
+  DB.stamps = DB.stamps || {}; DB.del = DB.del || {};
+  const all = new Set(syncTopCache.keys()); syncClassCache.forEach(x => x.ents.forEach((e, k) => all.add(k)));
+  Object.keys(DB.stamps).forEach(k => { if(!all.has(k)) delete DB.stamps[k]; });
+}
+function syncStamp(){
+  if(!syncTopCache){ syncReset(); return; }
+  const now = syncNow();
+  DB.stamps = DB.stamps || {}; DB.del = DB.del || {};
+  let changed = false;
+  const diff = (prev, cur) => {
+    cur.forEach((e, k) => {
+      const o = prev.get(k);
+      /* immer später als der bisherige Stempel bzw. die Löschung */
+      if(!o || o.v !== e.v){ const h = hk(k); DB.stamps[k] = Math.max(now, (DB.stamps[k] || 0) + 1, (DB.del[h] || 0) + 1); delete DB.del[h]; changed = true; }
+    });
+    prev.forEach((e, k) => {
+      if(cur.has(k)) return;
+      const old = DB.stamps[k] || 0;
+      delete DB.stamps[k]; changed = true;
+      if(e.p && !cur.has(e.p)) return;                  // Löschen der Klasse/Bewertung genügt für alles darunter
+      /* Tageswechsel im Unterricht ist kein Löschen: der alte Tag wandert in die Anwesenheit */
+      if(k.startsWith("ls|")){ const pre = k.slice(0, k.lastIndexOf("|") + 1), day = k.slice(pre.length);
+        for(const ck of cur.keys()) if(ck.startsWith(pre) && ck.slice(pre.length) > day) return; }
+      DB.del[hk(k)] = Math.max(now, old + 1);
+    });
+  };
+  const top = syncCollect(m => syncTop(DB, (k, v, p) => m.set(k, { v: jsonOf(v), p: p || "" })));
+  diff(syncTopCache, top); syncTopCache = top;
+  const seen = new Set();
+  (DB.classes || []).forEach(c => {
+    if(seen.has(c.id)) return; seen.add(c.id);
+    const json = JSON.stringify(c), old = syncClassCache.get(c.id);
+    if(old && old.json === json) return;                // unverändert – nichts zu tun
+    const ents = syncCollect(m => syncClass(c, (k, v, p) => m.set(k, { v: jsonOf(v), p: p || "" })));
+    diff(old ? old.ents : new Map(), ents);
+    syncClassCache.set(c.id, { json, ents });
+  });
+  syncClassCache.forEach((x, id) => {
+    if(seen.has(id)) return;                            // Klasse gelöscht: nur die Klasse selbst vermerken
+    const ck = "c|" + idk(id), old = DB.stamps[ck] || 0;   // vor dem Aufräumen merken
+    x.ents.forEach((e, k) => { delete DB.stamps[k]; });
+    DB.del[hk(ck)] = Math.max(now, old + 1); changed = true;
+    syncClassCache.delete(id);
+  });
+  if(changed){
+    DB.mod = Math.max(now, DB.mod || 0);
+    const dk = Object.keys(DB.del);
+    if(dk.length > SYNC_MAX_DEL) dk.sort((a, b) => DB.del[a] - DB.del[b]).slice(0, dk.length - SYNC_MAX_DEL).forEach(k => delete DB.del[k]);
+  }
+}
+/* Jüngste Änderung je Eintrag samt allem, was darunter liegt oder darauf verweist */
+function syncTreeMax(ents, stamps, dead){
+  const mx = {};
+  const up = (key, t0) => { let g = 0; while(key && g++ < 5){ if((mx[key] || 0) < t0) mx[key] = t0; key = (ents.get(key) || {}).p; } };
+  /* Was dieser Abgleich ohnehin entfernt (samt allem darunter), hält nichts anderes am Leben */
+  const gone = k => { let g = 0; while(k && g++ < 6){ if(dead.has(k)) return true; k = (ents.get(k) || {}).p; } return false; };
+  ents.forEach((e, k) => { const t0 = stamps[k] || 0; if(!t0 || (dead && dead.size && gone(k))) return; up(k, t0); (e.r || []).forEach(r => up(r, t0)); });
+  return mx;
+}
+/* Führt den Stand der Datei (R) in den Stand dieses Geräts (L) ein */
+function mergeDB(L0, R){
+  const L = sanitizeDB(clone(L0)) || L0;                 // wie gespeichert (z. B. ohne Noten gelöschter Schüler)
+  const eL = syncEntities(L), eR = syncEntities(R), now = syncNow();
+  /* Zeiten in der Zukunft (falsch gehende Uhr) zählen beim Vergleich als „jetzt“ */
+  const cap = o => { const r = {}; Object.keys(o || {}).forEach(k => { r[k] = Math.min(o[k], now); }); return r; };
+  const sL = cap(L.stamps), sR = cap(R.stamps), dL = cap(L.del), dR = cap(R.del);
+  /* Löschen gewinnt nur, wenn es nach der letzten Änderung samt allem Abhängigen lag. Abhängiges, das
+     selbst gelöscht wird, zählt dabei nicht – sonst hinge das Ergebnis von der Reihenfolge der Abgleiche ab. */
+  const deadL = new Set(), deadR = new Set();
+  let mL = syncTreeMax(eL, sL), mR = syncTreeMax(eR, sR);
+  for(let it = 0, more = true; more && it < 64; it++){   // Mengen wachsen nur – endet spätestens, wenn nichts mehr dazukommt
+    more = false;
+    eL.forEach((e, k) => { if(!deadL.has(k) && !eR.has(k) && (dR[hk(k)] || 0) > (mL[k] || 0)){ deadL.add(k); more = true; } });
+    eR.forEach((e, k) => { if(!deadR.has(k) && !eL.has(k) && (dL[hk(k)] || 0) > (mR[k] || 0)){ deadR.add(k); more = true; } });
+    if(more){ mL = syncTreeMax(eL, sL, deadL); mR = syncTreeMax(eR, sR, deadR); }
+  }
+  const since = L.syncAt || 0;
+  let conflicts = 0;
+  /* "L", "R" oder null (entfällt) */
+  const pick = k => {
+    const inL = eL.has(k), inR = eR.has(k);
+    if(inL && inR){
+      const vl = eL.get(k).v, vr = eR.get(k).v;
+      if(vl === vr) return "L";
+      const tl = sL[k] || 0, tr = sR[k] || 0;
+      if(since && tl > since && tr > since) conflicts++;   // auf beiden Geräten seit dem letzten Abgleich geändert (nur informativ)
+      if(tr !== tl) return tr > tl ? "R" : "L";
+      if((R.mod || 0) !== (L.mod || 0)) return (R.mod || 0) > (L.mod || 0) ? "R" : "L";
+      return vr > vl ? "R" : "L";                          // Gleichstand: auf beiden Geräten gleich entscheiden
+    }
+    if(inL) return (dR[hk(k)] || 0) > (mL[k] || 0) ? null : "L";
+    if(inR) return (dL[hk(k)] || 0) > (mR[k] || 0) ? null : "R";
+    return null;
+  };
+  /* Liste nach Schlüssel: Reihenfolge des Geräts, Neues aus der Datei hinten an */
+  const mergeList = (a, b, keyOf, mergeBoth) => {
+    a = a || []; b = b || [];
+    const mb = new Map(b.map(x => [keyOf(x), x])), out = [], seen = new Set();
+    a.forEach(x => {
+      const k = keyOf(x); if(seen.has(k)) return; seen.add(k);
+      const y = mb.get(k), w = pick(k);
+      if(w === null) return;
+      /* Nur hier vorhanden: trotzdem Löschungen der Gegenseite für Einträge darunter anwenden */
+      if(y === undefined && mergeBoth && mergeBoth.shell){ out.push(mergeBoth(x, mergeBoth.shell(x), "L")); return; }
+      out.push(y !== undefined && mergeBoth ? mergeBoth(x, y, w) : (w === "R" && y !== undefined ? clone(y) : x));
+    });
+    b.forEach(y => {
+      const k = keyOf(y); if(seen.has(k)) return; seen.add(k);
+      if(pick(k) === "R") out.push(mergeBoth ? (mergeBoth.shell ? mergeBoth(mergeBoth.shell(y), y, "R") : mergeBoth(null, y, "R")) : clone(y));
+    });
+    return out;
+  };
+  /* Menge von Schüler-IDs je Eintrag (Haken, Abwesende): einzeln entscheiden */
+  const idSet = (a, b, keyOf) => Array.from(new Set((a || []).concat(b || []))).filter(s => pick(keyOf(s)) !== null);
+  const out = clone(L);
+  out.rooms = mergeList(L.rooms, R.rooms, x => "room|" + idk(x.id));
+  out.subjects = mergeList(L.subjects, R.subjects, x => "subj|" + idk(x.id));
+  out.lessons = mergeList(L.lessons, R.lessons, x => "les|" + idk(x.id));
+  out.cancelled = mergeList(L.cancelled, R.cancelled, k => "cx|" + idk(k));
+  if(pick("tt") === "R") out.tt = clone(R.tt);
+  if(pick("set") === "R"){ const keep = L.settings.lock === true; out.settings = clone(R.settings); out.settings.lock = keep; }
+  out.gradesAck = !!(L.gradesAck || R.gradesAck);
+  const classMerge = (cl, cr, w) => {
+    if(!cl) return clone(cr);
+    const c = clone(cl), cid = idk(cl.id);
+    if(w === "R") ["name", "archived", "levelMode", "subNote", "color", "gradeW", "gradeRound", "gradeSubjects"].forEach(f => { c[f] = clone(cr[f]); });
+    const sub = (pre, f, idOf, both) => { c[f] = mergeList(cl[f], cr[f], x => pre + "|" + cid + "|" + idk(idOf(x)), both); };
+    sub("s", "students", x => x.id);
+    sub("r", "rules", x => x.id);
+    sub("g", "groups", x => x.id);
+    sub("p", "plans", x => x.id);
+    sub("o", "obs", x => x.id);
+    sub("h", "history", x => (x.t || "") + "#" + (x.src || ""));
+    sub("at", "attendance", x => x.date, (x1, x2) => ({ date: x2.date,
+      absent: idSet(x1 && x1.absent, x2.absent, s => "atx|" + cid + "|" + idk(x2.date) + "|" + idk(s)) }));
+    sub("al", "absLog", x => x.d + "." + x.p, (x1, x2, wa) => { const e = clone(wa === "R" || !x1 ? x2 : x1);
+      e.ids = idSet(x1 && x1.ids, x2.ids, s => "alx|" + cid + "|" + idk(x2.d + "." + x2.p) + "|" + idk(s)); return e; });
+    sub("a", "assess", x => x.id, (a1, a2, wa) => {
+      const a = clone(wa === "R" || !a1 ? a2 : a1);
+      if(!a1) return a;
+      a.marks = {};
+      const markWin = {};
+      new Set(Object.keys(a1.marks || {}).concat(Object.keys(a2.marks || {}))).forEach(s => {
+        const w2 = markWin[s] = pick("m|" + cid + "|" + idk(a1.id) + "|" + idk(s));
+        if(w2 === "L") a.marks[s] = a1.marks[s]; else if(w2 === "R") a.marks[s] = a2.marks[s];
+      });
+      /* Aufgaben und Schlüssel nach eigenem Eintrag */
+      delete a.tasks; delete a.key;
+      const wt = pick("tk|" + cid + "|" + idk(a1.id)), srcT = wt === "L" ? a1 : wt === "R" ? a2 : null;
+      if(srcT && srcT.tasks){ a.tasks = clone(srcT.tasks); a.key = clone(srcT.key); }
+      /* Punkte je Schüler einzeln; die Note wird danach aus Punkten und Schlüssel neu berechnet */
+      delete a.pts;
+      if(a1.pts || a2.pts){
+        a.pts = {};
+        new Set(Object.keys(a1.pts || {}).concat(Object.keys(a2.pts || {}))).forEach(s => {
+          const w2 = pick("pt|" + cid + "|" + idk(a1.id) + "|" + idk(s));
+          if(w2 === "L" && a1.pts && a1.pts[s]) a.pts[s] = clone(a1.pts[s]); else if(w2 === "R" && a2.pts && a2.pts[s]) a.pts[s] = clone(a2.pts[s]);
+          /* Direkt gesetzte Note eines Geräts, das die Aufgaben (noch) nicht kannte, und jünger als die Punkte: sie gilt */
+          const wm = markWin[s], tkk = "tk|" + cid + "|" + idk(a1.id), mk = "m|" + cid + "|" + idk(a1.id) + "|" + idk(s), pk = "pt|" + cid + "|" + idk(a1.id) + "|" + idk(s);
+          if(a.pts[s] && wm && !(wm === "L" ? eL : eR).has(tkk) && ((wm === "L" ? sL : sR)[mk] || 0) > Math.max(sL[pk] || 0, sR[pk] || 0)) delete a.pts[s];
+        });
+      }
+      return a;
+    });
+    sub("k", "checks", x => x.id, (k1, k2, wk) => {
+      const k = clone(wk === "R" || !k1 ? k2 : k1);
+      if(k1) k.done = idSet(k1.done, k2.done, s => "kd|" + cid + "|" + idk(k1.id) + "|" + idk(s));
+      if(k1){
+        const wy = pick("kty|" + cid + "|" + idk(k1.id)), ty = wy === "L" ? k1.type : wy === "R" ? k2.type : undefined;
+        if(ty === "tally"){ k.type = "tally"; k.done = []; k.ticks = idSet(k1.ticks, k2.ticks, v => "kt|" + cid + "|" + idk(k1.id) + "|" + idk(v)).sort(); }
+        else { delete k.type; delete k.ticks; }
+      }
+      return k;
+    });
+    sub("j", "journal", x => x.id);
+    c.exc = mergeList(cl.exc, cr.exc, v => "ex|" + cid + "|" + idk(v));
+    sub("lt", "late", x => x.d + "." + x.p + "|" + x.sid);
+    /* Unterricht heute: der jüngere Tag gilt, der ältere wandert in die Anwesenheit (mit einem
+       vorhandenen Eintrag desselben Tages zusammengeführt). Ein gelöschter Tag kommt nicht zurück. */
+    const l1 = cl.lesson || {}, l2 = cr.lesson || {};
+    const lk = l => "ls|" + cid + "|" + idk(l.date), lx = (l, s) => "lsx|" + cid + "|" + idk(l.date) + "|" + idk(s);
+    const keep1 = !!l1.date && pick(lk(l1)) !== null, keep2 = !!l2.date && pick(lk(l2)) !== null;
+    const archive = l => {
+      const absent = (l.absent || []).filter(s => pick(lx(l, s)) !== null);
+      if(!absent.length) return;
+      const e = c.attendance.find(x => x.date === l.date);
+      if(e) absent.forEach(s => { if(e.absent.indexOf(s) < 0) e.absent.push(s); });
+      else c.attendance.push({ date: l.date, absent: absent.slice() });
+    };
+    if(keep1 && keep2 && l1.date === l2.date){
+      const base = clone(pick(lk(l1)) === "R" ? l2 : l1);
+      base.date = l1.date;
+      base.absent = idSet(l1.absent, l2.absent, s => lx(l1, s));
+      c.lesson = base;
+    } else {
+      const cand = [keep1 ? l1 : null, keep2 ? l2 : null].filter(Boolean).sort((x, y) => y.date.localeCompare(x.date));
+      const cur = cand[0] || null;
+      c.lesson = cur ? clone(cur) : { date: "", absent: [], picked: [], notes: {} };
+      if(cur) c.lesson.absent = (cur.absent || []).filter(s => pick(lx(cur, s)) !== null);
+      cand.slice(1).forEach(archive);
+    }
+    c.attendance.sort((x, y) => x.date.localeCompare(y.date));
+    (c.absLog || []).sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p);
+    (c.obs || []).sort((x, y) => x.d.localeCompare(y.d) || String(x.id).localeCompare(String(y.id)));
+    (c.journal || []).sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p || String(x.id).localeCompare(String(y.id)));
+    (c.late || []).sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p || x.sid.localeCompare(y.sid));
+    (c.exc || []).sort();
+    (c.history || []).sort((x, y) => String(x.t || "").localeCompare(String(y.t || "")));   // beide Geräte behalten dieselben 8
+    c.lastSubject = cl.lastSubject; c.lastGradePlan = cl.lastGradePlan;      // Bedienzustand bleibt vom Gerät
+    return c;
+  };
+  /* Leere Klasse als Gegenstück, wenn nur eine Seite die Klasse hat */
+  classMerge.shell = x => ({ id: x.id, name: x.name, archived: false, levelMode: "off", subNote: "", color: "", gradeW: {}, gradeRound: {}, gradeSubjects: [],
+    students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [],
+    lesson: { date: "", absent: [], picked: [], notes: {} }, lastSubject: "", lastGradePlan: "" });
+  out.classes = mergeList(L.classes, R.classes, c => "c|" + idk(c.id), classMerge);
+  /* Papierkorb: was durch den Abgleich wieder da ist, gehört nicht mehr hinein */
+  const live = new Set(out.classes.map(c => c.id).concat(out.rooms.map(r => r.id), ...out.classes.map(c => c.plans.map(p => p.id))));
+  out.trash = (L.trash || []).filter(e => !(e.payload && live.has(e.payload.id)));
+  /* Zeitstempel und Löschliste des Ergebnisses */
+  const eM = syncEntities(out), st = {}, del = {}, liveH = new Set();
+  eM.forEach((e, k) => { liveH.add(hk(k)); const t0 = Math.max(sL[k] || 0, sR[k] || 0); if(t0) st[k] = t0; });
+  [dL, dR].forEach(d => Object.keys(d).forEach(h => { if(!liveH.has(h) && (del[h] || 0) < d[h]) del[h] = d[h]; }));
+  out.stamps = st; out.del = del; out.mod = Math.min(Math.max(L.mod || 0, R.mod || 0), now);
+  const clean = sanitizeDB(out) || out;
+  return { db: clean, report: syncReport(eL, syncEntities(clean), conflicts) };
+}
+/* Was sich gegenüber dem Gerät ändert – gezählt nach Art */
+const SYNC_KINDS = { c: "syncClasses", s: "syncStudents", r: "syncRules", g: "syncGroups", a: "syncAssess", m: "syncMarks", o: "syncObs",
+  al: "syncAbs", alx: "syncAbs", at: "syncAbs", atx: "syncAbs", ls: "syncLesson", lsx: "syncLesson", p: "syncPlans", h: "syncHistory",
+  k: "syncChecks", kd: "syncChecks", kt: "syncChecks", kty: "syncChecks", tk: "syncAssess", pt: "syncMarks", j: "syncJournal", ex: "syncAbs", lt: "syncAbs", room: "syncRooms", subj: "syncTT", les: "syncTT", tt: "syncTT", cx: "syncTT", set: "syncSettings" };
+function syncReport(before, after, conflicts){
+  const r = { add: 0, upd: 0, rem: 0, conflicts, kinds: {} };
+  const bump = (k, f) => { const kd = SYNC_KINDS[k.split("|")[0]] || "syncOther"; r.kinds[kd] = r.kinds[kd] || { add: 0, upd: 0, rem: 0 }; r.kinds[kd][f]++; };
+  after.forEach((e, k) => { const o = before.get(k); if(!o){ r.add++; bump(k, "add"); } else if(o.v !== e.v){ r.upd++; bump(k, "upd"); } });
+  before.forEach((e, k) => { if(!after.has(k)){ r.rem++; bump(k, "rem"); } });
+  return r;
+}
+function syncCounts(db){
+  const c = db.classes || [];
+  return { classes: c.length, students: c.reduce((n, x) => n + x.students.length, 0),
+    assess: c.reduce((n, x) => n + (x.assess || []).length, 0),
+    marks: c.reduce((n, x) => n + (x.assess || []).reduce((m, a) => m + Object.keys(a.marks || {}).length, 0), 0),
+    obs: c.reduce((n, x) => n + (x.obs || []).length, 0) };
+}
+function fmtStamp(sec){
+  if(!sec) return t("syncUnknown");
+  const d = new Date(sec * 1000), loc = LANG === "en" ? "en-GB" : "de-DE";
+  return d.toLocaleDateString(loc, { day: "2-digit", month: "2-digit", year: "numeric" }) + ", " + d.toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" });
+}
+function openRestoreChoice(file, fileTime, opts){
+  opts = opts || {};
+  flushSave();
+  const localTime = DB.mod || 0, older = !!(localTime && fileTime && fileTime < localTime);
+  const hasLocal = DB.classes.length || DB.rooms.length || DB.subjects.length || DB.lessons.length;
+  const ownClock = localTime > syncNow() + SYNC_FUTURE;      // Uhr dieses Geräts geht offenbar nach
+  const sheet = sheetBase(t("syncTitle")); sheet.dataset.sens = "1";
+  const cmp = document.createElement("div"); cmp.className = "synccmp"; cmp.id = "sync-cmp";
+  const col = (title, when, n) => {
+    const b = document.createElement("div");
+    const h = document.createElement("b"); h.textContent = title; b.appendChild(h);
+    const w = document.createElement("span"); w.textContent = t("syncState").replace("{d}", fmtStamp(when)); b.appendChild(w);
+    const wd = t("syncWords").split("|"), nw = (x, i) => x + " " + wd[x === 1 ? i * 2 : i * 2 + 1];
+    const l = document.createElement("span"); l.textContent = [nw(n.classes, 0), nw(n.students, 1), nw(n.assess, 2), nw(n.marks, 3), nw(n.obs, 4)].join(" · "); b.appendChild(l);
+    cmp.appendChild(b);
+  };
+  col(t("syncFile"), fileTime, syncCounts(file));
+  col(t("syncDevice"), localTime, syncCounts(DB));
+  sheet.appendChild(cmp);
+  const warn = (id, txt) => { const w = document.createElement("div"); w.className = "syncwarn"; w.id = id; w.textContent = txt; sheet.appendChild(w); };
+  if(older) warn("sync-older", t("syncOlder"));
+  if(opts.future) warn("sync-clock", t("syncClock"));
+  if(ownClock) warn("sync-ownclock", t("syncOwnClock"));
+  let res = null;
+  if(hasLocal && !opts.v1){ try{ res = mergeDB(DB, file); }catch(e){ res = null; } }
+  if(hasLocal && opts.v1){ const d = document.createElement("div"); d.className = "hint"; d.style.marginTop = "10px"; d.textContent = t("syncV1"); sheet.appendChild(d); }
+  else if(hasLocal && !res){ const d = document.createElement("div"); d.className = "hint"; d.style.marginTop = "10px"; d.textContent = t("syncFail"); sheet.appendChild(d); }
+  if(res){
+    sheetLabel(sheet, t("syncMergeLabel"));
+    const pv = document.createElement("div"); pv.className = "previewbox"; pv.id = "sync-preview";
+    const R = res.report;
+    if(!R.add && !R.upd && !R.rem){ const d = document.createElement("div"); d.textContent = t("syncSame"); pv.appendChild(d); }
+    Object.keys(R.kinds).forEach(kd => {
+      const x = R.kinds[kd], parts = [];
+      if(x.add) parts.push(t("syncAdd").replace("{n}", x.add)); if(x.upd) parts.push(t("syncUpd").replace("{n}", x.upd)); if(x.rem) parts.push(t("syncRem").replace("{n}", x.rem));
+      const d = document.createElement("div"); d.textContent = t(kd) + ": " + parts.join(", "); pv.appendChild(d);
+    });
+    if(R.conflicts){ const d = document.createElement("div"); d.className = "hint"; d.textContent = (R.conflicts === 1 ? t("syncConflict1") : t("syncConflicts").replace("{n}", String(R.conflicts))); pv.appendChild(d); }
+    sheet.appendChild(pv);
+    const hh = document.createElement("div"); hh.className = "hint"; hh.textContent = t("syncMergeHint"); sheet.appendChild(hh);
+    const mb = document.createElement("button"); mb.className = "primary"; mb.id = "sync-merge"; mb.style.width = "100%"; mb.style.marginTop = "12px";
+    mb.textContent = t("syncMerge");
+    mb.onclick = () => { closeModal(); applyRestore(res.db, t("syncMerged").replace("{a}", String(res.report.add)).replace("{u}", String(res.report.upd)).replace("{r}", String(res.report.rem))); };
+    sheet.appendChild(mb);
+  }
+  const rb = document.createElement("button"); rb.className = hasLocal ? "ghost" : "primary"; rb.id = "sync-replace"; rb.style.width = "100%"; rb.style.marginTop = "8px";
+  if(hasLocal) rb.style.color = "var(--warn)";
+  rb.textContent = hasLocal ? t("syncReplace") : t("restore");
+  rb.onclick = () => {
+    closeModal();
+    const go = () => applyRestore(file, t("restoreOk"));
+    if(!hasLocal){ go(); return; }
+    askConfirm(t("restoreQ"), older ? t("syncReplaceOlder") : t("restoreT2"), t("syncReplace"), go, () => openRestoreChoice(file, fileTime, opts));
+    $("#sheet").dataset.sens = "1";                      // schließt sich bei automatischer Sperre
+  };
+  sheet.appendChild(rb);
+  const cb = document.createElement("button"); cb.className = "ghost"; cb.style.width = "100%"; cb.style.marginTop = "8px";
+  cb.textContent = t("cancel"); cb.onclick = closeModal; sheet.appendChild(cb);
+}
+
+/* ============ 30. Excel-Export (.xlsx) ohne Bibliothek ============
+   Eine .xlsx ist ein ZIP mit wenigen XML-Dateien. Gespeichert wird ohne Kompression (Methode 0),
+   Texte als „inlineStr“ – dadurch werden Zelleninhalte nie als Formel ausgeführt. */
+const CRC_TABLE = (() => { const tb = new Uint32Array(256); for(let n = 0; n < 256; n++){ let c = n; for(let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; tb[n] = c >>> 0; } return tb; })();
+function crc32(bytes){ let c = 0xFFFFFFFF; for(let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(files){
+  const enc = new TextEncoder(), parts = [], central = [];
+  let off = 0;
+  const now = new Date();
+  const dosT = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+  const dosD = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = typeof f.data === "string" ? enc.encode(f.data) : f.data, crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+    h.setUint16(10, dosT, true); h.setUint16(12, dosD, true); h.setUint32(14, crc, true);
+    h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true);
+    c.setUint16(12, dosT, true); c.setUint16(14, dosD, true); c.setUint32(16, crc, true);
+    c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true);
+    c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name);
+    off += 30 + name.length + data.length;
+  });
+  const cdSize = central.reduce((a, b) => a + b.length, 0);
+  const e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true);
+  e.setUint32(12, cdSize, true); e.setUint32(16, off, true);
+  return parts.concat(central, [new Uint8Array(e.buffer)]);
+}
+/* Nur in XML erlaubte Zeichen, Sonderzeichen maskiert */
+const xmlEsc = v => String(v == null ? "" : v).replace(/[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}]/gu, "")
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+  .replace(/_(x[0-9A-Fa-f]{4}_)/g, "_x005F_$1");                  // sonst liest Excel „_x0041_“ als „A“
+function xlsxCol(i){ let s = ""; i++; while(i > 0){ const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+/* Zelle: Zahl (mit Format 1 = 0,00 / 2 = 0,0 / 3 = ganzzahlig) oder Text; Kopfzeile fett (Stil 4) */
+function xlsxCell(ref, v, style){
+  if(typeof v === "number" && isFinite(v)) return '<c r="' + ref + '"' + (style ? ' s="' + style + '"' : "") + '><v>' + v + '</v></c>';
+  if(v === null || v === undefined || v === "") return "";
+  return '<c r="' + ref + '" t="inlineStr"' + (style ? ' s="' + style + '"' : "") + '><is><t xml:space="preserve">' + xmlEsc(v) + '</t></is></c>';
+}
+function xlsxSheet(rows, widths, numStyles){
+  const cols = '<cols>' + widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join("") + '</cols>';
+  const data = rows.map((r, ri) => '<row r="' + (ri + 1) + '">' + r.map((v, ci) =>
+    xlsxCell(xlsxCol(ci) + (ri + 1), v, ri === 0 ? 4 : (numStyles[ci] || 0))).join("") + '</row>').join("");
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetViews><sheetView workbookViewId="0"><pane xSplit="1" ySplit="1" topLeftCell="B2" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>' +
+    '<sheetFormatPr defaultRowHeight="15"/>' + cols + '<sheetData>' + data + '</sheetData></worksheet>';
+}
+/* Blattnamen: höchstens 31 Zeichen, ohne : \ / ? * [ ], eindeutig */
+function xlsxSheetNames(names){
+  const used = new Set();
+  return names.map(n => {
+    const cut = (x, m) => Array.from(x).slice(0, m).join("");       // keine halben Emojis
+    const tidy = x => x.replace(/^['\s]+|['\s]+$/g, "");            // Excel: kein Apostroph am Rand
+    let base = tidy(String(n).replace(/[\x00-\x1F\x7F:\\/?*\[\]]/g, " ").replace(/\s+/g, " "));
+    base = tidy(cut(base, 31)) || "Blatt";
+    if(/^history$/i.test(base)) base += "_";                       // in Excel reserviert
+    let v = base, k = 2;
+    while(used.has(v.toLowerCase())){ const suf = " (" + k++ + ")"; v = tidy(cut(base, 31 - suf.length)) + suf; }
+    used.add(v.toLowerCase());
+    return v;
+  });
+}
+function buildXlsx(sheets){
+  const names = xlsxSheetNames(sheets.map(sh => sh.name));
+  const files = [
+    { name: "[Content_Types].xml", data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
+      sheets.map((_, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join("") + '</Types>' },
+    { name: "_rels/.rels", data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+    { name: "xl/workbook.xml", data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' +
+      names.map((n, i) => '<sheet name="' + xmlEsc(n) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join("") + '</sheets></workbook>' },
+    { name: "xl/_rels/workbook.xml.rels", data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      sheets.map((_, i) => '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join("") +
+      '<Relationship Id="rId' + (sheets.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
+    { name: "xl/styles.xml", data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+      '<numFmts count="1"><numFmt numFmtId="164" formatCode="0.0"/></numFmts>' +
+      '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>' +
+      '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDCEBFA"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+      '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+      '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+      '<cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+      '<xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+      '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+      '<xf numFmtId="1" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+      '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf></cellXfs>' +
+      '<cellStyles count="1"><cellStyle name="Standard" xfId="0" builtinId="0"/></cellStyles></styleSheet>' }
+  ];
+  sheets.forEach((sh, i) => files.push({ name: "xl/worksheets/sheet" + (i + 1) + ".xml", data: xlsxSheet(sh.rows, sh.widths, sh.num || []) }));
+  return new Blob(zipStore(files), { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+}
+const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+/* Ein Blatt je Fach (gleiche Spalten wie die CSV) und ein Blatt mit den Fehlzeiten */
+function gradesXlsxSheets(c){
+  const sheets = [];
+  courseSubjects(c).forEach(s => {
+    const list = courseAssess(c, s.id); if(!list.length) return;
+    const sc = courseScale(list), fmt = sc === "points" ? 2 : 1;
+    const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + ")"))
+      .concat(["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposal"), t("absMissedShort")]);
+    const rows = [head];
+    c.students.forEach(st => {
+      const av = studentAverages(c, s.id, st.id);
+      /* Punkte und ganze Noten als Zahl (damit Excel rechnen kann), „2+“, Smileys und „fehlt“ als Text */
+      const marks = list.map(a => { const v = a.marks[st.id]; const n = v && (a.scale === "points" || /^[1-6]$/.test(v)) ? tokNum(v, a.scale) : null; return n !== null ? n : csvValue(v); });
+      const prop = proposeGrade(c, s.id, av);
+      rows.push([st.name].concat(marks, [av.written, av.other, av.total].map(v => v === null ? "" : Math.round(v * 100) / 100),
+        [prop ? (/^\d+$/.test(prop) ? +prop : prop) : "", missedLessons(c, st.id).bySubject[s.id] || 0]));
+    });
+    const k = list.length;
+    sheets.push({ name: s.name, rows, widths: [24].concat(list.map(() => 14), [10, 10, 10, 11, 10]),
+      num: { [k + 1]: fmt, [k + 2]: fmt, [k + 3]: fmt, [k + 5]: 3 } });
+  });
+  /* Fehlzeiten je Fach */
+  /* Fehlstunden ohne Fach und aus gelöschten Fächern landen gemeinsam unter „ohne Fach“ */
+  const key = id => subjectById(id) ? id : "";
+  const bySubj = st => { const o = {}; const m = missedLessons(c, st.id).bySubject; Object.keys(m).forEach(id => { o[key(id)] = (o[key(id)] || 0) + m[id]; }); return o; };
+  const subjIds = [];
+  c.students.forEach(st => Object.keys(bySubj(st)).forEach(id => { if(subjIds.indexOf(id) < 0) subjIds.push(id); }));
+  const rows = [[t("csvName"), t("gXlsxDays"), t("gXlsxDaysUnexc"), t("gXlsxTotal"), t("gXlsxUnexc"), t("gXlsxLate"), t("gXlsxLateMin")]
+    .concat(subjIds.map(id => subjectById(id) ? subjectById(id).name : t("absNoSubject")))];
+  c.students.forEach(st => {
+    const a = absenceSummary(c, st.id), bs = bySubj(st);
+    rows.push([st.name, a.days, a.days - a.daysExc, a.lessons, a.lessons - a.lessonsExc, a.late, a.lateMin].concat(subjIds.map(id => bs[id] || 0)));
+  });
+  sheets.push({ name: t("gXlsxAbs"), rows, widths: [24, 10, 12, 12, 12, 11, 12].concat(subjIds.map(() => 12)), num: {} });
+  return sheets;
+}
+function exportGradesXlsx(c){
+  try{
+    const blob = buildXlsx(gradesXlsxSheets(c));
+    if(download(blob, safeName(c.name + " " + t("gXlsxFile")) + ".xlsx", XLSX_MIME)) toast(t("gXlsxOk"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
 
 /* ============ 29. Sperre für Bewertungen und Beobachtungen ============
    Face ID, Fingerabdruck oder Geräte-PIN über die Entsperrung des Geräts. Die App erfährt nur

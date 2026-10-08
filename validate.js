@@ -142,7 +142,11 @@ for(const [ziel, inhalt] of Object.entries(erwarteteDateien())){
 const privacy = fs.readFileSync(path.join('res', 'ios', 'PrivacyInfo.xcprivacy'), 'utf8');
 pruefe(privacy.includes('CA92.1') && privacy.includes('NSPrivacyTracking'), 'PrivacyInfo.xcprivacy unvollständig');
 pruefe(/<preference name="target-device" value="universal" \/>/.test(config), 'iPad-Unterstützung (target-device universal) fehlt in config.xml');
-pruefe(/iPadPopupCoordinates:\s*shareAnchor\(\)/.test(skripte[0]), 'Teilen ohne iPad-Ankerpunkt – bricht auf dem iPad ab');
+/* Das Teilen-Plugin liest den Schlüssel „iPadCoordinates“ (SocialSharing.m) – ein anderer Name wird still ignoriert */
+pruefe(/iPadCoordinates:\s*shareAnchor\(\)/.test(skripte[0]) && !/iPadPopupCoordinates:/.test(skripte[0]), 'Teilen ohne iPad-Ankerpunkt – bricht auf dem iPad ab');
+/* Übertragen enthält alle Noten: nur entsperrt und nur verschlüsselt */
+pruefe(/function openTransfer\(\)\{\s*if\(!hasCrypto\(\)\)\{[^}]*\}\s*if\(needUnlock\(openTransfer\)\) return;/.test(skripte[0]) && /encryptBackup\(JSON\.stringify\(\{ app: "fairseat", v: 2, data: backupData\(\) \}\), pass\);\s*const blob = new Blob\(\[JSON\.stringify\(obj\)\]/.test(skripte[0]),
+  'Übertragen auf ein anderes Gerät ohne Sperre oder ohne Verschlüsselung');
 pruefe(/NSPhotoLibraryAddUsageDescription/.test(config) && /NSPhotoLibraryUsageDescription/.test(config),
   'Foto-Hinweistexte für iOS fehlen in config.xml');
 

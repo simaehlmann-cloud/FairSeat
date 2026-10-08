@@ -10,7 +10,7 @@
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
 
     <name>FairSeat</name>
-    <description>Sitzpläne, Stundenplan, Bewertungen und Anwesenheit für Lehrkräfte. Läuft vollständig offline.</description>
+    <description>Sitzplan &amp; Noten für Lehrkräfte: Sitzpläne, Klassenarbeiten mit Notenschlüssel, Stundenplan, Kursheft und Fehlzeiten. Läuft vollständig offline.</description>
     <author email="smaehlmann.appdev@gmail.com">Wisdompeak Apps – Simon Mählmann</author>
 
     <content src="index.html" />

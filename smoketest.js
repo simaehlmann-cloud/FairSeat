@@ -89,8 +89,15 @@ const besetzt = app => app.E('curPlan().desks.filter(d => d.studentId).length');
 
 test('Start', app => {
   erwarte(app.$('#screen-start').classList.contains('active'), 'Startseite nicht aktiv');
-  erwarte(app.$$('.home-tile').length === 5 && app.$$('.home-tile').slice(0, 3).map(b => b.id).join() === 'tile-names,tile-rooms,tile-plans', 'Kacheln fehlen oder falsche Reihenfolge');
-  erwarte(app.$('#tile-names').textContent.indexOf('Namen verwalten') >= 0, 'Kachel „Namen verwalten“ fehlt');
+  erwarte(app.$$('.home-tile').length === 4 && app.$$('.home-tile').map(b => b.id).join() === 'tile-names,tile-plans,tile-timetable,tile-grades' && !app.$('#tile-rooms'), 'Kacheln fehlen oder falsche Reihenfolge');
+  erwarte(/Klassen verwalten/.test(app.$('#tile-names').textContent) && /Namen, Stufen/.test(app.$('#tile-names').textContent), 'Kachel „Klassen verwalten“ fehlt');
+  erwarte(/mit Räumen/.test(app.$('#tile-plans').textContent), 'Kachel „Sitzpläne“ nennt die Räume nicht');
+  // Räume ohne Klasse über den Reiter erreichbar, Sitzpläne-Reiter führt dann zu den Klassen
+  app.E('goRooms()');
+  erwarte(app.$('#screen-rooms .pr-tab.on').dataset.pr === 'rooms' && /alle Klassen/.test(app.$('#screen-rooms').textContent), 'Räume-Reiter oder Hinweis fehlt');
+  app.klick('#screen-rooms .pr-tab[data-pr="plans"]');
+  erwarte(app.$('#screen-names').classList.contains('active'), 'Ohne Klasse muss der Sitzpläne-Reiter zu den Klassen führen');
+  app.E('goHome()');
   app.klick('#tile-plans');
   erwarte(app.$('#screen-names').classList.contains('active'), 'Ohne Klasse muss „Sitzpläne“ zu den Namen führen');
   erwarte(!/pro|lite/i.test(app.$('.brand').textContent), 'Kopfzeile nennt noch Pro/Lite');
@@ -163,7 +170,11 @@ test('Klassenübersicht und Suche', app => {
 });
 
 test('Räume (Vorlage)', app => {
-  app.klick('#tile-rooms');
+  klasseMitNamen(app, '7b', ['Anna']);
+  app.E('goHome()'); app.klick('#tile-plans');
+  erwarte(app.$('#screen-plans .pr-tab.on').dataset.pr === 'plans', 'Sitzpläne-Reiter nicht aktiv');
+  app.klick('#screen-plans .pr-tab[data-pr="rooms"]');
+  erwarte(app.$('#screen-rooms').classList.contains('active'), 'Reiter „Räume“ führt nicht zu den Räumen');
   const r = app.E('buildRoomFromTemplate("modern", "Raum 204")');
   erwarte(r.items.length === 10, 'Vorlage „Modern“ hat nicht 10 Objekte');
   app.E('DB.rooms.push(buildRoomFromTemplate("classic", "Raum 101")); renderRooms()');
@@ -176,6 +187,9 @@ test('Räume (Vorlage)', app => {
   erwarte(app.E('curRoom().items.length') === 11, 'Möbel lässt sich nicht hinzufügen');
   app.klick('#btn-editor-back');
   erwarte(app.$('#screen-rooms').classList.contains('active'), 'Zurück führt nicht zu den Räumen');
+  app.klick('#screen-rooms .pr-tab[data-pr="plans"]');
+  erwarte(app.$('#screen-plans').classList.contains('active'), 'Zurück zum Reiter „Sitzpläne“ fehlt');
+  erwarte(app.w.document.activeElement === app.$('#screen-plans .pr-tab.on'), 'Fokus geht beim Reiterwechsel verloren');
 });
 
 test('Sitzplan zufällig mit Regeln', app => {
@@ -346,7 +360,7 @@ test('Englisch', app => {
   app.klick('#flag-en');
   const roh = app.$$('[data-i]').filter(el => el.textContent === el.dataset.i).map(el => el.dataset.i);
   erwarte(!roh.length, 'Unübersetzte Beschriftungen: ' + roh.join(', '));
-  erwarte(app.$('#tile-rooms').textContent.indexOf('Rooms') >= 0, 'Kachel nicht übersetzt');
+  erwarte(app.$('#tile-names').textContent.indexOf('Manage classes') >= 0 && app.$('#screen-plans .pr-tab[data-pr="rooms"]').textContent === 'Rooms', 'Kachel oder Reiter nicht übersetzt');
   app.klick('#flag-de');
   erwarte(app.E('t("classLabel")') === 'Klasse' && !app.E('Object.keys(I18N.de).some(k => /^ev_/.test(k))'), 'Reste des Veranstaltungsmodus');
 });
@@ -418,9 +432,9 @@ test('Sicherung laden lässt sich rückgängig machen', async app => {
   app.E('goHome()');
   dateiWaehlen(app, '#filepick', 'alt.json', fremd);
   await pause(60);
-  erwarte(app.$('#modal').classList.contains('on'), 'Keine Rückfrage vor dem Ersetzen');
-  app.sheetOk();
-  erwarte(app.E('DB.classes[0].name') === 'Aus Sicherung', 'Sicherung nicht geladen');
+  erwarte(app.$('#modal').classList.contains('on') && !!app.$('#sync-merge') && !!app.$('#sync-replace'), 'Keine Auswahl vor dem Laden');
+  app.klick('#sync-replace'); app.sheetOk();
+  erwarte(app.E('DB.classes[0].name') === 'Aus Sicherung' && app.E('DB.classes.length') === 1, 'Sicherung nicht geladen');
   erwarte(!!app.$('#backup-reminder .minibtn.blue'), 'Kein Angebot, den vorherigen Stand zurückzuholen');
   app.klick('#backup-reminder .minibtn.blue'); app.sheetOk();
   erwarte(app.E('DB.classes[0].name') === 'Original' && app.E('DB.classes[0].students.length') === 12, 'Vorheriger Stand nicht zurückgeholt');
@@ -513,7 +527,7 @@ test('Erster Start', async app => {
   await pause(320);
   erwarte(app.$('#modal').classList.contains('on') && !!app.$('#welcome-ok') && !app.$('#sheet .choice'), 'Begrüßung erscheint nicht oder fragt noch nach dem Einsatzbereich');
   app.willkommen();
-  erwarte(app.E('DB.onboarded') === true && app.$('#tile-names').textContent.indexOf('Namen verwalten') >= 0, 'Begrüßung nicht abgeschlossen');
+  erwarte(app.E('DB.onboarded') === true && app.$('#tile-names').textContent.indexOf('Klassen verwalten') >= 0, 'Begrüßung nicht abgeschlossen');
   erwarte(app.E('JSON.parse(localStorage.getItem(KEY)).onboarded') === true, 'Antwort nicht gespeichert');
 }, true);
 
@@ -786,7 +800,7 @@ test('Verschlüsselte Sicherung', async app => {
   for(let i = 0; i < 150 && app.$('#bk-pw-open'); i++) await pause(30);
   erwarte(!app.$('#bk-pw-open') && app.$('#modal').classList.contains('on'), 'Nach richtigem Passwort keine Rückfrage zum Ersetzen');
   app.E('DB.classes[0].name = "Verändert"');
-  app.sheetOk();
+  app.klick('#sync-replace'); app.sheetOk();
   erwarte(app.E('DB.classes[0].name') === 'Geheim' && app.E('DB.classes[0].students.length') === 2, 'Verschlüsselte Sicherung nicht wiederhergestellt');
 });
 
@@ -1139,7 +1153,7 @@ test('Zweites Audit: Laden, Skalen, Sicherung', app => {
   // Sicherung enthält keine Noten gelöschter Schüler
   const sid = app.E('curClass().students[1].id');
   app.E(`curClass().students = curClass().students.filter(s => s.id !== "${sid}")`);
-  erwarte(JSON.stringify(app.E('backupData()')).indexOf(sid) < 0, 'Sicherung enthält Daten gelöschter Schüler');
+  erwarte(JSON.stringify(app.E('(() => { const d = backupData(); delete d.del; return d; })()')).indexOf(sid) < 0, 'Sicherung enthält Daten gelöschter Schüler');
   // Abbrechen beim neuen Fach behält das alte Fach
   app.E('DB.subjects.push({ id: "d", name: "Deutsch", short: "De", color: "#E0533D" }); DB.lessons.push({ id: "L1", day: 0, period: 0, span: 1, week: "", subjectId: "d", classId: "", roomId: "", planId: "" }); editLesson(DB.lessons[0])');
   const sel = app.$$('#sheet select')[0]; sel.value = '__new'; sel.dispatchEvent(new app.w.Event('change'));
@@ -1496,7 +1510,7 @@ test('Fehlstunden aus Stundenplan und Unterricht', app => {
   erwarte(app.E('recordLessonAbsence(curClass())') === true && app.E('recordLessonAbsence(curClass())') === false && app.E('curClass().absLog.length') === 2, 'Neue Stunde nicht erfasst oder doppelt');
   // Anwesenheitsblatt zeigt die Summe
   app.E('closeModal()'); app.klick('#btn-attendance');
-  erwarte(!!app.$('#abs-missed') && app.$('#abs-missed').textContent.indexOf('Anna: 1') >= 0, 'Fehlstunden fehlen im Anwesenheitsblatt');
+  erwarte(!!app.$('#abs-missed') && /Anna.*1 Fehlstunde/.test(app.$('#abs-missed').textContent), 'Fehlstunden fehlen im Anwesenheitsblatt: ' + (app.$('#abs-missed') || {}).textContent);
   app.E('closeModal()');
   // Laden: fremde IDs fliegen raus, unsinnige Werte werden korrigiert
   const roh = app.E(`(() => { const d = JSON.parse(JSON.stringify(DB)); d.classes[0].absLog.push({ d: "kaputt", ids: [] }, { d: "2026-01-01", p: 99, n: 7, s: 5, ids: ["fremd", "${a}"] }); return JSON.stringify(sanitizeDB(d).classes[0].absLog.slice(-1)); })()`);
@@ -1843,6 +1857,943 @@ test('Sperre für Noten und Beobachtungen', app => {
   app.E('window.cordova = window.__c; DB.settings.lock = false');
   // Laden
   erwarte(app.E('sanitizeDB({ v: 2, settings: { lock: true } }).settings.lock') === true && app.E('sanitizeDB({ v: 2, settings: { lock: "ja" } }).settings.lock') === false, 'Einstellung wird beim Laden nicht geprüft');
+});
+
+
+/* ---------- 30. Excel-Export ---------- */
+function zipLesen(buf){
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength), out = {};
+  let o = 0;
+  while(dv.getUint32(o, true) === 0x04034b50){
+    const crc = dv.getUint32(o + 14, true), size = dv.getUint32(o + 18, true), nl = dv.getUint16(o + 26, true), el = dv.getUint16(o + 28, true);
+    const name = Buffer.from(buf.slice(o + 30, o + 30 + nl)).toString('utf8');
+    const data = Buffer.from(buf.slice(o + 30 + nl + el, o + 30 + nl + el + size));
+    out[name] = { crc, data, ok: require('zlib').crc32(data) === crc };
+    o += 30 + nl + el + size;
+  }
+  return { files: out, ende: dv.getUint32(buf.byteLength - 22, true) === 0x06054b50 };
+}
+test('Bewertungen als Excel-Datei', async app => {
+  bewertungsKlasse(app);
+  app.E(`(() => { const c = curClass(), s = c.students; s[1].name = '=SUMME(1;2)'; s[2].name = 'Cem <&> "x"';
+    DB.subjects.push({ id: "de", name: "Deutsch: Lyrik/Prosa [Q1]*", short: "De", color: "#C0392B" }); c.gradeSubjects = ["ma", "de"];
+    c.assess = [{ id: "w1", subjectId: "ma", title: "KA 1", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: { [s[0].id]: "2+", [s[1].id]: "x" } },
+      { id: "o1", subjectId: "ma", title: "Mitarbeit", date: "2026-09-12", kind: "other", scale: "smiley", weight: 2, marks: { [s[0].id]: "s1" } },
+      { id: "p1", subjectId: "de", title: "Klausur", date: "2026-09-20", kind: "written", scale: "points", weight: 1, marks: { [s[0].id]: "11" } },
+      { id: "z1", subjectId: "ma", title: "Selbst", date: "2026-09-12", kind: "self", scale: "smiley", weight: 1, marks: { [s[0].id]: "s4" } }];
+    c.absLog = [{ d: "2026-09-01", p: 0, n: 2, s: "ma", ids: [s[0].id] }]; })(); goGrades("ma")`);
+  const box = downloadAbfangen(app);
+  app.klick('#g-tab-overview'); app.klick('#g-xlsx');
+  erwarte(!!box.blob && /\.xlsx$/.test(box.name) && box.blob.type.indexOf('spreadsheetml') >= 0, 'Excel-Datei wird nicht erzeugt: ' + box.name);
+  const bytes = new Uint8Array(await new Promise(r => { const f = new app.w.FileReader(); f.onload = () => r(f.result); f.readAsArrayBuffer(box.blob); }));
+  const z = zipLesen(bytes), namen = Object.keys(z.files);
+  erwarte(z.ende && ['[Content_Types].xml', 'xl/workbook.xml', 'xl/styles.xml', 'xl/worksheets/sheet1.xml', 'xl/worksheets/sheet3.xml'].every(n => namen.indexOf(n) >= 0), 'ZIP-Aufbau falsch: ' + namen.join());
+  erwarte(namen.every(n => z.files[n].ok), 'Prüfsumme im ZIP falsch');
+  const wb = z.files['xl/workbook.xml'].data.toString('utf8');
+  erwarte(/name="Mathe"/.test(wb) && /name="Deutsch Lyrik Prosa Q1"/.test(wb) && /name="Fehlzeiten"/.test(wb), 'Blattnamen falsch: ' + wb);
+  const s1 = z.files['xl/worksheets/sheet1.xml'].data.toString('utf8');
+  erwarte(s1.indexOf('<f>') < 0 && s1.indexOf('=SUMME(1;2)') >= 0 && s1.indexOf('Cem &lt;&amp;&gt; &quot;x&quot;') >= 0, 'Text nicht sicher abgelegt');
+  erwarte(s1.indexOf('Selbst') < 0 && /state="frozen"/.test(s1) && s1.indexOf('sehr gut') >= 0 && s1.indexOf('fehlt') >= 0, 'Inhalt Mathe falsch');
+  erwarte(/<c r="D2" s="1"><v>1\.7<\/v><\/c>/.test(s1), 'Durchschnitt nicht als Zahl: ' + (s1.match(/<c r="D2"[^/]*\/c>/) || [''])[0]);
+  const s2 = z.files['xl/worksheets/sheet2.xml'].data.toString('utf8');
+  erwarte(/<c r="B2"><v>11<\/v><\/c>/.test(s2), 'Punkte nicht als Zahl');
+  const s3 = z.files['xl/worksheets/sheet3.xml'].data.toString('utf8');
+  erwarte(/<c r="D2"><v>2<\/v><\/c>/.test(s3) && /<c r="E2"><v>2<\/v><\/c>/.test(s3) && s3.indexOf('Mathe') >= 0 && s3.indexOf('Verspätungen') >= 0, 'Fehlzeiten-Blatt falsch');
+  // Steuerzeichen und doppelte Blattnamen
+  erwarte(app.E('xmlEsc("a\\u0001b\\uD800c")') === 'abc', 'Ungültige XML-Zeichen bleiben');
+  erwarte(app.E('JSON.stringify(xlsxSheetNames(["A", "a", "' + 'x'.repeat(40) + '"]))') === JSON.stringify(['A', 'a (2)', 'x'.repeat(31)]), 'Blattnamen nicht eindeutig oder zu lang');
+  erwarte(app.E('xlsxCol(0) + xlsxCol(25) + xlsxCol(26) + xlsxCol(701)') === 'AZAAZZ', 'Spaltenbuchstaben falsch');
+  erwarte(app.E(`JSON.stringify(xlsxSheetNames(["'Lyrik' *", "History", "A\\u0001", "A"]))`) === JSON.stringify(['Lyrik', 'History_', 'A', 'A (2)']), 'Blattnamen nicht Excel-tauglich: ' + app.E(`JSON.stringify(xlsxSheetNames(["'Lyrik' *", "History", "A\\u0001", "A"]))`));
+  erwarte(app.E('xmlEsc("_x0041_")') === '_x005F_x0041_', '_xHHHH_ wird von Excel als Zeichen gelesen');
+  // ganze Noten als Zahl, „ohne Fach“ und gelöschtes Fach in einer Spalte
+  app.E(`(() => { const c = curClass(), s = c.students; c.assess[0].marks[s[2].id] = "3";
+    c.absLog.push({ d: "2026-09-02", p: 1, n: 1, s: "", ids: [s[0].id] }, { d: "2026-09-03", p: 1, n: 1, s: "weg", ids: [s[0].id] }); })()`);
+  const sh = app.E('gradesXlsxSheets(curClass())');
+  erwarte(sh[0].rows[3][1] === 3 && sh[0].rows[1][1] === '2+', 'Ganze Noten nicht als Zahl oder Tendenz verloren');
+  const fz = sh[sh.length - 1].rows;
+  erwarte(fz[0].filter(x => x === 'ohne Fach').length === 1 && fz[1][fz[0].indexOf('ohne Fach')] === 2, '„ohne Fach“ doppelt: ' + JSON.stringify(fz[0]));
+});
+
+test('Teilen in der App behält den Dateinamen', async app => {
+  const calls = [];
+  app.E('window.cordova = { platformId: "android" }');
+  app.w.plugins = { socialsharing: { shareWithOptions(o){ calls.push(o); } } };
+  app.E('download(new Blob(["x"], { type: "" }), "7b_Bewertungen.xlsx", XLSX_MIME)');
+  await pause(80);
+  erwarte(calls.length === 1 && calls[0].files[0].indexOf('df:7b_Bewertungen.xlsx;data:' + app.E('XLSX_MIME') + ';base64,') === 0, 'Dateiname oder Typ geht beim Teilen verloren: ' + (calls[0] && calls[0].files[0].slice(0, 90)));
+  erwarte(typeof calls[0].iPadCoordinates === 'string' && calls[0].iPadCoordinates.split(',').length === 4, 'iPad-Anker hat den falschen Schlüssel');
+  app.E('download(new Blob(["a;b"], { type: "text/csv;charset=utf-8" }), "x.csv", "text/csv")');
+  await pause(80);
+  erwarte(calls[1] && calls[1].files[0].indexOf('df:x.csv;data:text/csv;base64,') === 0, 'CSV-Typ mit Zusatz: ' + (calls[1] && calls[1].files[0].slice(0, 50)));
+  app.E('download(new Blob(["a;b"], { type: "text/csv;charset=utf-8" }), "y.csv")');
+  await pause(80);
+  erwarte(calls[2] && calls[2].files[0].indexOf('df:y.csv;data:text/csv;base64,') === 0, 'Blob-Typ mit Zusatz wird weitergegeben');
+});
+
+
+/* ---------- 31. Abgleich zwischen Geräten ---------- */
+const uhr = (app, sek) => app.E('Date.now = () => ' + (sek * 1000))
+const datei = app => app.E('JSON.stringify({ app: "fairseat", v: 2, exported: new Date(Date.now()).toISOString(), data: backupData() })');
+const inhalt = app => app.E('(() => { const m = syncEntities(DB), o = {}; Array.from(m.keys()).sort().forEach(k => { if(k !== "set") o[k] = m.get(k).v; }); return JSON.stringify(o); })()');
+function grundstand(app){
+  klasseMitNamen(app, '7b', ['Anna', 'Ben', 'Cem', 'Dana']);
+  app.E(`(() => { DB.gradesAck = true; DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" });
+    const c = curClass(), s = c.students; c.gradeSubjects = ["ma"];
+    c.assess = [{ id: "w1", subjectId: "ma", title: "KA 1", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: { [s[0].id]: "2", [s[3].id]: "4" } }];
+    c.obs = []; c.absLog = []; c.checks = [{ id: "k1", title: "Einverständnis", date: "2026-09-01", done: [] }]; })()`);
+  app.E('flushSave()');
+}
+const sid = (app, n) => app.E(`curClass().students.find(s => s.name === "${n}").id`);
+async function laden(app, json, wie){
+  app.E(`restoreParsed(${json})`);
+  if(wie === 'merge') app.klick('#sync-merge');
+  else { app.klick('#sync-replace'); if(app.$('#sheet .row button.primary')) app.sheetOk(); }
+  await pause(10);
+  app.E('curClassId = DB.classes[0] ? DB.classes[0].id : null');
+}
+
+test('Abgleich: Zeitstempel beim Speichern', app => {
+  uhr(app, 1000); grundstand(app);
+  const st = app.E('JSON.stringify(DB.stamps)');
+  erwarte(app.E('DB.mod') === 1000 && app.E(`DB.stamps["m|" + curClass().id + "|w1|${sid(app, 'Anna')}"]`) === 1000, 'Neue Einträge ohne Zeitstempel: ' + st.slice(0, 200));
+  uhr(app, 1500);
+  app.E(`curClass().assess[0].marks["${sid(app, 'Anna')}"] = "3"; flushSave()`);
+  const k = `"m|" + curClass().id + "|w1|${sid(app, 'Anna')}"`;
+  erwarte(app.E(`DB.stamps[${k}]`) === 1500 && app.E(`DB.stamps["m|" + curClass().id + "|w1|${sid(app, 'Dana')}"]`) === 1000, 'Geänderte Note nicht gestempelt oder andere mitgestempelt');
+  // unveränderter Stand: kein neuer Zeitstempel
+  uhr(app, 1600); app.E('flushSave()');
+  erwarte(app.E('DB.mod') === 1500, 'Speichern ohne Änderung verändert den Zeitstempel');
+  // Löschen: Note → Eintrag in der Löschliste; ganze Bewertung → nur die Bewertung
+  uhr(app, 1700);
+  app.E(`delete curClass().assess[0].marks["${sid(app, 'Dana')}"]; flushSave()`);
+  erwarte(app.E(`DB.del[hk("m|" + curClass().id + "|w1|${sid(app, 'Dana')}")]`) === 1700, 'Gelöschte Note nicht vermerkt');
+  erwarte(app.E('Object.keys(DB.del).every(k => /^[0-9a-z]+$/.test(k))') && app.E('JSON.stringify(DB.del)').indexOf(sid(app, 'Dana')) < 0, 'Löschliste verrät Schlüssel');
+  uhr(app, 1800);
+  app.E('curClass().assess = []; flushSave()');
+  erwarte(app.E('DB.del[hk("a|" + curClass().id + "|w1")]') === 1800 && app.E(`DB.del[hk("m|" + curClass().id + "|w1|${sid(app, 'Anna')}")]`) === undefined, 'Löschliste falsch bei ganzer Bewertung');
+  // Rückgängig: Eintrag kommt zurück, Löschvermerk verschwindet
+  uhr(app, 1900);
+  app.E('curClass().assess = [{ id: "w1", subjectId: "ma", title: "KA 1", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: {} }]; flushSave()');
+  erwarte(app.E('DB.del[hk("a|" + curClass().id + "|w1")]') === undefined && app.E('DB.stamps["a|" + curClass().id + "|w1"]') === 1900, 'Wiederhergestellter Eintrag bleibt als gelöscht vermerkt');
+  // Gerätebezogenes zählt nicht als Änderung
+  uhr(app, 2000); app.E('DB.lastClass = "x"; DB.trash = []; DB.settings.lock = true; LANG = "en"; flushSave(); LANG = "de"');
+  erwarte(app.E('DB.mod') === 1900, 'Gerätebezogene Einstellungen gelten als Datenänderung');
+  // Laden prüft Zeitstempel
+  uhr(app, 1790000000);
+  const roh = app.E(`JSON.stringify((() => { const d = sanitizeDB({ v: 2, stamps: { "c|a": 5, "c|b": -1, "c|c": "x", "c|d": 1.5, "zz|x": 1, constructor: 3, "s|k|z": 1790000000 + 999999 }, del: { [hk("c|alt")]: 10, [hk("c|neu")]: Math.floor(Date.now() / 1000), "c|klar": 5 }, mod: 1790000000 + 999999 }); return [d.stamps, d.del, d.mod, hk("c|neu")]; })())`);
+  const hn = JSON.parse(roh)[3];
+  erwarte(roh === JSON.stringify([{ "s|k|z": 1790999999, "c|a": 5 }, { [hn]: 1790000000 }, 1790999999, hn]), 'Zeitstempel werden beim Laden nicht geprüft: ' + roh);
+});
+
+test('Abgleich: zwei Geräte bearbeiten parallel', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    erwarte(B.E('DB.classes.length') === 1 && inhalt(B) === inhalt(app), 'Gleicher Ausgangsstand fehlt auf Gerät B');
+    const ids0 = {}; ['Anna', 'Ben', 'Cem', 'Dana'].forEach(n => { ids0[n] = sid(app, n); });
+    const A_ = n => ids0[n];
+    // Gerät A
+    uhr(app, 2000);
+    app.E(`(() => { const c = curClass(), a = c.assess[0];
+      a.marks["${A_('Ben')}"] = "3"; a.marks["${A_('Anna')}"] = "2-";
+      c.obs.push({ id: "o1", sid: "${A_('Ben')}", d: "2026-09-20", s: "ma", text: "meldet sich oft" });
+      c.students = c.students.filter(s => s.name !== "Cem");
+      c.checks[0].done.push("${A_('Anna')}"); })(); flushSave()`);
+    // Gerät B (später)
+    uhr(B, 3000);
+    B.E(`(() => { const c = curClass(), a = c.assess[0];
+      a.marks["${A_('Anna')}"] = "1"; delete a.marks["${A_('Dana')}"];
+      c.assess.push({ id: "w2", subjectId: "ma", title: "Test", date: "2026-09-25", kind: "other", scale: "points", weight: 1, marks: { "${A_('Ben')}": "12" } });
+      c.absLog.push({ d: "2026-09-24", p: 1, n: 1, s: "ma", ids: ["${A_('Dana')}"] });
+      c.students.find(s => s.name === "Ben").name = "Benjamin";
+      c.checks[0].done.push("${A_('Ben')}"); })(); flushSave()`);
+    const fA = datei(app), fB = datei(B);
+    // B in A einspielen
+    uhr(app, 4000);
+    app.E(`restoreParsed(${fB})`);
+    erwarte(!!app.$('#sync-preview') && /Noten/.test(app.$('#sync-preview').textContent) && !app.$('#sync-older'), 'Vorschau fehlt oder falsche Altersangabe');
+    erwarte(!/beiden Geräten/.test(app.$('#sync-preview').textContent), 'Ohne früheren Abgleich werden Widersprüche gemeldet');
+    app.klick('#sync-merge'); await pause(10);
+    app.E('curClassId = DB.classes[0].id');
+    const c = 'curClass()';
+    const m = n => app.E(`(${c}.assess.find(a => a.id === "w1").marks || {})["${A_(n)}"]`);
+    erwarte(m('Anna') === '1', 'Neuere Note von B nicht übernommen: ' + m('Anna'));
+    erwarte(m('Ben') === '3', 'Note von A verloren');
+    erwarte(m('Dana') === undefined, 'Auf B gelöschte Note kommt zurück');
+    erwarte(app.E(`${c}.assess.some(a => a.id === "w2" && a.marks["${A_('Ben')}"] === "12")`), 'Neue Bewertung von B fehlt');
+    erwarte(app.E(`${c}.obs.length`) === 1 && app.E(`${c}.absLog.length`) === 1, 'Beobachtung oder Fehlzeit fehlt');
+    erwarte(!app.E(`${c}.students.some(s => s.name === "Cem")`) && app.E(`${c}.students.some(s => s.name === "Benjamin")`), 'Löschen oder Umbenennen nicht übernommen');
+    erwarte(app.E(`${c}.checks[0].done.length`) === 2, 'Haken beider Geräte nicht zusammengeführt');
+    erwarte(!!app.$('#backup-reminder .minibtn.blue'), 'Zusammenführen lässt sich nicht rückgängig machen');
+    // A in B einspielen: beide Geräte haben danach denselben Stand
+    uhr(B, 4000);
+    await laden(B, fA, 'merge');
+    erwarte(inhalt(B) === inhalt(app), 'Geräte kommen nicht zum selben Stand');
+    // dieselbe Datei noch einmal: nichts ändert sich
+    const vorher = inhalt(app);
+    app.E(`restoreParsed(${fB})`);
+    erwarte(/ändert sich nichts/.test(app.$('#sync-preview').textContent), 'Zweites Einspielen meldet Änderungen: ' + app.$('#sync-preview').textContent);
+    app.klick('#sync-merge'); await pause(10);
+    app.E('curClassId = DB.classes[0].id');
+    erwarte(inhalt(app) === vorher, 'Zweites Einspielen verändert den Stand');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: Löschen gegen spätere Änderung', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1000); await laden(B, datei(app), 'replace');
+    const ben = sid(app, 'Ben');
+    // A löscht die Bewertung früh, B trägt später eine Note ein -> Bewertung bleibt
+    uhr(app, 2000); app.E('curClass().assess = []; flushSave()');
+    uhr(B, 3000); B.E(`curClass().assess[0].marks["${ben}"] = "5"; flushSave()`);
+    uhr(app, 3500); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curClass().assess.length') === 1 && app.E(`curClass().assess[0].marks["${ben}"]`) === '5', 'Spätere Note geht durch frühere Löschung verloren');
+    // A löscht danach erneut (neuer) -> bleibt gelöscht
+    uhr(app, 5000); app.E('curClass().assess = []; flushSave()');
+    uhr(B, 5000); await laden(B, datei(app), 'merge');
+    erwarte(B.E('curClass().assess.length') === 0, 'Neuere Löschung wird nicht übernommen');
+    // ganze Klasse: auf A gelöscht, auf B danach nicht verändert -> weg
+    uhr(app, 6000); app.E('DB.classes = []; flushSave()');
+    uhr(B, 6500); await laden(B, datei(app), 'merge');
+    erwarte(B.E('DB.classes.length') === 0, 'Gelöschte Klasse kommt zurück');
+    // Klasse neu auf B, A kennt sie nicht -> wird ergänzt
+    uhr(B, 7000); klasseMitNamen(B, '8a', ['Xaver']); B.E('flushSave()');
+    uhr(app, 7500); await laden(app, datei(B), 'merge');
+    erwarte(app.E('DB.classes.length') === 1 && app.E('DB.classes[0].name') === '8a', 'Neue Klasse wird nicht ergänzt');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: ältere Datei, alte Sicherungen, Gerätebezogenes', async app => {
+  uhr(app, 1790000000); grundstand(app);
+  app.E('DB.settings.lock = true; DB.lastClass = curClass().id; LANG = "de"; flushSave()');
+  // Sicherung ohne Zeitstempel (ältere Version): ergänzen, bei Unterschied gilt das Gerät
+  const alt = JSON.stringify({ app: 'fairseat', v: 2, exported: '2026-01-01T10:00:00.000Z', data: app.E(`(() => { const d = backupData(); delete d.stamps; delete d.del; delete d.mod;
+    d.lang = "en"; d.theme = "dark"; d.settings.timetable = false;
+    d.classes[0].assess[0].marks[d.classes[0].students[0].id] = "6";
+    d.classes[0].obs.push({ id: "alt", sid: d.classes[0].students[1].id, d: "2026-01-01", s: "", text: "aus alter Datei" });
+    d.rooms.push({ id: "r9", name: "Aula", w: 2700, h: 2100, floor: "stone", items: [] }); return d; })()`) });
+  app.E(`restoreParsed(${alt})`);
+  erwarte(!!app.$('#sync-older') && app.$('#sync-cmp').textContent.indexOf('01.01.2026') >= 0, 'Keine Warnung bei älterer Datei');
+  app.klick('#sync-merge'); await pause(10);
+  app.E('curClassId = DB.classes[0].id');
+  erwarte(app.E(`curClass().assess[0].marks["${sid(app, 'Anna')}"]`) === '2', 'Alte Datei überschreibt neueren Stand');
+  erwarte(app.E('curClass().obs.some(o => o.id === "alt")') && app.E('DB.rooms.some(r => r.id === "r9")'), 'Neues aus alter Datei wird nicht ergänzt');
+  erwarte(app.E('DB.settings.lock') === true && app.E('LANG') === 'de' && app.E('DB.theme') !== 'dark' && app.E('DB.settings.timetable') !== false, 'Gerätebezogenes aus der Datei übernommen');
+  // Ersetzen mit älterer Datei: deutliche Rückfrage
+  app.E(`restoreParsed(${alt})`); app.klick('#sync-replace');
+  erwarte(app.$('#sheet').textContent.indexOf('älter') >= 0, 'Ersetzen mit älterer Datei ohne Warnung');
+  app.klick('#sheet .row button.ghost'); await pause(100);
+  erwarte(!!app.$('#sync-replace'), 'Abbrechen führt nicht zur Auswahl zurück');
+  app.E('closeModal()');
+  // leeres Gerät: nur „Laden“
+  const B = neueApp();
+  try{
+    B.E(`restoreParsed(${alt})`);
+    erwarte(!B.$('#sync-merge') && !!B.$('#sync-replace') && B.$('#sync-replace').textContent === B.E('t("restore")'), 'Leeres Gerät bietet Zusammenführen an');
+    B.klick('#sync-replace'); await pause(10);
+    erwarte(B.E('DB.classes.length') === 1, 'Laden auf leerem Gerät klappt nicht');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: heutiger Unterricht und Anwesenheit', async app => {
+  uhr(app, 1000); grundstand(app);
+  const B = neueApp();
+  try{
+    uhr(B, 1000); await laden(B, datei(app), 'replace');
+    const ben = sid(app, 'Ben'), cem = sid(app, 'Cem');
+    // A: gestern Ben abwesend (Unterrichtsstand von gestern), B: heute Cem abwesend
+    uhr(app, 2000); app.E(`curClass().lesson = { date: "2026-10-05", absent: ["${ben}"], picked: [], notes: {} }; flushSave()`);
+    uhr(B, 3000); B.E(`curClass().lesson = { date: "2026-10-06", absent: ["${cem}"], picked: [], notes: {} }; flushSave()`);
+    uhr(app, 4000); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curClass().lesson.date') === '2026-10-06' && app.E('curClass().lesson.absent[0]') === cem, 'Jüngerer Unterrichtstag nicht übernommen');
+    erwarte(app.E('curClass().attendance.some(x => x.date === "2026-10-05" && x.absent[0] === "' + ben + '")'), 'Älterer Tag geht verloren');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: große Datenmenge', app => {
+  uhr(app, 1000);
+  klasseMitNamen(app, 'Groß', Array.from({ length: 32 }, (_, i) => 'Kind ' + i));
+  app.E(`(() => { const c = curClass(); DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" });
+    c.assess = []; for(let i = 0; i < 300; i++){ const m = {}; c.students.forEach((s, j) => { if((i + j) % 3) m[s.id] = String(1 + (i + j) % 6); });
+      c.assess.push({ id: "a" + i, subjectId: "ma", title: "T" + i, date: "2026-09-10", kind: "other", scale: "grade", weight: 1, marks: m }); } })(); flushSave()`);
+  const t0 = Date.now ? process.hrtime.bigint() : 0n;
+  uhr(app, 20000);
+  const ms = app.E('(() => { const t = performance.now(); const f = sanitizeDB(JSON.parse(JSON.stringify(DB))); f.classes[0].assess[5].marks[f.classes[0].students[2].id] = "1"; f.stamps["m|" + f.classes[0].id + "|a5|" + f.classes[0].students[2].id] = 9999; const r = mergeDB(DB, f); window.__r = r.report; return performance.now() - t; })()');
+  erwarte(ms < 3000, 'Zusammenführen zu langsam: ' + Math.round(ms) + ' ms');
+  erwarte(app.E('__r.upd') === 1 && app.E('__r.add') + app.E('__r.rem') === 0, 'Bericht falsch bei großer Datenmenge: ' + app.E('JSON.stringify(__r)'));
+  const ms2 = app.E('(() => { const t = performance.now(); curClass().assess[0].title = "x"; flushSave(); return performance.now() - t; })()');
+  erwarte(ms2 < 1500, 'Speichern mit Zeitstempeln zu langsam: ' + Math.round(ms2) + ' ms');
+});
+
+
+test('Abgleich: Verweise, Fehlzeiten, Papierkorb, Uhr', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1000); await laden(B, datei(app), 'replace');
+    const ben = sid(app, 'Ben'), cem = sid(app, 'Cem');
+    // A löscht Ben früh, B trägt später eine Note für Ben ein -> Ben bleibt (Verweis zählt)
+    uhr(app, 2000); app.E(`curClass().students = curClass().students.filter(s => s.id !== "${ben}"); flushSave()`);
+    uhr(B, 3000); B.E(`curClass().assess[0].marks["${ben}"] = "2"; flushSave()`);
+    uhr(app, 3500); await laden(app, datei(B), 'merge');
+    erwarte(app.E(`curClass().students.some(s => s.id === "${ben}")`) && app.E(`curClass().assess[0].marks["${ben}"]`) === '2', 'Spätere Note für gelöschten Schüler geht verloren');
+    // gleichzeitig verschiedene Abwesende in derselben Stunde -> beide zählen; Austragen wirkt
+    uhr(app, 4000); app.E(`curClass().absLog.push({ d: "2026-10-01", p: 0, n: 1, s: "ma", ids: ["${ben}"] }); flushSave()`);
+    uhr(B, 4100); B.E(`curClass().absLog.push({ d: "2026-10-01", p: 0, n: 1, s: "ma", ids: ["${cem}"] }); flushSave()`);
+    uhr(app, 4500); await laden(app, datei(B), 'merge');
+    erwarte(app.E('JSON.stringify(curClass().absLog[0].ids.slice().sort())') === JSON.stringify([ben, cem].sort()), 'Gleichzeitige Abwesenheiten überschreiben sich');
+    uhr(B, 4600); await laden(B, datei(app), 'merge');
+    uhr(B, 5000); B.E(`curClass().absLog[0].ids = curClass().absLog[0].ids.filter(x => x !== "${cem}"); flushSave()`);
+    uhr(app, 5500); await laden(app, datei(B), 'merge');
+    erwarte(app.E('JSON.stringify(curClass().absLog[0].ids)') === JSON.stringify([ben]), 'Austragen einer Abwesenheit wird nicht übernommen');
+    // Haken: auf B abgehakt, später auf A wieder entfernt
+    uhr(B, 6000); B.E(`curClass().checks[0].done.push("${cem}"); flushSave()`);
+    uhr(app, 6100); await laden(app, datei(B), 'merge');
+    uhr(app, 6200); app.E(`curClass().checks[0].done = []; flushSave()`);
+    uhr(B, 6300); await laden(B, datei(app), 'merge');
+    erwarte(B.E('curClass().checks[0].done.length') === 0, 'Entfernter Haken kommt zurück');
+    // Einstellungen: neuere werden übernommen, die Sperre nicht
+    uhr(B, 6400); B.E('DB.settings.quickScale = "points"; DB.settings.lock = true; flushSave()');
+    uhr(app, 6500); app.E('DB.settings.lock = false; flushSave()'); await laden(app, datei(B), 'merge');
+    erwarte(app.E('DB.settings.quickScale') === 'points' && app.E('DB.settings.lock') === false, 'Einstellungen falsch übernommen');
+    // Papierkorb: Klasse auf A gelöscht, auf B danach geändert -> wieder da, Papierkorb-Eintrag weg
+    uhr(app, 7000); app.E('(() => { const c = curClass(); trashPush("class", c.name, c); DB.classes = []; })(); flushSave()');
+    uhr(B, 7100); B.E('curClass().name = "7b neu"; flushSave()');
+    uhr(app, 7200); await laden(app, datei(B), 'merge');
+    erwarte(app.E('DB.classes.length') === 1 && app.E('DB.trash.length') === 0, 'Papierkorb behält die wieder vorhandene Klasse');
+    app.E('trashPush("class", "x", DB.classes[0]); trashRestore(DB.trash[0].id)');
+    erwarte(app.E('DB.classes.length') === 2 && app.E('DB.classes[0].id !== DB.classes[1].id'), 'Wiederherstellen erzeugt doppelte IDs');
+    app.E('DB.classes.pop(); flushSave()');
+    // Uhr des anderen Geräts in der Zukunft: Hinweis, Zeiten zählen als „jetzt“
+    uhr(B, 7300 + 365 * 86400); B.E('curClass().name = "Zukunft"; flushSave()');
+    uhr(app, 8000);
+    const f = datei(B);
+    app.E(`restoreParsed(${f})`);
+    erwarte(!!app.$('#sync-clock'), 'Kein Hinweis auf falsche Uhr');
+    app.klick('#sync-merge'); await pause(10);
+    erwarte(app.E('Math.max(...Object.values(DB.stamps))') <= 8000 && app.E('DB.mod') <= 8000, 'Zeitstempel aus der Zukunft übernommen');
+    app.E('curClassId = DB.classes[0].id');
+    uhr(B, 8050); B.E('flushSave()');                 // Uhr von B wieder richtig – Zukunftszeiten bleiben lokal unverändert
+    erwarte(B.E('Math.max(...Object.values(DB.stamps))') > 8050, 'Lokale Zeiten werden ohne Abgleich verändert');
+    B.E(`restoreParsed(${datei(app)})`);
+    erwarte(!!B.$('#sync-ownclock') && !!B.$('#sync-merge'), 'Kein Hinweis auf die eigene Uhr');
+    B.klick('#sync-merge'); await pause(10); B.E('curClassId = DB.classes[0].id');
+    erwarte(B.E('Math.max(...Object.values(DB.stamps))') <= 8050, 'Zukunftszeiten bleiben nach dem Abgleich bestehen');
+    uhr(app, 8100); app.E('curClass().name = "Korrigiert"; flushSave()');
+    uhr(B, 8200); await laden(B, datei(app), 'merge');
+    erwarte(B.E('DB.classes[0].name') === 'Korrigiert', 'Nach falscher Uhr setzt sich die spätere Korrektur nicht durch');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: Vorschau, Widersprüche, Gelöschtes, alte Formate', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1000); await laden(B, datei(app), 'replace');
+    const anna = sid(app, 'Anna'), ben = sid(app, 'Ben');
+    // nur B ändert -> kein Widerspruch
+    uhr(B, 2000); B.E(`curClass().rules.push({ id: "r1", type: "apart", a: "${anna}", b: "${ben}" }); curClass().history.push({ t: "2026-09-01T08:00:00.000Z", pairs: ["${anna}|${ben}"] }); flushSave()`);
+    uhr(app, 2500); app.E(`restoreParsed(${datei(B)})`);
+    const pv = app.$('#sync-preview').textContent;
+    erwarte(/Regeln: 1 neu/.test(pv) && /Gemerkte Sitzordnungen: 1 neu/.test(pv) && !/beiden Geräten/.test(pv), 'Vorschau unvollständig oder falscher Widerspruch: ' + pv);
+    app.klick('#sync-merge'); await pause(10); app.E('curClassId = DB.classes[0].id');
+    // beide ändern dieselbe Note nach dem Abgleich -> ein Widerspruch (Einzahl)
+    uhr(B, 2600); await laden(B, datei(app), 'merge');
+    uhr(app, 3000); app.E(`curClass().assess[0].marks["${anna}"] = "5"; flushSave()`);
+    uhr(B, 3100); B.E(`curClass().assess[0].marks["${anna}"] = "6"; flushSave()`);
+    uhr(app, 3500); app.E(`restoreParsed(${datei(B)})`);
+    erwarte(/1 Eintrag wurde auf beiden Geräten geändert/.test(app.$('#sync-preview').textContent), 'Widerspruch nicht (in Einzahl) gemeldet: ' + app.$('#sync-preview').textContent);
+    app.klick('#sync-merge'); await pause(10); app.E('curClassId = DB.classes[0].id');
+    erwarte(app.E(`curClass().assess[0].marks["${anna}"]`) === '6', 'Neuere Note nicht übernommen');
+    // Gemerkte Sitzordnung nach Löschen eines Schülers nicht doppelt
+    uhr(B, 3600); await laden(B, datei(app), 'merge');
+    uhr(B, 3700); B.E(`curClass().students = curClass().students.filter(s => s.id !== "${ben}"); flushSave()`);
+    uhr(app, 3800); await laden(app, datei(B), 'merge');
+    uhr(B, 3900); await laden(B, datei(app), 'merge');
+    erwarte(app.E('curClass().history.length') === 1 && B.E('curClass().history.length') === 1, 'Gemerkte Sitzordnung verdoppelt');
+    // Datei-„Stand“ ist die letzte Änderung, nicht der Export
+    uhr(app, 5000); app.E('curClass().obs.push({ id: "neu", sid: "' + anna + '", d: "2026-10-01", s: "", text: "x" }); flushSave()');
+    uhr(B, 9000);
+    app.E(`restoreParsed(${datei(B)})`);
+    erwarte(!!app.$('#sync-older'), 'Ältere Datei (später exportiert) ohne Warnung');
+    app.E('closeModal()');
+    // Schuljahreswechsel auf A: alter Unterrichtstag von B kommt nicht zurück
+    uhr(B, 9100); B.E(`curClass().lesson = { date: "2026-07-01", absent: ["${anna}"], picked: [], notes: {} }; flushSave()`);
+    uhr(app, 9200); await laden(app, datei(B), 'merge');
+    uhr(app, 9300); app.E('curClass().lesson = { date: "", absent: [], picked: [], notes: {} }; curClass().attendance = []; flushSave()');
+    uhr(app, 9400); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curClass().lesson.date') === '' && app.E('curClass().attendance.length') === 0, 'Gelöschter Unterrichtstag kommt zurück');
+    // sehr alte Sicherung (v1): nur Laden
+    app.E(`restoreParsed({ classes: [{ name: "Alt", students: ["A"], plans: [] }] })`);
+    erwarte(!app.$('#sync-merge') && !!app.$('#sync-replace') && app.$('#sheet').textContent.indexOf('sehr alten Version') >= 0, 'v1-Sicherung bietet Zusammenführen an');
+    app.E('closeModal()');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: kompaktes Speichern und Schlüssel', app => {
+  uhr(app, 1790000000); grundstand(app);
+  const roh = app.E('localStorage.getItem(KEY)');
+  erwarte(roh.indexOf('"~":1') >= 0 && roh.indexOf('"m|' + app.E('curClass().id') + '|w1|') < 0, 'Zeitstempel nicht kompakt gespeichert');
+  const n = app.E('Object.keys(DB.stamps).length');
+  erwarte(n > 5 && app.E('JSON.stringify(sanitizeDB(JSON.parse(localStorage.getItem(KEY))).stamps) === JSON.stringify(DB.stamps)'), 'Kompaktformat geht beim Laden verloren');
+  erwarte(app.E('JSON.stringify(unpackStamps(packStamps({ "a|x": 5, "a|y": 7, tt: 9 })))') === '{"a|x":5,"a|y":7,"tt":9}', 'Packen und Entpacken falsch');
+  erwarte(app.E('JSON.stringify(unpackStamps({ "~": 1, b: 0, g: { "": { "__proto__": "1", constructor: "2" } } }))') === '{}', 'Entpacken nicht abgesichert');
+  // IDs mit „|“ führen nicht zu verwechselten Schlüsseln
+  const ks = app.E('Array.from(syncEntities({ classes: [{ id: "a|b", name: "x", students: [{ id: "c", name: "y" }] }, { id: "a", name: "z", students: [{ id: "b|c", name: "w" }] }] }).keys())');
+  erwarte(new Set(ks).size === ks.length && ks.length === 4, 'Schlüssel nicht eindeutig: ' + ks.join(' '));
+  // Sicherung: kompakt, ohne Gerätezeit des letzten Abgleichs
+  app.E('DB.syncAt = 5');
+  const d = app.E('backupData()');
+  erwarte(d.stamps['~'] === 1 && d.syncAt === undefined, 'Sicherung nicht kompakt oder mit Abgleichzeit');
+});
+
+
+test('Abgleich: Tageswechsel, Schuljahr, Historie, Gleichstand', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1000); await laden(B, datei(app), 'replace');
+    const ben = sid(app, 'Ben'), cem = sid(app, 'Cem'), anna = sid(app, 'Anna');
+    // Handy: Ben fehlt am 05.10.; Tablet: Cem fehlt am 05.10., am 06.10. Tageswechsel (05.10. wandert in die Anwesenheit)
+    uhr(app, 2000); app.E(`curClass().lesson = { date: "2026-10-05", absent: ["${ben}"], picked: [], notes: {} }; flushSave()`);
+    uhr(B, 2100); B.E(`curClass().lesson = { date: "2026-10-05", absent: ["${cem}"], picked: [], notes: {} }; flushSave()`);
+    uhr(B, 2200); B.E(`(() => { const c = curClass(); c.attendance.push({ date: "2026-10-05", absent: c.lesson.absent.slice() }); c.lesson = { date: "2026-10-06", absent: [], picked: [], notes: {} }; })(); flushSave()`);
+    erwarte(!B.E('Object.keys(DB.del).length'), 'Tageswechsel erzeugt Löschvermerke');
+    uhr(app, 2300); await laden(app, datei(B), 'merge');
+    uhr(B, 2400); await laden(B, datei(app), 'merge');
+    const tag = x => x.E('JSON.stringify((curClass().attendance.find(a => a.date === "2026-10-05") || { absent: [] }).absent.slice().sort())');
+    erwarte(tag(app) === JSON.stringify([ben, cem].sort()) && tag(B) === tag(app) && app.E('curClass().lesson.date') === '2026-10-06', 'Abwesenheit geht beim Tageswechsel verloren: ' + tag(app) + ' / ' + tag(B));
+    // Schuljahreswechsel auf B löscht Fehlzeiten; A unverändert -> nichts kommt zurück
+    uhr(B, 3000); B.E('curClass().attendance = []; curClass().lesson = { date: "", absent: [], picked: [], notes: {} }; flushSave()');
+    uhr(B, 3100); B.E(`curClass().lesson = { date: "2026-09-01", absent: [], picked: [], notes: {} }; flushSave()`);
+    uhr(app, 3200); await laden(app, datei(B), 'merge');
+    uhr(B, 3300); await laden(B, datei(app), 'merge');
+    erwarte(app.E('curClass().attendance.length') === 0 && B.E('curClass().attendance.length') === 0, 'Fehlzeiten des alten Schuljahres kehren zurück');
+    // Unterricht auf B gelöscht (später), A hat ihn -> auf A gelöscht
+    uhr(app, 3400); app.E(`curClass().lesson = { date: "2026-09-02", absent: ["${anna}"], picked: [], notes: {} }; flushSave()`);
+    uhr(B, 3500); await laden(B, datei(app), 'merge');
+    uhr(B, 3600); B.E('curClass().lesson = { date: "", absent: [], picked: [], notes: {} }; flushSave()');
+    uhr(app, 3700); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curClass().lesson.date') === '', 'Gelöschter Unterricht bleibt bestehen');
+    // Historie: 5 + 5 Einträge, höchstens 8 – beide Geräte behalten dieselben
+    uhr(app, 4000); app.E('for(let i = 0; i < 5; i++) curClass().history.push({ t: "2026-09-0" + (i + 1) + "T08:00:00.000Z", pairs: [] }); flushSave()');
+    uhr(B, 4000); B.E('for(let i = 0; i < 5; i++) curClass().history.push({ t: "2026-09-1" + i + "T09:00:00.000Z", pairs: [] }); flushSave()');
+    for(let r = 0; r < 2; r++){ uhr(app, 4100 + r * 100); await laden(app, datei(B), 'merge'); uhr(B, 4150 + r * 100); await laden(B, datei(app), 'merge'); }
+    const hist = x => x.E('JSON.stringify(curClass().history.map(h => h.t))');
+    erwarte(hist(app) === hist(B) && app.E('curClass().history.length') === 8, 'Gemerkte Sitzordnungen laufen auseinander');
+    app.E(`restoreParsed(${datei(B)})`);
+    erwarte(/ändert sich nichts/.test(app.$('#sync-preview').textContent), 'Historie meldet bei jedem Abgleich Änderungen');
+    app.E('closeModal()');
+    // Gleichstand in derselben Sekunde: beide Geräte entscheiden gleich
+    uhr(app, 5000); uhr(B, 5000);
+    app.E(`curClass().assess[0].marks["${anna}"] = "4"; flushSave()`); B.E(`curClass().assess[0].marks["${anna}"] = "5"; flushSave()`);
+    const fa = datei(app), fb = datei(B);
+    uhr(app, 5100); await laden(app, fb, 'merge'); uhr(B, 5100); await laden(B, fa, 'merge');
+    erwarte(app.E(`curClass().assess[0].marks["${anna}"]`) === B.E(`curClass().assess[0].marks["${anna}"]`), 'Gleichstand wird unterschiedlich entschieden');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: Vorrang lokal, Widersprüche, Verweise ohne Wiederkehr', async app => {
+  uhr(app, 1000); grundstand(app);
+  const cid = app.E('curClass().id'), anna = sid(app, 'Anna');
+  // R hat die Bewertung früh gelöscht, L hat danach eine Note ergänzt -> bleibt
+  const R1 = app.E(`(() => { const d = sanitizeDB(JSON.parse(JSON.stringify(DB))); d.classes[0].assess = []; d.del = { [hk("a|${cid}|w1")]: 2000 }; d.mod = 2000; return d; })()`);
+  uhr(app, 3000); app.E(`curClass().assess[0].marks["${anna}"] = "1"; flushSave()`);
+  uhr(app, 3500);
+  erwarte(app.E(`mergeDB(DB, ${JSON.stringify(R1)}).db.classes[0].assess.length`) === 1, 'Spätere lokale Note geht durch frühere Löschung verloren');
+  // Sperre aus der Datei wird nie übernommen, auch wenn die Datei neuere Einstellungen hat
+  const R2 = app.E('(() => { const d = sanitizeDB(JSON.parse(JSON.stringify(DB))); d.settings.lock = true; d.settings.quickScale = "smiley"; d.stamps.set = 9999; return d; })()');
+  uhr(app, 10000);
+  const m2 = app.E(`(() => { const r = mergeDB(DB, ${JSON.stringify(R2)}).db; return [r.settings.lock, r.settings.quickScale]; })()`);
+  erwarte(m2[0] === false && m2[1] === 'smiley', 'Sperre aus der Datei übernommen: ' + JSON.stringify(m2));
+  // Zeiten in der Zukunft gewinnen beim Vergleich nicht
+  const R3 = app.E(`(() => { const d = sanitizeDB(JSON.parse(JSON.stringify(DB))); d.classes[0].assess[0].marks["${anna}"] = "6"; d.stamps["m|${cid}|w1|${anna}"] = 99999999; return d; })()`);
+  uhr(app, 10100); app.E(`curClass().assess[0].marks["${anna}"] = "2"; flushSave()`);
+  erwarte(app.E(`mergeDB(DB, ${JSON.stringify(R3)}).db.classes[0].assess[0].marks["${anna}"]`) === '2', 'Zukunftszeit gewinnt beim Zusammenführen');
+  // Widersprüche nur, wenn beide seit dem letzten Abgleich/Export geändert haben
+  app.E('DB.syncAt = 10200');
+  const R4 = app.E(`(() => { const d = sanitizeDB(JSON.parse(JSON.stringify(DB))); d.classes[0].assess[0].marks["${anna}"] = "3"; d.stamps["m|${cid}|w1|${anna}"] = 10300; return d; })()`);
+  erwarte(app.E(`mergeDB(DB, ${JSON.stringify(R4)}).report.conflicts`) === 0, 'Einseitige Änderung als Widerspruch gemeldet');
+  uhr(app, 10400); app.E(`curClass().assess[0].marks["${anna}"] = "1"; flushSave()`);
+  erwarte(app.E(`mergeDB(DB, ${JSON.stringify(R4)}).report.conflicts`) === 1, 'Echter Widerspruch nicht gezählt');
+  // ohne früheren Abgleich keine (womöglich falschen) Widersprüche
+  app.E('DB.syncAt = 0');
+  erwarte(app.E(`mergeDB(DB, ${JSON.stringify(R4)}).report.conflicts`) === 0, 'Widersprüche ohne gemeinsamen Ausgangsstand');
+  // Stunde einer gelöschten Klasse holt die Klasse nicht zurück
+  const R5 = app.E(`(() => { const d = sanitizeDB(JSON.parse(JSON.stringify(DB))); d.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" });
+    d.lessons = [{ id: "L1", day: 0, period: 0, span: 1, week: "", subjectId: "ma", classId: "${cid}", roomId: "", planId: "" }]; d.stamps["les|L1"] = 20000; return d; })()`);
+  uhr(app, 15000); app.E('DB.classes = []; flushSave()');
+  uhr(app, 21000);
+  const m5 = app.E(`(() => { const r = mergeDB(DB, ${JSON.stringify(R5)}).db; return [r.classes.length, r.lessons.length]; })()`);
+  erwarte(m5[0] === 0 && m5[1] === 1, 'Stunde holt gelöschte Klasse zurück: ' + JSON.stringify(m5));
+});
+
+test('Abgleich: eigene Datei ändert nichts, Zahlen im Vergleich', async app => {
+  uhr(app, 1000); grundstand(app);
+  const f = datei(app);
+  // Schüler gelöscht – seine Noten liegen bis zum Neuladen noch im Speicher (für Rückgängig)
+  uhr(app, 2000); app.E(`curClass().students = curClass().students.filter(s => s.name !== "Dana"); flushSave()`);
+  const f2 = datei(app);
+  app.E(`restoreParsed(${f2})`);
+  erwarte(/ändert sich nichts/.test(app.$('#sync-preview').textContent), 'Eigene Datei meldet Änderungen: ' + app.$('#sync-preview').textContent);
+  erwarte(/1 Klasse ·/.test(app.$('#sync-cmp').textContent) && /3 Namen/.test(app.$('#sync-cmp').textContent), 'Zahlen im Vergleich falsch: ' + app.$('#sync-cmp').textContent);
+  app.E('closeModal()');
+});
+
+test('Abgleich: Speichern großer Klassen bleibt schnell', app => {
+  uhr(app, 1000);
+  for(let k = 0; k < 6; k++) klasseMitNamen(app, 'K' + k, Array.from({ length: 30 }, (_, i) => 'Kind ' + k + '-' + i));
+  app.E(`(() => { DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" });
+    DB.classes.forEach(c => { c.assess = []; for(let i = 0; i < 40; i++){ const m = {}; c.students.forEach((s, j) => { m[s.id] = String(1 + (i + j) % 6); });
+      c.assess.push({ id: "a" + i, subjectId: "ma", title: "T" + i, date: "2026-09-10", kind: "other", scale: "grade", weight: 1, marks: m }); } }); })(); flushSave()`);
+  const ms = app.E('(() => { const t = performance.now(); for(let i = 0; i < 5; i++) flushSave(); return (performance.now() - t) / 5; })()');
+  erwarte(ms < 60, 'Speichern ohne Änderung zu langsam: ' + Math.round(ms) + ' ms');
+  const ms2 = app.E('(() => { const t = performance.now(); DB.classes[2].assess[3].marks[DB.classes[2].students[0].id] = "1"; flushSave(); return performance.now() - t; })()');
+  erwarte(ms2 < 120, 'Speichern einer Note zu langsam: ' + Math.round(ms2) + ' ms');
+  const size = app.E('localStorage.getItem(KEY).length'), ohne = app.E('JSON.stringify(Object.assign({}, DB, { stamps: {}, del: {} })).length');
+  erwarte(size < ohne * 2, 'Zeitstempel brauchen zu viel Platz: ' + size + ' zu ' + ohne);
+});
+
+test('Übertragen auf ein anderes Gerät', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    uhr(B, 1500); B.E('curClass().students.find(s => s.name === "Ben").name = "Bennet"; flushSave()');
+    klasseMitNamen(B, '9c', ['Xaver', 'Yara']); B.E('flushSave(); goHome()');
+    app.E('goHome(); DB.lastBackup = "2026-01-01T00:00:00.000Z"');
+    erwarte(!!app.$('#btn-transfer') && /anderes Gerät/.test(app.$('#btn-transfer').textContent), 'Knopf „Auf anderes Gerät übertragen“ fehlt');
+    const box = downloadAbfangen(app);
+    app.klick('#btn-transfer');
+    erwarte(!!app.$('#tr-pw1') && !!app.$('#tr-send') && !app.$('#bk-plain') && app.E('document.querySelectorAll("#sheet ol li").length') === 3, 'Übertragen: Passwort, Anleitung oder Knopf fehlt – oder ungeschützt möglich');
+    erwarte(/Zusammenführen/.test(app.$('#sheet ol').textContent) && /Sicherung laden/.test(app.$('#sheet ol').textContent), 'Anleitung nennt die Knöpfe auf dem anderen Gerät nicht');
+    app.$('#tr-pw1').value = 'kurz'; app.$('#tr-pw2').value = 'kurz';
+    app.klick('#tr-send'); await pause(50);
+    erwarte(!box.blob && /8 Zeichen/.test(app.$('#toast').textContent), 'Zu kurzes Passwort beim Übertragen akzeptiert');
+    app.$('#tr-pw1').value = 'geheim-geheim'; app.$('#tr-pw2').value = 'geheim-anders';
+    app.klick('#tr-send'); await pause(50);
+    erwarte(!box.blob && /stimmen nicht/.test(app.$('#toast').textContent), 'Abweichende Passwörter beim Übertragen akzeptiert');
+    app.$('#tr-pw2').value = 'geheim-geheim';
+    uhr(app, 2000); app.E('curClass().students.find(s => s.name === "Ben").name = "Benno"');   // noch nicht gespeichert, aber neuer als „Bennet“ auf B
+    app.$('#tr-pw2').dispatchEvent(new app.w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));   // Enter im zweiten Feld sendet
+    for(let i = 0; i < 100 && !box.blob; i++) await pause(30);
+    erwarte(!!box.blob, 'Übertragungsdatei nicht erzeugt');
+    if(!box.blob) return;
+    erwarte(/^fairseat-uebertragung-\d{4}-\d{2}-\d{2}\.json$/.test(box.name), 'Dateiname: ' + box.name);
+    erwarte(!app.$('#modal').classList.contains('on') && /Übertragungsdatei/.test(app.$('#toast').textContent), 'Blatt bleibt offen oder keine Rückmeldung');
+    erwarte(app.E('DB.lastBackup') === '2026-01-01T00:00:00.000Z', 'Übertragung zählt fälschlich als Sicherung');
+    const text = await blobText(app, box.blob);
+    erwarte(text.indexOf('Anna') < 0 && text.indexOf('"students"') < 0 && text.indexOf('"enc"') >= 0, 'Übertragungsdatei enthält Klartext');
+    // Gerät B: laden, Passwort, Zusammenführen – eigene Klasse bleibt
+    uhr(B, 3000);
+    dateiWaehlen(B, '#filepick', box.name, text); await pause(60);
+    erwarte(!!B.$('#bk-pw-open'), 'Gerät B fragt nicht nach dem Passwort');
+    B.$('#bk-pw-open').value = 'geheim-geheim'; B.sheetOk();
+    for(let i = 0; i < 150 && !B.$('#sync-merge'); i++) await pause(30);
+    erwarte(!!B.$('#sync-merge'), 'Gerät B bietet kein Zusammenführen an');
+    B.klick('#sync-merge'); await pause(10);
+    const namen = B.E('DB.classes.map(c => c.name).sort().join(",")');
+    erwarte(namen === '7b,9c', 'Nach dem Übertragen fehlen Klassen: ' + namen);
+    erwarte(B.E('DB.classes.find(c => c.name === "7b").students.some(s => s.name === "Benno")'), 'Ungespeicherte letzte Änderung nicht übertragen: ' + B.E('DB.classes.find(c => c.name === "7b").students.map(s => s.name).join()'));
+    // Sperre: ohne Entsperren kein Übertragen
+    const m = bioMock(app); app.E('DB.settings.lock = true; lockOpen = false'); m.next = 'abbruch';
+    app.klick('#btn-transfer');
+    erwarte(!app.$('#tr-pw1') && m.calls === 1, 'Übertragen ohne Entsperren möglich');
+    m.next = 'ok'; app.klick('#btn-transfer');
+    erwarte(!!app.$('#tr-pw1'), 'Nach dem Entsperren kein Übertragen');
+    // länger im Hintergrund: Übertragen- und Sicherungsblatt schließen sich, nichts wird erzeugt
+    const box2 = downloadAbfangen(app);
+    app.$('#tr-pw1').value = 'geheim-geheim'; app.$('#tr-pw2').value = 'geheim-geheim';
+    app.E('lockPause(); lockPausedAt = Date.now() - 6 * 60 * 1000; lockResume()');
+    erwarte(!app.$('#tr-pw1') && !app.$('#modal').classList.contains('on'), 'Übertragen bleibt nach automatischer Sperre offen');
+    m.next = 'ok'; app.klick('#btn-backup');
+    erwarte(!!app.$('#bk-plain'), 'Sicherung nach Entsperren nicht offen');
+    app.E('lockPause(); lockPausedAt = Date.now() - 6 * 60 * 1000; lockResume()');
+    erwarte(!app.$('#bk-plain') && !app.$('#modal').classList.contains('on'), 'Sicherung bleibt nach automatischer Sperre offen');
+    // gesperrt, während verschlüsselt wird: nichts verlässt das Gerät
+    m.next = 'ok'; app.klick('#btn-transfer');
+    app.$('#tr-pw1').value = 'geheim-geheim'; app.$('#tr-pw2').value = 'geheim-geheim';
+    app.klick('#tr-send'); app.E('lockOpen = false');
+    await pause(1500);
+    erwarte(!box2.blob, 'Nach dem Sperren trotzdem übertragen');
+    app.E('closeModal()');
+  } finally { B.ende(); }
+});
+
+test('Übertragen in der App öffnet das Teilen-Menü', async app => {
+  klasseMitNamen(app, '7b', ['Anna']);
+  app.E('goHome()');
+  const calls = [];
+  app.E('window.cordova = { platformId: "ios" }');
+  app.w.plugins = { socialsharing: { shareWithOptions(o){ calls.push(o); } } };
+  app.klick('#btn-transfer');
+  app.$('#tr-pw1').value = 'geheim-geheim'; app.$('#tr-pw2').value = 'geheim-geheim';
+  app.klick('#tr-send');
+  for(let i = 0; i < 100 && !calls.length; i++) await pause(30);
+  erwarte(calls.length === 1 && /^df:fairseat-uebertragung-[\d-]+\.json;data:application\/json;base64,/.test(calls[0].files[0]), 'Teilen-Menü nicht mit der Datei geöffnet: ' + (calls[0] && calls[0].files[0].slice(0, 70)));
+  // Blatt während des Verschlüsselns geschlossen: nichts wird geteilt
+  app.klick('#btn-transfer');
+  app.$('#tr-pw1').value = 'geheim-geheim'; app.$('#tr-pw2').value = 'geheim-geheim';
+  app.klick('#tr-send'); app.E('closeModal()');
+  await pause(1500);
+  erwarte(calls.length === 1, 'Nach dem Schließen trotzdem geteilt');
+  // Sicherung: Abbrechen während des Verschlüsselns teilt nichts und zählt nicht als Sicherung
+  app.E('DB.lastBackup = ""');
+  app.klick('#btn-backup');
+  app.$('#bk-pw1').value = 'geheim-geheim'; app.$('#bk-pw2').value = 'geheim-geheim';
+  app.klick('#bk-enc'); app.E('closeModal()');
+  await pause(1500);
+  erwarte(calls.length === 1 && app.E('DB.lastBackup') === '', 'Sicherung nach Abbrechen trotzdem geteilt');
+});
+
+/* ---------- 32. Klassenarbeit mit Aufgaben, Kursheft, Fehlzeiten, Strichlisten ---------- */
+const feld = (app, sel, v) => { const f = app.$(sel); f.value = v; f.dispatchEvent(new app.w.Event('input')); if(f.onchange) f.onchange(); };
+function klassenarbeit(app){
+  bewertungsKlasse(app);
+  app.E(`curClass().assess = [{ id: "w1", subjectId: "ma", title: "KA 1", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: {} }]; openAssess("w1")`);
+}
+test('Klassenarbeit: Aufgaben, Notenschlüssel, Punkte', async app => {
+  klassenarbeit(app);
+  erwarte(!!app.$('#a-tasks') && /Punkte je Aufgabe/.test(app.$('#a-tasks').textContent), 'Kein Einstieg für Aufgabenpunkte');
+  app.klick('#a-tasks');
+  erwarte(app.$$('#tk-list .tkrow').length === 3 && app.$$('#tk-key .tkrow').length === 5, 'Vorgabe: 3 Aufgaben und 5 Grenzen erwartet');
+  erwarte(app.$$('#tk-preset button')[0].classList.contains('on') && !app.$$('#tk-preset button')[1].classList.contains('on'), 'Gewählte Vorlage nicht markiert');
+  feld(app, '#tk-max-2', '20'); feld(app, '#tk-name-2', '3a');
+  erwarte(/40 Punkte/.test(app.$('#tk-sum').textContent) && /ab 37 P/.test(app.$('#tk-key').textContent), 'Summe oder Schlüssel in Punkten falsch: ' + app.$('#tk-key').textContent.slice(0, 60));
+  app.sheetOk();
+  erwarte(app.E('curAssess().tasks.length') === 3 && app.E('taskMax(curAssess())') === 40 && app.E('curAssess().tasks[2].name') === '3a', 'Aufgaben nicht gespeichert');
+  erwarte(app.E('JSON.stringify(keyNeeds(curAssess()))') === '[37,32.5,27,20,12]', 'Grenzen falsch gerundet: ' + app.E('JSON.stringify(keyNeeds(curAssess()))'));
+  erwarte(!app.$$('#assess-pad button').some(b => b.dataset.tok === '2') && !!app.$('#a-pts'), 'Tastenfeld statt Punkte-Eingabe');
+  // Anna: Zeile antippen öffnet die Punkte
+  const anna = sid(app, 'Anna'), ben = sid(app, 'Ben'), cem = sid(app, 'Cem'), dana = sid(app, 'Dana');
+  app.klick(`#assess-list .arow[data-sid="${anna}"]`);
+  erwarte(!!app.$('#pt-0') && app.$$('#pt-grid input').length === 3, 'Punkteblatt nicht geöffnet');
+  feld(app, '#pt-0', '10'); feld(app, '#pt-1', '10'); feld(app, '#pt-2', '17');
+  erwarte(/37 von 40/.test(app.$('#pt-res').textContent) && /Note 1/.test(app.$('#pt-res').textContent), 'Vorschau falsch: ' + app.$('#pt-res').textContent);
+  app.klick('#pt-next');
+  erwarte(app.E(`curAssess().marks["${anna}"]`) === '1' && app.$('#sheet h3').textContent.indexOf('Ben') === 0, 'Note nicht berechnet oder nicht weiter zum nächsten Namen');
+  feld(app, '#pt-0', '5'); feld(app, '#pt-1', '5');
+  app.$('#pt-1').dispatchEvent(new app.w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));   // Enter: nächstes Feld
+  erwarte(app.w.document.activeElement === app.$('#pt-2'), 'Enter springt nicht ins nächste Feld');
+  app.$('#pt-2').dispatchEvent(new app.w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));   // letztes Feld: weiter
+  erwarte(app.E(`curAssess().marks["${ben}"]`) === '6' && app.E(`JSON.stringify(curAssess().pts["${ben}"])`).indexOf('5') > 0, 'Ben: 10 Punkte müssen 6 ergeben');
+  feld(app, '#pt-0', '9,5'); feld(app, '#pt-1', '10'); feld(app, '#pt-2', '10.3');
+  app.klick('#pt-next');
+  erwarte(app.E(`studentPoints(curAssess(), "${cem}")`) === 30 && app.E(`curAssess().marks["${cem}"]`) === '3', 'Komma oder halbe Punkte falsch: ' + app.E(`studentPoints(curAssess(), "${cem}")`));
+  // Dana: zu viele Punkte werden abgelehnt, dann „fehlt“
+  feld(app, '#pt-0', '11'); app.klick('#pt-save');
+  erwarte(!!app.$('#pt-0') && /höchstens 10/.test(app.$('#toast').textContent) && !app.E(`curAssess().marks["${dana}"]`), 'Zu viele Punkte angenommen');
+  app.klick('#pt-miss');
+  erwarte(app.E(`curAssess().marks["${dana}"]`) === 'x' && !app.E(`curAssess().pts["${dana}"]`), '„fehlt“ nicht gesetzt');
+  app.E('closeModal(); renderAssess()');
+  erwarte(/Ben.*10 P/.test(app.$('#assess-list').textContent), 'Punkte fehlen in der Liste');
+  // Notenspiegel-Warnung (Ben 6 von 3 Arbeiten = 33 %) und Auswertung je Aufgabe
+  erwarte(!!app.$('#a-fail') && /33 %/.test(app.$('#a-fail').textContent) && /30 %/.test(app.$('#a-fail').textContent), 'Warnung über 30 % fehlt');
+  erwarte(!!app.$('#tk-stats') && app.$$('#tk-stats .tkbar').length === 3, 'Lösungsquote je Aufgabe fehlt');
+  // Tendenz
+  app.E('curAssess().key.tend = true; applyTaskMarks(curAssess())');
+  erwarte(app.E(`curAssess().marks["${anna}"]`) === '1-' && app.E(`curAssess().marks["${cem}"]`) === '3', 'Tendenz falsch: ' + app.E(`curAssess().marks["${anna}"]`) + ' ' + app.E(`curAssess().marks["${cem}"]`));
+  erwarte(app.E('keyGrade(curAssess(), 40)') === '1+' && app.E('keyGrade(curAssess(), 11.5)') === '6' && app.E('keyGrade(curAssess(), 12)') === '5-', 'Ränder der Tendenz falsch');
+  // „Löschen“ im Tastenfeld nimmt auch die Punkte weg
+  app.E(`assessSel = "${ben}"; setMark(null)`);
+  erwarte(!app.E(`curAssess().marks["${ben}"]`) && !app.E(`curAssess().pts["${ben}"]`), 'Löschen lässt Punkte stehen');
+  // Aufgabe entfernen: Punkte dieser Aufgabe weg, Note neu
+  app.klick('#a-tasks');
+  app.klick(app.$$('#tk-list .iconbtn')[2]);
+  app.sheetOk();
+  erwarte(app.E('taskMax(curAssess())') === 20 && app.E(`studentPoints(curAssess(), "${anna}")`) === 20 && app.E(`curAssess().marks["${anna}"]`) === '1+', 'Nach dem Entfernen einer Aufgabe nicht neu berechnet: ' + app.E(`curAssess().marks["${anna}"]`));
+  // Schnellbewertung auf einer Bewertung mit Punkten: die Punkte weichen, die Note bleibt
+  app.E(`(() => { const a = curAssess(); a.auto = true; a.date = isoDay(new Date()); a.kind = "other"; })()`);
+  const qb = app.w.document.createElement('div'); app.w.document.body.appendChild(qb);
+  app.E('window.__qb = document.body.lastChild');
+  app.E(`quickPad(window.__qb, curClass(), studentById(curClass(), "${cem}"), () => {}, isoDay(new Date()))`);
+  const q4 = app.$$('#sheet button, body > div:last-child button').find(b => b.dataset.tok === '4');
+  if(q4) q4.click();
+  erwarte(!!q4 && app.E(`curAssess().marks["${cem}"]`) === '4' && !app.E(`(curAssess().pts || {})["${cem}"]`) && app.E(`sanitizeDB(JSON.parse(JSON.stringify(DB))).classes[0].assess[0].marks["${cem}"]`) === '4', 'Schnellnote wird beim Laden überschrieben');
+  app.E(`(() => { const a = curAssess(); delete a.auto; a.kind = "written"; a.date = "2026-09-10"; a.pts["${cem}"] = { [a.tasks[0].id]: 9.5, [a.tasks[1].id]: 10 }; applyTaskMarks(a); })(); window.__qb.remove()`);
+  // Speichern und Laden: Punkte bleiben, Note wird aus Punkten abgeleitet, Unsinn wird begrenzt
+  const roh = app.E(`(() => { const d = JSON.parse(JSON.stringify(DB)); const a = d.classes[0].assess[0];
+    a.marks["${anna}"] = "5"; a.pts["${anna}"][a.tasks[0].id] = 99; a.pts["fremd"] = { x: 1 }; a.key.th = [10, 20, 30, 40, 50];
+    const o = sanitizeDB(d).classes[0].assess[0]; return JSON.stringify([o.marks["${anna}"], o.pts["${anna}"][o.tasks[0].id], !!o.pts.fremd, o.key.th[0]]); })()`);
+  erwarte(roh === '["1+",10,false,92]', 'Prüfung beim Laden unvollständig: ' + roh);
+  erwarte(app.E('JSON.stringify(sanitizeDB({ v: 2, classes: [{ name: "x", students: [], assess: [{ id: "a", subjectId: "ma", scale: "grade", marks: {} }] }] }).classes[0].assess[0]).indexOf("tasks")') < 0, 'Bewertungen ohne Aufgaben bekommen leere Felder');
+  // Punkte nur zu einer entfernten Aufgabe (z. B. nach dem Abgleich): Note entfällt; „fehlt“ bleibt
+  const weg = app.E(`(() => { const d = JSON.parse(JSON.stringify(DB)); const a = d.classes[0].assess[0];
+    a.pts["${ben}"] = { alt: 3 }; a.marks["${ben}"] = "6"; a.pts["${dana}"] = { alt: 1 };
+    const o = sanitizeDB(d).classes[0].assess[0]; return JSON.stringify([o.marks["${ben}"] || null, !!o.pts["${ben}"], o.marks["${dana}"]]); })()`);
+  erwarte(weg === '[null,false,"x"]', 'Note ohne Punkte bleibt stehen: ' + weg);
+  // „Mitarbeit heute“ (automatisch) bietet keine Aufgaben an
+  app.E(`curClass().assess.push({ id: "auto1", subjectId: "ma", title: "Mitarbeit", date: "2026-09-11", kind: "other", scale: "grade", weight: 1, marks: {}, auto: true }); openAssess("auto1")`);
+  erwarte(!app.$('#a-tasks'), 'Aufgaben bei automatischer Mitarbeitsnote angeboten');
+  app.E('openAssess("w1")');
+  // Auswertung als Excel
+  const box = downloadAbfangen(app);
+  app.E('renderAssess()'); app.klick('#a-xlsx');
+  erwarte(box.blob && /KA_1\.xlsx$/.test(box.name), 'Auswertung nicht exportiert: ' + box.name);
+  // Aufgaben ganz entfernen: Noten bleiben
+  app.klick('#a-tasks'); app.klick('#tk-off'); app.sheetOk();
+  erwarte(!app.E('hasTasks(curAssess())') && app.E(`curAssess().marks["${anna}"]`) === '1+' && !!app.$$('#assess-pad button').find(b => b.dataset.tok === '2'), 'Entfernen der Aufgaben falsch');
+});
+
+test('Klassenarbeit: Punkte im Sitzplan und Punkteskala', async app => {
+  klassenarbeit(app);
+  neuerPlan(app, 0);
+  app.E(`(() => { const a = curClass().assess[0]; a.tasks = [{ id: "t1", name: "1", max: 10 }, { id: "t2", name: "2", max: 10 }]; a.key = defaultKey("grade"); })(); startGradeMode("w1")`);
+  erwarte(!!app.$('#gb-pts') && !app.$$('#gb-pad button').some(b => b.dataset.tok === '1'), 'Im Plan kein Punkte-Knopf');
+  const seats = app.E('JSON.stringify(curPlan().desks.filter(d => d.studentId).map(d => d.studentId))');
+  const first = JSON.parse(seats)[0];
+  app.E(`pickGradeSeat("${first}")`);
+  erwarte(!!app.$('#pt-0'), 'Tipp auf Platz öffnet keine Punkte');
+  feld(app, '#pt-0', '10'); feld(app, '#pt-1', '9');
+  app.klick('#pt-next');
+  erwarte(app.E(`curAssess() || gradeAssess()`) && app.E(`gradeAssess().marks["${first}"]`) === '1' && !!app.$('#pt-0') && app.E('gradeSel') !== first, 'Note im Plan nicht gesetzt oder nicht zum nächsten Platz');
+  app.E('closeModal(); endGradeMode()');
+  // Punkteskala (Oberstufe): Abitur-Raster
+  app.E(`curClass().assess.push({ id: "w2", subjectId: "ma", title: "Klausur", date: "2026-09-12", kind: "written", scale: "points", weight: 1, marks: {},
+    tasks: [{ id: "a", name: "1", max: 100 }], key: defaultKey("points"), pts: {} }); openAssess("w2")`);
+  const P = v => app.E(`keyGrade(curAssess(), ${v})`);
+  erwarte(P(95) === '15' && P(94.5) === '14' && P(50) === '6' && P(45) === '5' && P(20) === '1' && P(19.5) === '0', 'Abitur-Raster falsch: ' + [P(95), P(94.5), P(50), P(20), P(19.5)].join());
+  app.klick('#a-tasks');
+  erwarte(app.$$('#tk-key .tkrow').length === 15 && !app.$('#tk-tend'), 'Punkteskala: 15 Grenzen, keine Tendenz');
+  app.E('closeModal()');
+});
+
+test('Kursheft: Thema, Hausaufgabe, letzte Stunde', async app => {
+  bewertungsKlasse(app);
+  neuerPlan(app, 0);
+  app.E('DB.settings.lesson = true; setLesson(true)');
+  app.klick('#lb-journal');
+  erwarte(!!app.$('#j-topic') && !app.$('#j-prev'), 'Kursheft nicht geöffnet oder Vorschau ohne Eintrag');
+  app.$('#j-subj').value = 'ma';
+  app.$('#j-topic').value = 'Brüche erweitern'; app.$('#j-hw').value = 'S. 12 Nr. 3';
+  app.$('#j-date').value = '2026-09-28';
+  app.sheetOk();
+  erwarte(app.E('curClass().journal.length') === 1 && app.E('curClass().journal[0].s') === 'ma' && app.E('curClass().journal[0].d') === '2026-09-28', 'Eintrag nicht gespeichert');
+  app.klick('#lb-journal'); app.$('#j-subj').value = 'ma';
+  app.E('closeModal(); openJournal(curClass(), null, "ma")');
+  erwarte(!!app.$('#j-prev') && /S\. 12 Nr\. 3/.test(app.$('#j-prev').textContent), 'Hausaufgabe der letzten Stunde fehlt');
+  app.$('#j-topic').value = '  '; app.$('#j-hw').value = '';
+  app.sheetOk();
+  erwarte(app.E('curClass().journal.length') === 1, 'Leerer Eintrag gespeichert');
+  app.E('openJournalList(curClass(), "")');
+  erwarte(app.$$('#j-list .jcard').length === 1 && /Brüche/.test(app.$('#j-list').textContent), 'Liste fehlt');
+  const box = downloadAbfangen(app);
+  app.klick('#j-xlsx');
+  erwarte(box.blob && /Kursheft\.xlsx$/.test(box.name), 'Kursheft nicht exportiert: ' + box.name);
+  // bearbeiten und löschen
+  app.klick('#j-list .jcard');
+  erwarte(app.$('#j-topic').value === 'Brüche erweitern', 'Bearbeiten zeigt den Eintrag nicht');
+  app.$('#j-hw').value = 'S. 13 Nr. 1'; app.sheetOk();
+  erwarte(app.E('curClass().journal.length') === 1 && app.E('curClass().journal[0].hw') === 'S. 13 Nr. 1', 'Bearbeiten legt neuen Eintrag an');
+  app.E('openJournal(curClass(), curClass().journal[0])'); app.klick('#j-del'); app.sheetOk();
+  erwarte(app.E('curClass().journal.length') === 0, 'Löschen geht nicht');
+  // Sonntag (ttDays kennt nur Mo–Sa)
+  erwarte(app.E('fmtDateLong("2026-10-04")') === 'So, 04.10.' && app.E('fmtDateLong("2026-10-05")') === 'Mo, 05.10.', 'Wochentag falsch: ' + app.E('fmtDateLong("2026-10-04")'));
+  // Prüfung beim Laden
+  const n = app.E(`sanitizeDB({ v: 2, classes: [{ name: "x", students: [], journal: [{ d: "2026-09-01", topic: "a" }, { d: "kaputt", topic: "b" }, { d: "2026-09-02", topic: " ", hw: "" }, { d: "2026-09-03", p: 99, hw: "h" }] }] }).classes[0].journal.map(e => e.d + ":" + e.p).join()`);
+  erwarte(n === '2026-09-01:-1,2026-09-03:-1', 'Kursheft beim Laden: ' + n);
+});
+
+test('Fehlzeiten: Verspätung und entschuldigt', async app => {
+  bewertungsKlasse(app);
+  neuerPlan(app, 0);
+  app.E('DB.settings.lesson = true; setLesson(true)');
+  const anna = sid(app, 'Anna');
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${anna}"))`);
+  app.klick('#lesson-late button[data-m="10"]');
+  erwarte(app.$('#lesson-late button[data-m="10"]').classList.contains('on'), 'Minuten nicht gewählt');
+  app.sheetOk();
+  erwarte(app.E('curClass().late.length') === 1 && app.E('curClass().late[0].min') === 10, 'Verspätung nicht gespeichert');
+  const seat = app.E(`curPlan().desks.find(d => d.studentId === "${anna}").id`);
+  erwarte(app.$(`#stage .item[data-id="${seat}"] .latemark`) && app.$(`#stage .item[data-id="${seat}"] .latemark`).textContent === '+10', 'Platz zeigt die Verspätung nicht');
+  erwarte(/10 Min\. zu spät/.test(app.$(`#stage .item[data-id="${seat}"]`).getAttribute('aria-label')), 'Vorlesen nennt die Verspätung nicht');
+  app.E('setPresenting(true)');
+  erwarte(!app.$(`#stage .item[data-id="${seat}"] .latemark`), 'Verspätung am Beamer sichtbar');
+  app.E('setPresenting(false)');
+  // abwesend nimmt die Verspätung weg
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${anna}"))`);
+  erwarte(app.$('#lesson-late button[data-m="10"]').classList.contains('on'), 'Gespeicherte Minuten nicht gezeigt');
+  app.klick('#sheet .tile.wide');
+  erwarte(!app.$('#lesson-late button.on'), 'Abwesend lässt die Minuten markiert');
+  app.sheetOk();
+  erwarte(app.E('curClass().late.length') === 0 && app.E(`curClass().lesson.absent.indexOf("${anna}")`) >= 0, 'Abwesend und verspätet zugleich');
+  // entschuldigen
+  app.E(`curClass().absLog = [{ d: "2026-09-14", p: 0, n: 2, s: "ma", ids: ["${anna}"] }]; curClass().attendance = [{ date: "2026-09-14", absent: ["${anna}"] }]; curClass().lesson.absent = []`);
+  app.E(`openAbsences(curClass(), studentById(curClass(), "${anna}"))`);
+  erwarte(app.$$('#abs-days .setrow').length === 1, 'Fehltag fehlt');
+  app.klick('#abs-days .setrow');
+  erwarte(app.E(`isExcused(curClass(), "2026-09-14", "${anna}")`) === true && /2 entschuldigt/.test(app.$('#abs-sum').textContent), 'Entschuldigung nicht gespeichert: ' + app.$('#abs-sum').textContent);
+  erwarte(app.E(`JSON.stringify(absenceSummary(curClass(), "${anna}"))`) === '{"days":1,"daysExc":1,"lessons":2,"lessonsExc":2,"late":0,"lateMin":0}', 'Summe falsch: ' + app.E(`JSON.stringify(absenceSummary(curClass(), "${anna}"))`));
+  // Anwesenheitsblatt: Name antippen öffnet die Fehlzeiten
+  app.E('closeModal()'); app.klick('#btn-attendance');
+  app.klick(`#abs-missed [data-sid="${anna}"]`);
+  erwarte(!!app.$('#abs-days'), 'Kein Weg zu den Fehlzeiten');
+  // Prüfung beim Laden
+  const r = app.E(`JSON.stringify((d => [d.exc, d.late.map(e => e.min)])(sanitizeDB({ v: 2, classes: [{ name: "x", students: [{ id: "s1", name: "A" }],
+    exc: ["2026-09-14|s1", "2026-09-14|s1", "kaputt|s1", "2026-09-14|weg"], late: [{ d: "2026-09-14", sid: "s1", min: 5 }, { d: "2026-09-14", sid: "s1", min: 0 }, { d: "2026-09-14", sid: "s1", min: 999 }] }] }).classes[0]))`);
+  erwarte(r === '[["2026-09-14|s1"],[5]]', 'Fehlzeiten beim Laden: ' + r);
+});
+
+test('Strichliste: Hausaufgaben vergessen', async app => {
+  bewertungsKlasse(app);
+  neuerPlan(app, 0);
+  app.E('DB.settings.lesson = true; setLesson(true)');
+  app.klick('#lb-check');
+  const q = app.$$('#tl-quick button');
+  erwarte(q.length === 2 && q[0].textContent === 'Hausaufgaben vergessen', 'Schnellwahl fehlt');
+  app.klick(q[0]);
+  erwarte(app.E('isTally(checkCur())') && app.E('checkCur().title') === 'Hausaufgaben vergessen', 'Strichliste nicht gestartet');
+  const anna = sid(app, 'Anna'), ben = sid(app, 'Ben');
+  app.E(`toggleCheck("${anna}"); toggleCheck("${anna}"); toggleCheck("${ben}")`);
+  erwarte(app.E('checkCur().ticks.length') === 1 && /heute 1 · insgesamt 1/.test(app.$('#cb-meta').textContent), 'Tippen zählt falsch: ' + app.$('#cb-meta').textContent);
+  app.E(`checkCur().ticks.push("2026-09-01|${ben}"); renderStage(false)`);
+  const seat = app.E(`curPlan().desks.find(d => d.studentId === "${ben}").id`);
+  const mk = app.$(`#stage .item[data-id="${seat}"] .tlmark`);
+  erwarte(mk && mk.textContent === '2' && app.$(`#stage .item[data-id="${seat}"]`).classList.contains('tltoday'), 'Platz zeigt die Summe nicht');
+  erwarte(!app.$(`#stage .item[data-id="${seat}"] .ckmark`), 'Strichliste zeigt Haken');
+  app.klick('#cb-list');
+  erwarte(!!app.$('#tl-names') && /2× · 01\.09\./.test(app.$('#tl-names').textContent), 'Liste zeigt Tage nicht');
+  app.klick(`#tl-names [data-sid="${anna}"] .minibtn`);
+  erwarte(app.E('checkCur().ticks.length') === 3, 'Heute-Knopf setzt keinen Strich');
+  app.E('closeModal(); endCheckMode()');
+  // Gesprächsblatt nennt die Strichliste, nicht als „offen“
+  const txt = app.E(`talkSheetPages(curClass(), studentById(curClass(), "${ben}")).map(p => p.content).join("\\n")`);
+  erwarte(/Strichlisten/.test(txt) && /Hausaufgaben vergessen: 2/.test(txt), 'Gesprächsblatt ohne Strichliste');
+  erwarte(!/Hausaufgaben vergessen \(/.test(txt) && txt.indexOf(app.E('t("ckOpen")')) < 0, 'Strichliste erscheint als offene Abhakliste');
+  // Prüfung beim Laden
+  const r = app.E(`JSON.stringify(sanitizeDB({ v: 2, classes: [{ name: "x", students: [{ id: "s1", name: "A" }],
+    checks: [{ id: "k", title: "HA", type: "tally", done: ["s1"], ticks: ["2026-09-01|s1", "2026-09-01|s1", "x|s1", "2026-09-02|zz"] }] }] }).classes[0].checks[0])`);
+  erwarte(r === '{"id":"k","title":"HA","date":"","done":[],"type":"tally","ticks":["2026-09-01|s1"]}', 'Strichliste beim Laden: ' + r);
+});
+
+test('Abgleich: Punkte, Kursheft, Fehlzeiten, Strichlisten', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    const A_ = n => sid(app, n);
+    app.E(`(() => { const a = curClass().assess[0]; a.tasks = [{ id: "t1", name: "1", max: 10 }, { id: "t2", name: "2", max: 10 }]; a.key = defaultKey("grade"); a.pts = {};
+      curClass().checks.push({ id: "k2", title: "HA", date: "2026-09-01", done: [], type: "tally", ticks: [] }); })(); flushSave()`);
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    uhr(app, 2000);
+    app.E(`(() => { const c = curClass(), a = c.assess[0]; a.pts["${A_('Anna')}"] = { t1: 10, t2: 9 }; applyTaskMarks(a);
+      c.journal.push({ id: "j1", d: "2026-09-20", p: -1, s: "ma", topic: "Brüche", hw: "S. 3" }); c.exc.push("2026-09-14|${A_('Ben')}");
+      c.checks[1].ticks.push("2026-09-20|${A_('Cem')}"); })(); flushSave()`);
+    uhr(B, 3000);
+    B.E(`(() => { const c = curClass(), a = c.assess[0]; a.pts["${A_('Ben')}"] = { t1: 2 }; applyTaskMarks(a);
+      c.late.push({ d: "2026-09-21", p: 1, sid: "${A_('Dana')}", min: 5, s: "ma" }); c.checks[1].ticks.push("2026-09-21|${A_('Cem')}");
+      c.journal.push({ id: "j2", d: "2026-09-21", p: -1, s: "ma", topic: "Kürzen", hw: "" }); a.key.th[0] = 96; applyTaskMarks(a); })(); flushSave()`);
+    const fA = datei(app), fB = datei(B);
+    uhr(app, 4000); await laden(app, fB, 'merge');
+    uhr(B, 4000); await laden(B, fA, 'merge');
+    erwarte(inhalt(B) === inhalt(app), 'Geräte kommen nicht zum selben Stand');
+    const c = 'curClass()';
+    erwarte(app.E(`Object.keys(${c}.assess[0].pts).length`) === 2 && app.E(`${c}.assess[0].key.th[0]`) === 96, 'Punkte oder Schlüssel nicht zusammengeführt');
+    erwarte(app.E(`${c}.assess[0].marks["${A_('Anna')}"]`) === '2' && B.E(`${c}.assess[0].marks["${A_('Anna')}"]`) === '2', 'Note nicht aus Punkten und neuem Schlüssel: ' + app.E(`${c}.assess[0].marks["${A_('Anna')}"]`));
+    erwarte(app.E(`${c}.journal.length`) === 2 && app.E(`${c}.exc.length`) === 1 && app.E(`${c}.late.length`) === 1 && app.E(`${c}.checks[1].ticks.length`) === 2, 'Kursheft, Fehlzeiten oder Striche fehlen');
+    // Löschen eines Strichs und eines Kursheft-Eintrags auf A kommt bei B an
+    uhr(app, 5000); app.E(`${c}.checks[1].ticks.shift(); ${c}.journal = ${c}.journal.filter(e => e.id !== "j2"); ${c}.exc = []; flushSave()`);
+    uhr(B, 5100); await laden(B, datei(app), 'merge');
+    erwarte(B.E(`${c}.checks[1].ticks.length`) === 1 && B.E(`${c}.journal.length`) === 1 && B.E(`${c}.exc.length`) === 0, 'Löschen wird nicht übertragen');
+    erwarte(inhalt(B) === inhalt(app), 'Nach dem Löschen unterschiedlich');
+    // Zeitstempel der neuen Arten überstehen das Laden
+    erwarte(app.E('Object.keys(sanitizeDB(JSON.parse(localStorage.getItem(KEY))).stamps).filter(k => /^(tk|pt|kty|kt|j|ex|lt)\\|/.test(k)).length') >= 6, 'Zeitstempel für Punkte, Kursheft usw. gehen beim Laden verloren');
+    // Eigene Einträge: Bewertungen ohne Aufgaben behalten ihr bisheriges Format
+    erwarte(app.E(`syncEntities(DB).has("tk|" + idk(${c}.id) + "|w1")`) && app.E(`JSON.parse(syncEntities(DB).get("a|" + idk(${c}.id) + "|w1").v).tasks`) === undefined
+      && app.E(`syncEntities(DB).has("kty|" + idk(${c}.id) + "|k2")`), 'Aufgaben oder Listentyp nicht als eigener Eintrag');
+    // Datei eines älteren App-Stands (kennt Aufgaben und Strichlisten nicht), danach dort geändert: nichts geht verloren
+    uhr(B, 6000);
+    const alt = B.E(`(() => { const d = JSON.parse(JSON.stringify(DB)); d.stamps = Object.assign({}, d.stamps);
+      Object.keys(d.stamps).forEach(k => { if(/^(tk|pt|kty|kt|j|ex|lt)\|/.test(k)) delete d.stamps[k]; });
+      d.classes.forEach(c => { c.assess.forEach(a => { delete a.tasks; delete a.key; delete a.pts; }); c.checks.forEach(k => { delete k.type; delete k.ticks; k.title += "!"; }); delete c.journal; delete c.late; delete c.exc; c.name = "7b neu"; });
+      d.stamps["c|" + idk(d.classes[0].id)] = 6000; d.stamps["k|" + idk(d.classes[0].id) + "|k2"] = 6000; d.mod = 6000;
+      return JSON.stringify({ app: "fairseat", v: 2, exported: new Date(6000000).toISOString(), data: d }); })()`);
+    uhr(app, 6100); await laden(app, alt, 'merge');
+    erwarte(app.E(`${c}.checks[1].title`) === 'HA!', 'Neuerer Titel der Liste nicht übernommen');
+    erwarte(app.E(`${c}.name`) === '7b neu' && app.E(`hasTasks(${c}.assess[0])`) && app.E(`Object.keys(${c}.assess[0].pts).length`) === 2
+      && app.E(`isTally(${c}.checks[1])`) && app.E(`${c}.checks[1].ticks.length`) === 1 && app.E(`${c}.journal.length`) === 1, 'Älterer App-Stand löscht Aufgaben, Punkte oder Strichlisten');
+    // Gerät ohne Aufgaben (z. B. noch nicht abgeglichen) setzt später direkt eine Note: sie gilt, die Punkte weichen
+    const C = neueApp();
+    try{
+      uhr(C, 900); grundstand(C);
+      const fC0 = C.E(`(() => { const d = JSON.parse(${JSON.stringify(datei(app))}); return JSON.stringify(d); })()`);
+      uhr(C, 950); await laden(C, fC0, 'replace');
+      C.E(`(() => { const c = curClass(), a = c.assess[0]; delete a.tasks; delete a.key; delete a.pts; })(); syncReset()`);
+      uhr(C, 7000); C.E(`curClass().assess[0].marks["${A_('Anna')}"] = "4"; flushSave()`);
+      uhr(app, 7100); await laden(app, datei(C), 'merge');
+      erwarte(app.E(`${c}.assess[0].marks["${A_('Anna')}"]`) === '4' && !app.E(`(${c}.assess[0].pts || {})["${A_('Anna')}"]`) && app.E(`hasTasks(${c}.assess[0])`), 'Jüngere direkte Note geht verloren: ' + app.E(`${c}.assess[0].marks["${A_('Anna')}"]`));
+    } finally { C.ende(); }
+  } finally { B.ende(); }
+});
+
+test('Abgleich: Löschen gewinnt, wenn das Abhängige im selben Abgleich wegfällt', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1000); await laden(B, datei(app), 'replace');
+    // A: Bewertung (verweist auf das Fach) neu; B: Fach gelöscht, danach die Bewertung von A gelöscht
+    uhr(app, 1100); app.E('curClass().assess.push({ id: "w9", subjectId: "ma", title: "Neu", date: "2026-09-12", kind: "other", scale: "grade", weight: 1, marks: {} }); flushSave()');
+    uhr(B, 1200); await laden(B, datei(app), 'merge');
+    uhr(B, 1300); B.E('DB.subjects = []; DB.classes.forEach(c => { c.assess = c.assess.filter(a => a.id !== "w1"); }); flushSave()');
+    uhr(B, 1400); B.E('curClass().assess = curClass().assess.filter(a => a.id !== "w9"); flushSave()');
+    uhr(app, 1500); await laden(app, datei(B), 'merge');
+    erwarte(app.E('DB.subjects.length') === 0 && app.E('curClass().assess.length') === 0, 'Fach bleibt, obwohl die einzige neuere Bewertung gelöscht wurde: ' + app.E('DB.subjects.length') + '/' + app.E('curClass().assess.length'));
+  } finally { B.ende(); }
+});
+
+test('Abgleich: Löschungen unter einer Klasse, die nur hier existiert', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    const cid = app.E('curClass().id'), ben = sid(app, 'Ben');
+    uhr(app, 1500); app.E('curClass().name = "7b neu"; flushSave()');
+    /* B: Ben gelöscht (1450), Klasse gelöscht (1400), außerdem eine Bewertung, die das Fach am Leben hielte und dann gelöscht wurde */
+    uhr(app, 1550); app.E('curClass().assess.push({ id: "w9", subjectId: "ma", title: "Neu", date: "2026-09-12", kind: "other", scale: "grade", weight: 1, marks: {} }); flushSave()');
+    uhr(B, 1600); klasseMitNamen(B, '9c', ['Xaver']);
+    B.E(`(() => { DB.subjects = []; DB.del = {}; DB.del[hk("c|${cid}")] = 1400; DB.del[hk("s|${cid}|${ben}")] = 1450;
+      DB.del[hk("subj|ma")] = 1300; DB.del[hk("a|${cid}|w9")] = 1600; DB.mod = 1600; })()`);
+    const fB = B.E('JSON.stringify({ app: "fairseat", v: 2, exported: new Date(1600000).toISOString(), data: (d => { d.del = packStamps(DB.del); return d; })(backupData()) })');
+    uhr(app, 1700); await laden(app, fB, 'merge');
+    app.E(`curClassId = "${cid}"`);
+    erwarte(app.E('DB.classes.length') === 2 && app.E('curClass().name') === '7b neu', 'Neuere Klasse fehlt');
+    erwarte(!app.E(`curClass().students.some(s => s.id === "${ben}")`), 'Löschung eines Schülers unter einer nur hier vorhandenen Klasse ignoriert');
+    erwarte(app.E('DB.subjects.length') === 0 && !app.E('curClass().assess.some(a => a.id === "w9")'), 'Gelöschte Bewertung hält das gelöschte Fach am Leben');
+  } finally { B.ende(); }
+});
+
+test('Abgleich: Löschungen in Ketten (Note → Bewertung → Fach)', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    const cid = app.E('curClass().id'), anna = sid(app, 'Anna');
+    uhr(app, 1050); app.E('curClass().assess = []; flushSave()');
+    uhr(app, 1200); app.E('curClass().assess.push({ id: "w8", subjectId: "ma", title: "Neu", date: "2026-09-12", kind: "other", scale: "grade", weight: 1, marks: {} }); flushSave()');
+    uhr(app, 1300); app.E(`curClass().assess[0].marks["${anna}"] = "2"; flushSave()`);
+    uhr(B, 1400); klasseMitNamen(B, '9c', ['Xaver']);
+    B.E(`(() => { DB.subjects = []; DB.del = {}; DB.del[hk("subj|ma")] = 1100; DB.del[hk("a|${cid}|w8")] = 1250; DB.del[hk("m|${cid}|w8|${anna}")] = 1350; DB.mod = 1400; })()`);
+    const fB = B.E('JSON.stringify({ app: "fairseat", v: 2, exported: new Date(1400000).toISOString(), data: (d => { d.del = packStamps(DB.del); return d; })(backupData()) })');
+    uhr(app, 1500); await laden(app, fB, 'merge');
+    app.E(`curClassId = "${cid}"`);
+    erwarte(app.E('curClass().assess.length') === 0 && app.E('DB.subjects.length') === 0, 'Kette von Löschungen nicht vollständig: ' + app.E('curClass().assess.length') + '/' + app.E('DB.subjects.length'));
+  } finally { B.ende(); }
+});
+
+test('Abgleich: Klasse gelöscht, Schüler darin anderswo geändert und gelöscht (4 Geräte)', async app => {
+  const devs = [app, neueApp(), neueApp(), neueApp()];
+  try{
+    uhr(devs[0], 1000); grundstand(devs[0]); const f0 = datei(devs[0]);
+    for(let i = 1; i < 4; i++){ uhr(devs[i], 1000); await laden(devs[i], f0, 'replace'); }
+    uhr(devs[2], 1091); devs[2].E('trashPush("class", DB.classes[0].name, DB.classes[0]); DB.classes = []; flushSave()');
+    uhr(devs[3], 1093); devs[3].E('DB.classes[0].students[1].level = 2; flushSave()');
+    uhr(devs[0], 1101); devs[0].E('DB.classes[0].students.splice(1, 1); flushSave()');
+    let T = 1130;
+    for(let rep = 0; rep < 3; rep++) for(let i = 0; i < 4; i++){ const x = devs[i], y = devs[(i + 1) % 4]; uhr(y, ++T);
+      y.E(`restoreParsed(${datei(x)})`); if(y.$('#sync-merge')) y.klick('#sync-merge'); else y.E('closeModal()'); await pause(1); }
+    const n = devs.map(d => d.E('DB.classes.length')).join();
+    erwarte(n === '0,0,0,0', 'Geräte kommen nicht zum selben Stand: ' + n);
+  } finally { devs.slice(1).forEach(d => d.ende()); }
 });
 
 /* ------------------------------------------------------------------ */

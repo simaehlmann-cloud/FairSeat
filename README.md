@@ -1,12 +1,16 @@
-# FairSeat – Sitzplaner
+# FairSeat – Sitzplan & Noten
 
-Sitzpläne für den Unterricht: **Namen verwalten**, **Räume gestalten**, **Sitzpläne zuordnen** – dazu Stundenplan, Bewertungen, Anwesenheit, Beobachtungen und Abhaklisten.
+Sitzpläne für den Unterricht: **Klassen verwalten**, **Sitzpläne** (mit dem Reiter **Räume** für alle Klassen) – dazu Stundenplan, Bewertungen
+(auch Klassenarbeiten mit Punkten je Aufgabe und Notenschlüssel), Kursheft, Fehlzeiten mit Verspätungen und Entschuldigungen,
+Beobachtungen, Abhak- und Strichlisten.
 Läuft als Android- und iOS-App (Cordova, iPhone und iPad) und als Web-App – vollständig offline,
 ohne Konto, ohne Tracking, ohne externe Bibliotheken. Paketkennung: `de.fairseat.app`.
 
 Store-Eintrag (je höchstens 30 Zeichen):
-- Name: **FairSeat – Sitzplaner** · Untertitel: *Sitzplan & Noten für Lehrer*
-- englisch: **FairSeat – Seating Planner** · Untertitel: *Seating & grades for teachers*
+- Name: **FairSeat – Sitzplan & Noten** · Untertitel: *Stundenplan & Fehlzeiten*
+- englisch: **FairSeat – Seating & Grades** · Untertitel: *Timetable & attendance*
+- Zeile unter dem Logo in der App: „Sitzplan, Noten, Stundenplan — offline“
+- Den Namen in App Store Connect nur mit einer neuen Version ändern; bei Google Play jederzeit.
 
 Zur Marke: FairSeat gehört zur Familie von FairMix (gleiches Design, gleicher Import).
 Vor der ersten Veröffentlichung kurz im Markenregister (DPMA, EUIPO) prüfen.
@@ -118,7 +122,8 @@ Das Teilen-Menü hängt auf dem iPad am auslösenden Knopf.
 
 Apple verlangt für universelle Apps iPad-Screenshots (13 Zoll). Fertige Bilder für iPad und iPhone
 liegen in `store-bilder/`; neu erzeugen mit `python3 tools/store-bilder.py`.
-**Achtung:** Bild 5–8 zeigen noch den entfernten Feier-Modus und müssen ersetzt werden.
+Die Reihe: Start, Namen, neuer Sitzplan, Sitzplan mit Gruppen, Notenübersicht, Unterricht (Anwesenheit und
+Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfundenen Namen aus `test/fairmix-backup.json`.
 
 ### Angaben in den Stores
 
@@ -150,6 +155,15 @@ liegen in `store-bilder/`; neu erzeugen mit `python3 tools/store-bilder.py`.
   Smileys zählen nicht in Durchschnitte; Punkte werden mit Noten gemischt über (17 − P) : 3 umgerechnet.
 - Beides lässt sich in den Einstellungen ausblenden. Vor der ersten Nutzung der Bewertungen erscheint
   ein Datenschutzhinweis.
+- Klassenarbeit mit Aufgaben: `a.tasks` (Name, Höchstpunkte, halbe Punkte), `a.key` (Mindest-% je Stufe,
+  Vorlagen 50 %/40 % = ausreichend bzw. Abitur-Raster; optional Tendenz = Drittel je Stufe), `a.pts` (Punkte
+  je Schüler und Aufgabe). Die Note wird immer aus Punkten und Schlüssel berechnet (`keyGrade`, auch beim Laden).
+  Lösungsquote je Aufgabe, Excel-Auswertung, Warnung bei mehr als 30 % „5/6“ (Niedersachsen, Erlass
+  „Schriftliche Arbeiten“ Nr. 8).
+- Kursheft `c.journal` (Datum, Stunde, Fach, Thema, Hausaufgabe) aus der Unterrichtsleiste, mit letzter Stunde.
+- Fehlzeiten: entschuldigte Tage `c.exc` („Datum|ID“), Verspätungen `c.late` (Minuten je Stunde) aus dem
+  Unterrichtsblatt; Übersicht je Name über „Anwesenheit“ oder die Bewertungsübersicht.
+- Strichlisten: Abhaklisten mit `type: "tally"` und `ticks` („Datum|ID“, ein Strich je Tag), Summe am Platz.
 
 ## Datenschutz
 
@@ -171,8 +185,29 @@ Wurzelverzeichnis bzw. nach `res/android/` kopieren.
   (Face ID, Touch ID, Fingerabdruck, ersatzweise Geräte-PIN; unter Android braucht die PIN einen eingerichteten
   Fingerabdruck bzw. Gesichtserkennung). Die App erfährt nur „entsperrt“ oder nicht. Die Einstellung gilt je Gerät
   und wird nicht mitgesichert. Fällt die Entsperrung weg, bietet die App das Ausschalten an.
-- Gesperrt sind: Bewertungen (Kachel, Bewerten im Plan und im Unterricht), Beobachtungen,
-  Gesprächsblatt/CSV (liegen in den Bewertungen), Sicherung und Schuljahreswechsel.
-- Frei bleiben Sitzplan, Anwesenheit, Abhaken und die Selbsteinschätzung.
+- Gesperrt sind: Bewertungen (Kachel, Bewerten im Plan und im Unterricht, Punkte und Notenschlüssel), Beobachtungen,
+  Gesprächsblatt/CSV/Excel (liegen in den Bewertungen), Sicherung, Übertragen und Schuljahreswechsel.
+- Frei bleiben Sitzplan, Anwesenheit mit Fehlzeiten und Verspätungen, Kursheft, Abhak- und Strichlisten
+  und die Selbsteinschätzung (bewusst: organisatorisch, ohne Noten).
 - Wieder gesperrt nach 5 Minuten im Hintergrund und nach jeder Selbsteinschätzung.
   Ausschalten nur nach Entsperren.
+
+## Abgleich zwischen Geräten (Sicherungsdatei)
+
+- Jeder Eintrag hat einen Schlüssel (`syncEntities`): Klasse, Schüler, Regel, Gruppe, Plan, Bewertung,
+  einzelne Note, Aufgaben/Schlüssel (`tk`), Punkte je Schüler (`pt`), Beobachtung, Fehlzeit je Schüler,
+  Entschuldigung (`ex`), Verspätung (`lt`), Kursheft (`j`), Abhak-Haken (`kd`), Listentyp (`kty`), Striche (`kt`),
+  Raum, Fach, Stunde, Ausfall … Neue Arten sind eigene Einträge, damit ältere App-Stände sie nicht verwerfen.
+- `syncStamp` (bei jedem Speichern) vermerkt Änderungszeiten in `DB.stamps` und Löschungen in `DB.del`
+  (400 Tage). Gespeichert wird beides kompakt (`packStamps`).
+- Beim Laden einer Sicherung: Vergleich Datei/Gerät, Warnung bei älterer Datei oder falscher Uhr,
+  Vorschau, dann „Zusammenführen“ (`mergeDB`: je Eintrag gewinnt der neuere Stand; Löschen gewinnt nur,
+  wenn es nach der letzten Änderung samt allem Abhängigen lag – Abhängiges, das im selben Abgleich selbst
+  gelöscht wird, zählt nicht) oder „Ersetzen“. Beides 14 Tage rückgängig.
+- Knopf „Auf anderes Gerät übertragen“ (`openTransfer`): immer mit Passwort verschlüsselt, öffnet in einem
+  Schritt das Teilen-Menü (AirDrop, Quick Share, Mail) und erklärt das Zusammenführen auf dem Zielgerät.
+  Zählt nicht als Sicherung (die Sicherungserinnerung bleibt).
+- Klassenarbeit mit Aufgaben: Die Note folgt nach dem Abgleich immer aus Punkten und Schlüssel. Ausnahme: Ein
+  Gerät, das die Aufgaben noch nicht kannte, hat später direkt eine Note gesetzt – dann gilt diese Note.
+- Gerätebezogen und nie übernommen: Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse.
+- Grenzen: Datum und Uhrzeit sollten auf beiden Geräten stimmen; unabhängig angelegte Klassen erscheinen doppelt.

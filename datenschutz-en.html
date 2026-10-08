@@ -69,7 +69,8 @@
     <li>optionally your timetable (subjects with colours, times, breaks and the links to
         classes, rooms and seating plans)</li>
     <li>optionally assessments per class and subject (title, date, type, weighting and the
-        grades, points or smileys entered per pupil)</li>
+        grades, points or smileys entered per pupil), for class tests optionally the tasks with their
+        maximum points, the grading key and the points scored per task</li>
     <li>optionally pupils' self-assessments (question, date and the smiley chosen), stored
         separately from your assessments and never included in averages</li>
     <li>for class tests, optionally seat numbers and the version A/B per seat, and your notes
@@ -78,9 +79,15 @@
         with the assignment of names to seats, including seats you keep fixed</li>
     <li>optionally earlier seating arrangements, so that new neighbours are formed</li>
     <li>optionally, in lesson mode, attendance per day and short notes on individual names,
-        the missed lessons counted from them per timetable period, and lessons marked as cancelled</li>
+        the missed lessons counted from them per timetable period, and lessons marked as cancelled,
+        optionally late arrivals (date, period, minutes) and which days of absence are excused</li>
+    <li>optionally, a course log per class (date, period, subject, topic and homework – no names)</li>
     <li>optionally, lasting observations on individual names (date, subject and a short text)</li>
-    <li>optionally, checklists (title, date and who has already been ticked off)</li>
+    <li>optionally, checklists (title, date and who has already been ticked off) and tally lists such as
+        “homework forgotten” (title and, per name, the days with a mark)</li>
+    <li>for every entry the time of its last change, and for up to 400 days the internal identifiers of
+        deleted entries (no names or contents) – so that backups from two devices can be merged without
+        deleted entries coming back</li>
     <li>the time of your last backup, so that the app can remind you</li>
     <li>after loading a backup, a copy of the previous state for 14 days, so that loading
         the wrong file can be undone</li>
@@ -88,7 +95,8 @@
   </ul>
   <p>
     This data is stored using the browser technology <em>localStorage</em> in the
-    protected app directory. It is never transmitted. Uninstalling the app removes it
+    protected app directory. The app itself never transmits it; files only leave the device
+    when you share them yourself (see section 5). Uninstalling the app removes it
     completely. Within the app, names, classes, rooms and seating plans can be deleted at
     any time; deleted items stay in the app's trash for 30 days and are then removed
     automatically.
@@ -142,7 +150,8 @@
     telephony. If you turn on the optional lock for assessments and observations, the app uses
     your device's unlock function (Face ID, fingerprint or device PIN). The check is done by the
     operating system; the app only learns whether unlocking succeeded. The app neither
-    processes nor stores biometric data. When you export a PDF, an image, an attendance list or a backup, the file is
+    processes nor stores biometric data. When you export a PDF, an image, an attendance list, a table (CSV or Excel, e.g. assessments,
+    absences, task analysis, course log), a backup or a transfer file for another device, the file is
     placed in a temporary app directory and passed on via your device's share function.
     Where the file goes from there is entirely up to you. When importing (a backup or a
     FairMix backup), the app only reads the file you select yourself.
