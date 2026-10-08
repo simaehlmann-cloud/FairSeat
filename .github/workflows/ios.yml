@@ -102,6 +102,19 @@ jobs:
           cd build
           cordova platform add "ios@${CORDOVA_IOS}"
 
+          # Das Teilen-Plugin legt Exportdateien (Noten, Sicherungen) in Documents/ ab –
+          # dort landen sie im iCloud-/Geräte-Backup und bleiben nach einem Abbruch liegen.
+          # Im temporären Ordner räumt iOS selbst auf.
+          FUNDE=$(grep -rl 'NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)' platforms/ios plugins/cordova-plugin-x-socialsharing 2>/dev/null | grep 'SocialSharing.m' || true)
+          if [ -n "$FUNDE" ]; then
+            for F in $FUNDE; do
+              perl -pi -e 's/NSSearchPathForDirectoriesInDomains\(NSDocumentDirectory, NSUserDomainMask, YES\)/\@[NSTemporaryDirectory()]/' "$F"
+              echo "Exportordner auf tmp umgestellt: $F"
+            done
+          else
+            echo "::warning::SocialSharing.m nicht gefunden – Exporte bleiben in Documents/."
+          fi
+
       # Die config.xml erklaert nur die Absicht. Was Xcode wirklich baut, steht
       # in der erzeugten Info.plist – und genau daran scheitert der Upload,
       # wenn es nicht stimmt. Alle drei Punkte sind Rueckweisungsgruende, die
