@@ -164,6 +164,27 @@ Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfun
 - Fehlzeiten: entschuldigte Tage `c.exc` („Datum|ID“), Verspätungen `c.late` (Minuten je Stunde) aus dem
   Unterrichtsblatt; Übersicht je Name über „Anwesenheit“ oder die Bewertungsübersicht.
 - Strichlisten: Abhaklisten mit `type: "tally"` und `ticks` („Datum|ID“, ein Strich je Tag), Summe am Platz.
+  Abhak- und Strichlisten lassen sich auch unter „Klassen verwalten“ ohne Sitzplan öffnen.
+- Halbjahre: `DB.settings.termSplit` (Ende 1. Halbjahr, Standard 31.1.; beim Schuljahreswechsel zurückgesetzt).
+  Übersicht, Notenvorschlag und Ausgaben umschaltbar: 1. Halbjahr, 2. Halbjahr, Schuljahr.
+  Fehlstunden in Übersicht/CSV/Excel folgen dem Halbjahr; Bewertungen ohne Datum zählen nur im Schuljahr (Hinweis in der Übersicht).
+- Zieldifferent: `c.zd` („Fach|ID“), nur das Merkmal; solche Arbeiten zählen bei der 30-%-Warnung nicht mit.
+- Elternkontakte: Beobachtungen mit `k: "parent"` und Art `m` (Gespräch, Telefonat, Brief, E-Mail), eigener
+  Abschnitt im Gesprächsblatt.
+- Unterrichtsblatt: Mitarbeit für „Heute“ oder die letzte Stunde laut Stundenplan (`lastLessonDate`).
+- Größe: „Größe“ in der Auswahlleiste gilt für jeden Gegenstand (Breite/Tiefe in cm, ±10 cm, Standardgröße; Tische mit Einzel-/Doppel-/Gruppentisch).
+  Wandgegenstände (Tür, Fenster, Wand, Tafeln) nur in der Länge und bleiben an der Wand, Rundes (Pflanze, Uhr, runder Tisch, Säule) nur im Durchmesser.
+  Bei genau einem Gegenstand ohne Gruppe zusätzlich ein Ziehgriff an der Ecke (10-cm-Raster, gegenüberliegende Ecke bleibt stehen); nicht im Vorführ- und Unterrichtsmodus.
+- Timer (Unterrichtsleiste, Menü ···, Vorführmodus): Countdown über den Endzeitpunkt, groß am Beamer, wird nicht gespeichert. Hält per Wake-Lock-API den Bildschirm wach, solange er läuft (nicht in der Pause; wo die WebView es nicht kann, ohne Wirkung).
+
+## Sitzpläne: PC-Plätze, Speichern unter, Wechseln
+
+- PC-Platz: Tisch mit `pc: true` (Bildschirm an der Kante gegenüber dem Stuhl, auch in PNG/PDF).
+  Vorlagen „PC-Raum (Wände)“ (links/hinten/rechts, Blick zur Wand, Rest als Reihe in der Mitte) und „PC-Raum (Reihen)“.
+  Einzeln über „PC-Platz“ im Bereich Plätze oder in der Auswahlleiste umschaltbar.
+- Tipp auf den Plannamen: alle Pläne der Klasse (wechseln, umbenennen) und „Als neuen Sitzplan speichern“.
+  Danach auf Wunsch das Original auf den Stand beim Öffnen zurücksetzen (`planSnap`).
+- Auswahlleiste: Pfeil am rechten Rand, solange sie weitergeht.
 
 ## Datenschutz
 

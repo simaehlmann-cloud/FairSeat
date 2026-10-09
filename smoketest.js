@@ -369,7 +369,8 @@ test('Editor-Menü und Export-Dialog', app => {
   klasseMitNamen(app);
   neuerPlan(app, 0, 'Zufällig');
   app.klick('#btn-more');
-  erwarte(app.$$('#sheet .tile').length === 4 && app.$$('#sheet .tile')[3].textContent.indexOf('Selbsteinschätzung') >= 0, 'Menü zeigt nicht Vollbild, Auswahl, Spiegeln und Selbsteinschätzung');
+  const tiles = app.$$('#sheet .tile').map(b => b.textContent);
+  erwarte(tiles.length === 6 && /Selbsteinschätzung/.test(tiles[5]) && /neuen Sitzplan/.test(tiles[3]) && /Timer/.test(tiles[4]), 'Menü zeigt nicht Vollbild, Auswahl, Spiegeln, Speichern, Timer und Selbsteinschätzung: ' + tiles.join(' | '));
   app.klick(app.$$('#sheet .tile')[2]);
   app.klick('#btn-share');
   erwarte(app.$$('#sheet .tile').length >= 2, 'Export-Dialog unvollständig');
@@ -2794,6 +2795,572 @@ test('Abgleich: Klasse gelöscht, Schüler darin anderswo geändert und gelösch
     const n = devs.map(d => d.E('DB.classes.length')).join();
     erwarte(n === '0,0,0,0', 'Geräte kommen nicht zum selben Stand: ' + n);
   } finally { devs.slice(1).forEach(d => d.ende()); }
+});
+
+/* ---------- 33. PC-Plätze, Leiste, Speichern unter, letzte Stunde, Halbjahre, zieldifferent, Eltern, Timer, Listen ---------- */
+const boxesOverlap = (app) => app.E(`(() => { const b = curPlan().desks.map(itemBox);
+  for(let i = 0; i < b.length; i++) for(let j = i + 1; j < b.length; j++){ const p = b[i], q = b[j];
+    if(p.x < q.x + q.w - 1 && q.x < p.x + p.w - 1 && p.y < q.y + q.h - 1 && q.y < p.y + p.h - 1) return true; } return false; })()`);
+const imRaum = app => app.E('curPlan().desks.every(d => { const b = itemBox(d); return b.x >= 0 && b.y >= 0 && b.x + b.w <= ROOM_W && b.y + b.h <= ROOM_H; })');
+test('PC-Raum: Plätze mit Bildschirm', async app => {
+  klasseMitNamen(app);                                  // 12 Namen
+  neuerPlan(app, 8);                                    // PC-Raum (Wände)
+  erwarte(app.E('curPlan().desks.length') === 12 && app.E('curPlan().desks.every(d => d.pc === true)'), 'Vorlage setzt keine PC-Plätze');
+  const rots = app.E('JSON.stringify(Array.from(new Set(curPlan().desks.map(d => d.rot))).sort())');
+  erwarte(rots === '[180,270,90]', 'PC-Plätze stehen nicht an drei Wänden: ' + rots);
+  erwarte(!boxesOverlap(app) && imRaum(app), 'PC-Plätze überlappen oder ragen aus dem Raum');
+  erwarte(app.$$('#stage .item .pcmon').length === 12, 'Bildschirme fehlen im Plan');
+  erwarte(/PC-Platz/.test(app.$('#stage .item.t-desk').getAttribute('aria-label')), 'Vorlesen nennt den PC-Platz nicht');
+  const pdf = app.E('pdfPlanPage(curClass(), curPlan(), curRoom(), "x", {})');
+  erwarte((pdf.match(/0\.227 0\.275 0\.322 RG/g) || []).length === 12, 'PDF zeichnet die Bildschirme nicht');
+  // große Klasse: Rest in der Mitte, nichts überlappt
+  app.E(`(() => { const p = curPlan(); for(let i = 0; i < 26; i++) p.desks.push({ id: uid(), type: "desk", x: 0, y: 0, w: 90, h: 55, rot: 0 }); })(); layoutDesks("pcwall", true)`);
+  erwarte(app.E('curPlan().desks.length') === 38 && !boxesOverlap(app) && imRaum(app), 'Große PC-Räume überlappen');
+  // Reihen
+  app.E('layoutDesks("pcrows", true)');
+  erwarte(app.E('curPlan().desks.every(d => d.pc && d.rot === 0)') && !boxesOverlap(app), 'PC-Reihen falsch');
+  // einzelner PC-Platz, umschalten
+  const n0 = app.E('curPlan().desks.length');
+  app.klick('#btn-pc-desk');
+  erwarte(app.E('curPlan().desks.length') === n0 + 1 && app.E('curPlan().desks[curPlan().desks.length - 1].pc') === true, 'Knopf „PC-Platz“ legt keinen PC-Platz an');
+  app.E('selected.clear(); selected.add(curPlan().desks[0].id); renderStage(false)');
+  erwarte(app.$('#sb-pc').style.display !== 'none' && /Als Tisch/.test(app.$('#sb-pc').textContent), 'Umschalten in der Leiste fehlt');
+  app.klick('#sb-pc');
+  erwarte(!app.E('curPlan().desks[0].pc') && /Als PC-Platz/.test(app.$('#sb-pc').textContent), 'Umschalten geht nicht');
+  app.E('undo()');
+  erwarte(app.E('curPlan().desks[0].pc') === true, 'Umschalten nicht rückgängig zu machen');
+  // Laden: nur Tische tragen das Merkmal
+  erwarte(app.E('sanitizeItem({ type: "desk", pc: true }).pc') === true && app.E('sanitizeItem({ type: "window", pc: true }).pc') === undefined && app.E('sanitizeItem({ type: "desk", pc: "ja" }).pc') === undefined, 'Merkmal beim Laden falsch geprüft');
+});
+
+test('Auswahlleiste: Pfeil, wenn es rechts weitergeht', async app => {
+  klasseMitNamen(app); neuerPlan(app, 0);
+  const bar = app.$('#selbar');
+  let sl = 0;
+  Object.defineProperty(bar, 'scrollWidth', { configurable: true, get: () => 900 });
+  Object.defineProperty(bar, 'clientWidth', { configurable: true, get: () => 300 });
+  Object.defineProperty(bar, 'scrollLeft', { configurable: true, get: () => sl, set: v => { sl = Math.min(600, v); } });
+  bar.scrollBy = undefined;
+  app.E('selected.clear(); selected.add(curPlan().desks[0].id); renderStage(false)');
+  erwarte(app.$('#selbar').classList.contains('on') && !app.$('#sb-more').hidden, 'Pfeil fehlt, obwohl die Leiste weitergeht');
+  app.klick('#sb-more');
+  erwarte(sl > 0, 'Pfeil schiebt die Leiste nicht weiter');
+  sl = 600; bar.dispatchEvent(new app.w.Event('scroll'));
+  erwarte(app.$('#sb-more').hidden, 'Pfeil bleibt am Ende stehen');
+  app.E('selected.clear(); renderStage(false)');
+  erwarte(app.$('#sb-more').hidden, 'Pfeil ohne Leiste sichtbar');
+});
+
+test('Sitzplan: als neuen speichern, Original zurücksetzen, wechseln', async app => {
+  klasseMitNamen(app); neuerPlan(app, 0);
+  const pid = app.E('curPlanId'), x0 = app.E('curPlan().desks[0].x');
+  app.E('curPlan().desks[0].x += 120; save()');
+  app.klick('#plan-title');
+  erwarte(app.$$('#pm-list .grpcard').length === 1 && !!app.$('#pm-saveas'), 'Planmenü fehlt');
+  app.klick('#pm-saveas'); await pause(90);
+  erwarte(/Gruppenarbeit/.test(app.$('#sheet input').value), 'Vorschlag für den Namen fehlt');
+  app.sheetOk();
+  erwarte(app.$('#modal').classList.contains('on') && /zurücksetzen/.test(app.$('#sheet h3').textContent), 'Keine Frage zum Zurücksetzen');
+  app.sheetOk();
+  const c = 'curClass()';
+  erwarte(app.E(`${c}.plans.length`) === 2 && app.E('curPlanId') !== pid, 'Neuer Plan nicht angelegt oder nicht geöffnet');
+  erwarte(app.E('curPlan().desks[0].x') === x0 + 120 && app.E(`${c}.plans.find(p => p.id === "${pid}").desks[0].x`) === x0, 'Neuer Plan oder Original falsch');
+  erwarte(app.E(`new Set(${c}.plans[0].desks.map(d => d.id).concat(${c}.plans[1].desks.map(d => d.id))).size`) === 24, 'Tisch-IDs doppelt');
+  // unverändert: keine Rückfrage
+  app.E('saveAsNewPlan()'); app.sheetOk();
+  erwarte(app.E(`${c}.plans.length`) === 3 && !app.$('#modal').classList.contains('on'), 'Unveränderter Plan fragt nach dem Zurücksetzen');
+  // „Nein, so lassen“: Original behält die Änderung
+  app.E('curPlan().desks[1].x += 50; save()');
+  const p3 = app.E('curPlanId'), x1 = app.E('curPlan().desks[1].x');
+  app.E('saveAsNewPlan()'); app.sheetOk();
+  erwarte(/so lassen/.test(app.$('#sheet .row .ghost').textContent), 'Knopf zum Behalten fehlt');
+  app.klick('#sheet .row .ghost'); await pause(90);
+  erwarte(app.E(`${c}.plans.length`) === 4 && app.E(`${c}.plans.find(p => p.id === "${p3}").desks[1].x`) === x1, '„So lassen“ setzt trotzdem zurück');
+  // wechseln, Unterrichtsmodus bleibt
+  app.E('DB.settings.lesson = true; setLesson(true)');
+  app.klick('#plan-title');
+  app.klick(`#pm-list .grpcard[data-pid="${pid}"]`);
+  erwarte(app.E('curPlanId') === pid && app.E('lessonMode') === true, 'Wechsel des Plans fehlt oder beendet den Unterricht');
+  // Selbsteinschätzung: kein Menü
+  app.E('closeModal(); selfMode = "x"');
+  app.klick('#plan-title');
+  erwarte(!app.$('#modal').classList.contains('on'), 'Planmenü während der Selbsteinschätzung');
+  app.E('selfMode = null');
+});
+
+test('Unterricht: Mitarbeit für die letzte Stunde nachtragen', async app => {
+  bewertungsKlasse(app); neuerPlan(app, 0);
+  const cid = app.E('curClass().id');
+  app.E(`DB.lessons = [0, 1, 2, 3, 4].map(d => ({ id: "L" + d, day: d, period: 7, span: 1, week: "", subjectId: "ma", classId: "${cid}", roomId: "", planId: "" }))`);
+  /* erwarteter Tag: der letzte Werktag vor heute */
+  const exp = (() => { const n = new Date(); for(let k = 1; k < 10; k++){ const d = new Date(n.getFullYear(), n.getMonth(), n.getDate() - k); const w = (d.getDay() + 6) % 7; if(w < 5) return d; } })();
+  const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  erwarte(app.E('lastLessonDate(curClass(), "ma")') === iso(exp), 'Letzte Stunde falsch: ' + app.E('lastLessonDate(curClass(), "ma")'));
+  // Ausfall an diesem Tag: eine Stunde früher
+  app.E(`setCancelled(DB.lessons[${(exp.getDay() + 6) % 7}], "${iso(exp)}", true)`);
+  erwarte(app.E('lastLessonDate(curClass(), "ma")') < iso(exp), 'Ausgefallene Stunde zählt als letzte Stunde');
+  app.E('DB.cancelled = []');
+  const anna = sid(app, 'Anna');
+  app.E(`DB.settings.lesson = true; setLesson(true); curClass().lesson.absent = ["${anna}"]`);
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${anna}"))`);
+  const last = app.$('#lesson-qday button[data-v="last"]');
+  erwarte(last && !last.disabled && last.textContent.indexOf(iso(exp).slice(8, 10) + '.') >= 0, 'Knopf „letzte Stunde“ fehlt');
+  app.klick(last);
+  erwarte(last.classList.contains('on'), 'Letzte Stunde nicht gewählt');
+  app.klick(app.$$('#lesson-quickmark button').find(b => b.dataset.tok === '2'));
+  erwarte(app.E(`curClass().assess.some(a => a.auto && a.date === "${iso(exp)}" && a.marks["${anna}"] === "2")`), 'Note nicht für die letzte Stunde gespeichert');
+  erwarte(app.E(`curClass().lesson.absent.indexOf("${anna}")`) >= 0, 'Nachtragen ändert die heutige Anwesenheit');
+  // ohne Stundenplan: Knopf gesperrt
+  app.E('DB.lessons = []');
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${anna}"))`);
+  erwarte(app.$('#lesson-qday button[data-v="last"]').disabled, 'Ohne Stundenplan trotzdem wählbar');
+  app.E('closeModal()');
+});
+
+test('Bewertungen: Halbjahre', async app => {
+  bewertungsKlasse(app);
+  const [anna, ben] = [sid(app, 'Anna'), sid(app, 'Ben')];
+  app.E(`DB.settings.termSplit = "2027-01-31"; curClass().assess = [
+    { id: "a1", subjectId: "ma", title: "KA 1", date: "2026-10-10", kind: "written", scale: "grade", weight: 1, marks: { "${anna}": "1", "${ben}": "4" } },
+    { id: "a2", subjectId: "ma", title: "KA 2", date: "2027-03-01", kind: "written", scale: "grade", weight: 1, marks: { "${anna}": "3", "${ben}": "2" } },
+    { id: "a3", subjectId: "ma", title: "alt", date: "2025-12-01", kind: "written", scale: "grade", weight: 1, marks: { "${anna}": "6" } }]`);
+  app.E('goGrades("ma")'); app.klick('#g-tab-overview');
+  erwarte(app.$$('#g-term button').length === 3 && app.$('#g-term button.on').dataset.v === 'year', 'Halbjahr-Umschalter fehlt');
+  app.klick('#g-term button[data-v="h1"]');
+  erwarte(app.$$('#g-table tr')[0].querySelectorAll('th').length === 1 + 1 + 5 && /^1$/.test(app.$('#g-table .prop').textContent), '1. Halbjahr zeigt falsche Spalten oder Vorschlag: ' + app.$('#g-table .prop').textContent);
+  app.klick('#g-term button[data-v="h2"]');
+  erwarte(app.$('#g-table .prop').textContent === '3', '2. Halbjahr falsch: ' + app.$('#g-table .prop').textContent);
+  erwarte(app.E(`studentAverages(curClass(), "ma", "${anna}", "year").total`) === 10 / 3, 'Schuljahr rechnet nicht alles');
+  const box = downloadAbfangen(app);
+  app.klick('#g-csv');
+  erwarte(/2_Halbjahr\.csv$/.test(box.name), 'Datei nennt das Halbjahr nicht: ' + box.name);
+  // Stichtag ändern
+  erwarte(/2027/.test(app.$('#g-term-split').textContent), 'Stichtag ohne Jahr: ' + app.$('#g-term-split').textContent);
+  app.klick('#g-term-split');
+  app.$('#term-split').value = '2026-09-30'; app.sheetOk();
+  // ungewöhnlicher Monat: Rückfrage; „Abbrechen“ führt mit dem getippten Tag zurück
+  erwarte(app.$('#sheet').textContent.includes(app.E('t("termSplitOdd")')) && app.E('DB.settings.termSplit') === '2027-01-31', 'Keine Rückfrage beim ungewöhnlichen Stichtag');
+  app.klick("#sheet .row .ghost"); await pause(100);
+  erwarte(app.$('#term-split') && app.$('#term-split').value === '2026-09-30', 'Getippter Stichtag nach Abbrechen verloren');
+  app.sheetOk(); app.sheetOk();
+  erwarte(app.E('DB.settings.termSplit') === '2026-09-30' && app.$('#g-table .prop').textContent === '2', 'Stichtag nicht übernommen: ' + app.$('#g-table .prop').textContent);
+  erwarte(app.E('courseAssess(curClass(), "ma", "h2").map(a => a.id).join()') === 'a1,a2', 'Nach dem Stichtag falsch zugeordnet');
+  // Standard wiederherstellen
+  app.klick('#g-term-split'); app.klick('#term-split-default');
+  erwarte(app.E('DB.settings.termSplit') === undefined && /31/.test(app.$('#g-term-split').textContent), 'Standard-Stichtag nicht wiederhergestellt');
+  // Bewertung ohne Datum: im Halbjahr ein Hinweis, im Schuljahr nicht
+  app.E('curClass().assess.find(a => a.id === "a1").date = ""'); app.E('renderGrades()');
+  erwarte(app.$('#g-undated') && /1/.test(app.$('#g-undated').textContent), 'Kein Hinweis auf Bewertungen ohne Datum');
+  app.klick('#g-term button[data-v="year"]');
+  erwarte(!app.$('#g-undated'), 'Hinweis ohne Datum auch im Schuljahr');
+  // Laden: ungültiger Stichtag fällt weg, ältere Stände bleiben unverändert
+  erwarte(app.E('sanitizeDB({ v: 2, settings: { termSplit: "kaputt" } }).settings.termSplit') === undefined && app.E('"termSplit" in sanitizeDB({ v: 2, settings: {} }).settings') === false, 'Stichtag beim Laden falsch geprüft');
+  erwarte(app.E('defaultTermSplit(new Date(2026, 9, 8))') === '2027-01-31' && app.E('defaultTermSplit(new Date(2027, 4, 2))') === '2027-01-31', 'Standard-Stichtag falsch');
+});
+
+test('Bewertungen: zieldifferent zählt nicht bei der 30-%-Grenze', async app => {
+  bewertungsKlasse(app);
+  const [anna, ben, cem, dana] = ['Anna', 'Ben', 'Cem', 'Dana'].map(n => sid(app, n));
+  app.E(`curClass().assess = [{ id: "w1", subjectId: "ma", title: "KA", date: "2026-10-01", kind: "written", scale: "grade", weight: 1,
+    marks: { "${anna}": "5", "${ben}": "6", "${cem}": "2", "${dana}": "3" } }]; openAssess("w1")`);
+  erwarte(!!app.$('#a-fail') && /50 %/.test(app.$('#a-fail').textContent), 'Warnung fehlt');
+  app.E('goGrades("ma")'); app.klick('#g-tab-overview');
+  app.klick(app.$$('#g-table .gname').find(b => b.textContent === 'Ben'));
+  app.klick('#zd-switch');
+  erwarte(app.E(`isZd(curClass(), "ma", "${ben}")`) === true, 'Merkmal nicht gesetzt');
+  app.E('closeModal(); renderGrades()');
+  erwarte(!!app.$('#g-table .zdtag'), 'Übersicht zeigt das Merkmal nicht');
+  erwarte(app.E('JSON.stringify(failShare(curClass(), curClass().assess[0]))') === JSON.stringify({ bad: 1, n: 3, share: 1 / 3 }), 'Anteil rechnet zieldifferent mit');
+  app.E(`setZd(curClass(), "ma", "${anna}", true)`);
+  erwarte(app.E('failShare(curClass(), curClass().assess[0])') === null, 'Mit zwei zieldifferenten Arbeiten trotzdem gewertet');
+  app.E(`setZd(curClass(), "de", "${cem}", true)`);
+  erwarte(app.E(`isZd(curClass(), "ma", "${cem}")`) === false, 'Merkmal gilt fächerübergreifend');
+  const z = app.E(`JSON.stringify(sanitizeDB({ v: 2, classes: [{ name: "x", students: [{ id: "s1", name: "A" }], zd: ["ma|s1", "ma|s1", "ma|weg", "kaputt", 3] }] }).classes[0].zd)`);
+  erwarte(z === '["ma|s1"]', 'Merkmal beim Laden: ' + z);
+});
+
+test('Beobachtungen: Elternkontakte', async app => {
+  bewertungsKlasse(app);
+  const anna = sid(app, 'Anna');
+  app.E(`openObservations(curClass(), studentById(curClass(), "${anna}"))`);
+  erwarte(app.$('#obs-mode').style.display === 'none', 'Anlass sichtbar, obwohl Beobachtung gewählt');
+  app.klick('#obs-kind button[data-v="parent"]');
+  erwarte(app.$('#obs-mode').style.display !== 'none' && app.$('#obs-mode button.on').dataset.v === 'talk', 'Elternkontakt nicht wählbar');
+  app.klick('#obs-mode button[data-v="phone"]');
+  app.$('#obs-text').value = 'Absprache: wöchentliche Rückmeldung'; app.klick('#obs-add');
+  erwarte(app.E('JSON.stringify(curClass().obs.map(o => [o.k, o.m]))') === '[["parent","phone"]]', 'Elternkontakt nicht gespeichert');
+  erwarte(/Telefonat/.test(app.$('#obs-list').textContent) && app.$('#obs-mode button.on').dataset.v === 'phone', 'Liste zeigt die Art nicht oder Auswahl vergessen');
+  app.klick('#obs-kind button[data-v="obs"]');
+  app.$('#obs-text').value = 'arbeitet konzentriert'; app.klick('#obs-add');
+  erwarte(app.E('curClass().obs.filter(o => !o.k).length') === 1, 'Normale Beobachtung wird Elternkontakt');
+  const txt = app.E(`talkSheetPages(curClass(), studentById(curClass(), "${anna}")).map(p => p.content).join("\\n")`);
+  erwarte(/Elternkontakte/.test(txt) && /Telefonat: Absprache/.test(txt), 'Gesprächsblatt ohne Elternkontakte');
+  const m = app.E(`JSON.stringify(sanitizeDB({ v: 2, classes: [{ name: "x", students: [{ id: "s1", name: "A" }], obs: [{ sid: "s1", d: "2026-10-01", text: "t", k: "parent", m: "fax" }, { sid: "s1", d: "2026-10-01", text: "u", k: "x" }] }] }).classes[0].obs.map(o => [o.k || "", o.m || ""]))`);
+  erwarte(m === '[["parent","talk"],["",""]]', 'Elternkontakt beim Laden: ' + m);
+});
+
+test('Timer für Gruppenarbeit', async app => {
+  klasseMitNamen(app); neuerPlan(app, 0);
+  app.E('DB.settings.lesson = true; setLesson(true)');
+  app.klick('#lb-timer');
+  app.$('#timer-min').value = '0'; app.klick('#timer-go');
+  erwarte(/1 bis 180/.test(app.$('#toast').textContent) && app.$('#timerbox').hidden, 'Unsinnige Minuten angenommen');
+  let now = 1000000;
+  app.E(`Date.now = () => ${now}`);
+  app.klick(app.$$('#timer-presets button').find(b => b.dataset.m === '5'));
+  erwarte(!app.$('#timerbox').hidden && app.$('#tb-time').textContent === '5:00', 'Timer startet nicht');
+  app.E(`Date.now = () => ${now + 61000}; paintTimer()`);
+  erwarte(app.$('#tb-time').textContent === '3:59', 'Timer läuft falsch: ' + app.$('#tb-time').textContent);
+  app.klick('#tb-pause');
+  app.E(`Date.now = () => ${now + 121000}; paintTimer()`);
+  erwarte(app.$('#timerbox').classList.contains('paused') && app.$('#tb-time').textContent === '3:59', 'Pause hält nicht an');
+  app.klick('#tb-plus'); app.klick('#tb-pause');
+  erwarte(app.$('#tb-time').textContent === '4:59', 'Minute dazu fehlt: ' + app.$('#tb-time').textContent);
+  app.E(`Date.now = () => ${now + 121000 + 300000}; paintTimer()`);
+  erwarte(app.$('#tb-time').textContent === 'Zeit!' && app.$('#timerbox').classList.contains('done'), 'Ende nicht angezeigt');
+  app.klick('#tb-big');
+  erwarte(app.E('presenting') === true && !app.$('#timerbox').hidden, 'Groß anzeigen geht nicht');
+  app.E('setPresenting(false)');
+  app.klick('#tb-stop');
+  erwarte(app.$('#timerbox').hidden && app.E('timer') === null, 'Timer lässt sich nicht beenden');
+});
+
+test('Listen über „Klassen verwalten“ ohne Sitzplan', async app => {
+  klasseMitNamen(app, '7b', ['Anna', 'Ben']);
+  app.E('goNames()');
+  app.klick('#btn-class-lists');
+  erwarte(!!app.$('#ck-new') && app.$$('#tl-quick button').length === 2, 'Listen aus der Klasse nicht erreichbar');
+  app.klick(app.$$('#tl-quick button')[0]); await pause(90);
+  erwarte(!!app.$('#tl-names') && app.E('checkMode') === null && app.$('#screen-names').classList.contains('active'), 'Strichliste öffnet nicht ohne Sitzplan');
+  app.klick(app.$$('#tl-names .minibtn')[0]);
+  erwarte(app.E('curClass().checks[0].ticks.length') === 1, 'Strich für heute nicht gesetzt');
+  erwarte(/Zurück/.test(app.$('#ck-ok').textContent), 'Kein Weg zurück zur Liste');
+  app.klick('#ck-ok'); await pause(90);
+  erwarte(!!app.$('#ck-new'), 'Zurück führt nicht zu den Listen');
+  app.$('#ck-new-title').value = 'Elternbrief Ausflug'; app.klick('#ck-new'); await pause(90);
+  erwarte(app.$$('#ck-names .setrow').length === 2, 'Abhakliste zeigt keine Namen');
+  app.klick(app.$$('#ck-names .setrow')[1]);
+  erwarte(app.E('curClass().checks[0].done.length') === 1, 'Haken nicht gesetzt');
+  app.klick('#ck-delete'); app.sheetOk(); await pause(90);
+  erwarte(app.E('curClass().checks.length') === 1 && !!app.$('#ck-new'), 'Löschen führt nicht zurück zur Liste');
+});
+
+test('PC-Raum: Wände halten die Kapazität auch in kleinen Räumen', async app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 8);
+  // viele Größen: nie Überlappung, nie außerhalb – auch nicht bei vollen Wänden
+  const bad = app.E(`(() => { const keepW = ROOM_W, keepH = ROOM_H, out = [];
+    for(const [w, h] of [[700, 520], [800, 600], [900, 650], [1000, 700], [1200, 800], [1400, 1000]]) for(const n of [4, 9, 14, 20, 30]){
+      ROOM_W = w; ROOM_H = h;
+      const pos = pPcWall(n), bx = pos.map(q => itemBox({ x: q.x, y: q.y, w: LW, h: LH, rot: q.rot || 0 }));
+      let ov = false;
+      for(let i = 0; i < bx.length; i++) for(let j = i + 1; j < bx.length; j++){ const p = bx[i], q = bx[j];
+        if(p.x < q.x + q.w - 1 && q.x < p.x + p.w - 1 && p.y < q.y + q.h - 1 && q.y < p.y + p.h - 1) ov = true; }
+      const inside = bx.every(b => b.x >= -1 && b.y >= -1 && b.x + b.w <= w + 1 && b.y + b.h <= h + 1);
+      if(pos.length !== n || ov || !inside) out.push(w + "x" + h + "/" + n + (ov ? " Überlappung" : "") + (!inside ? " außerhalb" : ""));
+    }
+    ROOM_W = keepW; ROOM_H = keepH; return out.join(", "); })()`);
+  erwarte(bad === '', 'PC-Wände: ' + bad);
+  // Überlappungsprüfung kennt gedrehte Tische
+  erwarte(app.E('desksOverlap([{ x: 100, y: 100, w: 90, h: 55, rot: 90 }, { x: 100, y: 120, w: 90, h: 55, rot: 90 }])') === true, 'Gedrehte Tische übereinander nicht erkannt');
+  erwarte(app.E('desksOverlap([{ x: 100, y: 100, w: 90, h: 55, rot: 90 }, { x: 170, y: 100, w: 90, h: 55, rot: 90 }])') === false, 'Gedrehte Tische nebeneinander als Überlappung');
+  // andere Vorlage nimmt die Bildschirme weg
+  app.E('layoutDesks("rows", true)');
+  erwarte(app.E('curPlan().desks.every(d => !d.pc)'), 'Reihen behalten die PC-Bildschirme');
+});
+
+test('Nachbesserungen: Speichern unter, Fehlstunden je Halbjahr, Strichliste, Timer, Eltern, Fächer', async app => {
+  klasseMitNamen(app); neuerPlan(app, 0);
+  const c = 'curClass()';
+  // Speichern unter im Unterricht: bleibt im Unterricht; Rückfrage per Hintergrund geschlossen = behalten
+  app.E('DB.settings.lesson = true; setLesson(true)');
+  app.E('curPlan().desks[0].x += 77; save()');
+  const pid = app.E('curPlanId'), x = app.E('curPlan().desks[0].x');
+  app.E('saveAsNewPlan()'); app.sheetOk();
+  erwarte(/zurücksetzen/.test(app.$('#sheet h3').textContent), 'Rückfrage fehlt');
+  app.$('#modal').dispatchEvent(new app.w.MouseEvent('click', { bubbles: true }));
+  await pause(60);
+  erwarte(app.E(`${c}.plans.length`) === 2 && app.E('curPlanId') !== pid && app.E(`${c}.plans.find(p => p.id === "${pid}").desks[0].x`) === x, 'Weggetippte Rückfrage: Plan nicht geöffnet oder Original verändert');
+  erwarte(app.E('lessonMode') === true, 'Speichern unter beendet den Unterricht');
+  app.E('setLesson(false)');
+  // Fehlstunden nur im gewählten Halbjahr
+  app.E(`DB.settings.termSplit = "2027-01-31"; ${c}.absLog = [{ d: "2026-10-05", p: 0, n: 2, s: "ma", ids: [${c}.students[0].id] }, { d: "2027-03-05", p: 0, n: 1, s: "ma", ids: [${c}.students[0].id] }]`);
+  erwarte(app.E(`missedLessons(${c}, ${c}.students[0].id, "h1").total`) === 2 && app.E(`missedLessons(${c}, ${c}.students[0].id, "h2").total`) === 1 && app.E(`missedLessons(${c}, ${c}.students[0].id).total`) === 3, 'Fehlstunden ignorieren das Halbjahr');
+  // Strichliste: Zeile an Ort und Stelle, Titel bleibt
+  app.E('goNames()'); app.klick('#btn-class-lists');
+  app.klick(app.$$('#tl-quick button')[0]); await pause(90);
+  app.$('#ck-title').value = 'Neu getippt';
+  const order = app.$$('#tl-names .obsrow').map(r => r.dataset.sid).join();
+  app.klick(app.$$('#tl-names .minibtn')[3]);
+  erwarte(app.$('#ck-title').value === 'Neu getippt' && app.$$('#tl-names .obsrow').map(r => r.dataset.sid).join() === order, 'Strichliste springt oder verliert den Titel');
+  erwarte(app.$$('#tl-names .minibtn')[3].classList.contains('on') && /1×/.test(app.$$('#tl-names .obsm')[3].textContent), 'Zeile nicht aktualisiert');
+  app.E('closeModal()');
+  // Timer: Bildschirm wach, am Ende frei und Meldung
+  app.E(`window.__wl = []; Object.defineProperty(navigator, "wakeLock", { configurable: true, value: { request: () => { const l = { released: false, release(){ l.released = true; window.__wl.push("rel"); return Promise.resolve(); } }; window.__wl.push("req"); return Promise.resolve(l); } } })`);
+  app.E('Date.now = () => 5000000; startTimer(60)'); await pause(20);
+  erwarte(app.E('window.__wl.join()') === 'req' && !!app.E('timerWake'), 'Timer hält den Bildschirm nicht wach');
+  app.E('Date.now = () => 5000000 + 61000; paintTimer()'); await pause(20);
+  erwarte(app.E('window.__wl.join()') === 'req,rel' && app.$('#toast').textContent === app.E('t("timerDone")'), 'Timer-Ende gibt den Bildschirm nicht frei oder meldet nichts');
+  app.E('Date.now = () => 6000000; startTimer(60)'); await pause(20);
+  app.klick('#tb-pause'); await pause(20);
+  erwarte(app.E('window.__wl.slice(-2).join()') === 'req,rel' && !app.E('timerWake'), 'Pause hält den Bildschirm wach');
+  app.klick('#tb-pause'); await pause(20);
+  erwarte(!!app.E('timerWake'), 'Weiter nach Pause hält den Bildschirm nicht wach');
+  app.E('stopTimer()');
+  // Excel: Fehlzeiten-Blatt im Halbjahr als Schuljahr gekennzeichnet
+  erwarte(app.E(`gradesXlsxSheets(${c}, "h1").slice(-1)[0].name`) === 'Fehlzeiten (Schuljahr)' && app.E(`gradesXlsxSheets(${c}, "year").slice(-1)[0].name`) === 'Fehlzeiten', 'Fehlzeiten-Blatt ohne Hinweis aufs Schuljahr');
+  // Stichtag: Rückfrage weggetippt = zurück mit dem getippten Tag
+  app.E('editTermSplit()'); app.$('#term-split').value = '2026-06-30'; app.sheetOk();
+  app.$('#modal').dispatchEvent(new app.w.MouseEvent('click', { bubbles: true })); await pause(30);
+  erwarte(app.$('#term-split') && app.$('#term-split').value === '2026-06-30', 'Weggetippte Rückfrage verliert den Stichtag');
+  app.E('closeModal()');
+  // Elternkontakt: Knopf sagt, was gespeichert wird
+  app.E(`openObservations(${c}, ${c}.students[0])`);
+  erwarte(app.$('#obs-add').textContent === 'Beobachtung speichern', 'Knopf Beobachtung');
+  app.klick('#obs-kind button[data-v="parent"]');
+  erwarte(app.$('#obs-add').textContent === 'Elternkontakt speichern', 'Knopf sagt nicht „Elternkontakt“');
+  app.E('closeModal()');
+  // Fach löschen nimmt zieldifferent mit
+  app.E(`DB.subjects.push({ id: "zz", name: "Kunst", color: "#123456" }); ${c}.zd = ["zz|" + ${c}.students[0].id, "ma|" + ${c}.students[0].id]`);
+  app.E('editSubject(DB.subjects.find(s => s.id === "zz"))');
+  const del = app.$$('#sheet button').find(b => /löschen/i.test(b.textContent) && b.className === 'ghost');
+  if(del){ app.klick(del); app.sheetOk(); erwarte(app.E(`${c}.zd.join()`) === "ma|" + app.E(`${c}.students[0].id`), 'Gelöschtes Fach bleibt in zieldifferent'); }
+  else erwarte(false, 'Fach-Dialog nicht gefunden');
+});
+
+test('Größe ändern: Dialog für Tische, Möbel, Wandgegenstände und Rundes', async app => {
+  klasseMitNamen(app); neuerPlan(app, 0);
+  const d0 = app.E('curPlan().desks[0].id');
+  const sel = ids => app.E(`selected.clear(); ${JSON.stringify(ids)}.forEach(i => selected.add(i)); renderStage(false)`);
+  // ein Tisch: Breite/Tiefe in cm, Mitte bleibt
+  app.E(`curPlan().desks.forEach(d => { delete d.groupId; delete d.tbl; d.rot = 0; })`);
+  sel([d0]);
+  const c0 = app.E(`(() => { const d = curPlan().desks[0]; return [d.x + d.w / 2, d.y + d.h / 2]; })()`);
+  app.klick('#sb-size');
+  erwarte(/Tisch/.test(app.$('#sheet h3').textContent) && app.$('#size-w').value === '60' && app.$('#size-h').value === '37', 'Dialog zeigt nicht die Tischmaße in cm: ' + app.$('#size-w').value + '/' + (app.$('#size-h') || {}).value);
+  app.klick(app.$$('#sheet .sizerow .stepbtn')[1]);                // Breite +10
+  erwarte(app.$('#size-w').value === '70', 'Plus-Knopf rechnet falsch: ' + app.$('#size-w').value);
+  app.$('#size-w').value = '120'; app.$('#size-h').value = '70'; app.sheetOk();
+  const d = app.E('JSON.stringify((({ x, y, w, h }) => ({ x, y, w, h }))(curPlan().desks[0]))');
+  const o = JSON.parse(d);
+  erwarte(o.w === 180 && o.h === 105 && Math.abs(o.x + o.w / 2 - c0[0]) <= 1 && Math.abs(o.y + o.h / 2 - c0[1]) <= 1, 'Tischgröße oder Mitte falsch: ' + d);
+  erwarte(app.E('curPlan().desks[1].w') === 90, 'Nicht ausgewählter Tisch mitgeändert');
+  // größere Tische: größere Schrift
+  erwarte(parseFloat(app.$(`#stage .item[data-id="${d0}"]`).style.fontSize) > parseFloat(app.$$('#stage .item.t-desk')[1].style.fontSize), 'Schrift wächst auf großen Tischen nicht');
+  app.E('undo()');
+  erwarte(app.E('curPlan().desks[0].w') === 90 && app.E('curPlan().desks[0].h') === 55, 'Rückgängig stellt die Größe nicht her');
+  // Grenzen: zu klein / zu groß wird abgelehnt
+  sel([d0]); app.klick('#sb-size');
+  app.$('#size-w').value = '5'; app.sheetOk();
+  erwarte(app.$('#modal').classList.contains('on') && /zwischen/.test(app.$('#toast').textContent) && app.E('curPlan().desks[0].w') === 90, 'Zu kleine Größe angenommen');
+  app.$('#size-w').value = '99999'; app.sheetOk();
+  erwarte(app.$('#modal').classList.contains('on') && app.E('curPlan().desks[0].w') === 90, 'Zu große Größe angenommen');
+  app.E('closeModal()');
+  // ± rundet krumme Werte erst auf den nächsten Zehner
+  sel([d0]); app.klick('#sb-size');
+  app.$('#size-w').value = '37'; app.klick(app.$$('#sheet .sizerow .stepbtn')[1]);
+  erwarte(app.$('#size-w').value === '40', 'Plus nach krummem Wert: ' + app.$('#size-w').value);
+  app.klick(app.$$('#sheet .sizerow .stepbtn')[0]);
+  erwarte(app.$('#size-w').value === '30', 'Minus: ' + app.$('#size-w').value);
+  // Tisch am Rand vergrößert: bleibt im Raum
+  app.E('closeModal(); curPlan().desks[0].x = ROOM_W - 95; renderStage(false)'); sel([d0]); app.klick('#sb-size');
+  app.$('#size-w').value = '300'; app.sheetOk();
+  erwarte(app.E('(b => b.x + b.w <= ROOM_W + 1)(itemBox(curPlan().desks[0]))'), 'Vergrößerter Tisch ragt aus dem Raum');
+  app.E('undo()');
+  // ein Tisch wird nicht versehentlich zum runden Stuhl
+  sel([d0]); app.klick('#sb-size'); app.$('#size-w').value = '40'; app.$('#size-h').value = '40'; app.sheetOk();
+  erwarte(!app.E('isSeatDesk(curPlan().desks[0])') && !app.$(`#stage .item[data-id="${d0}"]`).classList.contains('seat'), 'Quadratischer kleiner Tisch wird zum Stuhl');
+  app.E('undo()');
+  // Weg zu „alle Tische“ aus der Auswahl heraus
+  sel([d0]); app.klick('#sb-size'); app.klick('#size-all');
+  erwarte(/alle 12 Tische/.test(app.$('#size-for').textContent), 'Link „alle Tische“ fehlt');
+  app.E('closeModal()');
+  // ohne Auswahl: alle Tische, Vorschläge setzen die Plangröße
+  app.E('selected.clear(); renderStage(false); openSize()');
+  erwarte(/alle 12 Tische/.test(app.$('#size-for').textContent) && app.$$('#size-presets button').length === 3, 'Alle Tische / Vorschläge fehlen');
+  app.klick('#size-presets button[data-k="double"]');
+  erwarte(app.E('curPlan().desks.every(d => d.w === 165 && d.h === 58)') && app.E('curPlan().deskSize') === 'double', 'Doppeltisch-Vorschlag gilt nicht für alle');
+  app.E('undo()');
+  // Möbel im Raum: Fenster nur Länge und bleibt an der Wand, Pflanze nur Durchmesser
+  // Stühle und Tische getrennt; Stuhl bleibt rund und klein; Gruppen bleiben beisammen
+  app.E('curPlan().desks[2].w = 64; curPlan().desks[2].h = 64; curPlan().desks[3].groupId = "gg"; curPlan().desks[4].groupId = "gg"; curPlan().desks[4].x = curPlan().desks[3].x + 90; curPlan().desks[4].y = curPlan().desks[3].y; renderStage(false)');
+  sel(app.E('curPlan().desks.slice(2, 5).map(d => d.id)'));
+  app.klick('#sb-size');
+  erwarte(app.$$('#size-kind button').length === 2 && !!app.$('#size-kind button[data-v="seat"]'), 'Stühle nicht getrennt wählbar');
+  app.klick('#size-kind button[data-v="seat"]');
+  erwarte(/Durchmesser/.test(app.$('#sheet .sizerow span').textContent) && +app.$('#size-w').max <= 47, 'Stuhl ohne Durchmesser oder zu groß wählbar');
+  app.$('#size-w').value = '40'; app.sheetOk();
+  erwarte(app.E('(d => d.w === 60 && d.h === 60)(curPlan().desks[2])') && app.E('isSeatDesk(curPlan().desks[2])'), 'Stuhl nicht rund geblieben');
+  sel(app.E('curPlan().desks.slice(3, 5).map(d => d.id)')); app.klick('#sb-size');
+  app.$('#size-w').value = '90'; app.sheetOk();
+  erwarte(app.E('(([a, b]) => a.w === 135 && b.w === 135 && Math.abs((b.x - a.x) - 135) <= 1)(curPlan().desks.slice(3, 5))'), 'Gruppentische überlappen oder klaffen: ' + app.E('JSON.stringify(curPlan().desks.slice(3, 5).map(d => [d.x, d.w]))'));
+  app.E('undo(); undo()');
+  // Stühle verschiedener Tische (ohne Gruppe, gleiche Tischform) rücken beim Ändern nicht zusammen
+  app.E('const P = curPlan().desks; [5, 6].forEach(k => { P[k].w = 64; P[k].h = 64; P[k].tbl = "round"; delete P[k].groupId; }); P[5].x = 100; P[5].y = 300; P[6].x = 900; P[6].y = 300; renderStage(false)');
+  sel(app.E('curPlan().desks.slice(5, 7).map(d => d.id)')); app.klick('#sb-size');
+  app.$('#size-w').value = '30'; app.sheetOk();
+  erwarte(app.E('(([a, b]) => Math.abs(a.x + a.w / 2 - 132) <= 1 && Math.abs(b.x + b.w / 2 - 932) <= 1)(curPlan().desks.slice(5, 7))'), 'Stühle verschiedener Tische rücken zusammen: ' + app.E('JSON.stringify(curPlan().desks.slice(5, 7).map(d => [d.x, d.w]))'));
+  app.E('undo()');
+  app.E('setEditMode("room")');
+  const win = app.E('(() => { const w = curRoom().items.find(i => i.type === "window"); return w && w.id; })()');
+  const plant = app.E('(() => { const w = curRoom().items.find(i => i.type === "plant"); return w && w.id; })()');
+  erwarte(!!win && !!plant, 'Raum ohne Fenster/Pflanze');
+  const w0 = app.E(`JSON.stringify(curRoom().items.find(i => i.id === "${win}"))`);
+  sel([win, plant]);
+  app.klick('#sb-size');
+  erwarte(app.$$('#size-kind button').length === 2, 'Arten nicht wählbar');
+  app.klick(`#size-kind button[data-v="window"]`);
+  erwarte(!app.$('#size-h') && /Länge/.test(app.$('#sheet .sizerow span').textContent), 'Fenster zeigt Tiefe');
+  app.$('#size-w').value = '200'; app.sheetOk();
+  const w1 = JSON.parse(app.E(`JSON.stringify(curRoom().items.find(i => i.id === "${win}"))`)), wo = JSON.parse(w0);
+  erwarte(w1.w === 300 && w1.h === wo.h && w1.rot === wo.rot && app.E(`isOnWall(curRoom().items.find(i => i.id === "${win}"))`), 'Fenster: Länge, Dicke oder Wand falsch: ' + JSON.stringify(w1));
+  sel([plant]); app.klick('#sb-size');
+  erwarte(/Durchmesser/.test(app.$('#sheet .sizerow span').textContent) && !app.$('#size-h'), 'Pflanze ohne Durchmesser');
+  app.$('#size-w').value = '60'; app.sheetOk();
+  erwarte(app.E(`(i => i.w === 90 && i.h === 90)(curRoom().items.find(i => i.id === "${plant}"))`), 'Pflanze nicht rund vergrößert');
+  // Standardgröße
+  sel([plant]); app.klick('#sb-size'); app.klick('#size-default');
+  erwarte(app.E(`curRoom().items.find(i => i.id === "${plant}").w`) === app.E('ITEMS.plant.w'), 'Standardgröße nicht wiederhergestellt');
+  // Fenster darf nicht länger als die Wand werden
+  sel([win]); app.klick('#sb-size');
+  erwarte(+app.$('#size-w').max <= app.E('pxToCm(Math.max(ROOM_W, ROOM_H))'), 'Fenster länger als der Raum erlaubt');
+  app.E('closeModal()');
+  // kleiner Raum: Fenster höchstens so lang wie die Wand
+  app.E('curRoom().w = 600; curRoom().h = 600; useRoomSize(curRoom())');
+  sel([win]); app.klick('#sb-size');
+  app.$('#size-w').value = '9999'; app.sheetOk();
+  erwarte(app.$('#modal').classList.contains('on') && +app.$('#size-w').max <= 400, 'Fenster länger als die Wand erlaubt: ' + app.$('#size-w').max);
+  app.$('#size-w').value = app.$('#size-w').max; app.sheetOk();
+  erwarte(app.E(`(b => b.x >= -1 && b.y >= -1 && b.x + b.w <= ROOM_W + 1 && b.y + b.h <= ROOM_H + 1)(itemBox(curRoom().items.find(i => i.id === "${win}")))`), 'Fenster ragt aus dem Raum');
+  // Laden: Größen bleiben in sinnvollen Grenzen
+  erwarte(app.E('sanitizeItem({ type: "window", w: 5000, h: 14 }).w') === 1000 && app.E('sanitizeItem({ type: "desk", w: 2, h: 55 }).w') === 10, 'Größen beim Laden nicht begrenzt');
+  app.E('setEditMode("desks")');
+});
+
+test('Größe ändern: Ziehgriff an der Ecke', async app => {
+  klasseMitNamen(app); neuerPlan(app, 0);
+  app.E(`curPlan().desks.forEach(d => { delete d.groupId; delete d.tbl; d.rot = 0; })`);
+  const d0 = app.E('curPlan().desks[0].id');
+  const sel = ids => app.E(`selected.clear(); ${JSON.stringify(ids)}.forEach(i => selected.add(i)); renderStage(false)`);
+  const pe = (type, x, y) => app.$('#sizehandle').dispatchEvent(new app.w.MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y }));
+  // Aufsetzen genau auf der Ecke (der Griff selbst sitzt daneben – der Versatz wird abgezogen), dann die Ecke nach (rx, ry) ziehen
+  const ziehe = (expr, rx, ry, len) => { const g = app.E(`(c => roomToScreen(c.x, c.y))(itemCorner(${expr}, 1, ${len ? 0 : 1}))`), s = app.E(`roomToScreen(${rx}, ${ry})`);
+    pe('pointerdown', g.x, g.y); pe('pointermove', s.x, s.y); pe('pointerup', s.x, s.y); };
+  const D0 = 'curPlan().desks[0]';
+  sel([d0]);
+  erwarte(app.$('#sizehandle').classList.contains('on'), 'Griff fehlt bei einem Tisch');
+  // nach rechts unten ziehen: linke obere Ecke bleibt, 10-cm-Raster
+  const a = JSON.parse(app.E('JSON.stringify(curPlan().desks[0])'));
+  const und = app.E('undoStack.length');
+  ziehe(D0, a.x + 182, a.y + 88);
+  const b = JSON.parse(app.E('JSON.stringify(curPlan().desks[0])'));
+  erwarte(b.w === 180 && b.h === 85 && b.x === a.x && b.y === a.y, 'Ziehen ändert falsch: ' + JSON.stringify([b.x, b.y, b.w, b.h]));
+  erwarte(app.E('undoStack.length') === und + 1, 'Ziehen nicht rückgängig zu machen');
+  app.E('undo()');
+  erwarte(app.E('curPlan().desks[0].w') === 90, 'Rückgängig nach Ziehen geht nicht');
+  // Antippen ohne Ziehen ändert nichts und hinterlässt keinen Rückgängig-Schritt
+  sel([d0]);
+  erwarte(app.$('#sizehandle').classList.contains('on'), 'Griff nach Rückgängig weg');
+  pe('pointerdown', 0, 0); pe('pointerup', 0, 0);
+  erwarte(app.E('undoStack.length') === und && app.E('curPlan().desks[0].w') === 90, 'Antippen des Griffs ändert etwas');
+  // Antippen eines Tischs auf der Fläche lässt „Wiederholen“ stehen
+  erwarte(app.E('redoStack.length') === 1, 'Wiederholen fehlt nach Rückgängig (1)');
+  { const el = app.$(`#stage .item[data-id="${d0}"]`), c = app.E(`(d => roomToScreen(d.x + d.w / 2, d.y + d.h / 2))(${D0})`);
+    const ev = (t, x, y) => el.dispatchEvent(new app.w.MouseEvent(t, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 }));
+    ev('pointerdown', c.x, c.y); ev('pointerup', c.x, c.y); }
+  erwarte(app.E('redoStack.length') === 1 && app.E('undoStack.length') === und, 'Antippen eines Tischs löscht Wiederholen');
+  // Verschieben auf der Fläche legt weiterhin einen Rückgängig-Schritt an
+  { const el = app.$(`#stage .item[data-id="${d0}"]`), c = app.E(`(d => roomToScreen(d.x + d.w / 2, d.y + d.h / 2))(${D0})`), x0 = app.E(`${D0}.x`);
+    const ev = (t, x, y) => el.dispatchEvent(new app.w.MouseEvent(t, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 }));
+    ev('pointerdown', c.x, c.y); ev('pointermove', c.x + 40, c.y); ev('pointermove', c.x + 80, c.y); ev('pointerup', c.x + 80, c.y);
+    erwarte(app.E(`${D0}.x`) !== x0 && app.E('undoStack.length') === und + 1, 'Verschieben ohne Rückgängig-Schritt: ' + app.E('undoStack.length') + ' ' + app.E(`${D0}.x`) + ' ' + x0);
+    app.E('undo()');
+    erwarte(app.E(`${D0}.x`) === x0, 'Rückgängig nach Verschieben geht nicht'); }
+  sel([d0]);
+  // Zittern beim Antippen (2 px) ändert nichts und lässt „Wiederholen“ stehen
+  erwarte(app.E('redoStack.length') === 1, 'Wiederholen fehlt nach Rückgängig');
+  pe('pointerdown', 100, 100); pe('pointermove', 102, 101); pe('pointerup', 102, 101);
+  erwarte(app.E('curPlan().desks[0].w') === 90 && app.E('redoStack.length') === 1 && app.E('undoStack.length') === und, 'Zittern am Griff ändert die Größe oder löscht Wiederholen');
+  // Aufsetzen neben der Ecke (wo der Griff ist): ohne Bewegung kein Sprung
+  const gs = app.E(`(c => roomToScreen(c.x + 30, c.y + 30))(itemCorner(${D0}, 1, 1))`);
+  pe('pointerdown', gs.x, gs.y); pe('pointermove', gs.x + 5, gs.y); pe('pointerup', gs.x + 5, gs.y);
+  erwarte(app.E('curPlan().desks[0].h') === 55 && app.E('curPlan().desks[0].w') <= 105, 'Größe springt beim Aufsetzen: ' + app.E('JSON.stringify([curPlan().desks[0].w, curPlan().desks[0].h])'));
+  app.E('undo()');
+  sel([d0]);
+  // kleiner Zug unter einem halben Rasterschritt: keine Änderung, kein leerer Rückgängig-Schritt
+  app.E('zoom = 2; applyTransform()'); sel([d0]);
+  { const g = app.E(`(c => roomToScreen(c.x, c.y))(itemCorner(${D0}, 1, 1))`), u0 = app.E('undoStack.length');
+    pe('pointerdown', g.x, g.y); pe('pointermove', g.x + 10, g.y); pe('pointerup', g.x + 10, g.y);
+    erwarte(app.E('undoStack.length') === u0 && app.E('curPlan().desks[0].w') === 90, 'Leerer Rückgängig-Schritt nach kleinem Zug'); }
+  // gedreht: die gegenüberliegende Ecke bleibt stehen
+  app.E('curPlan().desks[0].rot = 90'); sel([d0]);
+  const anc = JSON.parse(app.E('JSON.stringify(itemCorner(curPlan().desks[0], -1, -1))'));
+  ziehe(D0, anc.x - 70, anc.y + 150);                     // gedreht um 90°: Breite zeigt nach unten, Tiefe nach links
+  const r = JSON.parse(app.E('JSON.stringify(curPlan().desks[0])')), anc2 = JSON.parse(app.E('JSON.stringify(itemCorner(curPlan().desks[0], -1, -1))'));
+  erwarte(r.w === 150 && r.h === 70 && Math.abs(anc2.x - anc.x) <= 1.5 && Math.abs(anc2.y - anc.y) <= 1.5, 'Gedrehter Tisch: falsche Größe oder Ecke wandert: ' + JSON.stringify([r.w, r.h, anc, anc2]));
+  // Gruppe, Vorführen, Unterricht: kein Griff
+  app.E('curPlan().desks[0].groupId = "g1"; curPlan().desks[1].groupId = "g1"');
+  sel([d0]);
+  erwarte(!app.$('#sizehandle').classList.contains('on'), 'Griff bei einer Tischgruppe');
+  app.E('delete curPlan().desks[0].groupId; delete curPlan().desks[1].groupId'); sel([d0]);
+  app.E('setPresenting(true)'); sel([d0]);
+  erwarte(!app.$('#sizehandle').classList.contains('on'), 'Griff im Vorführmodus');
+  app.E('setPresenting(false)');
+  // Pflanze: bleibt rund; Fenster: nur Länge, bleibt an der Wand
+  app.E('setEditMode("room")');
+  const plant = app.E('curRoom().items.find(i => i.type === "plant").id'), win = app.E('curRoom().items.find(i => i.type === "window").id');
+  sel([plant]);
+  const pa = JSON.parse(app.E(`JSON.stringify(itemCorner(curRoom().items.find(i => i.id === "${plant}"), -1, -1))`));
+  ziehe(`curRoom().items.find(i => i.id === "${plant}")`, pa.x + 120, pa.y + 60);
+  erwarte(app.E(`(i => i.w === i.h && i.w === 119)(curRoom().items.find(i => i.id === "${plant}"))`), 'Pflanze nicht rund: ' + app.E(`JSON.stringify(curRoom().items.find(i => i.id === "${plant}"))`));
+  sel([win]);
+  const wv = JSON.parse(app.E(`JSON.stringify(curRoom().items.find(i => i.id === "${win}"))`));
+  const wa = JSON.parse(app.E(`JSON.stringify(itemCorner(curRoom().items.find(i => i.id === "${win}"), 1, 0))`));
+  const s0 = app.E(`roomToScreen(${wa.x}, ${wa.y})`);
+  pe('pointerdown', s0.x, s0.y);
+  const tgt = app.E(`(() => { const it = curRoom().items.find(i => i.id === "${win}"), a = it.rot * Math.PI / 180; return roomToScreen(${wa.x} + Math.cos(a) * 60 - Math.sin(a) * 80, ${wa.y} + Math.sin(a) * 60 + Math.cos(a) * 80); })()`);
+  pe('pointermove', tgt.x, tgt.y);
+  erwarte(/^\d,\d\d m$/.test(app.$('#sizebadge').textContent) && app.$('#sizebadge').classList.contains('on'), 'Maßanzeige beim Ziehen fehlt: ' + app.$('#sizebadge').textContent);
+  pe('pointerup', tgt.x, tgt.y);
+  const wn = JSON.parse(app.E(`JSON.stringify(curRoom().items.find(i => i.id === "${win}"))`));
+  erwarte(wn.h === wv.h && wn.w === wv.w + 60 && wn.rot === wv.rot && app.E(`isOnWall(curRoom().items.find(i => i.id === "${win}"))`), 'Fenster beim Ziehen falsch: ' + JSON.stringify([wv, wn]));
+  // frei stehende Tafel stößt beim Verlängern an die Wand: dreht sich nicht und springt nicht an die Wand
+  const bid = app.E(`(() => { const b = { id: uid(), type: "whiteboard", x: 0, y: 0, w: 240, h: 24, rot: 90 }; b.x = ROOM_W - 300; b.y = 300; curRoom().items.push(b); return b.id; })()`);
+  sel([bid]);
+  const bb = `curRoom().items.find(i => i.id === "${bid}")`;
+  const bc = JSON.parse(app.E(`JSON.stringify(itemCorner(${bb}, 1, 0))`));
+  ziehe(bb, bc.x + 400, bc.y + 600, true);
+  const bn = JSON.parse(app.E(`JSON.stringify(${bb})`));
+  erwarte(bn.rot === 90 && bn.w > 240 && bn.h === 24, 'Tafel dreht sich oder springt beim Ziehen: ' + JSON.stringify(bn));
+  // waagerechte Tafel frei im Raum: beim Verlängern bis an die rechte Wand (zwei Züge) bleibt sie, wo sie steht
+  const hid = app.E(`(() => { const b = { id: uid(), type: "whiteboard", x: ROOM_W - 400, y: 320, w: 240, h: 24, rot: 0 }; curRoom().items.push(b); return b.id; })()`);
+  sel([hid]);
+  const hb = `curRoom().items.find(i => i.id === "${hid}")`;
+  const hg = app.E(`(c => roomToScreen(c.x, c.y))(itemCorner(${hb}, 1, 0))`);
+  const h1 = app.E(`roomToScreen(ROOM_W + 50, 332)`), h2 = app.E(`roomToScreen(ROOM_W + 120, 332)`);
+  pe('pointerdown', hg.x, hg.y); pe('pointermove', h1.x, h1.y); pe('pointermove', h2.x, h2.y); pe('pointerup', h2.x, h2.y);
+  const hn = JSON.parse(app.E(`JSON.stringify(${hb})`));
+  erwarte(hn.rot === 0 && hn.y === 320 && hn.w > 240, 'Tafel springt an eine Wand: ' + JSON.stringify(hn));
+  erwarte(app.E(`isOnWall(${hb})`) === false && app.E(`isOnWall({ type: "whiteboard", x: 100, y: 0, w: 240, h: 24, rot: 0 })`) === true, 'Wandprüfung beachtet die Ausrichtung nicht');
+  app.E('setEditMode("desks")');
+});
+
+test('Abgleich: zieldifferent, Elternkontakte, PC-Plätze', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    const ben = sid(app, 'Ben'), anna = sid(app, 'Anna');
+    uhr(app, 2000); app.E(`setZd(curClass(), "ma", "${ben}", true); addObs(curClass(), "${anna}", "Telefonat Mutter", "ma", "2026-10-01", "phone"); flushSave()`);
+    uhr(B, 2100); B.E(`setZd(curClass(), "ma", "${anna}", true); flushSave()`);
+    uhr(app, 3000); await laden(app, datei(B), 'merge');
+    uhr(B, 3100); await laden(B, datei(app), 'merge');
+    erwarte(inhalt(app) === inhalt(B), 'Geräte unterschiedlich');
+    erwarte(app.E('curClass().zd.length') === 2 && B.E('curClass().obs.some(o => o.k === "parent" && o.m === "phone")'), 'Merkmal oder Elternkontakt nicht übertragen');
+    uhr(app, 4000); app.E(`setZd(curClass(), "ma", "${ben}", false); flushSave()`);
+    uhr(B, 4100); await laden(B, datei(app), 'merge');
+    erwarte(B.E(`isZd(curClass(), "ma", "${ben}")`) === false, 'Entfernen des Merkmals nicht übertragen');
+  } finally { B.ende(); }
 });
 
 /* ------------------------------------------------------------------ */

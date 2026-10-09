@@ -479,7 +479,7 @@ html.android{--safe-t:0px;--safe-b:0px;--safe-l:0px;--safe-r:0px}
   padding:calc(12px + var(--safe-t)) calc(14px + var(--safe-r)) 12px calc(16px + var(--safe-l))}
 body.selfmode .selfhead{display:flex}
 body.selfmode #screen-editor > .topbar,body.selfmode .panels,body.selfmode .lessonbar,body.selfmode .selbar,
-body.selfmode .stagehint,body.selfmode .rothandle,body.selfmode .gradebar,body.selfmode .zoombar,body.selfmode #coach,body.selfmode .lockbtn{display:none!important}
+body.selfmode .stagehint,body.selfmode .rothandle,body.selfmode .sizehandle,body.selfmode .gradebar,body.selfmode .zoombar,body.selfmode #coach,body.selfmode .lockbtn{display:none!important}
 .sh-tx{flex:1;min-width:0}
 .sh-title{font-size:clamp(26px,6vw,40px);font-weight:850;letter-spacing:.01em;line-height:1.1}
 .sh-q{font-size:clamp(15px,3.4vw,20px);font-weight:600;margin-top:4px;opacity:.95}
@@ -685,6 +685,11 @@ body.checking .panels,body.checking .lessonbar,body.checking .stagehint,body.sel
 .t-desk.wide::after{left:14%;right:62%}
 .t-desk.wide::before{left:62%;right:14%}
 .t-desk.seat{border-radius:50%;box-shadow:0 2px 3px rgba(0,0,0,.12)}
+/* PC-Platz: Bildschirm an der Tischkante gegenüber dem Stuhl */
+.item .pcmon{position:absolute;left:24%;right:24%;top:-8px;height:10px;border-radius:3px 3px 1px 1px;
+  background:linear-gradient(180deg,#4B5A67,#2E3A44);border:1.5px solid #1F2830;pointer-events:none}
+.item .pcmon::after{content:"";position:absolute;left:42%;right:42%;bottom:-5px;height:4px;background:#4B5A67}
+.item.t-desk.seat .pcmon{left:22%;right:22%}
 /* Tischplatten unter den Stühlen (runde Tische, Tafeln) */
 .ptable{position:absolute;top:0;left:0;background:var(--table);border:2px solid var(--table-line);
   display:flex;align-items:center;justify-content:center;pointer-events:none;transform-origin:center;
@@ -724,12 +729,52 @@ body.checking .panels,body.checking .lessonbar,body.checking .stagehint,body.sel
   border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;pointer-events:none;
   margin-left:-26px;margin-top:-58px;min-width:52px;text-align:center}
 .rotbadge.on{display:block}
+/* Größengriff: neben der Ecke, damit kleine Gegenstände (Fenster) weiter verschiebbar bleiben */
+.sizehandle{position:absolute;z-index:30;width:36px;height:36px;border-radius:50%;
+  background:var(--surface);border:2px solid var(--accent);color:var(--accent);
+  display:none;align-items:center;justify-content:center;touch-action:none;cursor:nwse-resize;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);margin-left:-18px;margin-top:-18px}
+.sizehandle svg.i{width:18px;height:18px}
+.sizehandle.on{display:flex}
+.sizehandle.active{background:var(--accent);color:var(--accent-ink)}
+.sizebadge{position:absolute;z-index:31;display:none;background:var(--ink);color:var(--surface);
+  border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;pointer-events:none;white-space:nowrap;
+  transform:translate(-50%,-150%)}
+.sizebadge.on{display:block}
+.sizerow{display:flex;align-items:center;gap:8px;margin-top:10px}
+.sizerow > span{flex:1;font-weight:650}
+.sizerow input{width:96px;text-align:center}
+.sizerow .stepbtn{min-width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:20px;font-weight:700;color:var(--ink)}
+.sizerow small{color:var(--ink-soft);font-size:13px}
+#size-presets button{padding:6px 8px;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:1px}
+#size-presets button small{font-weight:600;opacity:.75;font-size:12px}
+#size-presets button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .rotbadge.snap{background:var(--accent);color:var(--accent-ink)}
 .lockbtn{position:absolute;z-index:60;display:none;align-items:center;justify-content:center;
   top:calc(10px + var(--safe-t));right:calc(64px + var(--safe-r));width:44px;height:44px;
   border-radius:50%;background:var(--surface);border:1px solid var(--line);
   box-shadow:0 2px 10px rgba(0,0,0,.2)}
 body.presenting .lockbtn{display:flex}
+.lockbtn.timerbtn{right:calc(118px + var(--safe-r))}
+/* Timer: klein oben rechts, im Vorführmodus groß in der Mitte oben */
+.timerbox{position:absolute;z-index:58;top:10px;right:62px;display:flex;align-items:center;gap:8px;
+  background:var(--ink);color:var(--surface);border-radius:14px;padding:6px 8px 6px 14px;box-shadow:0 4px 18px rgba(0,0,0,.28)}
+.timerbox[hidden]{display:none}
+.timerbox .tb-time{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;min-width:62px;text-align:center}
+.timerbox .tb-btns{display:flex;gap:2px}
+.timerbox button{min-width:36px;height:36px;border-radius:9px;color:var(--surface);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.timerbox button:active{background:rgba(127,127,127,.3)}
+.timerbox.paused .tb-time{opacity:.55}
+.timerbox.done,.timerbox.done button{color:#fff}
+.timerbox.done{background:#B42318;animation:tbflash 1s steps(2) 6}
+@keyframes tbflash{50%{background:#F04438}}
+body.presenting .timerbox{left:50%;right:auto;transform:translateX(-50%);top:calc(12px + var(--safe-t));padding:10px 14px 10px 26px;border-radius:22px}
+body.presenting .timerbox .tb-time{font-size:clamp(40px,min(9vw,14vh),110px);min-width:2.6em}
+body.presenting .timerbox #tb-big{display:none}
+@media (max-width:700px){ body.presenting .timerbox{top:calc(64px + var(--safe-t))} }
+/* Handy quer: flacher, damit die erste Reihe sichtbar bleibt */
+@media (max-height:520px){ body.presenting .timerbox{padding:4px 8px 4px 16px;border-radius:16px} body.presenting .timerbox .tb-time{font-size:clamp(30px,11vh,60px)} }
+body.selfmode .timerbox .tb-btns,body.selfmode .timerbtn{display:none!important}
 .lockbtn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .zoombar{position:absolute;bottom:12px;z-index:20;display:flex;flex-direction:column;gap:6px;
   right:calc(10px + var(--safe-r))}
@@ -747,6 +792,19 @@ body.presenting .lockbtn{display:flex}
   white-space:nowrap;display:flex;align-items:center;gap:5px;color:var(--surface)}
 .selbar button:active{background:rgba(127,127,127,.3)}
 .selbar button.del{color:#FF9B84}
+/* Pfeil: die Leiste geht rechts weiter */
+.hsarrow{position:absolute;right:62px;bottom:12px;z-index:27;width:40px;border-radius:0 12px 12px 0;
+  display:flex;align-items:center;justify-content:center;color:var(--surface);
+  background:linear-gradient(90deg,rgba(0,0,0,0),var(--ink) 45%)}
+.hsarrow[hidden]{display:none}
+#plan-title{cursor:pointer}
+.linkbtn{display:block;margin:6px 0 0 auto;font-size:13px;color:var(--accent);font-weight:650;text-decoration:underline;padding:4px 2px;background:none;border:0}
+.pktag{display:inline-block;font-size:11px;font-weight:800;padding:1px 6px;border-radius:6px;background:#FDECD8;color:#7A3A06}
+[data-theme="dark"] .pktag{background:#4A2B0C;color:#FBE8D3}
+.zdtag{display:inline-block;font-size:10px;font-weight:800;padding:1px 5px;border-radius:6px;margin-left:5px;background:var(--accent-soft);color:var(--accent);vertical-align:middle}
+#plan-title.menu{position:relative;padding-right:1.1em}
+#plan-title.menu::after{content:"▾";position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:.8em;opacity:.75}
+.hsarrow svg.i{width:20px;height:20px}
 .lessonbar{position:absolute;left:10px;right:62px;bottom:12px;z-index:26;
   background:var(--ink);color:var(--surface);border-radius:12px;padding:6px;display:none;
   gap:2px;align-items:center;box-shadow:0 4px 18px rgba(0,0,0,.28);
@@ -819,7 +877,7 @@ body.presenting .lockbtn{display:flex}
 /* Vorführmodus */
 body.presenting .topbar,body.presenting .panels,body.presenting .stagehint,
 body.presenting .lessonbar,body.presenting .checkbar,body.presenting .gradebar,body.viewlocked .zoombar,body.viewlocked .selbar,
-body.viewlocked .rothandle{display:none!important}
+body.viewlocked .rothandle,body.presenting .sizehandle{display:none!important}
 body.presenting .selbar{right:62px}
 body.presenting .item{font-size:15px;font-weight:600}
 #exitPresent{position:fixed;z-index:60;display:none;
@@ -892,6 +950,7 @@ body.presenting #exitPresent{display:flex}
 <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h4M10 17h4"/></symbol>
 <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></symbol>
 <symbol id="i-angle" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M4 20L17 6"/><path d="M12 20a8 8 0 0 0-1.6-4.8"/></symbol>
+<symbol id="i-resize" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
 <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
 <symbol id="i-group" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/><path d="M11 7h4v6"/></symbol>
 <symbol id="i-ungroup" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/><path d="M12 5l4 4M16 5l-4 4"/></symbol>
@@ -1122,6 +1181,7 @@ body.presenting #exitPresent{display:flex}
           <button class="iconbtn danger" id="btn-delete-class" aria-label="Delete"><svg class="i"><use href="#i-trash"></use></svg></button>
         </div>
         <div class="eyebrow" id="names-count"></div>
+        <button class="cbtn outline" id="btn-class-lists" style="width:100%;margin:2px 0 10px"><svg class="i"><use href="#i-check"></use></svg><span data-i="classListsBtn"></span></button>
         <textarea class="field" id="student-input" data-ph="namesPh"></textarea>
         <button class="cbtn green" id="btn-add-students" style="width:100%;margin-top:8px"><svg class="i"><use href="#i-plus"></use></svg><span data-i="addNames"></span></button>
         <div class="hint" data-i="namesHint2"></div>
@@ -1222,7 +1282,7 @@ body.presenting #exitPresent{display:flex}
 <section id="screen-editor" class="screen">
   <div class="topbar">
     <button class="iconbtn" id="btn-editor-back" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
-    <h2 id="plan-title">—</h2>
+    <h2 id="plan-title" role="button" tabindex="0" aria-haspopup="dialog">—</h2>
     <button class="iconbtn" id="btn-undo" disabled aria-label="Undo"><svg class="i"><use href="#i-undo"></use></svg></button>
     <button class="iconbtn" id="btn-redo" disabled aria-label="Redo"><svg class="i"><use href="#i-redo"></use></svg></button>
     <button class="iconbtn" id="btn-tool" aria-label="Tool"><svg class="i"><use href="#i-hand"></use></svg></button>
@@ -1254,7 +1314,19 @@ body.presenting #exitPresent{display:flex}
       </div>
       <div class="rothandle" id="rothandle" role="button"><svg class="i"><use href="#i-rotate"></use></svg></div>
       <div class="rotbadge" id="rotbadge"></div>
+      <div class="sizehandle" id="sizehandle" aria-hidden="true"><svg class="i"><use href="#i-resize"></use></svg></div>
+      <div class="sizebadge" id="sizebadge"></div>
       <button class="lockbtn" id="btn-lock"><svg class="i"><use href="#i-lock"></use></svg></button>
+      <button class="lockbtn timerbtn" id="btn-timer-present" data-al="timerTitle"><svg class="i"><use href="#i-clock"></use></svg></button>
+      <div class="timerbox" id="timerbox" hidden role="timer" aria-live="off">
+        <span class="tb-time" id="tb-time">0:00</span>
+        <div class="tb-btns">
+          <button id="tb-pause" data-al="timerPause"><span>❚❚</span></button>
+          <button id="tb-plus" data-al="timerPlus"><span>+1</span></button>
+          <button id="tb-big" data-al="timerBig"><svg class="i"><use href="#i-eye"></use></svg></button>
+          <button id="tb-stop" data-al="timerStop"><svg class="i"><use href="#i-close"></use></svg></button>
+        </div>
+      </div>
       <div class="lessonbar" id="lessonbar">
         <span class="lb-count" id="lb-count"></span>
         <button id="lb-pick"><svg class="i"><use href="#i-dice"></use></svg><span data-i="pickOne"></span></button>
@@ -1262,13 +1334,14 @@ body.presenting #exitPresent{display:flex}
         <button id="lb-grade"><svg class="i"><use href="#i-grade"></use></svg><span data-i="gRate"></span></button>
         <button id="lb-check"><svg class="i"><use href="#i-check"></use></svg><span data-i="ckTitle"></span></button>
         <button id="lb-journal"><svg class="i"><use href="#i-note"></use></svg><span data-i="jTitle"></span></button>
+        <button id="lb-timer"><svg class="i"><use href="#i-clock"></use></svg><span data-i="timerTitle"></span></button>
         <button id="lb-self" class="lb-self"><svg class="i"><use href="#i-users"></use></svg><span data-i="selfTitle"></span></button>
         <button id="lb-exit"><svg class="i"><use href="#i-close"></use></svg><span data-i="close"></span></button>
       </div>
       <div class="selbar" id="selbar">
         <span class="sb-count" id="sb-count"></span>
         <button id="sb-grade" class="sb-main"><svg class="i"><use href="#i-grade"></use></svg><span data-i="gRate"></span></button>
-        <button id="sb-size"><svg class="i"><use href="#i-desk"></use></svg><span data-i="deskSize"></span></button>
+        <button id="sb-size"><svg class="i"><use href="#i-resize"></use></svg><span data-i="deskSize"></span></button>
         <button id="sb-rot"><svg class="i"><use href="#i-rotate"></use></svg><span data-i="rotate"></span></button>
         <button id="sb-group"><svg class="i"><use href="#i-group"></use></svg><span data-i="group"></span></button>
         <button id="sb-ungroup"><svg class="i"><use href="#i-ungroup"></use></svg><span data-i="ungroup"></span></button>
@@ -1277,9 +1350,11 @@ body.presenting #exitPresent{display:flex}
         <button id="sb-clear"><svg class="i"><use href="#i-close"></use></svg><span data-i="clearSeat"></span></button>
         <button id="sb-note"><svg class="i"><use href="#i-note"></use></svg><span data-i="noteAbsent"></span></button>
         <button id="sb-lock"><svg class="i"><use href="#i-lock"></use></svg><span id="sb-lock-t" data-i="lockSeat"></span></button>
+        <button id="sb-pc"><svg class="i"><use href="#i-computer"></use></svg><span id="sb-pc-t" data-i="pcMake"></span></button>
         <button id="sb-dup"><svg class="i"><use href="#i-copy"></use></svg><span data-i="duplicate"></span></button>
         <button id="sb-del" class="del"><svg class="i"><use href="#i-trash"></use></svg><span data-i="delete"></span></button>
       </div>
+      <button class="hsarrow" id="sb-more" hidden data-al="moreRight"><svg class="i"><use href="#i-go"></use></svg></button>
     </div>
 
     <div class="gradebar" id="gradebar">
@@ -1310,6 +1385,7 @@ body.presenting #exitPresent{display:flex}
           <button class="tile" id="btn-place-all"><svg class="i"><use href="#i-users"></use></svg><span data-i="placeAll"></span></button>
           <button class="tile" id="btn-shuffle"><svg class="i"><use href="#i-shuffle"></use></svg><span data-i="shuffle"></span></button>
           <button class="tile" id="btn-empty-desk"><svg class="i"><use href="#i-desk"></use></svg><span data-i="emptyDesk"></span></button>
+          <button class="tile" id="btn-pc-desk"><svg class="i"><use href="#i-computer"></use></svg><span data-i="pcDesk"></span></button>
         </div>
         <input type="search" class="field" id="seat-search" data-ph="searchSeat" autocomplete="off" style="margin-top:6px">
         <div id="seat-options"></div>
@@ -1455,10 +1531,14 @@ const I18N = {
     roomHintPlan:"Die Ausstattung gehört zum Raum und gilt für alle Sitzpläne, die ihn nutzen.",
     roomHintEdit:"Du bearbeitest gerade den Raum. Tische sind ausgeblendet.",
     tabSeats:"Plätze", tabRoom:"Raum", tabPresets:"Vorlagen",
-    deskSize:"Größe", deskSizeTitle:"Tischgröße",
-    deskSizeHint:"Gilt für die ausgewählten Tische — ohne Auswahl für alle Tische des Plans.",
+    deskSize:"Größe", sizeSeat:"Stuhl", sizeAllDesks:"Für alle Tische des Plans …",
+    sizeTitle:"Größe: {t}", sizeFor1:"Gilt für den ausgewählten Gegenstand.", sizeFor:"Gilt für alle {n} ausgewählten ({t}).", sizeForAll:"Gilt für alle {n} Tische des Plans",
+    sizeW:"Breite", sizeD:"Tiefe", sizeLen:"Länge", sizeDia:"Durchmesser", sizeCm:"cm",
+    sizeMixed:"Die ausgewählten sind unterschiedlich groß – alle bekommen die eingestellte Größe.",
+    sizeWallHint:"Bleibt an der Wand; nur die Länge ist einstellbar.",
+    sizeDefault:"Standardgröße", sizeApply:"Übernehmen", sizeRange:"Bitte zwischen {a} und {b} cm angeben",
+    sizePresets:"Tischgrößen", sizeDone:"Größe geändert",
     sizeSingle:"Einzeltisch", sizeDouble:"Doppeltisch", sizeGroup:"Gruppentisch",
-    sizeSingleSub:"Für eine Person", sizeDoubleSub:"Zwei Personen nebeneinander", sizeGroupSub:"Großer Tisch für Gruppenarbeit",
     roomTemplate:"Raumvorlage", roomTemplateSub:"Fertig eingerichtetes Zimmer als Startpunkt",
     roomTplTitle:"Raumvorlage wählen", roomTplWarn:"Die bisherige Ausstattung dieses Raums wird ersetzt.",
     tplClassic:"Klassisch", tplClassicSub:"Kreidetafel, Pult, Tür, Fenster, Schrank",
@@ -1518,14 +1598,16 @@ const I18N = {
     presets:{rows:"Reihen",groups4:"Tischgruppen (4)",groups6:"Tischgruppen (6)",
       u:"U-Form",doubleU:"Doppel-U",circle:"Sitzkreis",exam:"Prüfung",cinema:"Kinobestuhlung",
       rounds:"Runde Tische",longtables:"Lange Tafeln",boardroom:"Konferenztisch",
-      squares:"Quadratische Tische",ovals:"Ovale Tische",utable:"U-Tafel",ttable:"T-Tafel"},
+      squares:"Quadratische Tische",ovals:"Ovale Tische",utable:"U-Tafel",ttable:"T-Tafel",
+      pcwall:"PC-Raum (Wände)",pcrows:"PC-Raum (Reihen)"},
     presetsSub:{rows:"Doppeltische zur Tafel",groups4:"Vierergruppen",groups6:"Sechsergruppen",
       u:"Offenes U zur Tafel",doubleU:"Zwei Reihen im U",circle:"Runder Kreis",
       exam:"Einzeln, weit auseinander",cinema:"Leicht gebogene Reihen",
       rounds:"Plätze rund um Tische — weicht Bühne & Säulen aus",longtables:"Tafeln mit Plätzen auf beiden Seiten",
       boardroom:"Umlaufend um einen langen Tisch",
       squares:"Plätze auf allen vier Seiten",ovals:"Gestreckt rund, viel Beinfreiheit",
-      utable:"Kopftafel vorne, Plätze außen mit Blick in die Mitte",ttable:"Kopftafel vorne, lange Tafel davor"},
+      utable:"Kopftafel vorne, Plätze außen mit Blick in die Mitte",ttable:"Kopftafel vorne, lange Tafel davor",
+      pcwall:"PC-Plätze an den Wänden, Blick zur Wand",pcrows:"PC-Plätze in Reihen zur Tafel"},
     info:[
       { h:"Was die App macht",
         p:["Du legst deine Klassen an, gibst die Namen ein und ziehst die Plätze frei auf der Fläche zusammen. Fertige Pläne kannst du ausdrucken, teilen und für jede Gruppe mehrfach anlegen."] },
@@ -1536,7 +1618,8 @@ const I18N = {
             "Plätze frei verschieben, gruppieren und als PDF sichern."] },
       { h:"Räume einmal einrichten",
         p:["Räume findest du unter „Sitzpläne → Räume“. Tafel, Tür, Fenster und Schränke gehören zum Raum, nicht zum einzelnen Sitzplan. Einmal eingerichtet, nutzt du denselben Raum für jede Klasse, die darin unterrichtet wird.",
-           "Unter „Größe & Boden“ stellst du die Maße in Metern ein; ein Kästchen im Raster sind 50 cm. Möbel ziehst du aus der Palette in den Raum, Türen, Fenster und Tafeln rasten dabei an der nächsten Wand ein."] },
+           "Unter „Größe & Boden“ stellst du die Maße in Metern ein; ein Kästchen im Raster sind 50 cm. Möbel ziehst du aus der Palette in den Raum, Türen, Fenster und Tafeln rasten dabei an der nächsten Wand ein.",
+           "Größer oder kleiner: Gegenstand antippen, dann „Größe“ in der Leiste (Maße in cm) – oder am runden Griff an der Ecke ziehen. Fenster, Türen und Tafeln ändern dabei nur ihre Länge."] },
       { h:"Gruppentische",
         p:["Mehrere Plätze auswählen und auf „Gruppieren“ tippen. Danach bewegen sich die Tische gemeinsam und lassen sich als Einheit drehen. Beim automatischen Setzen gelten gruppierte Tische als Nachbarn."] },
       { h:"Automatisch setzen",
@@ -1641,10 +1724,14 @@ const I18N = {
     roomHintPlan:"Furniture belongs to the room and applies to every plan using it.",
     roomHintEdit:"You are editing the room. Desks are hidden.",
     tabSeats:"Seats", tabRoom:"Room", tabPresets:"Templates",
-    deskSize:"Size", deskSizeTitle:"Desk size",
-    deskSizeHint:"Applies to the selected desks — with nothing selected, to every desk on the plan.",
+    deskSize:"Size", sizeSeat:"Chair", sizeAllDesks:"For all desks of the plan …",
+    sizeTitle:"Size: {t}", sizeFor1:"Applies to the selected item.", sizeFor:"Applies to all {n} selected ({t}).", sizeForAll:"Applies to all {n} desks of the plan",
+    sizeW:"Width", sizeD:"Depth", sizeLen:"Length", sizeDia:"Diameter", sizeCm:"cm",
+    sizeMixed:"The selected items differ in size – all of them get the size set here.",
+    sizeWallHint:"Stays on the wall; only the length can be set.",
+    sizeDefault:"Default size", sizeApply:"Apply", sizeRange:"Please enter between {a} and {b} cm",
+    sizePresets:"Desk sizes", sizeDone:"Size changed",
     sizeSingle:"Single desk", sizeDouble:"Double desk", sizeGroup:"Group table",
-    sizeSingleSub:"For one person", sizeDoubleSub:"Two people side by side", sizeGroupSub:"Large table for group work",
     roomTemplate:"Room template", roomTemplateSub:"A furnished room as a starting point",
     roomTplTitle:"Choose a room template", roomTplWarn:"The current furniture of this room will be replaced.",
     tplClassic:"Classic", tplClassicSub:"Chalkboard, teacher desk, door, windows, cupboard",
@@ -1704,14 +1791,16 @@ const I18N = {
     presets:{rows:"Rows",groups4:"Table groups (4)",groups6:"Table groups (6)",
       u:"U-shape",doubleU:"Double U",circle:"Circle",exam:"Exam",cinema:"Theatre style",
       rounds:"Round tables",longtables:"Long tables",boardroom:"Boardroom",
-      squares:"Square tables",ovals:"Oval tables",utable:"U-shaped table",ttable:"T-shaped table"},
+      squares:"Square tables",ovals:"Oval tables",utable:"U-shaped table",ttable:"T-shaped table",
+      pcwall:"Computer room (walls)",pcrows:"Computer room (rows)"},
     presetsSub:{rows:"Paired desks facing the board",groups4:"Groups of four",groups6:"Groups of six",
       u:"Open U facing the board",doubleU:"Two nested U rows",circle:"Full circle",
       exam:"Single desks, spread out",cinema:"Gently curved rows",
       rounds:"Seats around tables — avoids stage & pillars",longtables:"Banquet tables seated on both sides",
       boardroom:"All around one long table",
       squares:"Seats on all four sides",ovals:"Stretched round, plenty of legroom",
-      utable:"Head table at the front, seats outside facing in",ttable:"Head table at the front, long table in front of it"},
+      utable:"Head table at the front, seats outside facing in",ttable:"Head table at the front, long table in front of it",
+      pcwall:"Computer seats along the walls, facing the wall",pcrows:"Computer seats in rows facing the board"},
     info:[
       { h:"What the app does",
         p:["Set up your classes, type in the names, and drag the seats around freely. Finished plans can be printed, shared, and kept in several versions per group."] },
@@ -1722,7 +1811,8 @@ const I18N = {
             "Move seats around, group them, and save as PDF."] },
       { h:"Set up rooms once",
         p:["You find rooms under “Seating plans → Rooms”. Board, door, windows and cupboards belong to the room, not to a single plan. Set a room up once and reuse it for every class taught there.",
-           "Under “Size & floor” you set the dimensions in metres; one grid square is 50 cm. Drag furniture from the palette into the room — doors, windows and boards snap to the nearest wall."] },
+           "Under “Size & floor” you set the dimensions in metres; one grid square is 50 cm. Drag furniture from the palette into the room — doors, windows and boards snap to the nearest wall.",
+           "Bigger or smaller: tap an item, then “Size” in the bar (in cm) – or drag the round handle at its corner. Windows, doors and boards only change their length."] },
       { h:"Table groups",
         p:["Select several seats and tap “Group”. From then on they move together and rotate as one unit. When seating automatically, grouped desks count as neighbours."] },
       { h:"Seating automatically",
@@ -2397,6 +2487,52 @@ Object.assign(I18N.en, {
   tlListHint:"Total and recent days per name. “Today” sets or removes today's mark.", tlToday:"Today", tlDelete:"Delete tally list",
   syncJournal:"Course log",
 });
+Object.assign(I18N.de, {
+  pcDesk:"PC-Platz", pcMake:"Als PC-Platz", pcUnmake:"Als Tisch", moreRight:"Weitere Knöpfe",
+  planMenuTitle:"Sitzpläne – {c}", saveAsPlan:"Als neuen Sitzplan speichern", saveAsSub:"Aktuelle Anordnung unter neuem Namen sichern",
+  planRename:"Umbenennen", saveAsHint:"Tipp auf einen Plan wechselt dorthin. „Als neuen Sitzplan speichern“ sichert die jetzige Anordnung, z. B. nach einem Umbau für Gruppenarbeit.",
+  saveAsDefault:"Gruppenarbeit", saveAsDone:"Gespeichert als „{n}“",
+  saveAsResetQ:"„{n}“ zurücksetzen?", saveAsResetT:"Soll der bisherige Plan wieder so aussehen wie beim Öffnen? Die jetzige Anordnung steckt dann nur im neuen Plan.",
+  saveAsReset:"Zurücksetzen", saveAsKeep:"Nein, so lassen", saveAsDoneReset:"Gespeichert als „{n}“ – „{o}“ ist wieder wie vorher",
+  gTodayBtn:"Heute", gLastLesson:"Letzte Stunde · {d}", gLastLessonNone:"Keine letzte Stunde im Stundenplan",
+  termH1:"1. Halbjahr", termH2:"2. Halbjahr", termYear:"Schuljahr", termSplitBtn:"Ende 1. Halbjahr: {d} ändern", termSplitDefault:"Standard (31. Januar)", termSplitOdd:"Ungewöhnlicher Tag – das 1. Halbjahr endet meist zwischen November und März. Trotzdem speichern?", termUndated:"{n} Bewertung(en) ohne Datum zählen nur im Schuljahr.", parentAdd:"Elternkontakt speichern",
+  termSplitTitle:"Ende des 1. Halbjahres", termSplitHint:"Bewertungen bis zu diesem Tag zählen zum 1. Halbjahr, danach zum 2. Halbjahr. Ohne Angabe gilt der 31. Januar. Beim Schuljahreswechsel wird der Tag wieder automatisch gesetzt.",
+  zdLabel:"Zieldifferent unterrichtet (dieses Fach)", zdSub:"Arbeiten zählen bei der 30-%-Grenze nicht mit. Es wird nur dieses Merkmal gespeichert, kein Grund.", zdShort:"zd",
+  obsKindObs:"Beobachtung", obsKindParent:"Elternkontakt", parentPh:"z. B. Gespräch über Hausaufgaben, Absprache: wöchentliche Rückmeldung",
+  parentMode_talk:"Gespräch", parentMode_phone:"Telefonat", parentMode_letter:"Brief", parentMode_mail:"E-Mail", parentTitle:"Elternkontakte",
+  timerTitle:"Timer", timerSub:"Countdown für Gruppen- oder Stillarbeit, groß am Beamer", timerHint:"Der Timer läuft weiter, wenn du den Sitzplan bedienst. Mit dem Auge-Knopf wird er groß für den Beamer. Solange er läuft, bleibt der Bildschirm an (wenn das Gerät es erlaubt).",
+  timerMin:"Min.", timerOwn:"Eigene Minuten", timerStart:"Starten", timerRange:"1 bis 180 Minuten", timerDone:"Zeit!",
+  timerPause:"Anhalten", timerResume:"Weiter", timerPlus:"Eine Minute dazu", timerBig:"Groß anzeigen", timerStop:"Timer beenden",
+  classListsBtn:"Abhak- und Strichlisten (Elternbriefe, Hausaufgaben …)",
+});
+Object.assign(I18N.en, {
+  pcDesk:"Computer seat", pcMake:"Make computer seat", pcUnmake:"Make desk", moreRight:"More buttons",
+  planMenuTitle:"Seating plans – {c}", saveAsPlan:"Save as new seating plan", saveAsSub:"Keep the current arrangement under a new name",
+  planRename:"Rename", saveAsHint:"Tap a plan to switch to it. “Save as new seating plan” keeps the current arrangement, e.g. after rearranging for group work.",
+  saveAsDefault:"Group work", saveAsDone:"Saved as “{n}”",
+  saveAsResetQ:"Reset “{n}”?", saveAsResetT:"Should the previous plan look the way it did when you opened it? The current arrangement then only lives in the new plan.",
+  saveAsReset:"Reset", saveAsKeep:"No, keep it", saveAsDoneReset:"Saved as “{n}” – “{o}” is back as before",
+  gTodayBtn:"Today", gLastLesson:"Last lesson · {d}", gLastLessonNone:"No previous lesson in the timetable",
+  termH1:"1st half", termH2:"2nd half", termYear:"School year", termSplitBtn:"End of 1st half: {d} – change", termSplitDefault:"Default (31 January)", termSplitOdd:"Unusual day – the first half usually ends between November and March. Save anyway?", termUndated:"{n} assessment(s) without a date only count for the school year.", parentAdd:"Save parent contact",
+  termSplitTitle:"End of the first half-year", termSplitHint:"Assessments up to this day count towards the first half, later ones towards the second. Without a date, 31 January is used. The school-year change sets it automatically again.",
+  zdLabel:"Taught to different targets (this subject)", zdSub:"Tests do not count towards the 30 % threshold. Only this flag is stored, no reason.", zdShort:"dt",
+  obsKindObs:"Observation", obsKindParent:"Parent contact", parentPh:"e.g. talked about homework, agreed on weekly feedback",
+  parentMode_talk:"Meeting", parentMode_phone:"Phone call", parentMode_letter:"Letter", parentMode_mail:"Email", parentTitle:"Parent contacts",
+  timerTitle:"Timer", timerSub:"Countdown for group or quiet work, large on the projector", timerHint:"The timer keeps running while you use the seating plan. The eye button shows it large for the projector. While it runs, the screen stays on (if the device allows it).",
+  timerMin:"min", timerOwn:"Own minutes", timerStart:"Start", timerRange:"1 to 180 minutes", timerDone:"Time!",
+  timerPause:"Pause", timerResume:"Resume", timerPlus:"Add a minute", timerBig:"Show large", timerStop:"End timer",
+  classListsBtn:"Check and tally lists (letters, homework …)",
+});
+I18N.de.info.push({ h:"Sitzpläne im Alltag",
+  p:["Ein Tipp auf den Plannamen oben zeigt alle Pläne der Klasse. Dort wechselst du zwischen ihnen, z. B. „Frontal“ und „Gruppenarbeit“, oder sicherst die jetzige Anordnung mit „Als neuen Sitzplan speichern“. Danach kann das Original auf den Stand beim Öffnen zurück.",
+     "Für Computerräume gibt es die Vorlagen „PC-Raum (Wände)“ und „PC-Raum (Reihen)“. Einzelne Plätze machst du über die Auswahlleiste zum PC-Platz oder zurück zum Tisch.",
+     "Der Timer (Unterrichtsleiste oder Menü ···) zählt für Gruppen- und Stillarbeit herunter; mit dem Auge-Knopf erscheint er groß am Beamer.",
+     "In den Bewertungen schaltest du die Übersicht zwischen 1. Halbjahr, 2. Halbjahr und Schuljahr um. Unter einem Namen lässt sich „zieldifferent unterrichtet“ markieren; solche Arbeiten zählen dann bei der 30-%-Grenze nicht mit. In den Beobachtungen gibt es zusätzlich Elternkontakte."] });
+I18N.en.info.push({ h:"Seating plans day to day",
+  p:["Tap the plan name at the top to see all plans of the class. Switch between them, e.g. “front-facing” and “group work”, or keep the current arrangement with “Save as new seating plan”. The original can then go back to how it was when you opened it.",
+     "For computer rooms there are the templates “Computer room (walls)” and “Computer room (rows)”. Use the selection bar to turn single seats into computer seats or back into desks.",
+     "The timer (lesson bar or menu ···) counts down for group or quiet work; the eye button shows it large on the projector.",
+     "In assessments, switch the overview between first half, second half and school year. Under a name you can mark “taught to different targets”; such tests then do not count towards the 30 % threshold. Observations now also hold parent contacts."] });
 I18N.de.info.push({ h:"Klassenarbeiten, Kursheft und Fehlzeiten",
   p:["In einer Bewertung legst du unter „Punkte je Aufgabe und Notenschlüssel“ die Aufgaben mit Höchstpunkten an. Danach trägst du je Name die Punkte ein, die Note rechnet der Schlüssel aus (mit oder ohne Tendenz). Darunter siehst du den Notenspiegel und die Lösungsquote je Aufgabe; die Auswertung lässt sich als Excel-Datei teilen.",
      "Im Unterrichtsmodus hält „Kursheft“ Thema und Hausaufgabe der Stunde fest und zeigt dabei, was in der letzten Stunde aufgegeben wurde. Im Blatt eines Namens kannst du eine Verspätung in Minuten antippen. Unter „Anwesenheit“ öffnet ein Tipp auf einen Namen die Fehlzeiten; dort markierst du entschuldigte Tage.",
@@ -2502,6 +2638,7 @@ function sanitizeItem(raw){
   if(raw.locked === true && type === "desk") it.locked = true;
   if(type === "desk" && TABLE_KINDS.indexOf(raw.tbl) >= 0) it.tbl = raw.tbl;
   if(type === "desk" && (raw.var === "A" || raw.var === "B")) it.var = raw.var;
+  if(type === "desk" && raw.pc === true) it.pc = true;           // PC-Platz: Platz mit Bildschirm
   return it;
 }
 function sizePx(v, fb){
@@ -2523,7 +2660,9 @@ function sanitizeDB(raw){
     timetable: st.timetable !== false,
     grades:  st.grades  !== false,
     quickScale: ["grade", "points", "smiley"].indexOf(st.quickScale) >= 0 ? st.quickScale : "grade",
-    selfQuestion: typeof st.selfQuestion === "string" ? st.selfQuestion.slice(0, 100) : ""
+    selfQuestion: typeof st.selfQuestion === "string" ? st.selfQuestion.slice(0, 100) : "",
+    /* Ende des 1. Halbjahres (Zeugnisstichtag); nur wenn gesetzt, damit ältere Stände unverändert bleiben */
+    ...(typeof st.termSplit === "string" && /^\d{4}-\d{2}-\d{2}$/.test(st.termSplit) ? { termSplit: st.termSplit } : {})
   };
 
   out.rooms = Array.isArray(raw.rooms) ? raw.rooms.map(r => ({
@@ -2633,7 +2772,9 @@ function sanitizeDB(raw){
       obs: Array.isArray(c?.obs) ? c.obs.filter(o => o && typeof o.sid === "string" && ids.has(o.sid) && typeof o.text === "string" && o.text.trim()
         && typeof o.d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(o.d)).map(o => ({
         id: typeof o.id === "string" && o.id ? o.id.slice(0, 40) : uid(), sid: o.sid, d: o.d,
-        s: typeof o.s === "string" ? o.s.slice(0, 40) : "", text: o.text.slice(0, 300)
+        s: typeof o.s === "string" ? o.s.slice(0, 40) : "", text: o.text.slice(0, 300),
+        /* Elternkontakt: Art des Kontakts (Gespräch, Telefonat, Brief, E-Mail) */
+        ...(o.k === "parent" ? { k: "parent", m: PARENT_MODES.indexOf(o.m) >= 0 ? o.m : "talk" } : {})
       })).slice(-2000) : [],
       checks: Array.isArray(c?.checks) ? c.checks.filter(k => k && typeof k.title === "string" && k.title.trim()).map(k => ({
         id: typeof k.id === "string" && k.id ? k.id.slice(0, 40) : uid(), title: k.title.slice(0, 60),
@@ -2645,6 +2786,8 @@ function sanitizeDB(raw){
       /* Kursheft, entschuldigte Tage und Verspätungen */
       journal: sanJournal(c?.journal),
       exc: sanDayIds(c?.exc, ids, 5000),
+      /* zieldifferent unterrichtet: "Fach|Schüler-ID" – nur das Merkmal, keine Begründung */
+      zd: sanSubjIds(c?.zd, ids),
       late: sanLate(c?.late, ids),
       /* Aus FairMix übernommene Gruppen: Mitglieder als Schüler-IDs */
       groups: Array.isArray(c?.groups) ? c.groups.filter(g => g && Array.isArray(g.members)).map(g => ({
@@ -2885,6 +3028,65 @@ const ITEMS = {
 const WALL_ALWAYS = ["door", "window"];
 const WALL_NEAR = ["board", "digitalboard", "whiteboard", "screen", "pinboard"];
 const ROUND_TYPES = ["plant", "clock", "roundtable", "pillar", "carpet"];
+/* Größe ändern: Wandgegenstände nur in der Länge (die Dicke ist die Wand), Rundes nur im Durchmesser */
+const SIZE_LEN = ["door", "window", "wall", "board", "digitalboard", "whiteboard", "screen", "pinboard"];
+const SIZE_DIA = ["plant", "clock", "roundtable", "pillar"];
+const SIZE_STEP = 15;                                   // 10 cm (150 px je Meter)
+const pxToCm = px => Math.round(px * 100 / PX_PER_M);
+const cmToPx = cm => Math.round(cm * PX_PER_M / 100);
+/* Stuhl am runden Tisch oder an einer Tafel: quadratisch und klein (so erkennt ihn auch das Zeichnen) */
+const SEAT_MAX = 70;
+const isSeatDesk = it => it.type === "desk" && it.w === it.h && it.w <= SEAT_MAX;
+const sizeKindOf = it => isSeatDesk(it) ? "seat" : it.type;
+const sizeKindLabel = k => k === "seat" ? t("sizeSeat") : tItem(k);
+function sizeMode(it){
+  if(SIZE_LEN.indexOf(it.type) >= 0) return "len";
+  if(SIZE_DIA.indexOf(it.type) >= 0 || isSeatDesk(it)) return "dia";
+  return "free";
+}
+function sizeDefaultOf(it){
+  if(it.type === "desk") return isSeatDesk(it) ? DESK_SIZES.seat : deskSizeOf(curPlan());
+  return ITEMS[it.type] || { w: it.w, h: it.h };
+}
+/* Grenzen in Pixeln: mindestens 20 cm (Kleines wie die Uhr darf so klein bleiben, wie es ist),
+   höchstens so groß wie der Raum in der jeweiligen Richtung */
+function sizeLimits(it){
+  const def = sizeDefaultOf(it), r = ((it.rot || 0) % 180 + 180) % 180;
+  const along = r === 0 ? ROOM_W : r === 90 ? ROOM_H : Math.min(ROOM_W, ROOM_H);
+  const across = r === 0 ? ROOM_H : r === 90 ? ROOM_W : Math.min(ROOM_W, ROOM_H);
+  const seatMax = isSeatDesk(it) ? SEAT_MAX : 1000;      // ein Stuhl bleibt ein Stuhl
+  return { minW: Math.min(30, def.w, it.w), minH: Math.min(30, def.h, it.h),
+           maxW: Math.max(30, Math.min(seatMax, along - 20)), maxH: Math.max(30, Math.min(seatMax, across - 20)) };
+}
+/* Setzt die Größe um die Mitte (Dialog) oder um eine feste Ecke (Ziehgriff) */
+/* onWall: beim Ziehen einmal zu Beginn bestimmt, damit eine Tafel nicht mitten im Ziehen an eine Wand springt */
+function applySize(it, w, h, anchor, onWall){
+  const mode = sizeMode(it), lim = sizeLimits(it), seat = isSeatDesk(it);
+  if(onWall === undefined) onWall = wallBound(it);
+  if(mode === "len") h = it.h;
+  w = Math.round(clamp(w, lim.minW, lim.maxW)); h = Math.round(clamp(h, lim.minH, lim.maxH));
+  if(mode === "dia"){ const d = Math.min(w, h); w = d; h = d; }
+  /* ein rechteckiger Tisch darf nicht versehentlich zum runden Stuhl werden */
+  if(it.type === "desk" && !seat && w === h && w <= SEAT_MAX) h = h < lim.maxH ? h + 1 : h - 1;
+  let cx, cy;
+  if(anchor){
+    const a = ((it.rot || 0) * Math.PI) / 180, ux = Math.cos(a), uy = Math.sin(a);
+    cx = anchor.x + ux * w / 2 - uy * h / 2; cy = anchor.y + uy * w / 2 + ux * h / 2;
+  } else { cx = it.x + it.w / 2; cy = it.y + it.h / 2; }
+  it.w = w; it.h = h;
+  it.x = Math.round(cx - w / 2); it.y = Math.round(cy - h / 2);
+  if(onWall) snapToWall(it, true);
+  keepInRoom(it, 0);
+}
+/* Hängt ein Wandgegenstand an einer Wand – bündig und passend ausgerichtet (wie snapToWall ihn setzt)?
+   Tafeln dürfen auch frei stehen oder mit der Stirnseite an eine Wand stoßen. */
+function isOnWall(it){
+  const b = itemBox(it), r = ((it.rot || 0) % 360 + 360) % 360;
+  return (r === 0 && b.y <= 2) || (r === 180 && b.y + b.h >= ROOM_H - 2) || (r === 270 && b.x <= 2) || (r === 90 && b.x + b.w >= ROOM_W - 2);
+}
+const wallBound = it => WALL_ALWAYS.indexOf(it.type) >= 0 || (WALL_NEAR.indexOf(it.type) >= 0 && isOnWall(it));
+const fmtSizeM = (w, h, mode) => { const m = v => (LANG === "de" ? (v / PX_PER_M).toFixed(2).replace(".", ",") : (v / PX_PER_M).toFixed(2));
+  return mode === "len" ? m(w) + " m" : mode === "dia" ? "Ø " + m(w) + " m" : m(w) + " × " + m(h) + " m"; };
 const FURNITURE = Object.keys(ITEMS).filter(k => k !== "desk");
 const ITEM_GROUPS = [
   { key:"grpBoards",    types:["board","whiteboard","digitalboard","screen","pinboard","flipchart","teacherdesk"] },
@@ -2947,8 +3149,11 @@ function snapshot(){
     roomSize: r ? { w: r.w, h: r.h, floor: r.floor } : null
   };
 }
-function pushUndo(){
-  undoStack.push(snapshot());
+function pushUndo(){ commitUndo(snapshot()); }
+/* Griffe merken den Stand beim Aufsetzen und legen ihn erst bei echter Bewegung ab –
+   so löscht ein bloßes Antippen weder etwas noch den Wiederholen-Stapel */
+function commitUndo(snap){
+  undoStack.push(snap);
   if(undoStack.length > UNDO_MAX) undoStack.shift();
   redoStack.length = 0;
   updateUndoButtons();
@@ -3098,7 +3303,7 @@ function fillClassSelect(sel){
 }
 function newClassObj(name){
   return { id: uid(), name, archived: false, students: [], rules: [], plans: [], groups: [], levelMode: "off",
-           history: [], attendance: [], journal: [], exc: [], late: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
+           history: [], attendance: [], journal: [], exc: [], late: [], zd: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
 }
 
 /* ============ 9. Modale Dialoge ============ */
@@ -3118,7 +3323,10 @@ function onModalKey(e){
   if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
   else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
 }
+let modalCloseHook = null;                           // einmalig nach dem Schließen (auch per Hintergrund/Esc)
 function closeModal(){
+  const hook = modalCloseHook; modalCloseHook = null;
+  if(hook) setTimeout(hook, 0);
   $("#modal").classList.remove("on");
   $("#modal").removeEventListener("keydown", onModalKey, true);
   $("#sheet").textContent = "";
@@ -3163,6 +3371,7 @@ document.addEventListener("keydown", e => {
       const el = elCache.get(it.id);
       if(el) placeEl(el, it);
     });
+    updateRotHandle();                                 // Griffe wandern mit
   }
 });
 /* Baut einen Dialog auf — ausschließlich per DOM-API, nie per innerHTML mit Nutzertext */
@@ -3170,6 +3379,7 @@ function sheetBase(title){
   const sheet = $("#sheet");
   sheet.textContent = "";
   delete sheet.dataset.sens;                           // „sensibel“ setzen nur Blätter mit Noten oder Beobachtungen
+  modalCloseHook = null;
   const h = document.createElement("h3");
   h.textContent = title;
   sheet.appendChild(h);
@@ -4124,7 +4334,7 @@ $("#btn-delete-class").onclick = () => askConfirm(t("deleteClassQ"), t("deleteCl
   curClassId = null; ensureCurClass(); save(); renderNames(); toast(t("movedToTrash"));
 });
 /* ---- Neuer Sitzplan: Raum, Tischvorlage nach Namensanzahl, Verteilung ---- */
-const WIZ_LAYOUTS = ["rows","groups4","groups6","u","doubleU","circle","exam","cinema","rounds","longtables"];
+const WIZ_LAYOUTS = ["rows","groups4","groups6","u","doubleU","circle","exam","cinema","pcwall","pcrows","rounds","longtables"];
 function groupSizes(c){
   return (c.groups || []).map(g => g.members.filter(id => studentById(c, id)).length).filter(n => n > 0);
 }
@@ -4295,6 +4505,7 @@ $("#btn-add-plan").onclick = () => {
     if(st.dist === "groups") seatByGroups(true);
     else if(st.dist === "random") autoSeat();
     else { switchPanel("panel-seats"); toast(t("wizManualToast")); }
+    planSnap = { id: p.id, state: planState(p) };      // Ausgangsstand für „zurücksetzen“ ist der fertig angelegte Plan
   });
   setTimeout(() => inp.select(), 80);
 };
@@ -4319,6 +4530,8 @@ function openPlan(id){
   undoStack = []; redoStack = []; updateUndoButtons();
   show("editor");
   $("#plan-title").textContent = p.name;
+  $("#plan-title").classList.add("menu");               // ▾: Tipp öffnet die Pläne der Klasse
+  planSnap = { id: p.id, state: planState(p) };
   swapSrc = null; armedStudent = null;
   const sf = $("#seat-search"); if(sf) sf.value = "";
   buildPresetGrid(); renderSeatOptions();
@@ -4336,14 +4549,15 @@ function openRoomStandalone(roomId){
   undoStack = []; redoStack = []; updateUndoButtons();
   show("editor");
   $("#plan-title").textContent = r.name;
+  $("#plan-title").classList.remove("menu");
   updateEditorChrome();
   renderStage(true); renderUnseated();
   requestAnimationFrame(fitToScreen);
 }
 $("#plan-title").onclick = () => {
+  if(selfMode || presenting) return;                   // Gerät in Schülerhand bzw. am Beamer
   if(curPlanId){
-    const p = curPlan(); if(!p) return;
-    askText(t("planName"), t("planPh"), p.name, t("save"), n => { p.name = n; $("#plan-title").textContent = n; save(); });
+    openPlanMenu();
   } else {
     const r = curRoom(); if(!r) return;
     const sheet = sheetBase(t("roomOptions"));
@@ -4368,6 +4582,70 @@ $("#plan-title").onclick = () => {
     });
   }
 };
+/* ---- Pläne der Klasse: wechseln, umbenennen, als neuen Sitzplan speichern ---- */
+let planSnap = null;                                   // Stand des Plans beim Öffnen (für „zurücksetzen“)
+const PLAN_STATE_KEYS = ["desks", "deskSize", "exam", "examPrev", "byGroups", "seatsPerTable"];
+function planState(p){ const o = {}; PLAN_STATE_KEYS.forEach(k => { if(p[k] !== undefined) o[k] = clone(p[k]); }); return o; }
+function openPlanMenu(){
+  const c = curClass(), p = curPlan(); if(!c || !p) return;
+  const sheet = sheetBase(t("planMenuTitle").replace("{c}", c.name));
+  const list = document.createElement("div"); list.id = "pm-list";
+  c.plans.forEach(q => {
+    const b = document.createElement("button"); b.className = "grpcard" + (q === p ? " on" : "");
+    b.dataset.pid = q.id;
+    const h = document.createElement("b"); h.textContent = q.name + (q === p ? " ✓" : "");
+    const r = roomById(q.roomId); const d = document.createElement("div");
+    d.textContent = (r ? r.name + " · " : "") + cnt(q.desks.length, "nDesks");
+    b.appendChild(h); b.appendChild(d);
+    if(q === p){ b.setAttribute("aria-current", "true"); b.onclick = closeModal; }
+    else b.onclick = () => { const wasLesson = lessonMode; closeModal(); openPlan(q.id); if(wasLesson && DB.settings.lesson) setLesson(true); };
+    list.appendChild(b);
+  });
+  sheet.appendChild(list);
+  const sa = document.createElement("button"); sa.className = "cbtn purple"; sa.id = "pm-saveas"; sa.style.width = "100%"; sa.style.marginTop = "10px";
+  sa.appendChild(icon("copy")); const sas = document.createElement("span"); sas.textContent = t("saveAsPlan"); sa.appendChild(sas);
+  sa.onclick = () => { closeModal(); setTimeout(saveAsNewPlan, 60); };
+  sheet.appendChild(sa);
+  const rn = document.createElement("button"); rn.className = "cbtn outline"; rn.id = "pm-rename"; rn.style.width = "100%"; rn.style.marginTop = "8px";
+  rn.appendChild(icon("edit")); const rns = document.createElement("span"); rns.textContent = t("planRename"); rn.appendChild(rns);
+  rn.onclick = () => { closeModal(); setTimeout(() => askText(t("planName"), t("planPh"), p.name, t("save"), n => { p.name = n; $("#plan-title").textContent = n; save(); }), 60); };
+  sheet.appendChild(rn);
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("saveAsHint"); sheet.appendChild(h);
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
+}
+/* Aktuelle Anordnung als eigenen Sitzplan sichern; das Original auf Wunsch auf den Stand beim Öffnen zurück */
+function saveAsNewPlan(){
+  const c = curClass(), p = curPlan(); if(!c || !p) return;
+  if(c.plans.length >= MAX_PLANS){ toast(t("limitPlans").replace("{n}", String(MAX_PLANS))); return; }
+  askText(t("saveAsPlan"), t("planPh"), p.name + " – " + t("saveAsDefault"), t("save"), name => {
+    if(c.plans.length >= MAX_PLANS){ toast(t("limitPlans").replace("{n}", String(MAX_PLANS))); return; }
+    const np = Object.assign({ id: uid(), name: name.slice(0, 60), roomId: p.roomId }, planState(p));
+    const idMap = new Map();
+    np.desks.forEach(d => { const nid = uid(); idMap.set(d.id, nid); d.id = nid; });
+    if(np.examPrev && Array.isArray(np.examPrev.desks)) np.examPrev.desks.forEach(d => { d.id = idMap.get(d.id) || uid(); });
+    c.plans.push(np);
+    const changed = !!planSnap && planSnap.id === p.id && JSON.stringify(planSnap.state) !== JSON.stringify(planState(p));
+    let done = false;
+    const finish = msg => {
+      if(done) return; done = true;
+      const wasLesson = lessonMode;
+      save(); openPlan(np.id); if(wasLesson && DB.settings.lesson && !lessonMode) setLesson(true);
+      toast(msg);
+    };
+    const keep = () => finish(t("saveAsDone").replace("{n}", np.name));
+    if(!changed){ keep(); return; }
+    save();                                            // die Kopie ist gesichert, auch wenn die Rückfrage weggetippt wird
+    askConfirm(t("saveAsResetQ").replace("{n}", p.name), t("saveAsResetT"), t("saveAsReset"), () => {
+      PLAN_STATE_KEYS.forEach(k => { delete p[k]; });
+      Object.assign(p, clone(planSnap.state));
+      finish(t("saveAsDoneReset").replace("{n}", np.name).replace("{o}", p.name));
+    }, keep);
+    modalCloseHook = keep;                             // Hintergrund/Esc = Original behalten
+    $("#sheet").querySelector(".row .ghost") && ($("#sheet").querySelector(".row .ghost").textContent = t("saveAsKeep"));
+  });
+}
+$("#plan-title").addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); $("#plan-title").onclick(); } });
 function setEditMode(mode){
   editMode = mode; selected.clear(); armedStudent = null;
   updateEditorChrome(); renderStage(true);
@@ -4483,7 +4761,7 @@ function renderStage(full){
     const label = isDesk && shortBand ? shortLabel(full) : full;
     const isAbsent = lessonMode && !selfMode && isDesk && it.studentId && lessonAbsent(it.studentId);
     el.className = "item t-" + it.type
-      + (isDesk && it.w === it.h && it.w <= 70 ? " seat" : "")
+      + (isSeatDesk(it) ? " seat" : "")
       + (isDesk && it.w >= 150 ? " wide" : "")
       + (isDesk && !label ? " empty" : "")
       + (selected.has(it.id) ? " sel" : "")
@@ -4498,7 +4776,8 @@ function renderStage(full){
     el.firstChild.textContent = label;
     /* Lange Namen wurden bisher umgebrochen oder abgeschnitten */
     /* Herausgezoomt wächst die Schrift bis an den Tischrand, damit Vornamen lesbar bleiben */
-    const base0 = presenting ? 17 : (it.type === "desk" ? 12.5 : 11.5);
+    const grow = isDesk ? clamp(Math.min(it.w / 90, it.h / 55), 1, 1.6) : 1;   // große Tische: größere Schrift
+    const base0 = (presenting ? 17 : (it.type === "desk" ? 12.5 : 11.5)) * grow;
     const base = isDesk && shortBand ? Math.min(30, base0 * 0.5 / Math.max(zoom, 0.05)) : base0;
     const len = Math.max(1, label.length);
     const byWidth = (it.w - 10) / (len * 0.56);
@@ -4506,7 +4785,7 @@ function renderStage(full){
     el.style.fontSize = clamp(Math.min(base, byWidth, byHeight), 6.5, base).toFixed(1) + "px";
     el.setAttribute("role", "button");
     el.setAttribute("aria-label", (full || tItem(it.type)) +
-      (isDesk ? ", " + tItem("desk") : "") + (isAbsent ? ", " + t("absent") : ""));
+      (isDesk ? ", " + (it.pc ? t("pcDesk") : tItem("desk")) : "") + (isAbsent ? ", " + t("absent") : ""));
     placeEl(el, it);
     let dot = el.querySelector(".dot");
     const wantDot = lessonMode && !selfMode && isDesk && it.studentId && !!lessonNote(it.studentId);
@@ -4522,6 +4801,10 @@ function renderStage(full){
       if(!examNoCache) examNoCache = examNumbers(curPlan());
       ex.dataset.no = String(examNoCache.get(it.id) || "");
     }
+    let pm = el.querySelector(".pcmon");
+    const wantPc = isDesk && it.pc === true;
+    if(wantPc && !pm){ pm = document.createElement("i"); pm.className = "pcmon"; pm.setAttribute("aria-hidden", "true"); el.insertBefore(pm, el.children[1] || null); }
+    else if(!wantPc && pm) pm.remove();
     let lk = el.querySelector(".lockmark");
     const wantLock = isDesk && it.locked && it.studentId && !viewLocked();
     if(wantLock && !lk){ lk = document.createElement("i"); lk.className = "lockmark"; lk.appendChild(icon("lock")); el.appendChild(lk); }
@@ -4579,14 +4862,35 @@ function renderStage(full){
   ["#sb-swap", "#sb-clear"].forEach(id => { const b = $(id); if(b) b.style.display = showOne ? "" : "none"; });
   if($("#sb-grade")) $("#sb-grade").style.display = showOne && gradesOn() && DB.subjects.length ? "" : "none";
   if($("#sb-note")) $("#sb-note").style.display = showOne && DB.settings.lesson ? "" : "none";
+  const pcBtn = $("#sb-pc"), selAllDesks = planDesks().filter(d => selected.has(d.id));
+  if(pcBtn){
+    pcBtn.style.display = (editMode === "desks" && selAllDesks.length && !lessonMode) ? "" : "none";
+    $("#sb-pc-t").textContent = selAllDesks.length && selAllDesks.every(d => d.pc) ? t("pcUnmake") : t("pcMake");
+  }
   if(lockBtn){
     lockBtn.style.display = (editMode === "desks" && selDesks.length) ? "" : "none";
     $("#sb-lock-t").textContent = selDesks.length && selDesks.every(d => d.locked) ? t("unlockSeat") : t("lockSeat");
   }
   const cnt = $("#sb-count");
   if(cnt) cnt.textContent = selected.size ? t("selCount").replace("{n}", String(selected.size)) : "";
+  updateSbMore();
   updateRotHandle();
 }
+/* Pfeil rechts, solange die Auswahlleiste weitergeht; ein Tipp schiebt sie weiter */
+function updateSbMore(){
+  const bar = $("#selbar"), a = $("#sb-more"); if(!bar || !a) return;
+  const more = bar.classList.contains("on") && bar.scrollWidth - bar.clientWidth - bar.scrollLeft > 6;
+  a.hidden = !more;
+  if(more){ a.style.height = bar.offsetHeight + "px"; a.style.right = getComputedStyle(bar).right; }
+}
+$("#selbar").addEventListener("scroll", updateSbMore, { passive: true });
+window.addEventListener("resize", () => updateSbMore());
+$("#sb-more").onclick = () => {
+  const bar = $("#selbar");
+  const by = Math.max(80, bar.clientWidth * 0.7);
+  if(bar.scrollBy) bar.scrollBy({ left: by, behavior: "smooth" }); else bar.scrollLeft += by;
+  setTimeout(updateSbMore, 350);
+};
 function applyTransform(){
   applyTransformOnly();
   updateRotHandle();
@@ -4676,6 +4980,89 @@ function setPresenting(on){
   });
 }
 $("#btn-present").onclick = () => setPresenting(true);
+
+/* ---- Timer für Gruppen- und Stillarbeit ----
+   Läuft über die Uhrzeit (Endzeitpunkt), damit er im Hintergrund nicht nachgeht. Nicht gespeichert. */
+let timer = null, timerTick = null, audioCtx = null, timerWake = null;
+/* Bildschirm wach halten, solange ein Timer läuft – sonst schläft das Tablet am Beamer mitten im Countdown ein */
+function timerWakeLock(on){
+  try{
+    if(on && !timerWake && navigator.wakeLock && document.visibilityState === "visible"){
+      navigator.wakeLock.request("screen").then(l => { if(timer && !timer.done && timer.paused === null && !timerWake) timerWake = l; else l.release().catch(() => {}); }).catch(() => {});
+    } else if(!on && timerWake){ const l = timerWake; timerWake = null; l.release().catch(() => {}); }
+  }catch(e){}
+}
+const timerLeft = () => !timer ? 0 : timer.paused !== null ? timer.paused : Math.max(0, timer.end - Date.now());
+function fmtTimer(ms){ const s = Math.ceil(ms / 1000), m = Math.floor(s / 60); return m + ":" + String(s % 60).padStart(2, "0"); }
+function openTimer(){
+  const sheet = sheetBase(t("timerTitle"));
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("timerHint"); sheet.appendChild(h);
+  const grid = document.createElement("div"); grid.className = "latechips"; grid.id = "timer-presets";
+  [1, 2, 3, 5, 10, 15, 20, 30].forEach(m => { const b = document.createElement("button"); b.textContent = m + " " + t("timerMin"); b.dataset.m = String(m);
+    b.onclick = () => { closeModal(); startTimer(m * 60); }; grid.appendChild(b); });
+  sheet.appendChild(grid);
+  const row = document.createElement("div"); row.className = "obsform";
+  const inp = document.createElement("input"); inp.className = "field"; inp.type = "number"; inp.min = "1"; inp.max = "180"; inp.step = "1"; inp.id = "timer-min";
+  inp.placeholder = t("timerOwn"); inp.setAttribute("aria-label", t("timerOwn")); row.appendChild(inp);
+  const go = document.createElement("button"); go.className = "primary"; go.id = "timer-go"; go.textContent = t("timerStart");
+  go.onclick = () => { const v = Math.round(parseFloat(String(inp.value).replace(",", "."))); if(!(v >= 1 && v <= 180)){ toast(t("timerRange")); inp.focus(); return; } closeModal(); startTimer(v * 60); };
+  inp.addEventListener("keydown", e => { if(e.key === "Enter") go.onclick(); });
+  row.appendChild(go); sheet.appendChild(row);
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("cancel"); close.onclick = closeModal; sheet.appendChild(close);
+}
+function startTimer(sec){
+  try{ const AC = window.AudioContext || window.webkitAudioContext; if(AC && !audioCtx) audioCtx = new AC(); if(audioCtx && audioCtx.resume) audioCtx.resume(); }catch(e){}   // Ton nur nach Tipp möglich
+  timer = { end: Date.now() + sec * 1000, total: sec * 1000, paused: null, done: false };
+  clearInterval(timerTick); timerTick = setInterval(paintTimer, 250);
+  timerWakeLock(true);
+  paintTimer();
+}
+function stopTimer(){ timer = null; clearInterval(timerTick); timerTick = null; timerWakeLock(false); paintTimer(); }
+function timerBeep(){
+  try{
+    if(!audioCtx) return;
+    [0, 0.35, 0.7].forEach(at => { const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = 880; g.gain.setValueAtTime(0.0001, audioCtx.currentTime + at);
+      g.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + at + 0.25);
+      o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime + at); o.stop(audioCtx.currentTime + at + 0.3); });
+  }catch(e){}
+}
+function paintTimer(){
+  const box = $("#timerbox"); if(!box) return;
+  box.hidden = !timer;
+  if(!timer) return;
+  const left = timerLeft();
+  if(left <= 0 && !timer.done){
+    timer.done = true; clearInterval(timerTick); timerTick = null;
+    haptic(400); timerBeep(); timerWakeLock(false);
+    toast(t("timerDone"));                             // auch für Bildschirmleser
+    setTimeout(() => { if(timer && timer.done) stopTimer(); }, 20000);   // nach 20 Sekunden ausblenden
+  }
+  $("#tb-time").textContent = timer.done ? t("timerDone") : fmtTimer(left);
+  box.classList.toggle("paused", timer.paused !== null);
+  box.classList.toggle("done", !!timer.done);
+  $("#tb-pause").firstChild.textContent = timer.paused !== null ? "▶\uFE0E" : "❚❚";
+  $("#tb-pause").setAttribute("aria-label", t(timer.paused !== null ? "timerResume" : "timerPause"));
+  $("#tb-pause").style.display = timer.done ? "none" : ""; $("#tb-plus").style.display = timer.done ? "none" : "";
+}
+$("#tb-pause").onclick = () => {
+  if(!timer || timer.done) return;
+  if(timer.paused !== null){ timer.end = Date.now() + timer.paused; timer.paused = null; if(!timerTick) timerTick = setInterval(paintTimer, 250); timerWakeLock(true); }
+  else { timer.paused = Math.max(0, timer.end - Date.now()); clearInterval(timerTick); timerTick = null; timerWakeLock(false); }   // vergessene Pause hält den Bildschirm nicht wach
+  paintTimer();
+};
+$("#tb-plus").onclick = () => { if(!timer || timer.done) return; if(timer.paused !== null) timer.paused += 60000; else timer.end += 60000; paintTimer(); };
+$("#tb-stop").onclick = stopTimer;
+$("#tb-big").onclick = () => { if(!presenting) setPresenting(true); };
+$("#tb-time").onclick = () => { if(timer && timer.done) stopTimer(); };
+$("#lb-timer").onclick = openTimer;
+$("#btn-timer-present").onclick = openTimer;
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState !== "visible") return;
+  if(timerWake && timerWake.released) timerWake = null;   // das System gibt die Sperre beim Verlassen frei
+  paintTimer(); if(timer && !timer.done && timer.paused === null) timerWakeLock(true);
+});
 /* Auf dem Handy wandern selten genutzte Knöpfe in dieses Menü, damit der Planname lesbar bleibt */
 $("#btn-more").onclick = () => {
   const sheet = sheetBase(t("moreTitle"));
@@ -4694,6 +5081,8 @@ $("#btn-more").onclick = () => {
   mk("eye", t("morePresent"), t("morePresentSub"), () => setPresenting(true));
   mk(tool === "select" ? "hand" : "marquee", tool === "select" ? t("moreToolPan") : t("moreToolSelect"), t("moreToolSub"), () => $("#btn-tool").onclick());
   mk("mirror", t("moreMirror"), t("moreMirrorSub"), () => $("#btn-mirror").onclick());
+  if(curPlanId) mk("copy", t("saveAsPlan"), t("saveAsSub"), saveAsNewPlan);
+  mk("clock", t("timerTitle"), t("timerSub"), openTimer);
   if(gradesOn() && curPlanId) mk("users", t("selfTitle"), t("selfMenuSub"), () => withGradesReady(() => { if(!lessonMode) setLesson(true); startSelfSetup(); }));
   const close = document.createElement("button");
   close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "14px";
@@ -4729,6 +5118,7 @@ function selectionBounds(){
 /* Setzt den Drehgriff mittig über die Auswahl — in Bildschirmkoordinaten,
    damit er unabhängig vom Zoom immer gleich groß und gut greifbar bleibt. */
 function updateRotHandle(){
+  updateSizeHandle();
   const handle = $("#rothandle"), badge = $("#rotbadge");
   if(!handle) return;
   const visible = selected.size > 0 && !viewLocked() && !lessonMode && !dragging;
@@ -4785,7 +5175,7 @@ const selItems = () => activeList().filter(i => selected.has(i.id));
    „Gruppieren“ erst die Auswahl und der Knopf läuft anschließend ins Leere. */
 function onOverlayControl(target){
   return !!(target && target.closest &&
-    target.closest(".selbar, .lessonbar, .zoombar, .stagehint, .rothandle, .rotbadge, .lockbtn, .coach"));
+    target.closest(".selbar, .lessonbar, .zoombar, .stagehint, .rothandle, .rotbadge, .sizehandle, .lockbtn, .coach"));
 }
 wrap.addEventListener("pointerdown", e => {
   if(viewLocked()) return;                        // gesperrte Vollansicht nimmt keine Gesten an
@@ -4844,8 +5234,7 @@ wrap.addEventListener("pointerdown", e => {
       () => {                                                                          // lang drücken: Tisch greifen
         selected.clear(); selectWithGroup(it); renderStage(false); haptic(18);
         const set = movingSet();
-        pushUndo();
-        dragging = { sx: startX, sy: startY, orig: set.map(i => ({ i: i, x: i.x, y: i.y })) };
+        dragging = { sx: startX, sy: startY, orig: set.map(i => ({ i: i, x: i.x, y: i.y })), snap: snapshot() };
       });
     return;
   }
@@ -4860,8 +5249,8 @@ wrap.addEventListener("pointerdown", e => {
       selected.clear(); selectWithGroup(it); renderStage(false);
     }
     const set = movingSet();
-    pushUndo();
-    dragging = { sx: e.clientX, sy: e.clientY, orig: set.map(i => ({ i: i, x: i.x, y: i.y })) };
+    /* Rückgängig-Schritt erst bei echter Bewegung – ein Antippen lässt „Wiederholen“ stehen */
+    dragging = { sx: e.clientX, sy: e.clientY, orig: set.map(i => ({ i: i, x: i.x, y: i.y })), snap: snapshot() };
   } else if(tool === "select" && !lessonMode){
     const p0 = screenToRoom(e.clientX, e.clientY);
     marquee = { x0: p0.x, y0: p0.y, x1: p0.x, y1: p0.y, add: e.shiftKey };
@@ -4905,6 +5294,7 @@ wrap.addEventListener("pointermove", e => {
     let dy = (e.clientY - dragging.sy) / zoom;
     if(mirrored){ dx = -dx; dy = -dy; }
     if(Math.abs(e.clientX - dragging.sx) > 3 || Math.abs(e.clientY - dragging.sy) > 3) movedFar = true;
+    if(movedFar && !dragging.pushed){ commitUndo(dragging.snap); dragging.pushed = true; }
     const snap = computeSnap(dragging.orig, dx, dy);
     dragging.orig.forEach(o => {
       o.i.x = clamp(Math.round(o.x + dx + snap.dx), -80, ROOM_W - 20);
@@ -4948,8 +5338,7 @@ function endPointer(e){
     /* Einzeln verschobene Türen, Fenster und Tafeln rasten an der nächsten Wand ein */
     if(movedFar && movedItems.length === 1 && snapToWall(movedItems[0])){ renderStage(false); haptic(); }
     save();
-    if(!movedFar){
-      undoStack.pop();                              // reiner Tap erzeugt keinen Undo-Schritt
+    if(!movedFar){                                  // reiner Tap: kein Rückgängig-Schritt (wird erst beim Bewegen angelegt)
       if(tool === "select" && tapCandidate){
         /* Erneutes Antippen nimmt den Tisch wieder aus der Auswahl */
         const it2 = findItem(tapCandidate);
@@ -5117,12 +5506,12 @@ rotHandleEl.addEventListener("pointerdown", e => {
     scx: scx, scy: scy,
     start: Math.atan2(e.clientY - scy, e.clientX - scx),
     baseRot: set[0].rot || 0,
+    snap: snapshot(),
     moved: false
   };
   try{ rotHandleEl.setPointerCapture(e.pointerId); }catch(err){}
   rotHandleEl.classList.add("active");
   $("#rotbadge").classList.add("on");
-  pushUndo();
 });
 rotHandleEl.addEventListener("pointermove", e => {
   if(!rotDrag) return;
@@ -5135,6 +5524,7 @@ rotHandleEl.addEventListener("pointermove", e => {
   const snapped = Math.abs(target - nearest) < 5;   // rastet sanft auf glatte Winkel ein
   if(snapped) target = nearest;
   const delta = target - rotDrag.baseRot;
+  if(!rotDrag.moved){ if(!delta) return; commitUndo(rotDrag.snap); }
   rotateSet(rotDrag.set, rotDrag.orig, rotDrag.roomCentre, delta);
   rotDrag.moved = true;
   const shown = ((Math.round(target) % 360) + 360) % 360;
@@ -5148,14 +5538,92 @@ function endRotDrag(e){
   try{ rotHandleEl.releasePointerCapture(e.pointerId); }catch(err){}
   rotHandleEl.classList.remove("active");
   $("#rotbadge").classList.remove("on");
-  if(!rotDrag.moved) undoStack.pop();            // reines Antippen ändert nichts
-  else { save(); haptic(); }
+  if(rotDrag.moved){ save(); haptic(); }               // reines Antippen ändert nichts
   rotDrag = null;
   updateUndoButtons();
   renderStage(false);
 }
 rotHandleEl.addEventListener("pointerup", endRotDrag);
 rotHandleEl.addEventListener("pointercancel", endRotDrag);
+
+/* ---- Größengriff: an der Ecke ziehen; die gegenüberliegende Ecke bleibt stehen ---- */
+var sizeDrag = null;                                   // var: der Drehgriff fragt schon beim Start danach
+const sizeHandleEl = $("#sizehandle");
+/* Nur bei genau einem Gegenstand ohne Gruppe – Gruppen ändern ihre Größe über „Größe“ in der Leiste */
+function sizeTarget(){
+  if(!selected.size || viewLocked() || lessonMode || presenting || selfMode || (dragging && !sizeDrag)) return null;
+  const set = movingSet();
+  return set.length === 1 ? set[0] : null;
+}
+/* Ecke „unten rechts“ im eigenen (gedrehten) Rahmen des Gegenstands */
+function itemCorner(it, sx, sy){
+  const a = ((it.rot || 0) * Math.PI) / 180, ux = Math.cos(a), uy = Math.sin(a);
+  const cx = it.x + it.w / 2, cy = it.y + it.h / 2;
+  return { x: cx + ux * sx * it.w / 2 - uy * sy * it.h / 2, y: cy + uy * sx * it.w / 2 + ux * sy * it.h / 2 };
+}
+function updateSizeHandle(){
+  const it = sizeTarget(), h = $("#sizehandle"), badge = $("#sizebadge");
+  if(!h) return;
+  h.classList.toggle("on", !!it);
+  if(!it){ if(!sizeDrag) badge.classList.remove("on"); return; }
+  /* Wandgegenstände: am Ende entlang der Wand, sonst schräg an der Ecke */
+  const lenOnly = sizeMode(it) === "len", cr = itemCorner(it, 1, lenOnly ? 0 : 1);
+  const corner = roomToScreen(cr.x, cr.y);
+  const mid = roomToScreen(it.x + it.w / 2, it.y + it.h / 2);
+  /* etwas nach außen versetzt, damit der Gegenstand selbst greifbar bleibt */
+  let dx = corner.x - mid.x, dy = corner.y - mid.y; const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
+  const wrapEl = $("#stage-wrap");
+  const px = clamp(corner.x + dx * 22, 20, Math.max(20, wrapEl.clientWidth - 20));
+  const py = clamp(corner.y + dy * 22, 20, Math.max(20, wrapEl.clientHeight - 20));
+  h.style.left = px + "px"; h.style.top = py + "px";
+  badge.style.left = px + "px"; badge.style.top = py + "px";
+}
+sizeHandleEl.addEventListener("pointerdown", e => {
+  e.preventDefault(); e.stopPropagation();
+  const it = sizeTarget(); if(!it) return;
+  /* Der Griff sitzt neben der Ecke: diesen Versatz abziehen, sonst springt die Größe schon beim Aufsetzen */
+  const grab = itemCorner(it, 1, sizeMode(it) === "len" ? 0 : 1), P0 = screenToRoom(e.clientX, e.clientY);
+  sizeDrag = { it, anchor: itemCorner(it, -1, -1), off: { x: P0.x - grab.x, y: P0.y - grab.y }, w0: it.w, h0: it.h,
+    sx: e.clientX, sy: e.clientY, onWall: wallBound(it), snap: snapshot(), moved: false };
+  try{ sizeHandleEl.setPointerCapture(e.pointerId); }catch(err){}
+  sizeHandleEl.classList.add("active");
+  const badge = $("#sizebadge"); badge.textContent = fmtSizeM(it.w, it.h, sizeMode(it)); badge.classList.add("on");
+});
+sizeHandleEl.addEventListener("pointermove", e => {
+  if(!sizeDrag) return;
+  e.preventDefault();
+  const D = sizeDrag;
+  if(!D.moved && Math.hypot(e.clientX - D.sx, e.clientY - D.sy) < 4) return;   // Zittern beim Antippen
+  const it = D.it, P = screenToRoom(e.clientX, e.clientY), A = D.anchor;
+  const a = ((it.rot || 0) * Math.PI) / 180, ux = Math.cos(a), uy = Math.sin(a);
+  const vx = P.x - D.off.x - A.x, vy = P.y - D.off.y - A.y;
+  /* Abstand im eigenen Rahmen; die Änderung rastet in 10-cm-Schritten, krumme Ausgangsmaße bleiben erhalten */
+  const pu = vx * ux + vy * uy, pv = -vx * uy + vy * ux;
+  const mode = sizeMode(it);
+  let w = D.w0 + Math.round((pu - D.w0) / SIZE_STEP) * SIZE_STEP, h = D.h0 + Math.round((pv - D.h0) / SIZE_STEP) * SIZE_STEP;
+  if(mode === "dia"){ w = h = D.w0 + Math.round((Math.max(pu, pv) - D.w0) / SIZE_STEP) * SIZE_STEP; }
+  if(!D.moved){
+    if(w === D.w0 && (h === D.h0 || mode !== "free")) return;   // noch keine Änderung: kein leerer Rückgängig-Schritt
+    commitUndo(D.snap); D.moved = true;
+  }
+  applySize(it, w, h, A, D.onWall);
+  const el = elCache.get(it.id);
+  if(el){ el.style.width = it.w + "px"; el.style.height = it.h + "px"; placeEl(el, it); }
+  $("#sizebadge").textContent = fmtSizeM(it.w, it.h, mode);
+  updateRotHandle();                                   // setzt beide Griffe neu
+});
+function endSizeDrag(e){
+  if(!sizeDrag) return;
+  try{ sizeHandleEl.releasePointerCapture(e.pointerId); }catch(err){}
+  sizeHandleEl.classList.remove("active");
+  $("#sizebadge").classList.remove("on");
+  if(sizeDrag.moved){ save(); haptic(); }               // reines Antippen ändert nichts
+  sizeDrag = null;
+  updateUndoButtons();
+  renderStage(false);
+}
+sizeHandleEl.addEventListener("pointerup", endSizeDrag);
+sizeHandleEl.addEventListener("pointercancel", endSizeDrag);
 
 /* ============ 15. Aktionen auf der Auswahl ============ */
 function selectionCentre(set){
@@ -5187,48 +5655,117 @@ $("#sb-rot").onclick = () => {
   rotateSet(set, snapshotSet(set), selectionCentre(set), 90);
   save(); renderStage(false); haptic();
 };
-$("#sb-size").onclick = () => openDeskSize();
-function openDeskSize(){
-  const p = curPlan(); if(!p) return;
-  const sel = selItems().filter(i => i.type === "desk");
-  const targets = sel.length ? sel : p.desks;
-  if(!targets.length){ toast(t("noDesks")); return; }
-  const sheet = sheetBase(t("deskSizeTitle"));
-  const hint = document.createElement("div");
-  hint.className = "hint"; hint.textContent = t("deskSizeHint");
-  sheet.appendChild(hint);
-  [["single","sizeSingle","sizeSingleSub"],["double","sizeDouble","sizeDoubleSub"],
-   ["group","sizeGroup","sizeGroupSub"]].forEach(function(row){
-    const key = row[0];
-    const b = document.createElement("button");
-    b.className = "tile wide"; b.style.width = "100%"; b.style.marginTop = "8px";
-    b.appendChild(icon("desk"));
-    const txt = document.createElement("span"); txt.className = "txt";
-    const a1 = document.createElement("span"); a1.textContent = t(row[1]);
-    const a2 = document.createElement("span"); a2.className = "sub"; a2.textContent = t(row[2]);
-    txt.appendChild(a1); txt.appendChild(a2);
-    b.appendChild(txt);
-    if((p.deskSize || "single") === key){
-      b.style.borderColor = "var(--accent)"; b.style.background = "var(--accent-soft)";
-    }
-    b.onclick = () => {
-      pushUndo();
-      const size = DESK_SIZES[key];
-      targets.forEach(d => {
-        const cx = d.x + d.w / 2, cy = d.y + d.h / 2;      // Mitte beibehalten
-        d.w = size.w; d.h = size.h;
-        d.x = Math.round(cx - size.w / 2); d.y = Math.round(cy - size.h / 2);
-        keepInRoom(d, 0);
-      });
-      if(!sel.length) p.deskSize = key;
-      closeModal(); save(); renderStage(false);
-    };
-    sheet.appendChild(b);
+$("#sb-size").onclick = () => openSize();
+/* Größe der Auswahl: Breite/Tiefe in cm (bei Wandgegenständen nur Länge, bei Rundem der Durchmesser).
+   allDesks: für alle Tische des Plans. Unterschiedliche Arten in der Auswahl: oben wählbar. */
+function openSize(kind, allDesks){
+  const p = curPlan();
+  const sel = allDesks === true ? [] : selItems();
+  const all = !sel.length;
+  const pool = all ? (p && editMode === "desks" ? p.desks : []) : sel;
+  if(!pool.length){ toast(t("noDesks")); return; }
+  const kinds = [], countOf = k => pool.filter(i => sizeKindOf(i) === k).length;
+  pool.forEach(i => { const k = sizeKindOf(i); if(kinds.indexOf(k) < 0) kinds.push(k); });
+  kinds.sort((a, b) => countOf(b) - countOf(a));
+  if(kinds.indexOf(kind) < 0) kind = kinds[0];
+  const targets = pool.filter(i => sizeKindOf(i) === kind), first = targets[0];
+  const mode = sizeMode(first), lim = sizeLimits(first);
+  /* Grenzen über alle Ziele: das kleinste Maximum und größte Minimum */
+  targets.forEach(i => { const l = sizeLimits(i); lim.maxW = Math.min(lim.maxW, l.maxW); lim.maxH = Math.min(lim.maxH, l.maxH); lim.minW = Math.max(lim.minW, Math.min(l.minW, lim.maxW)); lim.minH = Math.max(lim.minH, Math.min(l.minH, lim.maxH)); });
+  const sheet = sheetBase(t("sizeTitle").replace("{t}", sizeKindLabel(kind)));
+  if(kinds.length > 1){
+    const seg = document.createElement("div"); seg.className = "segmented wrap"; seg.id = "size-kind";
+    kinds.forEach(k => { const b = document.createElement("button"); b.dataset.v = k;
+      b.textContent = sizeKindLabel(k) + " (" + countOf(k) + ")";
+      b.classList.toggle("on", k === kind); b.setAttribute("aria-pressed", String(k === kind));
+      b.onclick = () => openSize(k, allDesks); seg.appendChild(b); });
+    sheet.appendChild(seg);
+  }
+  const h = document.createElement("div"); h.className = "hint"; h.id = "size-for";
+  h.textContent = all ? t("sizeForAll").replace("{n}", String(targets.length))
+    : targets.length === 1 ? t("sizeFor1") : t("sizeFor").replace("{n}", String(targets.length)).replace("{t}", sizeKindLabel(kind));
+  sheet.appendChild(h);
+  if(targets.some(i => i.w !== first.w || i.h !== first.h)){ const m = document.createElement("div"); m.className = "hint"; m.id = "size-mixed"; m.textContent = t("sizeMixed"); sheet.appendChild(m); }
+  if(mode === "len" && wallBound(first)){ const m = document.createElement("div"); m.className = "hint"; m.id = "size-wall"; m.textContent = t("sizeWallHint"); sheet.appendChild(m); }
+  const row = (labelKey, id, px, minPx, maxPx) => {
+    const r = document.createElement("div"); r.className = "sizerow";
+    const l = document.createElement("span"); l.textContent = t(labelKey); r.appendChild(l);
+    const minus = document.createElement("button"); minus.className = "stepbtn"; minus.textContent = "−"; minus.setAttribute("aria-label", t(labelKey) + " −10 " + t("sizeCm"));
+    const inp = document.createElement("input"); inp.className = "field"; inp.type = "number"; inp.inputMode = "numeric"; inp.id = id;
+    inp.min = String(pxToCm(minPx)); inp.max = String(pxToCm(maxPx)); inp.step = "1"; inp.value = String(pxToCm(px)); inp.setAttribute("aria-label", t(labelKey) + " (" + t("sizeCm") + ")");
+    const plus = document.createElement("button"); plus.className = "stepbtn"; plus.textContent = "+"; plus.setAttribute("aria-label", t(labelKey) + " +10 " + t("sizeCm"));
+    const u = document.createElement("small"); u.textContent = t("sizeCm");
+    /* krumme Werte erst auf den nächsten Zehner in Pfeilrichtung, dann in 10er-Schritten */
+    const step = d => { const v0 = parseFloat(String(inp.value).replace(",", ".")), v = isFinite(v0) ? Math.round(v0) : pxToCm(px);
+      const n = v % 10 ? (d > 0 ? Math.ceil(v / 10) * 10 : Math.floor(v / 10) * 10) : v + d;
+      inp.value = String(clamp(n, pxToCm(minPx), pxToCm(maxPx))); };
+    minus.onclick = () => step(-10); plus.onclick = () => step(10);
+    r.appendChild(minus); r.appendChild(inp); r.appendChild(plus); r.appendChild(u);
+    sheet.appendChild(r);
+    return inp;
+  };
+  const inW = row(mode === "len" ? "sizeLen" : mode === "dia" ? "sizeDia" : "sizeW", "size-w", first.w, lim.minW, lim.maxW);
+  const inH = mode === "free" ? row("sizeD", "size-h", first.h, lim.minH, lim.maxH) : null;
+  const apply = (wPx, hPx, deskKey) => {
+    pushUndo();
+    resizeTargets(targets, wPx, hPx);
+    if(deskKey && all && p) p.deskSize = deskKey;
+    closeModal(); save(); renderStage(false); toast(t("sizeDone"));
+  };
+  if(kind === "desk"){
+    const lab = document.createElement("div"); lab.className = "eyebrow"; lab.style.marginTop = "14px"; lab.textContent = t("sizePresets"); sheet.appendChild(lab);
+    const chips = document.createElement("div"); chips.className = "latechips"; chips.id = "size-presets";
+    [["single", "sizeSingle"], ["double", "sizeDouble"], ["group", "sizeGroup"]].forEach(([key, lk]) => {
+      const sz = DESK_SIZES[key], b = document.createElement("button"); b.dataset.k = key;
+      const bn = document.createElement("b"); bn.textContent = t(lk);
+      const bs = document.createElement("small"); bs.textContent = pxToCm(sz.w) + " × " + pxToCm(sz.h) + " " + t("sizeCm");
+      b.appendChild(bn); b.appendChild(bs);
+      if(all && (p.deskSize || "single") === key) b.classList.add("on");
+      b.onclick = () => apply(sz.w, sz.h, key);
+      chips.appendChild(b);
+    });
+    sheet.appendChild(chips);
+  }
+  const def = sizeDefaultOf(first);
+  const db = document.createElement("button"); db.className = "linkbtn"; db.id = "size-default";
+  db.textContent = t("sizeDefault") + " (" + (mode === "free" ? pxToCm(def.w) + " × " + pxToCm(def.h) : pxToCm(def.w)) + " " + t("sizeCm") + ")";
+  db.onclick = () => apply(def.w, def.h);
+  sheet.appendChild(db);
+  if(!all && kind === "desk" && p && p.desks.length > targets.length){
+    const ab = document.createElement("button"); ab.className = "linkbtn"; ab.id = "size-all"; ab.textContent = t("sizeAllDesks");
+    ab.onclick = () => openSize("desk", true); sheet.appendChild(ab);
+  }
+  const read = (inp, minPx, maxPx) => {
+    const v = parseFloat(String(inp.value).replace(",", "."));
+    if(!isFinite(v) || cmToPx(v) < minPx - 1 || cmToPx(v) > maxPx + 1){
+      toast(t("sizeRange").replace("{a}", String(pxToCm(minPx))).replace("{b}", String(pxToCm(maxPx)))); inp.focus(); return null; }
+    return clamp(cmToPx(v), minPx, maxPx);
+  };
+  const ok = sheetButtons(sheet, t("sizeApply"), () => {
+    const w = read(inW, lim.minW, lim.maxW); if(w === null) return;
+    const hh = inH ? read(inH, lim.minH, lim.maxH) : (mode === "dia" ? w : first.h); if(hh === null) return;
+    apply(w, hh);
   });
-  const close = document.createElement("button");
-  close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "14px";
-  close.textContent = t("cancel"); close.onclick = closeModal;
-  sheet.appendChild(close);
+  [inW, inH].forEach(i => i && i.addEventListener("keydown", e => { if(e.key === "Enter") ok.click(); }));
+}
+/* Gruppen (zusammengeschobene Tische, Stühle an einem Tisch) bleiben beisammen: die Abstände zur
+   Gruppenmitte wachsen im eigenen Rahmen jedes Tischs mit, statt dass Tische ineinander wachsen */
+function resizeTargets(list, w, h){
+  const groups = new Map(), solo = [];
+  list.forEach(i => { const g = i.groupId || ""; if(!g){ solo.push(i); return; } if(!groups.has(g)) groups.set(g, []); groups.get(g).push(i); });
+  groups.forEach(arr => {
+    if(arr.length < 2){ solo.push(arr[0]); return; }
+    const gx = arr.reduce((a, i) => a + i.x + i.w / 2, 0) / arr.length, gy = arr.reduce((a, i) => a + i.y + i.h / 2, 0) / arr.length;
+    arr.forEach(i => {
+      const ow = i.w, oh = i.h, a = ((i.rot || 0) * Math.PI) / 180, ux = Math.cos(a), uy = Math.sin(a);
+      const dx = i.x + ow / 2 - gx, dy = i.y + oh / 2 - gy, du = dx * ux + dy * uy, dv = -dx * uy + dy * ux;
+      applySize(i, w, h);
+      const su = i.w / ow, sv = i.h / oh, nx = gx + ux * du * su - uy * dv * sv, ny = gy + uy * du * su + ux * dv * sv;
+      i.x = Math.round(nx - i.w / 2); i.y = Math.round(ny - i.h / 2);
+      keepInRoom(i, 0);
+    });
+  });
+  solo.forEach(i => applySize(i, w, h));
 }
 $("#sb-group").onclick = () => {
   const set = selItems();
@@ -5644,6 +6181,21 @@ function startItemDrag(e, type){
 
 /* ============ 17. Plätze & Namen ============ */
 $("#btn-empty-desk").onclick = () => { if(editMode === "room") setEditMode("desks"); addItem("desk", ""); renderUnseated(); };
+/* PC-Platz: ein Tisch mit Bildschirm – trägt Namen wie jeder Platz */
+$("#btn-pc-desk").onclick = () => {
+  if(editMode === "room") setEditMode("desks");
+  const it = addItem("desk", "");
+  if(it){ it.pc = true; save(); renderStage(false); }
+  renderUnseated();
+};
+$("#sb-pc").onclick = () => {
+  const ds = planDesks().filter(d => selected.has(d.id));
+  if(!ds.length) return;
+  pushUndo();
+  const on = !ds.every(d => d.pc);
+  ds.forEach(d => { if(on) d.pc = true; else delete d.pc; });
+  save(); renderStage(false);
+};
 $("#btn-place-all").onclick = () => {
   const c = curClass(), p = curPlan();
   if(!c || !p) return;
@@ -5888,7 +6440,7 @@ function stageFreeAt(x, y){
   const el = document.elementFromPoint(x, y);
   if(!el || !el.closest) return false;
   if(!el.closest("#stage-wrap")) return false;
-  return !el.closest(".item, .zoombar, .selbar, .lessonbar, .coach, .stagehint, .rothandle, .lockbtn, .gradebar, .checkbar");
+  return !el.closest(".item, .zoombar, .selbar, .lessonbar, .coach, .stagehint, .rothandle, .sizehandle, .lockbtn, .gradebar, .checkbar");
 }
 /* Darf an dieser Stelle ein neuer Tisch entstehen? (gleiche Regeln für Vorschau und Ablegen) */
 function canCreateDeskAt(clientX, clientY){
@@ -5986,7 +6538,8 @@ function unseatDesk(desk){
 
 
 /* ============ 18. Vorlagen ============ */
-const PRESET_KEYS = ["rows","groups4","groups6","u","doubleU","circle","exam","cinema","rounds","longtables","squares","ovals","utable","ttable","boardroom"];
+const PRESET_KEYS = ["rows","groups4","groups6","u","doubleU","circle","exam","cinema","pcwall","pcrows","rounds","longtables","squares","ovals","utable","ttable","boardroom"];
+const PC_LAYOUTS = ["pcwall", "pcrows"];
 function presetOrder(){ return PRESET_KEYS; }
 function applyPreset(k){
   if(PER_TABLE_LAYOUTS.indexOf(k) >= 0) askSeatsPerTable(() => layoutDesks(k));
@@ -6107,6 +6660,7 @@ function layoutDesks(kind, noUndo){
                u:pU, doubleU:pDoubleU, circle:pCircle, exam:pExam, cinema:pCinema,
                rounds:pRounds, longtables:pLongTables, boardroom:pBoardroom,
                squares:pSquares, ovals:pOvals, utable:pUTable, ttable:pTTable,
+               pcwall:pPcWall, pcrows:pPcRows,
                fmgroups:n => pVarClusters(fmClusterSizes(n)) }[kind];
   let pos = fn ? fn(p.desks.length) : pRows(p.desks.length);
   /* Letzte Absicherung: ragt die fertige Anordnung aus dem Raum, würde das
@@ -6128,6 +6682,8 @@ function layoutDesks(kind, noUndo){
     d.x = Math.round(q.x); d.y = Math.round(q.y); d.rot = q.rot || 0;
     if(q.g !== undefined) d.groupId = "g_" + kind + "_" + q.g;
     if(q.tbl) d.tbl = q.tbl;
+    if(PC_LAYOUTS.indexOf(kind) >= 0) d.pc = true;   // PC-Raum: alle Plätze mit Bildschirm
+    else delete d.pc;                           // andere Vorlagen ordnen neu – Bildschirme stünden sonst irgendwo
     keepInRoom(d);                              // Sicherheitsnetz für jede Vorlage
   });
   selected.clear();
@@ -6137,7 +6693,8 @@ function layoutDesks(kind, noUndo){
 }
 /* Liegen ungedrehte Tische übereinander? Dann passt die Anordnung nicht in den Raum. */
 function desksOverlap(desks){
-  const flat = desks.filter(d => !(d.rot % 360));
+  /* rechtwinklig gedrehte Tische (PC-Wände) über ihre Hülle; schräge bleiben außen vor */
+  const flat = desks.filter(d => !((d.rot || 0) % 90)).map(itemBox);
   for(let i = 0; i < flat.length; i++){
     const a = flat[i];
     for(let j = i + 1; j < flat.length; j++){
@@ -6327,6 +6884,45 @@ function uRings(n, minRings){
   return res;
 }
 function pU(n){ return uRings(n, 0); }
+/* PC-Raum an den Wänden: links, hinten, rechts, Blick zur Wand (Bildschirm an der Wand).
+   Vorne bleibt die Tafel frei. Was an den Wänden keinen Platz hat, kommt als Reihe in die Mitte. */
+function pPcWall(n){
+  const wall = 26, gap = 12, top = 170;
+  const sideCap = Math.max(0, Math.floor((ROOM_H - wall - LH - 20 - top) / (LW + gap)));
+  const bx0 = wall + LH + 24, bx1 = ROOM_W - wall - LH - 24;
+  const backCap = Math.max(0, Math.floor((bx1 - bx0 + gap) / (LW + gap)));
+  const res = [];
+  /* reihum auf linke Wand, hintere Wand, rechte Wand verteilen, jeweils bis zur Kapazität */
+  let left = 0, back = 0, right = 0, k = 0, guard = 0;
+  while(left + back + right < n && guard++ < 1000){
+    const w = k++ % 3;
+    if(w === 0 && left < sideCap) left++;
+    else if(w === 1 && back < backCap) back++;
+    else if(w === 2 && right < sideCap) right++;
+    if(left >= sideCap && back >= backCap && right >= sideCap) break;
+  }
+  for(let i = 0; i < left; i++){                       // links: Bildschirm zur linken Wand
+    const cx = wall + LH / 2, cy = top + LW / 2 + i * (LW + gap);
+    res.push({ x: cx - LW / 2, y: cy - LH / 2, rot: 270 });
+  }
+  const bw = back * (LW + gap) - gap, bx = (ROOM_W - bw) / 2;
+  for(let i = 0; i < back; i++) res.push({ x: bx + i * (LW + gap), y: ROOM_H - wall - LH, rot: 180 });
+  for(let i = 0; i < right; i++){                      // rechts: Bildschirm zur rechten Wand
+    const cx = ROOM_W - wall - LH / 2, cy = top + LW / 2 + (right - 1 - i) * (LW + gap);
+    res.push({ x: cx - LW / 2, y: cy - LH / 2, rot: 90 });
+  }
+  const rest = n - res.length;
+  if(rest > 0){
+    const x0 = wall + LH + 90, x1 = ROOM_W - wall - LH - 90, y0 = top + 40, y1 = ROOM_H - wall - LH - 110;
+    /* passt der Rest nicht überlappungsfrei in die Mitte, lieber alles als Raster */
+    const cap = Math.floor(Math.max(LW + 20, x1 - x0) / (LW + 14)) * Math.floor((y1 - y0 + 20) / (LH + 20));   // Spalten wie in pGrid
+    if(x1 - x0 < LW || y1 - y0 < LH || cap < rest) return pGrid(n, 20, ROOM_W - 20, 60, ROOM_H - 40);
+    pGrid(rest, x0, x1, y0, y1).forEach(q => res.push(q));
+  }
+  return res;
+}
+/* PC-Raum in Reihen: einzelne Plätze mit etwas Abstand, Blick nach vorn */
+function pPcRows(n){ return pGrid(n, 40, ROOM_W - 40, 220, ROOM_H - 50); }
 function pDoubleU(n){ return uRings(n, 2); }
 function pGrid(n, x0, x1, y0, y1){
   const availW = Math.max(LW + 20, x1 - x0);
@@ -7408,12 +8004,30 @@ function openLessonSheet(it){
 
   if(gradesOn() && DB.gradesAck && DB.subjects.length){
     const lab2 = document.createElement("div");
-    lab2.className = "eyebrow"; lab2.style.marginTop = "14px"; lab2.textContent = t("gQuick") + " · " + t("gToday");
+    lab2.className = "eyebrow"; lab2.style.marginTop = "14px"; lab2.textContent = t("gQuick");
     sheet.appendChild(lab2);
     const qbox = document.createElement("div"); sheet.appendChild(qbox);
+    /* Heute oder letzte Stunde (Datum aus dem Stundenplan) – zum Nachtragen */
+    let qDay = isoDay(new Date());
     const pad = () => { qbox.textContent = ""; sheet.dataset.sens = "1";
-      const qp = quickPad(qbox, c, st, () => { absent = false; commitLesson(); }, isoDay(new Date()));
-      qp.id = "lesson-quickmark"; };
+      const seg = document.createElement("div"); seg.className = "segmented"; seg.id = "lesson-qday"; seg.style.marginTop = "4px";
+      const bToday = document.createElement("button"); bToday.textContent = t("gTodayBtn"); bToday.dataset.v = "today";
+      const bLast = document.createElement("button"); bLast.dataset.v = "last";
+      seg.appendChild(bToday); seg.appendChild(bLast); qbox.appendChild(seg);
+      const qp = quickPad(qbox, c, st, () => { if(qDay === isoDay(new Date())) absent = false; commitLesson(); }, () => qDay);
+      qp.id = "lesson-quickmark";
+      const paintDay = () => {
+        const last = lastLessonDate(c, qp.subjectId());
+        if(!last && qDay !== isoDay(new Date())) qDay = isoDay(new Date());
+        bLast.textContent = last ? t("gLastLesson").replace("{d}", fmtDateLong(last)) : t("gLastLessonNone");
+        bLast.disabled = !last;
+        bToday.classList.toggle("on", qDay === isoDay(new Date())); bLast.classList.toggle("on", !!last && qDay === last);
+        bToday.setAttribute("aria-pressed", String(qDay === isoDay(new Date()))); bLast.setAttribute("aria-pressed", String(!!last && qDay === last));
+      };
+      bToday.onclick = () => { qDay = isoDay(new Date()); paintDay(); qp.repaint(); };
+      bLast.onclick = () => { const last = lastLessonDate(c, qp.subjectId()); if(last){ qDay = last; paintDay(); qp.repaint(); } };
+      qp.onSubject = () => { if(qDay !== isoDay(new Date())){ const last = lastLessonDate(c, qp.subjectId()); qDay = last || isoDay(new Date()); qp.repaint(); } paintDay(); };
+      paintDay(); };
     if(lockedNow()) lockButton(qbox, pad); else pad();
   }
   let obsArea = null;
@@ -7900,11 +8514,14 @@ function exportPNG(){
       g.fillStyle = PRINT_FILL[it.type] || "#FFFFFF";
       g.strokeStyle = "#16232B";
       g.lineWidth = 1.5;
-      const round = ROUND_TYPES.indexOf(it.type) >= 0 || (it.type === "desk" && it.w === it.h && it.w <= 70);
+      const round = ROUND_TYPES.indexOf(it.type) >= 0 || isSeatDesk(it);
       g.beginPath();
       if(round) g.ellipse(0, 0, it.w / 2, it.h / 2, 0, 0, Math.PI * 2);
       else roundRectPath(g, -it.w / 2, -it.h / 2, it.w, it.h, 5);
       g.fill(); g.stroke();
+      if(it.type === "desk" && it.pc){                         // Bildschirm an der Kante gegenüber dem Stuhl
+        g.fillStyle = "#3A4652"; g.fillRect(-it.w * 0.26, -it.h / 2 - 8, it.w * 0.52, 8);
+      }
       g.rotate(-(it.rot || 0) * Math.PI / 180);                // Schrift waagerecht
       g.fillStyle = PRINT_TEXT[it.type] || "#16232B";
       const lbl = it.type === "pillar" ? "" : it.type === "desk" ? deskPrintLabel(curClass(), curPlan(), it, pngNums) : itemLabel(it);
@@ -8028,7 +8645,7 @@ function pdfPlanPage(cls, plan, room, title, opts){
     c.push([Math.cos(rot).toFixed(5), Math.sin(rot).toFixed(5),
             (-Math.sin(rot)).toFixed(5), Math.cos(rot).toFixed(5), X(cx), Y(cy)].join(" ") + " cm");
     c.push(pdfRgb(PRINT_FILL[it.type] || "#FFFFFF") + " rg 0.086 0.137 0.169 RG 0.7 w");
-    const round = ROUND_TYPES.indexOf(it.type) >= 0 || (it.type === "desk" && it.w === it.h && it.w <= 70);
+    const round = ROUND_TYPES.indexOf(it.type) >= 0 || isSeatDesk(it);
     if(round) c.push(pdfEllipse(0, 0, w / 2, h / 2) + " B");
     else c.push((-w/2).toFixed(2) + " " + (-h/2).toFixed(2) + " " + w.toFixed(2) + " " + h.toFixed(2) + " re B");
     /* Beschriftung waagerecht, auch bei gedrehten Objekten */
@@ -8044,6 +8661,13 @@ function pdfPlanPage(cls, plan, room, title, opts){
         (-tw/2).toFixed(2) + " " + (-fs/3).toFixed(2) + " Td (" + pdfEscape(label) + ") Tj ET");
     }
     c.push("Q");
+    if(it.type === "desk" && it.pc){
+      /* Bildschirm: Mitte der oberen Kante (Bildschirmkoordinaten, im Uhrzeigersinn gedreht) */
+      const d = it.h / 2 + 4, ux = Math.sin(rot) * d, uy = -Math.cos(rot) * d, hw = it.w * 0.26;
+      const x1 = cx + ux - Math.cos(rot) * hw, y1 = cy + uy - Math.sin(rot) * hw;
+      const x2 = cx + ux + Math.cos(rot) * hw, y2 = cy + uy + Math.sin(rot) * hw;
+      c.push("0.227 0.275 0.322 RG " + (7 * sc).toFixed(2) + " w " + X(x1) + " " + Y(y1) + " m " + X(x2) + " " + Y(y2) + " l S");
+    }
   });
   return c.join("\n");
 }
@@ -8894,6 +9518,7 @@ function editSubject(s, after, onCancel){
           if(c.gradeW) delete c.gradeW[s.id];
           c.gradeSubjects = (c.gradeSubjects || []).filter(x => x !== s.id);
           if(c.lastSubject === s.id) c.lastSubject = "";
+          if(Array.isArray(c.zd)) c.zd = c.zd.filter(x => x.slice(0, x.indexOf("|")) !== s.id);
         });
         save(); refreshTTViews();
       });
@@ -9016,7 +9641,21 @@ const pointsToGrade = p => tokNum(GRADE_TOKS[POINT_TOKS.indexOf(String(p))], "gr
 const tokLabel = (tok, forPdf) => tok === "x" ? t("gMissing") : SMILEY[tok] ? (forPdf ? SMILEY_PDF[tok] : SMILEY[tok]) : String(tok || "");
 const fmtNum = (v, d) => v === null || v === undefined || !isFinite(v) ? "–" : (LANG === "de" ? v.toFixed(d).replace(".", ",") : v.toFixed(d));
 const fmtDate = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); return m ? (LANG === "de" ? m[3] + "." + m[2] + "." : m[3] + "/" + m[2]) : ""; };
-function courseAssess(c, subjectId){ return (c.assess || []).filter(a => a.subjectId === subjectId && a.kind !== "self").sort((a, b) => (a.date || "").localeCompare(b.date || "") || 0); }
+/* ---- Halbjahre: Stichtag = Ende des 1. Halbjahres; Schuljahr vom 1.8. bis 31.7. ---- */
+let gradeTerm = "year";                                 // Ansicht der Übersicht: "h1", "h2" oder "year"
+function defaultTermSplit(now){ now = now || new Date(); return (now.getMonth() >= 7 ? now.getFullYear() + 1 : now.getFullYear()) + "-01-31"; }
+function termSplit(){ const v = DB.settings.termSplit; return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : defaultTermSplit(); }
+function inTerm(a, term){
+  if(term !== "h1" && term !== "h2") return true;
+  const S = termSplit(), d = a.date || "";
+  if(!d) return false;
+  /* Schuljahr, in dem der Stichtag liegt: 1.8. davor bis 31.7. danach */
+  const sy = +S.slice(0, 4) - (+S.slice(5, 7) >= 8 ? 0 : 1);
+  const start = sy + "-08-01", end = (sy + 1) + "-07-31";
+  return term === "h1" ? d >= start && d <= S : d > S && d <= end;
+}
+const termLabel = term => t(term === "h1" ? "termH1" : term === "h2" ? "termH2" : "termYear");
+function courseAssess(c, subjectId, term){ return (c.assess || []).filter(a => a.subjectId === subjectId && a.kind !== "self" && inTerm(a, term)).sort((a, b) => (a.date || "").localeCompare(b.date || "") || 0); }
 /* Selbsteinschätzungen getrennt – zählen nie in Durchschnitte */
 function selfAssess(c, subjectId){ return (c.assess || []).filter(a => a.subjectId === subjectId && a.kind === "self").sort((a, b) => (a.date || "").localeCompare(b.date || "")); }
 /* Lehrerbewertung der Mitarbeit am selben Tag – zum Vergleich mit der Selbsteinschätzung */
@@ -9027,8 +9666,8 @@ function teacherSameDay(c, subjectId, date, sid){
 /* Durchschnitte im Maßstab des Fachs: nur Punkte → Punkte, sonst Noten (Punkte umgerechnet) */
 function courseScale(list){ const num = list.filter(a => a.scale !== "smiley"); return num.length && num.every(a => a.scale === "points") ? "points" : "grade"; }
 function valIn(a, tok, sc){ const v = tokNum(tok, a.scale); if(v === null) return null; return sc === "grade" && a.scale === "points" ? pointsToGrade(v) : v; }
-function studentAverages(c, subjectId, sid){
-  const list = courseAssess(c, subjectId), sc = courseScale(list);
+function studentAverages(c, subjectId, sid, term){
+  const list = courseAssess(c, subjectId, term), sc = courseScale(list);
   const part = kind => { let s = 0, w = 0; list.filter(a => a.kind === kind).forEach(a => { const v = valIn(a, a.marks[sid], sc); if(v !== null){ s += v * a.weight; w += a.weight; } }); return w ? s / w : null; };
   const wr = part("written"), ot = part("other");
   const W = (own(c.gradeW || {}, subjectId) ? c.gradeW[subjectId] : 50) / 100;
@@ -9130,7 +9769,20 @@ function renderGrades(){
       body.appendChild(card);
     });
     renderSelfSection(body, c, s, false);
-  } else { renderOverview(body, c, s, list); renderSelfSection(body, c, s, true); }
+  } else {
+    /* Halbjahr wählen: Übersicht, Notenvorschlag und Ausgaben rechnen nur mit diesen Bewertungen */
+    const tb = document.createElement("div"); tb.className = "segmented"; tb.id = "g-term";
+    ["h1", "h2", "year"].forEach(k => { const b = document.createElement("button"); b.textContent = termLabel(k); b.dataset.v = k;
+      b.classList.toggle("on", gradeTerm === k); b.setAttribute("aria-pressed", String(gradeTerm === k));
+      b.onclick = () => { gradeTerm = k; renderGrades(); }; tb.appendChild(b); });
+    body.appendChild(tb);
+    const sp = document.createElement("button"); sp.className = "linkbtn"; sp.id = "g-term-split";
+    sp.textContent = t("termSplitBtn").replace("{d}", fmtDateY(termSplit()));
+    sp.onclick = editTermSplit; body.appendChild(sp);
+    const und = gradeTerm !== "year" ? courseAssess(c, s.id).filter(a => !a.date).length : 0;
+    if(und){ const uh = document.createElement("div"); uh.className = "hint"; uh.id = "g-undated"; uh.textContent = t("termUndated").replace("{n}", String(und)); body.appendChild(uh); }
+    renderOverview(body, c, s, courseAssess(c, s.id, gradeTerm), gradeTerm); renderSelfSection(body, c, s, true);
+  }
 }
 function pickCourseSubject(c){
   const sheet = sheetBase(t("gPickSubject"));
@@ -9377,14 +10029,34 @@ function lineChart(points, scale, caption){
   wrap.appendChild(cap); wrap.appendChild(svg);
   return wrap;
 }
-function renderOverview(body, c, s, list){
+function editTermSplit(pre){
+  const sheet = sheetBase(t("termSplitTitle"));
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("termSplitHint"); sheet.appendChild(h);
+  const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "term-split"; di.value = typeof pre === "string" ? pre : termSplit(); sheet.appendChild(di);
+  const std = document.createElement("button"); std.className = "linkbtn"; std.id = "term-split-default"; std.textContent = t("termSplitDefault");
+  std.onclick = () => { delete DB.settings.termSplit; save(); closeModal(); renderGrades(); };
+  sheet.appendChild(std);
+  sheetButtons(sheet, t("save"), () => {
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(di.value)){ di.focus(); return; }
+    const v = di.value, m = +v.slice(5, 7);
+    const apply = () => { DB.settings.termSplit = v; save(); closeModal(); renderGrades(); };
+    if(m >= 4 && m <= 10){ closeModal(); let decided = false;
+      askConfirm(t("termSplitTitle"), t("termSplitOdd"), t("save"), () => { decided = true; apply(); });
+      modalCloseHook = () => { if(!decided) editTermSplit(v); };   // „Abbrechen“, Hintergrund oder Esc: zurück mit dem getippten Tag
+      return; }   // Tippfehler im Monat abfangen
+    apply();
+  });
+}
+/* Datum mit Jahr – beim Stichtag wichtig, damit klar ist, welches Schuljahr gemeint ist */
+function fmtDateY(iso){ const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? (LANG === "de" ? m[3] + "." + m[2] + "." + m[1] : m[3] + "/" + m[2] + "/" + m[1]) : ""; }
+function renderOverview(body, c, s, list, term){
   const sc = courseScale(list), dg = sc === "points" ? 1 : 2;
   const numeric = list.filter(a => a.scale !== "smiley");
   /* Erst jeden Wert umrechnen, dann mitteln – ein Durchschnitt von Punkten lässt sich nicht nachschlagen */
   const meanIn = a => { const v = c.students.map(st => valIn(a, a.marks[st.id], sc)).filter(x => x !== null); return v.length ? v.reduce((p, q) => p + q, 0) / v.length : null; };
   const pts = numeric.map(a => ({ label: fmtDate(a.date), v: meanIn(a) })).filter(p => p.v !== null);
   if(pts.length) body.appendChild(lineChart(pts, sc, t("gClassTrend")));
-  const avgAll = c.students.map(st => studentAverages(c, s.id, st.id).total).filter(v => v !== null);
+  const avgAll = c.students.map(st => studentAverages(c, s.id, st.id, term).total).filter(v => v !== null);
   const sum = document.createElement("div"); sum.className = "lvlstats";
   [[t("gClassAvg"), avgAll.length ? fmtNum(avgAll.reduce((a, b) => a + b, 0) / avgAll.length, dg) : "–"],
    [t("gCount"), String(list.length)]].forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + v; sum.appendChild(sp); });
@@ -9400,42 +10072,47 @@ function renderOverview(body, c, s, list){
   c.students.forEach(st => {
     const tr = document.createElement("tr");
     const n = document.createElement("td"); const nb = document.createElement("button"); nb.className = "gname"; nb.textContent = st.name;
-    nb.onclick = () => studentDetail(c, s, st); n.appendChild(nb); tr.appendChild(n);
+    nb.onclick = () => studentDetail(c, s, st, term); n.appendChild(nb);
+    if(isZd(c, s.id, st.id)){ const z = document.createElement("span"); z.className = "zdtag"; z.textContent = t("zdShort"); z.title = t("zdLabel"); n.appendChild(z); }
+    tr.appendChild(n);
     list.forEach(a => { const d = document.createElement("td"); d.textContent = a.marks[st.id] ? tokLabel(a.marks[st.id]) : ""; if(a.marks[st.id] === "x") d.className = "miss"; tr.appendChild(d); });
-    const av = studentAverages(c, s.id, st.id);
+    const av = studentAverages(c, s.id, st.id, term);
     [av.written, av.other, av.total].forEach((v, k) => { const d = document.createElement("td"); d.textContent = v === null ? "" : fmtNum(v, dg); d.className = k === 2 ? "tot" : "avg"; tr.appendChild(d); });
     const pr = document.createElement("td"); pr.className = "tot prop"; pr.textContent = proposeGrade(c, s.id, av) || ""; tr.appendChild(pr);
-    const ms = document.createElement("td"); ms.className = "avg"; const mc = missedLessons(c, st.id).bySubject[s.id] || 0; ms.textContent = mc ? String(mc) : ""; tr.appendChild(ms);
+    const ms = document.createElement("td"); ms.className = "avg"; const mc = missedLessons(c, st.id, term).bySubject[s.id] || 0; ms.textContent = mc ? String(mc) : ""; tr.appendChild(ms);
     tb.appendChild(tr);
   });
   wrap.appendChild(tb); body.appendChild(wrap);
   const ex = document.createElement("button"); ex.className = "cbtn outline"; ex.id = "g-pdf"; ex.style.width = "100%"; ex.style.marginTop = "12px";
   ex.appendChild(icon("pdf")); const es = document.createElement("span"); es.textContent = t("gPdf"); ex.appendChild(es);
-  ex.onclick = () => exportGradesPdf(c, s);
+  ex.onclick = () => exportGradesPdf(c, s, term);
   body.appendChild(ex);
   const cx = document.createElement("button"); cx.className = "cbtn outline"; cx.id = "g-csv"; cx.style.width = "100%"; cx.style.marginTop = "8px";
   cx.appendChild(icon("share")); const cs = document.createElement("span"); cs.textContent = t("gCsv"); cx.appendChild(cs);
-  cx.onclick = () => exportGradesCsv(c, s);
+  cx.onclick = () => exportGradesCsv(c, s, term);
   body.appendChild(cx);
   const xx = document.createElement("button"); xx.className = "cbtn blue"; xx.id = "g-xlsx"; xx.style.width = "100%"; xx.style.marginTop = "8px";
   xx.appendChild(icon("grid")); const xs = document.createElement("span"); xs.textContent = t("gXlsx"); xx.appendChild(xs);
-  xx.onclick = () => exportGradesXlsx(c);
+  xx.onclick = () => exportGradesXlsx(c, term);
   body.appendChild(xx);
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gOverviewHint"); body.appendChild(h);
 }
-function studentDetail(c, s, st){
-  const list = courseAssess(c, s.id), sc = courseScale(list), av = studentAverages(c, s.id, st.id), dg = sc === "points" ? 1 : 2;
-  const sheet = sheetBase(st.name + " – " + s.name);
+function studentDetail(c, s, st, term){
+  const list = courseAssess(c, s.id, term), sc = courseScale(list), av = studentAverages(c, s.id, st.id, term), dg = sc === "points" ? 1 : 2;
+  const sheet = sheetBase(st.name + " – " + s.name + (term === "h1" || term === "h2" ? " · " + termLabel(term) : ""));
   const sum = document.createElement("div"); sum.className = "lvlstats";
   [[t("gW"), av.written], [t("gO"), av.other], [t("gTotal"), av.total]].forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + fmtNum(v, dg); sum.appendChild(sp); });
   const pv = proposeGrade(c, s.id, av);
   if(pv){ const sp = document.createElement("span"); sp.className = "propchip"; sp.textContent = t("gProposal") + ": " + pv; sum.appendChild(sp); }
-  const mi = missedLessons(c, st.id);
+  const mi = missedLessons(c, st.id, term);
   if(mi.bySubject[s.id]){ const sp = document.createElement("span"); sp.textContent = t("absMissed").replace("{n}", String(mi.bySubject[s.id] || 0)); sum.appendChild(sp); }
   sheet.appendChild(sum);
+  const zr = switchRow(t("zdLabel"), t("zdSub"), () => isZd(c, s.id, st.id), () => { setZd(c, s.id, st.id, !isZd(c, s.id, st.id)); save();
+    if($("#screen-grades").classList.contains("active")) renderGrades(); });   // Kennzeichen und 30-%-Hinweis in der Übersicht
+  zr.id = "zd-switch"; zr.style.marginTop = "10px"; sheet.appendChild(zr);
   const ab = document.createElement("button"); ab.className = "cbtn outline"; ab.id = "abs-open"; ab.style.width = "100%"; ab.style.marginTop = "10px";
   ab.appendChild(icon("calendar")); const abs = document.createElement("span"); abs.textContent = t("absTitle") + " · " + absenceLine(c, st.id); ab.appendChild(abs);
-  ab.onclick = () => openAbsences(c, st, () => studentDetail(c, s, st));
+  ab.onclick = () => openAbsences(c, st, () => studentDetail(c, s, st, term));
   sheet.appendChild(ab);
   const tb = document.createElement("button"); tb.className = "cbtn outline"; tb.id = "talk-sheet"; tb.style.width = "100%"; tb.style.marginTop = "10px";
   tb.appendChild(icon("pdf")); const tbs = document.createElement("span"); tbs.textContent = t("talkTitle"); tb.appendChild(tbs);
@@ -9443,7 +10120,7 @@ function studentDetail(c, s, st){
   sheet.appendChild(tb);
   const ob = document.createElement("button"); ob.className = "cbtn outline"; ob.id = "obs-open"; ob.style.width = "100%"; ob.style.marginTop = "8px";
   ob.appendChild(icon("note")); const obs = document.createElement("span"); obs.textContent = t("obsCount").replace("{n}", String(studentObs(c, st.id).length)); ob.appendChild(obs);
-  ob.onclick = () => openObservations(c, st, () => studentDetail(c, s, st), s.id);
+  ob.onclick = () => openObservations(c, st, () => studentDetail(c, s, st, term), s.id);
   sheet.appendChild(ob);
   const pts = list.map(a => ({ label: fmtDate(a.date), v: valIn(a, a.marks[st.id], sc) })).filter(p => p.v !== null);
   if(pts.length) sheet.appendChild(lineChart(pts, sc, t("gTrend")));
@@ -9470,10 +10147,10 @@ function studentDetail(c, s, st){
   const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "12px";
   close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
 }
-function gradesPdfPages(c, s){
-  const list = courseAssess(c, s.id), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
+function gradesPdfPages(c, s, term){
+  const list = courseAssess(c, s.id, term), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
   const cols = list.slice(-14);                                  // höchstens 14 Spalten passen auf A4 quer
-  const M = PDF_M, title = c.name + " · " + s.name + " – " + t("gPdfTitle");
+  const M = PDF_M, title = c.name + " · " + s.name + " – " + t("gPdfTitle") + (term === "h1" || term === "h2" ? " · " + termLabel(term) : "");
   const nameW = 170, colW = Math.min(44, (PDF_W - 2 * M - nameW - 4 * 46) / Math.max(1, cols.length));
   const pages = []; let cur = [], y = 0;
   const head = () => {
@@ -9491,7 +10168,7 @@ function gradesPdfPages(c, s){
     if(idx % 2) cur.push("0.95 0.96 0.97 rg " + M + " " + (y - 4).toFixed(1) + " " + (PDF_W - 2 * M) + " 15 re f");
     cur.push(pdfText(M, y, 9.5, st.name));
     cols.forEach((a, i) => { const tok = a.marks[st.id]; if(tok) cur.push(pdfText(M + nameW + i * colW, y, 9.5, tokLabel(tok, true))); });
-    const av = studentAverages(c, s.id, st.id), x0 = M + nameW + cols.length * colW;
+    const av = studentAverages(c, s.id, st.id, term), x0 = M + nameW + cols.length * colW;
     [av.written, av.other, av.total].forEach((v, k) => { if(v !== null) cur.push(pdfText(x0 + k * 46, y, 9.5, fmtNum(v, dg))); });
     const pv = proposeGrade(c, s.id, av); if(pv) cur.push(pdfText(x0 + 3 * 46, y, 9.5, pv));
     y -= 15;
@@ -9500,9 +10177,10 @@ function gradesPdfPages(c, s){
   pages.push(cur.join("\n"));
   return pages;
 }
-function exportGradesPdf(c, s){
+const termFileSuffix = term => term === "h1" || term === "h2" ? " " + termLabel(term) : "";
+function exportGradesPdf(c, s, term){
   try{
-    if(download(buildPDF(gradesPdfPages(c, s)), safeName(c.name + " " + s.name + " " + t("gPdfTitle")) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
+    if(download(buildPDF(gradesPdfPages(c, s, term)), safeName(c.name + " " + s.name + " " + t("gPdfTitle") + termFileSuffix(term)) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
     else toast(t("exportFail"));
   }catch(e){ toast(t("exportFail")); }
 }
@@ -9523,6 +10201,17 @@ function quickSubject(c){
    (z. B. Noten einer vergangenen Stunde nachtragen). Gilt bis zum Wechsel – auch für weitere Schüler. */
 let quickDate = null;
 const quickDay = () => quickDate || isoDay(new Date());
+/* Letzte Stunde dieser Klasse in diesem Fach vor heute (laut Stundenplan, ohne Ausfälle, bis 4 Wochen zurück) */
+function lastLessonDate(c, subjectId, from){
+  const base = from ? new Date(from) : new Date();
+  for(let k = 1; k <= 28; k++){
+    const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() - k);
+    const day = (d.getDay() + 6) % 7; if(day >= DB.tt.days) continue;
+    const wk = abWeek(d), iso = isoDay(d);
+    if(DB.lessons.some(L => L.classId === c.id && L.subjectId === subjectId && L.day === day && (!L.week || !wk || L.week === wk) && !isCancelled(L, iso))) return iso;
+  }
+  return null;
+}
 function quickScaleFor(c, subjectId, date){
   const day = date || isoDay(new Date());
   const a = (c.assess || []).find(x => x.auto && x.subjectId === subjectId && x.date === day);
@@ -9558,14 +10247,15 @@ function quickPad(parent, c, st, onSaved, date){
         if(A.pts) delete A.pts[st.id];
         A.marks[st.id] = tok; c.lastSubject = subjectId(); save();
         if(onSaved) onSaved(tok);
-        toast(t("gQuickSaved").replace("{a}", st.name).replace("{v}", tokLabel(tok)));
+        toast(t("gQuickSaved").replace("{a}", st.name).replace("{v}", tokLabel(tok)) + (day() !== isoDay(new Date()) ? " · " + fmtDateLong(day()) : ""));
       };
       pad.appendChild(b);
     });
   };
-  if(subjSel) subjSel.onchange = paint;
+  if(subjSel) subjSel.onchange = () => { paint(); if(wrap.onSubject) wrap.onSubject(); };
   paint();
   wrap.repaint = paint;
+  wrap.subjectId = subjectId;
   return wrap;
 }
 function quickMark(st){
@@ -10005,21 +10695,21 @@ function proposeGrade(c, sid, av){
 }
 const smileyWord = tok => t("gSm_" + tok);
 function csvValue(tok){ return tok === "x" ? t("gMissing") : SMILEY[tok] ? smileyWord(tok) : String(tok || ""); }
-function exportGradesCsv(c, s){
+function exportGradesCsv(c, s, term){
   try{
-    const list = courseAssess(c, s.id), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
+    const list = courseAssess(c, s.id, term), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
     const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + ")"))
       .concat(["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposal"), t("absMissedShort")]);
     const lines = [head.map(csvCell).join(";")];
     c.students.forEach(st => {
-      const av = studentAverages(c, s.id, st.id);
+      const av = studentAverages(c, s.id, st.id, term);
       const cells = [st.name].concat(list.map(a => csvValue(a.marks[st.id])))
         .concat([av.written, av.other, av.total].map(v => v === null ? "" : fmtNum(v, dg)))
-        .concat([proposeGrade(c, s.id, av) || "", String(missedLessons(c, st.id).bySubject[s.id] || 0)]);
+        .concat([proposeGrade(c, s.id, av) || "", String(missedLessons(c, st.id, term).bySubject[s.id] || 0)]);
       lines.push(cells.map(csvCell).join(";"));
     });
     const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
-    if(download(blob, safeName(c.name + " " + s.name + " " + t("gPdfTitle")) + ".csv", "text/csv")) toast(t("gCsvOk"));
+    if(download(blob, safeName(c.name + " " + s.name + " " + t("gPdfTitle") + termFileSuffix(term)) + ".csv", "text/csv")) toast(t("gCsvOk"));
     else toast(t("exportFail"));
   }catch(e){ toast(t("exportFail")); }
 }
@@ -10055,10 +10745,10 @@ function recordLessonAbsence(c){
 }
 /* Läuft der Unterrichtsmodus über den Stundenwechsel, wird auch die nächste Stunde erfasst */
 setInterval(() => { if(lessonMode){ const c = curClass(); if(recordLessonAbsence(c)) save(); } }, 60000);
-function missedLessons(c, sid){
+function missedLessons(c, sid, term){
   const out = { total: 0, excused: 0, bySubject: {}, dates: [] }, off = cancelledSlots(c);
   (c.absLog || []).forEach(e => {
-    if(e.ids.indexOf(sid) < 0 || off.has(e.d + "|" + e.p)) return;
+    if(e.ids.indexOf(sid) < 0 || off.has(e.d + "|" + e.p) || !inTerm({ date: e.d }, term)) return;
     out.total += e.n; out.bySubject[e.s || ""] = (out.bySubject[e.s || ""] || 0) + e.n; out.dates.push(e.d);
     if(isExcused(c, e.d, sid)) out.excused += e.n;
   });
@@ -10128,20 +10818,21 @@ function talkSheetPages(c, st){
     y -= 10;
   });
   /* Beobachtungen (älteste zuerst) und offene Abhaklisten */
-  const ob = (c.obs || []).filter(o => o.sid === st.id).slice().sort((a, b) => a.d.localeCompare(b.d));
-  if(ob.length){
+  const allOb = (c.obs || []).filter(o => o.sid === st.id).slice().sort((a, b) => a.d.localeCompare(b.d));
+  [[t("obsTitle"), allOb.filter(o => o.k !== "parent")], [t("parentTitle"), allOb.filter(o => o.k === "parent")]].forEach(([title, ob]) => {
+    if(!ob.length) return;
     need(40);
-    cur.push(pdfText(M, y, 13, t("obsTitle"))); y -= 18;
+    cur.push(pdfText(M, y, 13, title)); y -= 18;
     ob.forEach(o => {
       const sj = subjectById(o.s);
-      const lines = pdfWrap(o.text, 78);
+      const lines = pdfWrap((o.k === "parent" ? t("parentMode_" + o.m) + ": " : "") + o.text, 78);
       need(14 * lines.length + 4);
       cur.push(pdfText(M + 10, y, 9.5, fmtDate(o.d) + (sj ? " " + (sj.short || sj.name) : ""), grey));
       lines.forEach(l => { cur.push(pdfText(M + 80, y, 10, l)); y -= 13; });
       y -= 3;
     });
     y -= 8;
-  }
+  });
   const tallies = (c.checks || []).filter(k => isTally(k) && tallyCount(k, st.id));
   if(tallies.length){
     need(36);
@@ -10230,6 +10921,7 @@ function openNewYear(){
         if(x.name.trim()) c.name = x.name.trim().slice(0, 60);
       });
       if(opt.timetable){ DB.lessons = []; DB.cancelled = []; DB.tt.ab = false; DB.tt.abRef = ""; }
+      delete DB.settings.termSplit; gradeTerm = "year";   // neues Schuljahr: Stichtag wieder automatisch
       curClassId = null; ensureCurClass(); undoStack = []; redoStack = []; updateUndoButtons();
       save(); renderStart(); renderSettings(); toast(t("nyDone"));
     });
@@ -10275,32 +10967,52 @@ function fmtDateLong(iso){
 }
 /* ---- Beobachtungen ---- */
 function studentObs(c, sid){ return (c.obs || []).filter(o => o.sid === sid).sort((a, b) => b.d.localeCompare(a.d)); }
-function addObs(c, sid, text, subj, date){
+const PARENT_MODES = ["talk", "phone", "letter", "mail"];
+function addObs(c, sid, text, subj, date, parentMode){
   text = String(text || "").trim().slice(0, 300); if(!text || !studentById(c, sid)) return null;
   c.obs = Array.isArray(c.obs) ? c.obs : [];
   const o = { id: uid(), sid, d: /^\d{4}-\d{2}-\d{2}$/.test(date || "") ? date : isoDay(new Date()), s: subj || "", text };
+  if(PARENT_MODES.indexOf(parentMode) >= 0){ o.k = "parent"; o.m = parentMode; }
   c.obs.push(o);
   while(c.obs.length > 2000) c.obs.shift();
   return o;
 }
 function lessonSubjectNow(c){ const L = currentLessonFor(c); return L ? L.subjectId : (subjectById(c.lastSubject) ? c.lastSubject : ""); }
-function openObservations(c, st, back, subj){
-  if(needUnlock(() => openObservations(c, st, back, subj))) return;
+function openObservations(c, st, back, subj, kind){
+  if(needUnlock(() => openObservations(c, st, back, subj, kind))) return;
   const sheet = sheetBase(t("obsTitle") + " – " + st.name); sheet.dataset.sens = "1";
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("obsHint"); sheet.appendChild(h);
-  const area = document.createElement("textarea"); area.className = "field"; area.id = "obs-text"; area.maxLength = 300; area.placeholder = t("obsPh");
+  /* Art: Beobachtung oder Elternkontakt (Gespräch, Telefonat, Brief, E-Mail) */
+  let mode = PARENT_MODES.indexOf(kind) >= 0 ? kind : "";
+  const kseg = document.createElement("div"); kseg.className = "segmented"; kseg.id = "obs-kind";
+  const mseg = document.createElement("div"); mseg.className = "segmented wrap"; mseg.id = "obs-mode";
+  const area = document.createElement("textarea"); area.className = "field"; area.id = "obs-text"; area.maxLength = 300;
+  let addBtn = null;
+  const paintKind = () => {
+    if(addBtn) addBtn.textContent = t(mode ? "parentAdd" : "obsAdd");
+    Array.from(kseg.children).forEach(b => { const on = (b.dataset.v === "parent") === !!mode; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    Array.from(mseg.children).forEach(b => { const on = b.dataset.v === mode; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    mseg.style.display = mode ? "flex" : "none";
+    area.placeholder = t(mode ? "parentPh" : "obsPh");
+  };
+  [["obs", "obsKindObs"], ["parent", "obsKindParent"]].forEach(([v, k]) => { const b = document.createElement("button"); b.dataset.v = v; b.textContent = t(k);
+    b.onclick = () => { mode = v === "parent" ? (mode || "talk") : ""; paintKind(); }; kseg.appendChild(b); });
+  PARENT_MODES.forEach(v => { const b = document.createElement("button"); b.dataset.v = v; b.textContent = t("parentMode_" + v);
+    b.onclick = () => { mode = v; paintKind(); }; mseg.appendChild(b); });
+  sheet.appendChild(kseg); sheet.appendChild(mseg);
   area.style.marginTop = "8px"; sheet.appendChild(area);
+  paintKind();
   const row = document.createElement("div"); row.className = "obsform";
   const subjSel = selectField(row, [["", t("absNoSubject")]].concat(DB.subjects.map(x => [x.id, x.name])), subj || lessonSubjectNow(c));
   subjSel.id = "obs-subj";
   const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "obs-date"; di.value = isoDay(new Date()); di.max = isoDay(new Date());
   row.appendChild(di); sheet.appendChild(row);
   const add = document.createElement("button"); add.className = "primary"; add.id = "obs-add"; add.style.width = "100%"; add.style.marginTop = "8px";
-  add.textContent = t("obsAdd");
+  addBtn = add; add.textContent = t(mode ? "parentAdd" : "obsAdd");
   add.onclick = () => {
     if(!area.value.trim()){ area.focus(); return; }
-    addObs(c, st.id, area.value, subjSel.value, di.value <= isoDay(new Date()) ? di.value : isoDay(new Date()));
-    save(); haptic(6); openObservations(c, st, back, subjSel.value);
+    addObs(c, st.id, area.value, subjSel.value, di.value <= isoDay(new Date()) ? di.value : isoDay(new Date()), mode);
+    save(); haptic(6); openObservations(c, st, back, subjSel.value, mode);
   };
   sheet.appendChild(add);
   const list = studentObs(c, st.id);
@@ -10311,11 +11023,12 @@ function openObservations(c, st, back, subj){
     const m = document.createElement("span"); m.className = "obsm"; const sj = subjectById(o.s);
     m.textContent = fmtDate(o.d) + (sj ? " · " + (sj.short || sj.name) : "");
     const tx = document.createElement("span"); tx.className = "obst"; tx.textContent = o.text;
+    if(o.k === "parent"){ r.classList.add("parentrow"); const pk = document.createElement("b"); pk.className = "pktag"; pk.textContent = t("parentMode_" + o.m); tx.prepend(pk, " "); }
     const del = document.createElement("button"); del.className = "iconbtn"; del.appendChild(icon("trash")); del.setAttribute("aria-label", t("delete"));
     const sv = subjSel.value;
     del.onclick = () => askConfirm(t("obsDeleteQ"), o.text.length > 80 ? o.text.slice(0, 80) + "…" : o.text, t("delete"),
-      () => { c.obs = (c.obs || []).filter(x => x !== o); save(); openObservations(c, st, back, sv); },
-      () => openObservations(c, st, back, sv));
+      () => { c.obs = (c.obs || []).filter(x => x !== o); save(); openObservations(c, st, back, sv, mode); },
+      () => openObservations(c, st, back, sv, mode));
     r.appendChild(m); r.appendChild(tx); r.appendChild(del); box.appendChild(r);
   });
   sheet.appendChild(box);
@@ -10365,9 +11078,12 @@ function toggleCheck(sid){
   save(); haptic(i >= 0 ? 4 : 8);
   renderCheckBar(); renderStage(false);
 }
-function openChecks(){
+/* fromClass: aus „Klassen verwalten“ ohne Sitzplan – Listen öffnen sich dann als Namensliste */
+function openChecks(fromClass){
   const c = curClass(); if(!c) return;
+  fromClass = fromClass === true;
   c.checks = Array.isArray(c.checks) ? c.checks : [];
+  const go = k => { closeModal(); if(!fromClass){ startCheckMode(k.id); return; } setTimeout(() => (isTally(k) ? openTallyList : openCheckList)(k, () => openChecks(true)), 60); };
   const sheet = sheetBase(t("ckLists"));
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("ckHint"); sheet.appendChild(h);
   const inp = document.createElement("input"); inp.className = "field"; inp.id = "ck-new-title"; inp.maxLength = 60; inp.placeholder = t("ckNewPh");
@@ -10379,20 +11095,20 @@ function openChecks(){
     if(!title){ toast(t("ckNeedTitle")); inp.focus(); return; }
     if(c.checks.length >= MAX_CHECKS){ toast(t("ckLimit")); return; }
     const k = { id: uid(), title, date: isoDay(new Date()), done: [] };
-    c.checks.unshift(k); save(); closeModal(); startCheckMode(k.id);
+    c.checks.unshift(k); save(); go(k);
   };
   sheet.appendChild(nb);
   /* Strichliste: dieselbe Eingabe, oder eine der üblichen mit einem Tipp */
   const tb = document.createElement("button"); tb.className = "cbtn outline"; tb.id = "tl-new"; tb.style.width = "100%"; tb.style.marginTop = "8px";
   tb.textContent = t("tlNew");
   tb.onclick = () => { const title = inp.value.trim().slice(0, 60); if(!title){ toast(t("ckNeedTitle")); inp.focus(); return; }
-    const k = newTally(c, title); if(k){ closeModal(); startCheckMode(k.id); } };
+    const k = newTally(c, title); if(k) go(k); };
   sheet.appendChild(tb);
   const quick = ["tlHw", "tlMat"].map(t).filter(q => !c.checks.some(k => isTally(k) && k.title === q));
   if(quick.length){
     const qr = document.createElement("div"); qr.className = "latechips"; qr.id = "tl-quick";
     quick.forEach(q => { const b = document.createElement("button"); b.textContent = q;
-      b.onclick = () => { const k = newTally(c, q); if(k){ closeModal(); startCheckMode(k.id); } }; qr.appendChild(b); });
+      b.onclick = () => { const k = newTally(c, q); if(k) go(k); }; qr.appendChild(b); });
     sheet.appendChild(qr);
   }
   const ids = new Set(c.students.map(st => st.id));
@@ -10404,15 +11120,17 @@ function openChecks(){
     d.textContent = isTally(k) ? t("tlCard").replace("{n}", String((k.ticks || []).filter(x => ids.has(x.slice(11))).length))
       : (k.date ? fmtDate(k.date) + " · " : "") + t("ckDone").replace("{a}", String(done)).replace("{b}", String(c.students.length));
     b.appendChild(hb); b.appendChild(d);
-    b.onclick = () => { closeModal(); startCheckMode(k.id); };
+    b.onclick = () => go(k);
     sheet.appendChild(b);
   });
   const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
   close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
 }
 /* Liste bearbeiten: Titel, Haken auch für Schüler ohne Platz, löschen */
-function openCheckList(){
-  const k = checkCur(), c = curClass(); if(!k || !c) return;
+const refreshCheckView = () => { if(checkMode){ renderCheckBar(); renderStage(false); } };
+function openCheckList(kArg, back){
+  const k = kArg && kArg.id ? kArg : checkCur(), c = curClass(); if(!k || !c) return;
+  if(!(kArg && kArg.id)) back = null;
   const sheet = sheetBase(k.title);
   sheetLabel(sheet, t("ckName"));
   const inp = document.createElement("input"); inp.className = "field"; inp.id = "ck-title"; inp.maxLength = 60; inp.value = k.title; sheet.appendChild(inp);
@@ -10420,7 +11138,7 @@ function openCheckList(){
   c.students.forEach(st => {
     const r = switchRow(st.name, "", () => k.done.indexOf(st.id) >= 0, () => {
       const i = k.done.indexOf(st.id); if(i >= 0) k.done.splice(i, 1); else k.done.push(st.id); save();
-      renderCheckBar(); renderStage(false);             // stimmt auch, wenn das Blatt anders geschlossen wird
+      refreshCheckView();                               // stimmt auch, wenn das Blatt anders geschlossen wird
     });
     box.appendChild(r);
   });
@@ -10428,17 +11146,18 @@ function openCheckList(){
   const del = document.createElement("button"); del.className = "ghost"; del.id = "ck-delete"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
   del.textContent = t("ckDelete");
   del.onclick = () => { closeModal(); askConfirm(t("ckDeleteQ"), t("ckDeleteT").replace("{t}", k.title), t("delete"), () => {
-    c.checks = (c.checks || []).filter(x => x !== k); save(); endCheckMode();
-  }, () => openCheckList()); };
+    c.checks = (c.checks || []).filter(x => x !== k); save(); if(checkMode === k.id) endCheckMode(); else if(back) back();
+  }, () => openCheckList(kArg, back)); };
   sheet.appendChild(del);
   const ok = document.createElement("button"); ok.className = "primary"; ok.id = "ck-ok"; ok.style.width = "100%"; ok.style.marginTop = "10px";
-  ok.textContent = t("ckOk");
-  ok.onclick = () => { const v = inp.value.trim().slice(0, 60); if(v) k.title = v; save(); closeModal(); renderCheckBar(); renderStage(false); };
+  ok.textContent = back ? t("back") : t("ckOk");
+  ok.onclick = () => { const v = inp.value.trim().slice(0, 60); if(v) k.title = v; save(); closeModal(); refreshCheckView(); if(back) setTimeout(back, 60); };
   sheet.appendChild(ok);
 }
 $("#lb-check").onclick = openChecks;
 $("#lb-journal").onclick = () => { const c = curClass(); if(c) openJournal(c); };
 $("#cb-list").onclick = () => { if(isTally(checkCur())) openTallyList(); else openCheckList(); };
+$("#btn-class-lists").onclick = () => { if(curClass()) openChecks(true); };
 $("#cb-exit").onclick = () => endCheckMode();
 
 /* ============ 32. Klassenarbeit mit Aufgaben, Kursheft, Fehlzeiten, Strichlisten ============ */
@@ -10507,6 +11226,18 @@ function sanDayIds(arr, ids, max){
   if(!Array.isArray(arr)) return [];
   const seen = new Set();
   return arr.filter(x => typeof x === "string" && x.length <= 60 && DAY_RX.test(x.slice(0, 10)) && x.charAt(10) === "|" && ids.has(x.slice(11)) && !seen.has(x) && seen.add(x)).slice(-max);
+}
+function sanSubjIds(arr, ids){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(x => { if(typeof x !== "string" || x.length > 90) return false; const i = x.indexOf("|");
+    return i > 0 && ids.has(x.slice(i + 1)) && !seen.has(x) && seen.add(x); }).slice(0, 2000);
+}
+const zdKey = (subj, sid) => subj + "|" + sid;
+const isZd = (c, subj, sid) => Array.isArray(c.zd) && c.zd.indexOf(zdKey(subj, sid)) >= 0;
+function setZd(c, subj, sid, on){
+  c.zd = (Array.isArray(c.zd) ? c.zd : []).filter(x => x !== zdKey(subj, sid));
+  if(on) c.zd.push(zdKey(subj, sid));
 }
 function sanJournal(arr){
   if(!Array.isArray(arr)) return [];
@@ -10713,7 +11444,8 @@ function taskChart(c, a){
 /* Niedersachsen, Erlass „Schriftliche Arbeiten“ Nr. 8: mehr als 30 % mangelhaft/ungenügend */
 function failShare(c, a){
   if(a.kind !== "written" || a.scale !== "grade") return null;
-  const v = c.students.map(st => a.marks[st.id]).filter(x => x && x !== "x");
+  /* Arbeiten zieldifferent unterrichteter Schülerinnen und Schüler zählen nicht mit (Erlass Nr. 8) */
+  const v = c.students.filter(st => !isZd(c, a.subjectId, st.id)).map(st => a.marks[st.id]).filter(x => x && x !== "x");
   if(v.length < 3) return null;
   const bad = v.filter(x => x.charAt(0) === "5" || x.charAt(0) === "6").length;
   return { bad, n: v.length, share: bad / v.length };
@@ -10929,8 +11661,9 @@ function newTally(c, title){
   const k = { id: uid(), title: title.slice(0, 60), date: isoDay(new Date()), done: [], type: "tally", ticks: [] };
   c.checks.unshift(k); save(); return k;
 }
-function openTallyList(){
-  const k = checkCur(), c = curClass(); if(!k || !c) return;
+function openTallyList(kArg, back){
+  const k = kArg && kArg.id ? kArg : checkCur(), c = curClass(); if(!k || !c) return;
+  if(!(kArg && kArg.id)) back = null;
   const sheet = sheetBase(k.title);
   sheetLabel(sheet, t("ckName"));
   const inp = document.createElement("input"); inp.className = "field"; inp.id = "ck-title"; inp.maxLength = 60; inp.value = k.title; sheet.appendChild(inp);
@@ -10940,23 +11673,28 @@ function openTallyList(){
   c.students.slice().sort((x, y) => tallyCount(k, y.id) - tallyCount(k, x.id) || 0).forEach(st => {
     const r = document.createElement("div"); r.className = "obsrow"; r.dataset.sid = st.id;
     const n = document.createElement("span"); n.className = "obst"; n.textContent = st.name;
-    const ds = tallyDates(k, st.id);
-    const m = document.createElement("span"); m.className = "obsm"; m.textContent = ds.length ? ds.length + "× · " + ds.slice(-4).map(fmtDate).join(", ") + (ds.length > 4 ? " …" : "") : "–";
-    const tg = document.createElement("button"); tg.className = "minibtn" + (ds.indexOf(today) >= 0 ? " on" : ""); tg.textContent = t("tlToday");
-    tg.setAttribute("aria-pressed", String(ds.indexOf(today) >= 0));
-    tg.onclick = () => { toggleTally(k, st.id, today); save(); renderCheckBar(); renderStage(false); openTallyList(); };
+    const m = document.createElement("span"); m.className = "obsm";
+    const tg = document.createElement("button"); tg.textContent = t("tlToday");
+    /* Zeile an Ort und Stelle aktualisieren – Reihenfolge, Scrollstand und ein getippter Titel bleiben */
+    const paint = () => {
+      const ds = tallyDates(k, st.id), on = ds.indexOf(today) >= 0;
+      m.textContent = ds.length ? ds.length + "× · " + ds.slice(-4).map(fmtDate).join(", ") + (ds.length > 4 ? " …" : "") : "–";
+      tg.className = "minibtn" + (on ? " on" : ""); tg.setAttribute("aria-pressed", String(on));
+    };
+    paint();
+    tg.onclick = () => { toggleTally(k, st.id, today); save(); refreshCheckView(); paint(); };
     r.appendChild(n); r.appendChild(m); r.appendChild(tg); box.appendChild(r);
   });
   sheet.appendChild(box);
   const del = document.createElement("button"); del.className = "ghost"; del.id = "ck-delete"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
   del.textContent = t("tlDelete");
   del.onclick = () => { closeModal(); askConfirm(t("ckDeleteQ"), t("ckDeleteT").replace("{t}", k.title), t("delete"), () => {
-    c.checks = (c.checks || []).filter(x => x !== k); save(); endCheckMode();
-  }, () => openTallyList()); };
+    c.checks = (c.checks || []).filter(x => x !== k); save(); if(checkMode === k.id) endCheckMode(); else if(back) back();
+  }, () => openTallyList(kArg, back)); };
   sheet.appendChild(del);
   const ok = document.createElement("button"); ok.className = "primary"; ok.id = "ck-ok"; ok.style.width = "100%"; ok.style.marginTop = "10px";
-  ok.textContent = t("ckOk");
-  ok.onclick = () => { const v = inp.value.trim().slice(0, 60); if(v) k.title = v; save(); closeModal(); renderCheckBar(); renderStage(false); };
+  ok.textContent = back ? t("back") : t("ckOk");
+  ok.onclick = () => { const v = inp.value.trim().slice(0, 60); if(v) k.title = v; save(); closeModal(); refreshCheckView(); if(back) setTimeout(back, 60); };
   sheet.appendChild(ok);
 }
 
@@ -10969,7 +11707,7 @@ function openTallyList(){
    Änderung der anderen (samt allem, was daran hängt) gelöscht wurde, bleibt gelöscht.
    Gerätebezogenes (Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse) wird nie übernommen. */
 const SYNC_MAX_STAMPS = 200000, SYNC_MAX_DEL = 20000, SYNC_DEL_DAYS = 400, SYNC_FUTURE = 86400;
-const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt)(\||$)/;
+const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd)(\||$)/;
 const SYNC_HASH = /^[0-9a-z]{6,14}$/;
 const syncNow = () => Math.floor(Date.now() / 1000);
 const jsonOf = v => JSON.stringify(v === undefined ? null : v);
@@ -11031,6 +11769,7 @@ function syncClass(c, add){
   });
   (c.journal || []).forEach(x => add("j|" + cid + "|" + idk(x.id), x, ck, x.s ? ["subj|" + idk(x.s)] : null));
   (c.exc || []).forEach(v => add("ex|" + cid + "|" + idk(v), 1, ck, [sk(v.slice(11))]));
+  (c.zd || []).forEach(v => { const i = v.indexOf("|"); add("zd|" + cid + "|" + idk(v), 1, ck, [sk(v.slice(i + 1)), "subj|" + idk(v.slice(0, i))]); });
   (c.late || []).forEach(x => add("lt|" + cid + "|" + idk(x.d + "." + x.p + "|" + x.sid), { min: x.min, s: x.s }, ck, [sk(x.sid)]));
 }
 /* Alle Einträge eines Stands: key -> { v: Inhalt als Text, p: Elternschlüssel, r: Verweise } */
@@ -11253,6 +11992,7 @@ function mergeDB(L0, R){
     });
     sub("j", "journal", x => x.id);
     c.exc = mergeList(cl.exc, cr.exc, v => "ex|" + cid + "|" + idk(v));
+    c.zd = mergeList(cl.zd, cr.zd, v => "zd|" + cid + "|" + idk(v));
     sub("lt", "late", x => x.d + "." + x.p + "|" + x.sid);
     /* Unterricht heute: der jüngere Tag gilt, der ältere wandert in die Anwesenheit (mit einem
        vorhandenen Eintrag desselben Tages zusammengeführt). Ein gelöschter Tag kommt nicht zurück. */
@@ -11283,14 +12023,14 @@ function mergeDB(L0, R){
     (c.obs || []).sort((x, y) => x.d.localeCompare(y.d) || String(x.id).localeCompare(String(y.id)));
     (c.journal || []).sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p || String(x.id).localeCompare(String(y.id)));
     (c.late || []).sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p || x.sid.localeCompare(y.sid));
-    (c.exc || []).sort();
+    (c.exc || []).sort(); (c.zd || []).sort();
     (c.history || []).sort((x, y) => String(x.t || "").localeCompare(String(y.t || "")));   // beide Geräte behalten dieselben 8
     c.lastSubject = cl.lastSubject; c.lastGradePlan = cl.lastGradePlan;      // Bedienzustand bleibt vom Gerät
     return c;
   };
   /* Leere Klasse als Gegenstück, wenn nur eine Seite die Klasse hat */
   classMerge.shell = x => ({ id: x.id, name: x.name, archived: false, levelMode: "off", subNote: "", color: "", gradeW: {}, gradeRound: {}, gradeSubjects: [],
-    students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [],
+    students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [], zd: [],
     lesson: { date: "", absent: [], picked: [], notes: {} }, lastSubject: "", lastGradePlan: "" });
   out.classes = mergeList(L.classes, R.classes, c => "c|" + idk(c.id), classMerge);
   /* Papierkorb: was durch den Abgleich wieder da ist, gehört nicht mehr hinein */
@@ -11307,7 +12047,7 @@ function mergeDB(L0, R){
 /* Was sich gegenüber dem Gerät ändert – gezählt nach Art */
 const SYNC_KINDS = { c: "syncClasses", s: "syncStudents", r: "syncRules", g: "syncGroups", a: "syncAssess", m: "syncMarks", o: "syncObs",
   al: "syncAbs", alx: "syncAbs", at: "syncAbs", atx: "syncAbs", ls: "syncLesson", lsx: "syncLesson", p: "syncPlans", h: "syncHistory",
-  k: "syncChecks", kd: "syncChecks", kt: "syncChecks", kty: "syncChecks", tk: "syncAssess", pt: "syncMarks", j: "syncJournal", ex: "syncAbs", lt: "syncAbs", room: "syncRooms", subj: "syncTT", les: "syncTT", tt: "syncTT", cx: "syncTT", set: "syncSettings" };
+  k: "syncChecks", kd: "syncChecks", kt: "syncChecks", kty: "syncChecks", tk: "syncAssess", pt: "syncMarks", j: "syncJournal", ex: "syncAbs", lt: "syncAbs", zd: "syncStudents", room: "syncRooms", subj: "syncTT", les: "syncTT", tt: "syncTT", cx: "syncTT", set: "syncSettings" };
 function syncReport(before, after, conflicts){
   const r = { add: 0, upd: 0, rem: 0, conflicts, kinds: {} };
   const bump = (k, f) => { const kd = SYNC_KINDS[k.split("|")[0]] || "syncOther"; r.kinds[kd] = r.kinds[kd] || { add: 0, upd: 0, rem: 0 }; r.kinds[kd][f]++; };
@@ -11486,21 +12226,21 @@ function buildXlsx(sheets){
 }
 const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 /* Ein Blatt je Fach (gleiche Spalten wie die CSV) und ein Blatt mit den Fehlzeiten */
-function gradesXlsxSheets(c){
+function gradesXlsxSheets(c, term){
   const sheets = [];
   courseSubjects(c).forEach(s => {
-    const list = courseAssess(c, s.id); if(!list.length) return;
+    const list = courseAssess(c, s.id, term); if(!list.length) return;
     const sc = courseScale(list), fmt = sc === "points" ? 2 : 1;
     const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + ")"))
       .concat(["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposal"), t("absMissedShort")]);
     const rows = [head];
     c.students.forEach(st => {
-      const av = studentAverages(c, s.id, st.id);
+      const av = studentAverages(c, s.id, st.id, term);
       /* Punkte und ganze Noten als Zahl (damit Excel rechnen kann), „2+“, Smileys und „fehlt“ als Text */
       const marks = list.map(a => { const v = a.marks[st.id]; const n = v && (a.scale === "points" || /^[1-6]$/.test(v)) ? tokNum(v, a.scale) : null; return n !== null ? n : csvValue(v); });
       const prop = proposeGrade(c, s.id, av);
       rows.push([st.name].concat(marks, [av.written, av.other, av.total].map(v => v === null ? "" : Math.round(v * 100) / 100),
-        [prop ? (/^\d+$/.test(prop) ? +prop : prop) : "", missedLessons(c, st.id).bySubject[s.id] || 0]));
+        [prop ? (/^\d+$/.test(prop) ? +prop : prop) : "", missedLessons(c, st.id, term).bySubject[s.id] || 0]));
     });
     const k = list.length;
     sheets.push({ name: s.name, rows, widths: [24].concat(list.map(() => 14), [10, 10, 10, 11, 10]),
@@ -11518,13 +12258,14 @@ function gradesXlsxSheets(c){
     const a = absenceSummary(c, st.id), bs = bySubj(st);
     rows.push([st.name, a.days, a.days - a.daysExc, a.lessons, a.lessons - a.lessonsExc, a.late, a.lateMin].concat(subjIds.map(id => bs[id] || 0)));
   });
-  sheets.push({ name: t("gXlsxAbs"), rows, widths: [24, 10, 12, 12, 12, 11, 12].concat(subjIds.map(() => 12)), num: {} });
+  /* Fehltage gibt es nur fürs ganze Schuljahr – im Halbjahr steht das am Blatt, damit niemand die Zahlen verwechselt */
+  sheets.push({ name: t("gXlsxAbs") + (term === "h1" || term === "h2" ? " (" + t("termYear") + ")" : ""), rows, widths: [24, 10, 12, 12, 12, 11, 12].concat(subjIds.map(() => 12)), num: {} });
   return sheets;
 }
-function exportGradesXlsx(c){
+function exportGradesXlsx(c, term){
   try{
-    const blob = buildXlsx(gradesXlsxSheets(c));
-    if(download(blob, safeName(c.name + " " + t("gXlsxFile")) + ".xlsx", XLSX_MIME)) toast(t("gXlsxOk"));
+    const blob = buildXlsx(gradesXlsxSheets(c, term));
+    if(download(blob, safeName(c.name + " " + t("gXlsxFile") + termFileSuffix(term)) + ".xlsx", XLSX_MIME)) toast(t("gXlsxOk"));
     else toast(t("exportFail"));
   }catch(e){ toast(t("exportFail")); }
 }
