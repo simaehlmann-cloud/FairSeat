@@ -334,6 +334,39 @@ select.field{-webkit-appearance:none;appearance:none;
 .ttf .field{margin:0}
 .colorpick{width:34px;height:34px;border-radius:50%;border:2px dashed var(--line);padding:0;background:none}
 #now-card{margin-top:14px}
+.daychips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+#screen-target{background:#F1E9FC}
+[data-theme="dark"] #screen-target{background:#221735}
+#screen-target .tghead{display:flex}
+.tgbody{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:8px 16px calc(14px + var(--safe-b));gap:8px}
+#tg-svg{flex:1;min-height:0;width:100%;max-width:min(92vw,80vh);touch-action:none;-webkit-user-select:none;user-select:none}
+#tg-svg text{font-family:inherit;fill:#2E1A55;font-weight:700}
+[data-theme="dark"] #tg-svg text{fill:#F1E8FF}
+.tghint{font-size:15px;font-weight:650;text-align:center;color:#2E1A55;min-height:22px}
+[data-theme="dark"] .tghint{color:#F1E8FF}
+.tgbar{display:flex;gap:10px;width:100%;max-width:520px}
+.tgbar button{flex:1;min-height:52px;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tgbar button:disabled{opacity:.45}
+#screen-target.result .tgbar,#screen-target.result .tghint{display:none}
+.tgmeans{margin-top:8px}
+.tgmeans div{display:flex;align-items:center;gap:8px;font-size:14px;padding:4px 0}
+.tgmeans i{width:14px;height:14px;border-radius:4px;flex:0 0 auto}
+.tgchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tgchips span{font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:6px;color:#fff}
+#tgr-svg{width:100%;max-width:420px;display:block;margin:6px auto 0}
+.tgring{stroke:#2E1A55;stroke-opacity:.35}.tgmean{stroke:#2E1A55}#tgr-svg .tgsm,#tg-svg .tgsm{fill:#2E1A55}
+[data-theme="dark"] .tgring{stroke:#E6DAFF;stroke-opacity:.45}[data-theme="dark"] .tgmean{stroke:#FFFFFF}[data-theme="dark"] #tgr-svg .tgsm,[data-theme="dark"] #tg-svg .tgsm{fill:#F1E8FF}
+#nf-list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:8px}
+.nfrow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:14.5px}
+.nfrow:last-child{border-bottom:0}
+.nfrow input{width:20px;height:20px;flex:0 0 auto;accent-color:var(--accent)}
+.nfrow span{flex:1;min-width:0}
+.nfrow small{color:var(--warn);font-weight:700;font-size:11.5px;white-space:nowrap}
+.nfrow.have{opacity:.55}
+.daychips button{border:1.5px solid var(--line);border-left:6px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:7px 10px;font-size:13px;font-weight:600;text-align:left}
+.daychips button.cancelled{text-decoration:line-through;opacity:.6}
+.daytask{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:9px 12px;margin-top:6px;font-size:13.5px;font-weight:600}
+.daytask svg.i{flex:0 0 auto;color:var(--accent)}
 .nowrow{display:flex;align-items:center;gap:8px;background:var(--surface);border:2px solid var(--border);border-left:8px solid var(--line);
   border-radius:var(--radius);padding:10px 10px 10px 12px;margin-top:8px}
 .nowtx{flex:1;min-width:0}
@@ -605,6 +638,8 @@ body.checking .panels,body.checking .lessonbar,body.checking .stagehint,body.sel
 
 .t-desk{background:var(--desk);box-shadow:inset 0 -3px 0 rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.07)}
 .t-desk.empty{border-style:dashed;color:var(--ink-soft);box-shadow:none}
+.t-desk.blocked{border-style:dashed;color:var(--ink-soft);box-shadow:none;font-style:italic;
+  background:repeating-linear-gradient(135deg,var(--surface) 0 6px,rgba(127,127,127,.18) 6px 9px)}
 .t-teacherdesk{background:linear-gradient(180deg,#F3F7F8,#DFE8EC);color:#22333C;font-weight:650;
   border-color:#5E7580;box-shadow:inset 0 -5px 0 rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.12)}
 
@@ -742,6 +777,28 @@ body.checking .panels,body.checking .lessonbar,body.checking .stagehint,body.sel
   transform:translate(-50%,-150%)}
 .sizebadge.on{display:block}
 .sizerow{display:flex;align-items:center;gap:8px;margin-top:10px}
+body.big .scroll,body.big .board-inner,body.big .topbar,body.big .panels,body.big #sheet,body.big .selbar,body.big .lessonbar,
+body.big .checkbar,body.big .gradebar,body.big #toast,body.big .tabbar,body.big .selfhead{zoom:1.15}
+body.big #sheet{max-height:calc(88vh / 1.15)}
+.calcbox{border:1px solid var(--line);border-radius:12px;padding:6px 12px 10px;margin-top:8px;background:var(--surface)}
+.calcbox > div{display:flex;gap:10px;justify-content:space-between;align-items:baseline;font-size:13.5px;padding:3px 0}
+.calcbox > div > b{white-space:nowrap;font-variant-numeric:tabular-nums}
+.calcbox .calc-h{font-weight:800;font-size:14px;margin-top:10px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.calcbox .calc-row{padding-left:8px}
+.calcbox .calc-sum{font-weight:700;color:var(--accent);padding-left:8px}
+.calcbox .calc-note,.calcbox .off{color:var(--ink-soft);font-size:12.5px;padding-left:8px}
+.pvrow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.pvrow:last-child{border-bottom:0}
+.pvrow .pvi{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;background:var(--accent-soft);color:var(--accent)}
+.pvrow .pvi.warn{background:#FDECD8;color:#9A4A06}
+[data-theme="dark"] .pvrow .pvi.warn{background:#4A2B0C;color:#FBE8D3}
+.pvrow .pvt{flex:1;min-width:0}
+.pvrow .pvt b{display:block;font-size:14px}
+.pvrow .pvt span{display:block;font-size:13px;color:var(--ink-soft);margin-top:2px}
+.pvrow .minibtn{flex:0 0 auto;padding:6px 10px;font-size:12.5px}
+.pvbar{height:8px;border-radius:4px;background:var(--line);margin-top:6px;overflow:hidden}
+.pvbar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.pvbar.warn i{background:var(--warn)}
 .sizerow > span{flex:1;font-weight:650}
 .sizerow input{width:96px;text-align:center}
 .sizerow .stepbtn{min-width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:20px;font-weight:700;color:var(--ink)}
@@ -950,6 +1007,8 @@ body.presenting #exitPresent{display:flex}
 <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h4M10 17h4"/></symbol>
 <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></symbol>
 <symbol id="i-angle" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M4 20L17 6"/><path d="M12 20a8 8 0 0 0-1.6-4.8"/></symbol>
+<symbol id="i-block" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
 <symbol id="i-resize" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
 <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></symbol>
 <symbol id="i-group" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/><path d="M11 7h4v6"/></symbol>
@@ -1073,6 +1132,7 @@ body.presenting #exitPresent{display:flex}
     </div>
     <div class="minirow">
       <button class="minibtn outline" id="btn-transfer"><svg class="i"><use href="#i-transfer"></use></svg><span data-i="transferBtn"></span></button>
+      <button class="minibtn outline" id="btn-privacy"><svg class="i"><use href="#i-lock"></use></svg><span data-i="pvBtn"></span></button>
     </div>
 
     <div id="trash-wrap" style="display:none">
@@ -1181,9 +1241,11 @@ body.presenting #exitPresent{display:flex}
           <button class="iconbtn danger" id="btn-delete-class" aria-label="Delete"><svg class="i"><use href="#i-trash"></use></svg></button>
         </div>
         <div class="eyebrow" id="names-count"></div>
-        <button class="cbtn outline" id="btn-class-lists" style="width:100%;margin:2px 0 10px"><svg class="i"><use href="#i-check"></use></svg><span data-i="classListsBtn"></span></button>
+        <button class="cbtn outline" id="btn-class-lists" style="width:100%;margin:2px 0 6px"><svg class="i"><use href="#i-check"></use></svg><span data-i="classListsBtn"></span></button>
+        <button class="cbtn outline" id="btn-class-targets" style="width:100%;margin:0 0 10px"><svg class="i"><use href="#i-target"></use></svg><span data-i="tgClassBtn"></span></button>
         <textarea class="field" id="student-input" data-ph="namesPh"></textarea>
         <button class="cbtn green" id="btn-add-students" style="width:100%;margin-top:8px"><svg class="i"><use href="#i-plus"></use></svg><span data-i="addNames"></span></button>
+        <button class="cbtn outline" id="btn-names-file" style="width:100%;margin-top:8px"><svg class="i"><use href="#i-copy"></use></svg><span data-i="nfBtn"></span></button>
         <div class="hint" data-i="namesHint2"></div>
         <ul class="namelist" id="student-list"></ul>
         <div class="btnrow" id="names-actions">
@@ -1279,6 +1341,27 @@ body.presenting #exitPresent{display:flex}
 </section>
 
 <!-- ============ EDITOR ============ -->
+<!-- ============ ZIELSCHEIBE (Gerät in Schülerhand) ============ -->
+<section id="screen-target" class="screen">
+  <div class="selfhead tghead" id="tg-head">
+    <div class="sh-tx">
+      <div class="sh-title" data-i="tgTitle"></div>
+      <div class="sh-q" id="tg-q"></div>
+      <div class="sh-n" id="tg-n"></div>
+    </div>
+    <button class="sh-exit" id="tg-exit" data-al="tgExit"><svg class="i"><use href="#i-close"></use></svg><i class="sh-ring"></i></button>
+  </div>
+  <div class="tgbody">
+    <svg id="tg-svg" viewBox="-142 -142 284 284" role="img"></svg>
+    <div class="tghint" id="tg-hint" aria-live="polite"></div>
+    <div class="sr" id="tg-a11y"></div>
+    <div class="tgbar">
+      <button class="ghost" id="tg-undo"><svg class="i"><use href="#i-undo"></use></svg><span data-i="tgUndo"></span></button>
+      <button class="primary" id="tg-next"><span data-i="tgNext"></span></button>
+    </div>
+  </div>
+</section>
+
 <section id="screen-editor" class="screen">
   <div class="topbar">
     <button class="iconbtn" id="btn-editor-back" aria-label="Zurück" data-al="back"><svg class="i"><use href="#i-back"></use></svg></button>
@@ -1336,6 +1419,7 @@ body.presenting #exitPresent{display:flex}
         <button id="lb-journal"><svg class="i"><use href="#i-note"></use></svg><span data-i="jTitle"></span></button>
         <button id="lb-timer"><svg class="i"><use href="#i-clock"></use></svg><span data-i="timerTitle"></span></button>
         <button id="lb-self" class="lb-self"><svg class="i"><use href="#i-users"></use></svg><span data-i="selfTitle"></span></button>
+        <button id="lb-target"><svg class="i"><use href="#i-target"></use></svg><span data-i="tgBtn"></span></button>
         <button id="lb-exit"><svg class="i"><use href="#i-close"></use></svg><span data-i="close"></span></button>
       </div>
       <div class="selbar" id="selbar">
@@ -1350,6 +1434,7 @@ body.presenting #exitPresent{display:flex}
         <button id="sb-clear"><svg class="i"><use href="#i-close"></use></svg><span data-i="clearSeat"></span></button>
         <button id="sb-note"><svg class="i"><use href="#i-note"></use></svg><span data-i="noteAbsent"></span></button>
         <button id="sb-lock"><svg class="i"><use href="#i-lock"></use></svg><span id="sb-lock-t" data-i="lockSeat"></span></button>
+        <button id="sb-block"><svg class="i"><use href="#i-block"></use></svg><span id="sb-block-t" data-i="blockMake"></span></button>
         <button id="sb-pc"><svg class="i"><use href="#i-computer"></use></svg><span id="sb-pc-t" data-i="pcMake"></span></button>
         <button id="sb-dup"><svg class="i"><use href="#i-copy"></use></svg><span data-i="duplicate"></span></button>
         <button id="sb-del" class="del"><svg class="i"><use href="#i-trash"></use></svg><span data-i="delete"></span></button>
@@ -1437,6 +1522,7 @@ body.presenting #exitPresent{display:flex}
 <div id="toast" role="status" aria-live="polite"></div>
 <input type="file" id="filepick" accept="application/json,.json" class="sr" tabindex="-1" aria-hidden="true">
 <input type="file" id="fmpick" accept="application/json,.json,text/plain" class="sr" tabindex="-1" aria-hidden="true">
+<input type="file" id="namepick" accept=".xlsx,.csv,.txt,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="sr" tabindex="-1" aria-hidden="true">
 
 <script>
 "use strict";
@@ -1562,8 +1648,7 @@ const I18N = {
     needTwo:"Mindestens zwei Tische auswählen",
     noStudents:"Lege zuerst Namen in der Klasse an",
     noDesks:"Es sind noch keine Tische auf dem Plan",
-    placed:"Tische gesetzt", seatedOk:"Alle Regeln erfüllt",
-    seatedPartial:"Gesetzt — {n} Regeln ließen sich nicht erfüllen",
+    placed:"Tische gesetzt",
     exportedPng:"Bild gespeichert", exportedPdf:"PDF gespeichert",
     exportFail:"Datei konnte nicht gespeichert werden",
     backupOk:"Sicherung gespeichert", backupBad:"Datei ist keine gültige Sicherung",
@@ -1755,8 +1840,7 @@ const I18N = {
     needTwo:"Select at least two desks",
     noStudents:"Add names to the class first",
     noDesks:"There are no desks on the plan yet",
-    placed:"Desks placed", seatedOk:"All rules satisfied",
-    seatedPartial:"Seated — {n} rules could not be satisfied",
+    placed:"Desks placed",
     exportedPng:"Image saved", exportedPdf:"PDF saved",
     exportFail:"Could not save the file",
     backupOk:"Backup saved", backupBad:"That file is not a valid backup",
@@ -2541,6 +2625,130 @@ I18N.en.info.push({ h:"Class tests, course log and absences",
   p:["In an assessment, “Points per task and grading key” lets you add the tasks with their maximum points. Then you enter the points per name and the key works out the grade (with or without +/−). Below you see the distribution and the success rate per task; the analysis can be shared as an Excel file.",
      "In lesson mode, “Course log” records the topic and homework of the lesson and shows what was set last time. In a name's sheet you can tap how many minutes someone was late. Under “Attendance”, tapping a name opens their absences, where you mark excused days.",
      "Under “Check off” there are tally lists such as “homework forgotten” as well as checklists: each tap on a name adds a mark for today, and the number on the seat shows the total. Tally lists also appear in the conversation sheet."] });
+Object.assign(I18N.de, {
+  calcBtn:"Wie berechnet?", calcTitle:"Rechenweg: {n} – {s}", calcScaleGrade:"Notenskala 1–6 (+ = −0,3, − = +0,3)", calcScalePoints:"Punkteskala 0–15",
+  calcMixed:"Punkte werden nach der Tabelle in Noten umgerechnet (15 P. = 1+ … 0 P. = 6).",
+  calcPart:"{k} – Gewichtung {w} %", calcNone:"Keine Bewertung – dieser Teil entfällt.", calcNotCounted:"zählt nicht",
+  calcMiss:"fehlt", calcSmiley:"Smiley", calcFromPts:"{a} von {b} P.", calcPtsTo:"{p} P. → {g}", calcNoSubj:"Dazu kommen {n} Fehlstunden ohne Fach (stehen in keinem Fach).", calcWeight:"× {w}",
+  calcAvg:"Summe {s} ÷ Gewichte {w} = Ø {a}", calcTotal:"Gesamt", calcTotalBoth:"{w1} % × {a1} + {w2} % × {a2} = {t}",
+  calcTotalOnly:"Nur {k} vorhanden → {t}", calcTotalZero:"{k} mit 0 % gewichtet → zählt nicht",
+  calcRound:"Notenvorschlag", calcRoundFav:"Ganze Noten; bei genau ,5 zugunsten gerundet (2,5 → 2).", calcRoundMath:"Ganze Noten; bei genau ,5 kaufmännisch gerundet (2,5 → 3).",
+  calcRoundTendFav:"Mit Tendenz: nächste Stufe (+ = −0,3, − = +0,3); bei Gleichstand zugunsten.", calcRoundTendMath:"Mit Tendenz: nächste Stufe (+ = −0,3, − = +0,3); bei Gleichstand die schlechtere.",
+  calcRoundPts:"Punkte: bei ,5 aufgerundet.", calcArrow:"{v} → {g}", calcNoTotal:"Noch kein Durchschnitt – kein Vorschlag.",
+  calcMissed:"Fehlstunden in {s} ({t})", calcMissedRow:"{n} Std.", calcExc:"entschuldigt", calcMissedSum:"Gesamt {n}, davon entschuldigt {e}",
+  calcMissedNone:"Keine Fehlstunden in diesem Fach.", calcMissedNote:"Ausgefallene Stunden zählen nicht mit.", calcPeriod:"{p}. Std.",
+  calcHint:"Der Vorschlag ist eine Rechenhilfe – die Note legst du fest.", calcPdf:"Rechenweg als PDF", calcFile:"Rechenweg",
+  calcTalk:"Rechenweg auch im Gesprächsblatt", calcTalkSub:"Gilt für alle Gesprächsblätter",
+  selfGuardTitle:"Noten vor Schülern schützen?", selfGuardText:"Ohne Sperre kommt nach dem Beenden jeder an Noten und Beobachtungen, der das ✕ zwei Sekunden hält. Mit Sperre fragt FairSeat beim Beenden nach Face ID, Fingerabdruck oder Geräte-PIN.",
+  selfGuardOn:"Sperre einschalten", selfGuardSkip:"Ohne Sperre weiter", selfUnlockExit:"Zum Beenden entsperren",
+  pvBtn:"Daten & Datenschutz", pvTitle:"Daten & Datenschutz", pvLocal:"Alle Daten liegen nur auf diesem Gerät. FairSeat überträgt nichts ins Internet.",
+  pvBackup:"Letzte Sicherung", pvBackupNever:"Noch keine Sicherung", pvBackupEnc:"verschlüsselt", pvBackupPlain:"ohne Passwort", pvBackupOld:"älter als 30 Tage",
+  pvBackupNow:"Jetzt sichern", pvLock:"Sperre für Noten und Beobachtungen", pvLockOn:"eingeschaltet", pvLockOff:"ausgeschaltet", pvLockWeb:"nur in der App verfügbar",
+  pvLockToggle:"Umschalten", pvStored:"Gespeichert", pvCounts:"Klassen: {c} · Namen: {s} · Bewertungen: {a} · Beobachtungen: {o}",
+  pvStorage:"Belegter Speicher", pvStorageVal:"{p} (etwa {m} MB von 5 MB)", pvStorageWarn:"Der Speicher wird knapp. Alte Klassen löschen und den Papierkorb leeren – sonst kann FairSeat bald nichts mehr speichern.",
+  pvOld:"Alte Klassen löschen", pvOldHint:"Ausgewählte Klassen kommen mit allen Noten und Beobachtungen in den Papierkorb und werden nach 30 Tagen endgültig gelöscht.",
+  pvOldMeta:"{s} Namen · zuletzt geändert {d}", pvOldDelete:"Ausgewählte löschen", pvOldNone:"Bitte mindestens eine Klasse wählen",
+  pvOldQ:"Ausgewählte Klassen löschen ({n})?", pvOldT:"Sie kommen in den Papierkorb und lassen sich dort 30 Tage lang wiederherstellen.", pvOldDone:"In den Papierkorb verschoben: {n}",
+  pvTrash:"Papierkorb jetzt leeren", pvTrashN:"Papierkorb: {n} Einträge", pvTrashQ:"Papierkorb endgültig leeren?", pvTrashT:"Die Einträge lassen sich danach nicht mehr wiederherstellen.", pvTrashDone:"Papierkorb geleert",
+  pvUnknown:"unbekannt", pvAttn:"Achtung:", storageLow:"Der Speicher von FairSeat ist zu {p} % belegt. Unter „Daten & Datenschutz“ kannst du alte Klassen löschen.",
+  bkPlainQ:"Ohne Passwort sichern?", bkPlainT:"Wer die Datei bekommt, kann alle Namen, Noten und Beobachtungen lesen – etwa wenn sie in einer Cloud, im Mail-Postfach oder auf einem fremden Rechner landet.", bkPlainOk:"Trotzdem ohne Passwort"
+});
+Object.assign(I18N.en, {
+  calcBtn:"How is it calculated?", calcTitle:"Calculation: {n} – {s}", calcScaleGrade:"Grade scale 1–6 (+ = −0.3, − = +0.3)", calcScalePoints:"Points scale 0–15",
+  calcMixed:"Points are converted to grades using the table (15 pts = 1+ … 0 pts = 6).",
+  calcPart:"{k} – weighting {w} %", calcNone:"No marks – this part is left out.", calcNotCounted:"not counted",
+  calcMiss:"missing", calcSmiley:"smiley", calcFromPts:"{a} of {b} pts", calcPtsTo:"{p} pts → {g}", calcNoSubj:"There are also {n} missed lessons without a subject (not counted in any subject).", calcWeight:"× {w}",
+  calcAvg:"Sum {s} ÷ weights {w} = avg. {a}", calcTotal:"Overall", calcTotalBoth:"{w1} % × {a1} + {w2} % × {a2} = {t}",
+  calcTotalOnly:"Only {k} available → {t}", calcTotalZero:"{k} weighted 0 % → not counted",
+  calcRound:"Suggested grade", calcRoundFav:"Whole grades; exactly .5 rounded in the pupil's favour (2.5 → 2).", calcRoundMath:"Whole grades; exactly .5 rounded the standard way (2.5 → 3).",
+  calcRoundTendFav:"With +/−: nearest step (+ = −0.3, − = +0.3); ties in the pupil's favour.", calcRoundTendMath:"With +/−: nearest step (+ = −0.3, − = +0.3); ties go to the worse grade.",
+  calcRoundPts:"Points: .5 is rounded up.", calcArrow:"{v} → {g}", calcNoTotal:"No average yet – no suggestion.",
+  calcMissed:"Missed lessons in {s} ({t})", calcMissedRow:"{n} lessons", calcExc:"excused", calcMissedSum:"Total {n}, of which excused {e}",
+  calcMissedNone:"No missed lessons in this subject.", calcMissedNote:"Cancelled lessons are not counted.", calcPeriod:"Lesson {p}",
+  calcHint:"The suggestion is a calculation aid – you decide the grade.", calcPdf:"Calculation as PDF", calcFile:"Calculation",
+  calcTalk:"Include the calculation in the parent-meeting sheet", calcTalkSub:"Applies to all meeting sheets",
+  selfGuardTitle:"Protect grades from pupils?", selfGuardText:"Without the lock, anyone who holds the ✕ for two seconds can see grades and observations afterwards. With the lock, FairSeat asks for Face ID, fingerprint or the device PIN when ending.",
+  selfGuardOn:"Turn on the lock", selfGuardSkip:"Continue without lock", selfUnlockExit:"Unlock to end",
+  pvBtn:"Data & privacy", pvTitle:"Data & privacy", pvLocal:"All data stays on this device. FairSeat sends nothing to the internet.",
+  pvBackup:"Last backup", pvBackupNever:"No backup yet", pvBackupEnc:"encrypted", pvBackupPlain:"without password", pvBackupOld:"more than 30 days ago",
+  pvBackupNow:"Back up now", pvLock:"Lock for assessments and observations", pvLockOn:"on", pvLockOff:"off", pvLockWeb:"only available in the app",
+  pvLockToggle:"Switch", pvStored:"Stored", pvCounts:"Classes: {c} · names: {s} · assessments: {a} · observations: {o}",
+  pvStorage:"Storage used", pvStorageVal:"{p} (about {m} MB of 5 MB)", pvStorageWarn:"Storage is running low. Delete old classes and empty the trash – otherwise FairSeat may soon be unable to save.",
+  pvOld:"Delete old classes", pvOldHint:"Selected classes move to the trash with all assessments and observations and are deleted for good after 30 days.",
+  pvOldMeta:"{s} names · last changed {d}", pvOldDelete:"Delete selected", pvOldNone:"Please select at least one class",
+  pvOldQ:"Delete selected classes ({n})?", pvOldT:"They move to the trash and can be restored there for 30 days.", pvOldDone:"Moved to the trash: {n}",
+  pvTrash:"Empty trash now", pvTrashN:"Trash: {n} entries", pvTrashQ:"Empty the trash for good?", pvTrashT:"The entries can no longer be restored afterwards.", pvTrashDone:"Trash emptied",
+  pvUnknown:"unknown", pvAttn:"Attention:", storageLow:"FairSeat's storage is {p} % full. Under “Data & privacy” you can delete old classes.",
+  bkPlainQ:"Save without password?", bkPlainT:"Anyone who gets the file can read all names, grades and observations – for instance if it ends up in a cloud, a mailbox or on someone else's computer.", bkPlainOk:"Save without password anyway"
+});
+I18N.de.info.push({ h:"Schülermodus absichern",
+  p:["Bei Selbsteinschätzungen hältst du zum Beenden das ✕ zwei Sekunden. Ist in den Einstellungen die Sperre eingeschaltet, fragt FairSeat danach zusätzlich nach Face ID, Fingerabdruck oder Geräte-PIN – Schüler kommen so nicht an Noten und Beobachtungen.",
+     "Noch sicherer: iPad und iPhone haben den „Geführten Zugriff“ (Einstellungen → Bedienungshilfen → Geführter Zugriff). Dreimal die Seitentaste (bzw. Home-Taste) drücken hält das Gerät in FairSeat fest; Bereiche wie das ✕ lassen sich dabei einkreisen und sperren. Beenden geht nur mit deinem Code. Unter Android heißt das „Bildschirm anpinnen“ bzw. „App-Fixierung“.",
+     "Unter „Daten & Datenschutz“ auf der Startseite siehst du die letzte Sicherung, die Sperre und den belegten Speicher und kannst alte Klassen gezielt löschen. In der Notenübersicht zeigt „Wie berechnet?“ unter einem Namen den vollständigen Rechenweg."] });
+I18N.en.info.push({ h:"Securing pupil mode",
+  p:["During self-assessments you hold the ✕ for two seconds to end. If the lock is turned on in the settings, FairSeat also asks for Face ID, fingerprint or the device PIN – so pupils cannot reach grades and observations.",
+     "Even safer: iPad and iPhone offer “Guided Access” (Settings → Accessibility → Guided Access). Triple-pressing the side (or home) button keeps the device in FairSeat; you can circle areas such as the ✕ to disable them. Only your code ends it. On Android this is called “screen pinning” or “app pinning”.",
+     "Under “Data & privacy” on the start page you see the last backup, the lock and the storage used, and can delete old classes. In the grade overview, “How is it calculated?” under a name shows the full calculation."] });
+Object.assign(I18N.de, {
+  blockMake:"Platz sperren", blockUnmake:"Platz freigeben", blockedShort:"gesperrt", blockedDesk:"gesperrter Platz",
+  blockedOn:"{n} Plätze gesperrt – dort setzt die App niemanden hin", blockedOff:"Plätze wieder frei", blockedNo:"Dieser Platz ist gesperrt",
+  seatedRules:"{a} von {b} Regeln erfüllt", seatedNone:"Namen gesetzt", blockedSkipped:"{n} gesperrt",
+  setBig:"Größere Schrift und Knöpfe", setBigSub:"Für bessere Lesbarkeit – gilt nur auf diesem Gerät",
+  dayLater:"Heute außerdem", dayTasks:"Offen", dayJournal:"{c} {s}: {n} Stunden ohne Kursheft-Eintrag", dayJournal1:"{c} {s}: 1 Stunde ohne Kursheft-Eintrag",
+  dayCheck:"{t} ({c}): {n} fehlen noch", dayCheck1:"{t} ({c}): 1 fehlt noch", dayMore:"… und {n} weitere",
+  nfBtn:"Aus Excel- oder CSV-Datei", nfTitle:"Namen aus der Datei", nfFound:"{n} Namen gefunden", nfFoundHead:"{n} Namen gefunden – Spalten: {c}",
+  nfFormat:"So erscheinen die Namen", nfFirst:"Vorname", nfFirstInitial:"Vorname N.", nfFull:"Vorname Nachname",
+  nfHave:"schon in der Klasse", nfDouble:"doppelt – anderes Format wählen", nfAdd:"Übernehmen ({n})", nfNone:"In der Datei wurden keine Namen gefunden.",
+  nfXls:"Ältere Excel-Dateien (.xls) bitte als .xlsx oder .csv speichern.", nfNoUnzip:"Dieses Gerät kann Excel-Dateien nicht öffnen – bitte als CSV speichern.",
+  nfBad:"Die Datei ließ sich nicht lesen.", nfPrivacy:"Nur die Namen werden übernommen – andere Spalten wie Geburtsdatum oder Adresse bleiben außen vor. Die Datei verlässt das Gerät nicht.",
+  nfAll:"Alle", nfNoneSel:"Keine", nfLastCol:"Nachname",
+  tgTitle:"Feedback-Zielscheibe", tgBtn:"Zielscheibe", tgClassBtn:"Feedback-Zielscheibe (anonym)",
+  tgHint:"Die Schüler setzen nacheinander je Bereich einen Punkt – je weiter innen, desto besser. Gespeichert werden nur die Punkte, ohne Namen und ohne Reihenfolge.",
+  tgNew:"Neue Zielscheibe", tgQuestion:"Thema oder Frage", tgQuestionPh:"z. B. Wie war die letzte Unterrichtseinheit?", tgAreas:"Bereiche",
+  tgArea:"Bereich {n}", tgOne:"Ohne Einteilung", tgStart:"Mit der Klasse starten", tgRounds:"Bisherige Runden",
+  tgRoundMeta:"{d} · {n}", tgPts1:"1 Punkt", tgPts:"{n} Punkte", tgNeedQ:"Bitte ein Thema oder eine Frage eingeben", tgNeedArea:"Bitte jeden Bereich benennen", tgLimit:"Höchstens 100 Zielscheiben je Klasse", tgFull:"Diese Zielscheibe ist voll – bitte eine neue anlegen",
+  tgDef4:"Thema und Lerninhalte|Methoden und Gestaltung|Lernklima in der Klasse|Meine Motivation", tgDef3:"Inhalte|Methoden|Lernklima", tgDef2:"Inhalte|Methoden",
+  tgTap:"Tippe in jeden Bereich einmal – innen heißt: sehr gut.", tgTap1:"Tippe einmal auf die Zielscheibe – innen heißt: sehr gut.",
+  tgMissing:"Noch offen: {a}", tgReady:"Fertig? Dann auf „Nächster“.", tgUndo:"Rückgängig", tgNext:"Nächster", tgCount:"{n} Rückmeldungen", tgCount1:"1 Rückmeldung",
+  tgThanks:"Danke! Bitte das Gerät weitergeben.", tgA11y:"{a}: {v}", tgV1:"sehr gut (innen)", tgV2:"mittel", tgV3:"weniger gut (außen)", tgWhole:"Zielscheibe", tgExit:"Zielscheibe beenden (zwei Sekunden halten)",
+  tgResult:"Auswertung", tgMeanHint:"100 % = alle Punkte in der Mitte, 0 % = ganz außen.", tgAreaRow:"{a}: Ø {p} % ({n})", tgAreaNone:"{a}: noch keine Punkte",
+  tgBig:"Groß zeigen", tgMore:"Weiter sammeln", tgPdf:"Als PDF", tgDelete:"Zielscheibe löschen", tgDeleteQ:"Zielscheibe löschen?", tgDeleteT:"„{t}“ mit allen Rückmeldungen wird gelöscht.",
+  tgDeleted:"Zielscheibe gelöscht", tgFile:"Zielscheibe", tgEnded:"Zielscheibe beendet", tgEmpty:"Noch keine Rückmeldungen."
+});
+Object.assign(I18N.en, {
+  blockMake:"Block seat", blockUnmake:"Unblock seat", blockedShort:"blocked", blockedDesk:"blocked seat",
+  blockedOn:"{n} seats blocked – nobody is seated there", blockedOff:"Seats free again", blockedNo:"This seat is blocked",
+  seatedRules:"{a} of {b} rules met", seatedNone:"Names seated", blockedSkipped:"{n} blocked",
+  setBig:"Larger text and buttons", setBigSub:"Easier to read – only on this device",
+  dayLater:"Also today", dayTasks:"Open", dayJournal:"{c} {s}: {n} lessons without a course log entry", dayJournal1:"{c} {s}: 1 lesson without a course log entry",
+  dayCheck:"{t} ({c}): {n} still missing", dayCheck1:"{t} ({c}): 1 still missing", dayMore:"… and {n} more",
+  nfBtn:"From an Excel or CSV file", nfTitle:"Names from the file", nfFound:"{n} names found", nfFoundHead:"{n} names found – columns: {c}",
+  nfFormat:"How names appear", nfFirst:"First name", nfFirstInitial:"First name + initial", nfFull:"First and last name",
+  nfHave:"already in the class", nfDouble:"duplicate – choose another format", nfAdd:"Add ({n})", nfNone:"No names were found in the file.",
+  nfXls:"Please save older Excel files (.xls) as .xlsx or .csv.", nfNoUnzip:"This device cannot open Excel files – please save as CSV.",
+  nfBad:"The file could not be read.", nfPrivacy:"Only the names are taken – other columns such as date of birth or address are ignored. The file never leaves the device.",
+  nfAll:"All", nfNoneSel:"None", nfLastCol:"Last name",
+  tgTitle:"Feedback target", tgBtn:"Target", tgClassBtn:"Feedback target (anonymous)",
+  tgHint:"Pupils take turns placing one dot per area – the closer to the centre, the better. Only the dots are stored, with no names and no order.",
+  tgNew:"New target", tgQuestion:"Topic or question", tgQuestionPh:"e.g. How was the last unit?", tgAreas:"Areas",
+  tgArea:"Area {n}", tgOne:"No division", tgStart:"Start with the class", tgRounds:"Previous rounds",
+  tgRoundMeta:"{d} · {n}", tgPts1:"1 dot", tgPts:"{n} dots", tgNeedQ:"Please enter a topic or question", tgNeedArea:"Please name every area", tgLimit:"At most 100 targets per class", tgFull:"This target is full – please create a new one",
+  tgDef4:"Topic and content|Methods and design|Class climate|My motivation", tgDef3:"Content|Methods|Class climate", tgDef2:"Content|Methods",
+  tgTap:"Tap each area once – the centre means: very good.", tgTap1:"Tap the target once – the centre means: very good.",
+  tgMissing:"Still open: {a}", tgReady:"Done? Then tap “Next”.", tgUndo:"Undo", tgNext:"Next", tgCount:"{n} responses", tgCount1:"1 response",
+  tgThanks:"Thank you! Please pass the device on.", tgA11y:"{a}: {v}", tgV1:"very good (centre)", tgV2:"medium", tgV3:"less good (edge)", tgWhole:"Target", tgExit:"End target (hold for two seconds)",
+  tgResult:"Results", tgMeanHint:"100 % = all dots in the centre, 0 % = right at the edge.", tgAreaRow:"{a}: avg. {p} % ({n})", tgAreaNone:"{a}: no dots yet",
+  tgBig:"Show large", tgMore:"Collect more", tgPdf:"As PDF", tgDelete:"Delete target", tgDeleteQ:"Delete target?", tgDeleteT:"“{t}” and all its responses will be deleted.",
+  tgDeleted:"Target deleted", tgFile:"Target", tgEnded:"Target ended", tgEmpty:"No responses yet."
+});
+I18N.de.info.push({ h:"Zielscheibe, Namenslisten und Tagesübersicht",
+  p:["Die Feedback-Zielscheibe (Unterrichtsleiste oder „Klassen verwalten“) sammelt anonyme Rückmeldungen: Thema eingeben, 1 bis 4 Bereiche benennen, starten und das Gerät herumgeben. Jede Person setzt je Bereich einen Punkt – innen heißt sehr gut – und tippt auf „Nächster“. Gespeichert werden nur die Punkte; die Auswertung zeigt alle Punkte und den Mittelwert je Bereich, auch groß am Beamer und als PDF.",
+     "Namenslisten aus der Schulverwaltung lädst du unter „Klassen verwalten“ mit „Aus Excel- oder CSV-Datei“. Die App erkennt die Spalten Vorname und Nachname; du wählst, ob „Anna“, „Anna K.“ oder „Anna Kowalski“ erscheint. Aus einer PDF kopierte Listen fügst du einfach ins Namensfeld ein – Nummern, Datumsangaben und Kopfzeilen fallen weg.",
+     "Ein Platz, auf den niemand soll (z. B. hinter der Säule), lässt sich in der Auswahlleiste sperren. Die Startseite zeigt unter der laufenden Stunde die weiteren Stunden des Tages und Offenes: Stunden ohne Kursheft-Eintrag und unvollständige Abhaklisten. In den Einstellungen gibt es „Größere Schrift und Knöpfe“."] });
+I18N.en.info.push({ h:"Target, name lists and today",
+  p:["The feedback target (lesson bar or “Manage classes”) collects anonymous feedback: enter a topic, name 1 to 4 areas, start and pass the device around. Each person places one dot per area – the centre means very good – and taps “Next”. Only the dots are stored; the results show all dots and the average per area, also large on the projector and as a PDF.",
+     "Load name lists from your school administration under “Manage classes” with “From an Excel or CSV file”. The app recognises first and last name columns; you choose whether “Anna”, “Anna K.” or “Anna Kowalski” appears. Lists copied from a PDF can simply be pasted into the name field – numbers, dates and headings are dropped.",
+     "A seat nobody should use (e.g. behind a pillar) can be blocked in the selection bar. Below the current lesson, the start page shows the rest of today's lessons and open items: lessons without a course log entry and incomplete checklists. The settings offer “Larger text and buttons”."] });
 /* ============ 2. Helfer ============ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
@@ -2584,6 +2792,7 @@ function toastUndo(msg){
 
 /* ============ 3. Speicher (nur lokal) ============ */
 const KEY = "sitzplan.v2";
+const STORE_CAP = 2500000;                              // Speichergrenze etwa 5 MB: WebKit zählt Zeichen doppelt (UTF-16)
 /* Vorheriger Stand vor dem Laden einer Sicherung – für „Rückgängig“ */
 const KEY_PREV = "sitzplan.v2.vorSicherung";
 /* Obergrenzen. Oberfläche UND Laden benutzen dieselben Werte – früher
@@ -2639,6 +2848,7 @@ function sanitizeItem(raw){
   if(type === "desk" && TABLE_KINDS.indexOf(raw.tbl) >= 0) it.tbl = raw.tbl;
   if(type === "desk" && (raw.var === "A" || raw.var === "B")) it.var = raw.var;
   if(type === "desk" && raw.pc === true) it.pc = true;           // PC-Platz: Platz mit Bildschirm
+  if(type === "desk" && raw.blocked === true && !it.studentId){ it.blocked = true; delete it.locked; }   // gesperrter Platz bleibt leer
   return it;
 }
 function sizePx(v, fb){
@@ -2650,6 +2860,7 @@ function sanitizeDB(raw){
   const out = emptyDB();
   out.lang  = (raw.lang === "en") ? "en" : "de";
   out.theme = (raw.theme === "dark") ? "dark" : "light";
+  if(raw.big === true) out.big = true;                               // größere Schrift (nur dieses Gerät)
   const st = (raw.settings && typeof raw.settings === "object") ? raw.settings : {};
   out.settings = {
     lock:    st.lock    === true,
@@ -2661,6 +2872,7 @@ function sanitizeDB(raw){
     grades:  st.grades  !== false,
     quickScale: ["grade", "points", "smiley"].indexOf(st.quickScale) >= 0 ? st.quickScale : "grade",
     selfQuestion: typeof st.selfQuestion === "string" ? st.selfQuestion.slice(0, 100) : "",
+    ...(st.talkCalc === true ? { talkCalc: true } : {}),
     /* Ende des 1. Halbjahres (Zeugnisstichtag); nur wenn gesetzt, damit ältere Stände unverändert bleiben */
     ...(typeof st.termSplit === "string" && /^\d{4}-\d{2}-\d{2}$/.test(st.termSplit) ? { termSplit: st.termSplit } : {})
   };
@@ -2677,6 +2889,8 @@ function sanitizeDB(raw){
   })) : [];
 
   out.lastBackup = typeof raw.lastBackup === "string" ? raw.lastBackup.slice(0, 30) : "";
+  if(raw.lastBackupEnc === true) out.lastBackupEnc = true;           // letzte Sicherung mit Passwort?
+  if(raw.selfGuardSeen === true) out.selfGuardSeen = true;           // Hinweis zur Sperre vor dem Schülermodus gezeigt
   /* Stundenplan */
   const isHex = v => typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v);
   out.subjects = Array.isArray(raw.subjects) ? raw.subjects.filter(x => x && typeof x.name === "string" && x.name.trim()).map(x => ({
@@ -2705,6 +2919,9 @@ function sanitizeDB(raw){
     && lessonIds.has(x.slice(11)) && a.indexOf(x) === i).slice(-500) : [];
   out.gradesAck = raw.gradesAck === true;
   out.panelsMin = raw.panelsMin === true;
+  const tl = raw.targetLock;
+  if(tl && typeof tl === "object" && typeof tl.classId === "string" && typeof tl.targetId === "string")
+    out.targetLock = { classId: tl.classId.slice(0, 60), targetId: tl.targetId.slice(0, 60) };
   const sl = raw.selfLock;
   if(sl && typeof sl === "object" && typeof sl.classId === "string" && typeof sl.planId === "string" && typeof sl.assessId === "string")
     out.selfLock = { classId: sl.classId.slice(0, 60), planId: sl.planId.slice(0, 60), assessId: sl.assessId.slice(0, 60) };
@@ -2785,6 +3002,7 @@ function sanitizeDB(raw){
       })).slice(0, MAX_CHECKS) : [],
       /* Kursheft, entschuldigte Tage und Verspätungen */
       journal: sanJournal(c?.journal),
+      targets: sanTargets(c?.targets),
       exc: sanDayIds(c?.exc, ids, 5000),
       /* zieldifferent unterrichtet: "Fach|Schüler-ID" – nur das Merkmal, keine Begründung */
       zd: sanSubjIds(c?.zd, ids),
@@ -3221,6 +3439,8 @@ function applyLang(){
   if($("#screen-rooms").classList.contains("active")) renderRooms();
   renderInfo(); renderSettings(); applyFeatureVisibility(); updateEditorChrome();
 }
+/* Größere Schrift und Knöpfe: Bedienflächen werden vergrößert, der Plan selbst nicht (dort zoomt man) */
+function applyBig(){ document.body.classList.toggle("big", DB.big === true); }
 function applyTheme(){
   document.documentElement.dataset.theme = DB.theme;
   const btn = $("#btn-theme");
@@ -3303,7 +3523,7 @@ function fillClassSelect(sel){
 }
 function newClassObj(name){
   return { id: uid(), name, archived: false, students: [], rules: [], plans: [], groups: [], levelMode: "off",
-           history: [], attendance: [], journal: [], exc: [], late: [], zd: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
+           history: [], attendance: [], journal: [], exc: [], late: [], zd: [], targets: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
 }
 
 /* ============ 9. Modale Dialoge ============ */
@@ -3441,6 +3661,7 @@ function classCard(c){
 }
 function renderStart(){
   purgeTrash();
+  checkStorage();
   ensureCurClass();
   const sel = $("#home-class");
   fillClassSelect(sel);
@@ -3510,7 +3731,7 @@ function undoRestore(){
   curClassId = null; curPlanId = null; curRoomId = null;
   undoStack = []; redoStack = []; updateUndoButtons();
   try{ window.localStorage.removeItem(KEY_PREV); }catch(e){}
-  flushSave(); applyTheme(); applyLang(); show("start"); renderStart();
+  flushSave(); applyTheme(); applyBig(); applyLang(); show("start"); renderStart();
   toast(t("restoreUndone"));
 }
 function renderBackupReminder(){
@@ -4081,6 +4302,238 @@ function cleanName(v, swap){
   }
   return x.slice(0, 40);
 }
+/* ---- Namen aus Excel (.xlsx) und CSV – alles auf dem Gerät, ohne Bibliothek ----
+   .xlsx ist ein ZIP mit XML; entpackt wird mit DecompressionStream("deflate-raw"). */
+function zipEntries(u8){
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength), out = new Map();
+  let eocd = -1;
+  for(let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) if(dv.getUint32(i, true) === 0x06054b50){ eocd = i; break; }
+  if(eocd < 0) throw new Error("zip");
+  const n = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+  for(let k = 0; k < n && p + 46 <= u8.length; k++){
+    if(dv.getUint32(p, true) !== 0x02014b50) throw new Error("zip");
+    const method = dv.getUint16(p + 10, true), cs = dv.getUint32(p + 20, true), us = dv.getUint32(p + 24, true);
+    const nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl));
+    out.set(name, { method, cs, us, off });
+    p += 46 + nl + el + cl;
+  }
+  return out;
+}
+async function inflateRaw(u8){
+  const ds = new DecompressionStream("deflate-raw"), w = ds.writable.getWriter();
+  w.write(u8).catch(() => {}); w.close().catch(() => {});
+  const r = ds.readable.getReader(), parts = []; let n = 0;
+  for(;;){ const { done, value } = await r.read(); if(done) break; parts.push(value); n += value.length; if(n > 20e6){ r.cancel().catch(() => {}); throw new Error("big"); } }
+  const out = new Uint8Array(n); let o = 0; parts.forEach(x => { out.set(x, o); o += x.length; });
+  return out;
+}
+async function zipText(u8, entries, name){
+  const e = entries.get(name); if(!e) return null;
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  if(dv.getUint32(e.off, true) !== 0x04034b50) throw new Error("zip");
+  const start = e.off + 30 + dv.getUint16(e.off + 26, true) + dv.getUint16(e.off + 28, true);
+  const raw = u8.subarray(start, start + e.cs);
+  const data = e.method === 0 ? raw : e.method === 8 ? await inflateRaw(raw) : null;
+  if(!data) throw new Error("zip");
+  return new TextDecoder().decode(data);
+}
+const xmlTags = (node, tag) => Array.from(node.getElementsByTagNameNS("*", tag));
+/* Erstes Tabellenblatt als Zeilen von Texten */
+async function readXlsxRows(u8){
+  try{ new DecompressionStream("deflate-raw"); }catch(e){ throw new Error("nounzip"); }   // ältere Geräte kennen „deflate-raw“ nicht
+  const E = zipEntries(u8), P = new DOMParser(), xml = txt => P.parseFromString(txt, "application/xml");
+  const ssTxt = await zipText(u8, E, "xl/sharedStrings.xml");
+  const shared = ssTxt ? xmlTags(xml(ssTxt), "si").map(si => xmlTags(si, "t").map(x => x.textContent).join("")) : [];
+  let path = null;
+  const wb = await zipText(u8, E, "xl/workbook.xml"), rels = await zipText(u8, E, "xl/_rels/workbook.xml.rels");
+  if(wb && rels){
+    const sh = xmlTags(xml(wb), "sheet")[0];
+    const rid = sh && (sh.getAttribute("r:id") || sh.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id"));
+    const rel = rid && xmlTags(xml(rels), "Relationship").find(r => r.getAttribute("Id") === rid);
+    if(rel){ const tg = rel.getAttribute("Target") || ""; path = tg.charAt(0) === "/" ? tg.slice(1) : "xl/" + tg.replace(/^\.\//, ""); }
+  }
+  if(!path || !E.has(path)) path = Array.from(E.keys()).filter(k => /^xl\/worksheets\/[^/]+\.xml$/.test(k)).sort()[0];
+  if(!path) throw new Error("zip");
+  const doc = xml(await zipText(u8, E, path)), rows = [];
+  const colOf = ref => { const m = /^([A-Z]+)/.exec(ref || ""); if(!m) return -1; let n = 0; for(const ch of m[1]) n = n * 26 + ch.charCodeAt(0) - 64; return n - 1; };
+  xmlTags(doc, "row").slice(0, 2000).forEach(r => {
+    const row = []; let next = 0;
+    xmlTags(r, "c").forEach(c => {
+      let i = colOf(c.getAttribute("r")); if(i < 0) i = next; next = i + 1;
+      if(i > 60) return;
+      const ty = c.getAttribute("t"), v = xmlTags(c, "v")[0];
+      let val = "";
+      if(ty === "s") val = shared[parseInt(v ? v.textContent : "", 10)] || "";
+      else if(ty === "inlineStr") val = xmlTags(c, "t").map(x => x.textContent).join("");
+      else val = v ? v.textContent : "";
+      row[i] = String(val).trim();
+    });
+    for(let i = 0; i < row.length; i++) if(row[i] === undefined) row[i] = "";
+    rows.push(row);
+  });
+  return rows;
+}
+/* CSV/Text: Trenner erkennen (; , Tab), Anführungszeichen beachten */
+function parseCsvRows(text){
+  text = String(text).replace(/^﻿/, "");
+  const first = text.split(/\r?\n/).slice(0, 5).join("\n");
+  const count = ch => (first.match(new RegExp(ch === "\t" ? "\t" : "\\" + ch, "g")) || []).length;
+  const sep = ["\t", ";", ","].sort((a, b) => count(b) - count(a))[0], useSep = count(sep) > 0;
+  const rows = []; let row = [], cell = "", q = false;
+  for(let i = 0; i < text.length; i++){
+    const ch = text[i];
+    if(q){ if(ch === '"'){ if(text[i + 1] === '"'){ cell += '"'; i++; } else q = false; } else cell += ch; continue; }
+    if(ch === '"' && cell === "") q = true;
+    else if(ch === sep && useSep){ row.push(cell.trim()); cell = ""; }
+    else if(ch === "\n" || ch === "\r"){ if(ch === "\r" && text[i + 1] === "\n") i++; row.push(cell.trim()); rows.push(row); row = []; cell = ""; if(rows.length >= 2000) break; }
+    else cell += ch;
+  }
+  if(cell || row.length){ row.push(cell.trim()); rows.push(row); }
+  return rows.filter(r => r.some(x => x));
+}
+/* Überschriften erkennen: Vorname / Nachname / ganzer Name */
+const NF_FIRST = /^(vor ?namen?|rufname|first ?name|given ?name|vn)$/i;
+const NF_LAST = /^(nach ?name|familien ?name|zuname|last ?name|surname|family ?name|nn)$/i;
+const NF_FULL = /^(name|namen|sch(ü|ue)ler(in|innen|:in|\*in|\/in)?(name)?|sch(ü|ue)lername|kind|student|pupil|full ?name|name,? ?vorname|nachname,? ?vorname)$/i;
+const nfHeadKind = v => { const x = String(v || "").trim().replace(/[.:]+$/, ""); return NF_FIRST.test(x) ? "first" : NF_LAST.test(x) ? "last" : NF_FULL.test(x) ? "full" : null; };
+/* Kein Name: leer, Zahlen, Datumsangaben, Kopfzeilen wie „Klasse 7b“ oder „Seite 1 von 2“ */
+function nfJunk(v){
+  const x = String(v || "").trim();
+  if(!x || !/\p{L}/u.test(x)) return true;
+  if(/\d{1,2}\.\d{1,2}\.\d{2,4}/.test(x) || /\d{4,}/.test(x)) return true;          // Datum, Kennnummer
+  if(/^(klasse|klassenliste|sch(ü|ue)lerliste|liste|schuljahr|stand|datum|summe|gesamt|nr|lfd|anzahl)\b/i.test(x) || /^(seite|page)\s*\d/i.test(x)) return true;
+  return !!nfHeadKind(x);
+}
+const nfSplitFull = full => {
+  const x = String(full).replace(/\s+/g, " ").trim();
+  if(x.indexOf(",") > 0){ const i = x.indexOf(","); return { first: x.slice(i + 1).trim(), last: x.slice(0, i).trim() }; }
+  const parts = x.split(" "); return { first: parts[0], last: parts.slice(1).join(" ") };
+};
+/* Zeilen → Einträge { first, last }; mit Überschrift über die Spalten, sonst die erste Textspalte */
+function rowsToNameEntries(rows){
+  let head = -1, cols = {};
+  for(let r = 0; r < Math.min(6, rows.length) && head < 0; r++){
+    const found = {};
+    rows[r].forEach((v, i) => { const k = nfHeadKind(v); if(k && found[k] === undefined) found[k] = i; });
+    if(found.first !== undefined || found.last !== undefined || found.full !== undefined){ head = r; cols = found; }
+  }
+  /* „Name“ neben „Vorname“ ist in Schulverwaltungs-Listen der Nachname */
+  if(cols.first !== undefined && cols.last === undefined && cols.full !== undefined){ cols.last = cols.full; delete cols.full; }
+  const data = rows.slice(head + 1);
+  if(head < 0){
+    let best = -1, bestN = 0;
+    for(let i = 0; i < 12; i++){ const n = data.filter(r => r[i] && !nfJunk(String(r[i]).replace(/^\s*\d+\s*[.)\-:]\s*/, ""))).length; if(n > bestN){ best = i; bestN = n; } }
+    if(best < 0) return { entries: [], head: false };
+    cols = { full: best };
+  }
+  const entries = [];
+  data.forEach(r => {
+    let first = "", last = "";
+    if(cols.first !== undefined || cols.last !== undefined){ first = r[cols.first] || ""; last = r[cols.last] || ""; }
+    else { const raw = String(r[cols.full] || "").replace(/^\s*\d+\s*[.)\-:]\s*/, ""); if(nfJunk(raw)) return; ({ first, last } = nfSplitFull(raw)); }
+    first = String(first).replace(/\s+/g, " ").trim().slice(0, 40); last = String(last).replace(/\s+/g, " ").trim().slice(0, 40);
+    if(!first && !last) return;
+    if(nfJunk(first + " " + last)) return;
+    if(!first){ first = last; last = ""; }
+    entries.push({ first, last });
+  });
+  const names = Object.keys(cols).sort((a, b) => cols[a] - cols[b]).map(k => t(k === "first" ? "nfFirst" : k === "last" ? "nfLastCol" : "nfFull"));
+  return { entries, head: head >= 0, cols: names };
+}
+function nfFormat(e, fmt){
+  if(fmt === "first" || !e.last) return e.first;
+  if(fmt === "initial") return e.first + " " + Array.from(e.last)[0].toUpperCase() + ".";
+  return e.first + " " + e.last;
+}
+/* Vorschau: Format wählen, abwählen, Doppelte sehen – erst dann übernehmen */
+function openNamePreview(entries, info){
+  const c = curClass(); if(!c) return;
+  if(!entries.length){ toast(t("nfNone")); return; }
+  const anyLast = entries.some(e => e.last);
+  let fmt = anyLast ? "initial" : "first";
+  const pick = entries.map(() => true);
+  const sheet = sheetBase(t("nfTitle"));
+  const h = document.createElement("div"); h.className = "hint"; h.id = "nf-info"; h.textContent = info || t("nfFound").replace("{n}", String(entries.length)); sheet.appendChild(h);
+  const pv = document.createElement("div"); pv.className = "hint"; pv.textContent = t("nfPrivacy"); sheet.appendChild(pv);
+  let seg = null;
+  if(anyLast){
+    sheetLabel(sheet, t("nfFormat"));
+    seg = document.createElement("div"); seg.className = "segmented wrap"; seg.id = "nf-format";
+    [["first", "nfFirst"], ["initial", "nfFirstInitial"], ["full", "nfFull"]].forEach(([v, k]) => {
+      const b = document.createElement("button"); b.dataset.v = v; b.textContent = t(k);
+      b.onclick = () => { fmt = v; paint(); }; seg.appendChild(b); });
+    sheet.appendChild(seg);
+  }
+  const tools = document.createElement("div"); tools.className = "btnrow"; tools.style.marginTop = "8px";
+  const all = document.createElement("button"); all.className = "minibtn outline"; all.id = "nf-all"; all.textContent = t("nfAll");
+  const none = document.createElement("button"); none.className = "minibtn outline"; none.id = "nf-none"; none.textContent = t("nfNoneSel");
+  all.onclick = () => { pick.fill(true); paint(); }; none.onclick = () => { pick.fill(false); paint(); };
+  tools.appendChild(all); tools.appendChild(none); sheet.appendChild(tools);
+  const list = document.createElement("div"); list.id = "nf-list"; sheet.appendChild(list);
+  let ok = null;
+  const have = new Set(c.students.map(s => s.name.toLowerCase()));
+  const paint = () => {
+    if(seg) Array.from(seg.children).forEach(b => { const on = b.dataset.v === fmt; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    const names = entries.map(e => nfFormat(e, fmt)), cnt = new Map();
+    names.forEach((n, i) => { if(pick[i]) cnt.set(n.toLowerCase(), (cnt.get(n.toLowerCase()) || 0) + 1); });
+    list.textContent = "";
+    names.forEach((n, i) => {
+      const r = document.createElement("label"); r.className = "nfrow";
+      const isHave = have.has(n.toLowerCase());
+      const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = pick[i] && !isHave; cb.disabled = isHave;
+      cb.onchange = () => { pick[i] = cb.checked; paint(); };
+      const sp = document.createElement("span"); sp.textContent = n;
+      r.appendChild(cb); r.appendChild(sp);
+      const note = isHave ? t("nfHave") : pick[i] && cnt.get(n.toLowerCase()) > 1 ? t("nfDouble") : "";
+      if(note){ const sm = document.createElement("small"); sm.textContent = note; r.appendChild(sm); }
+      r.classList.toggle("have", isHave);
+      list.appendChild(r);
+    });
+    const n = names.filter((x, i) => pick[i] && !have.has(x.toLowerCase())).length;
+    if(ok){ ok.textContent = t("nfAdd").replace("{n}", String(n)); ok.disabled = !n; }
+  };
+  ok = sheetButtons(sheet, t("nfAdd"), () => {
+    const names = entries.map(e => nfFormat(e, fmt)).filter((x, i) => pick[i] && !have.has(x.toLowerCase()));
+    if(!names.length) return;
+    closeModal(); addStudentNames(names);
+  });
+  ok.id = "nf-ok";
+  paint();
+}
+$("#btn-names-file").onclick = () => { if(curClass()) $("#namepick").click(); };
+$("#namepick").addEventListener("change", e => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if(!file) return;
+  if(file.size > 10 * 1024 * 1024){ toast(t("nfBad")); return; }
+  const reader = new FileReader();
+  reader.onerror = () => toast(t("nfBad"));
+  reader.onload = () => importNameFile(new Uint8Array(reader.result), file.name);
+  reader.readAsArrayBuffer(file);
+});
+async function importNameFile(u8, name){
+  try{
+    let rows;
+    if(u8[0] === 0xD0 && u8[1] === 0xCF){ toast(t("nfXls")); return; }        // altes Excel-Format
+    if(u8[0] === 0x50 && u8[1] === 0x4B) rows = await readXlsxRows(u8);       // „PK“: .xlsx
+    else {
+      let text;
+      if(u8[0] === 0xFF && u8[1] === 0xFE) text = new TextDecoder("utf-16le").decode(u8);       // Excel „Unicode-Text“
+      else if(u8[0] === 0xFE && u8[1] === 0xFF) text = new TextDecoder("utf-16be").decode(u8);
+      else try{ text = new TextDecoder("utf-8", { fatal: true }).decode(u8); }
+      catch(err){ text = new TextDecoder("windows-1252").decode(u8); }        // Excel-CSV unter Windows
+      rows = parseCsvRows(text);
+      /* „Kowalski, Anna“ zeilenweise: das Komma trennt Nach- und Vorname, nicht Spalten */
+      if(rows.length && rows.every(r => r.length === 2) && !rows.some(r => r.some(nfHeadKind)) && /^[^;\t]*,[^;\t]*$/.test(String(text).split(/\r?\n/)[0]))
+        rows = rows.map(r => [r[0] + ", " + r[1]]);
+    }
+    const res = rowsToNameEntries(rows);
+    if(!res.entries.length){ toast(t("nfNone")); return; }
+    openNamePreview(res.entries, res.head ? t("nfFoundHead").replace("{n}", String(res.entries.length)).replace("{c}", res.cols.join(", ")) : t("nfFound").replace("{n}", String(res.entries.length)));
+  }catch(err){ toast(t(err && err.message === "nounzip" ? "nfNoUnzip" : "nfBad")); }
+}
 function addStudentNames(names){
   const c = curClass(); if(!c) return 0;
   const existing = new Set(c.students.map(s => s.name.toLowerCase()));
@@ -4099,14 +4552,22 @@ function addStudentNames(names){
   else if(dupes) toast(t("importDupes").replace("{n}", String(dupes)));
   return added;
 }
+/* Aus PDF oder Webseiten kopiert: Datumsangaben und lange Kennnummern weg, Kopfzeilen fallen über nfJunk heraus */
+const pasteClean = v => String(v).replace(/\b\d{4}-\d{2}-\d{2}\b/g, " ").replace(/\b\d{1,2}\.\d{1,2}\.(\d{2,4})?/g, " ").replace(/(^|\s)\d{4,}(?=\s|$)/g, " ").replace(/\s+/g, " ").trim();
 $("#btn-add-students").onclick = () => {
   const c = curClass(); if(!c) return;
-  const parsed = parseNameInput($("#student-input").value);
+  const raw = $("#student-input").value;
+  const parsed = parseNameInput(raw);
   if(!parsed.rows.length){ toast(t("importNone")); return; }
+  /* Tabelle mit Überschrift (z. B. aus Excel kopiert): dieselbe Vorschau wie beim Laden einer Datei */
+  if(parsed.cols > 1){
+    const res = rowsToNameEntries(parsed.rows);
+    if(res.head && res.entries.length){ openNamePreview(res.entries); return; }
+  }
 
   const simple = parsed.cols === 1 && !parsed.lastFirst;
   if(simple){
-    const names = parsed.rows.map(r => cleanName(r[0], false)).filter(Boolean);
+    const names = parsed.rows.map(r => cleanName(pasteClean(cleanName(r[0], false)), false)).filter(n => n && !nfJunk(n));
     if(!names.length){ toast(t("importNone")); return; }
     if(addStudentNames(names)) $("#student-input").value = "";
     return;
@@ -4757,13 +5218,14 @@ function renderStage(full){
     }
     const isDesk = it.type === "desk";
     const active = (presenting || lessonMode) ? isDesk : ((editMode === "room") ? !isDesk : isDesk);
-    const full = itemLabel(it);
-    const label = isDesk && shortBand ? shortLabel(full) : full;
+    const full = isDesk && it.blocked ? t("blockedShort") : itemLabel(it);
+    const label = isDesk && shortBand && !it.blocked ? shortLabel(full) : full;
     const isAbsent = lessonMode && !selfMode && isDesk && it.studentId && lessonAbsent(it.studentId);
     el.className = "item t-" + it.type
       + (isSeatDesk(it) ? " seat" : "")
       + (isDesk && it.w >= 150 ? " wide" : "")
       + (isDesk && !label ? " empty" : "")
+      + (isDesk && it.blocked ? " blocked" : "")
       + (selected.has(it.id) ? " sel" : "")
       + (isAbsent ? " absent" : "")
       + (pickedId && it.studentId === pickedId ? " picked" : "")
@@ -4785,7 +5247,7 @@ function renderStage(full){
     el.style.fontSize = clamp(Math.min(base, byWidth, byHeight), 6.5, base).toFixed(1) + "px";
     el.setAttribute("role", "button");
     el.setAttribute("aria-label", (full || tItem(it.type)) +
-      (isDesk ? ", " + (it.pc ? t("pcDesk") : tItem("desk")) : "") + (isAbsent ? ", " + t("absent") : ""));
+      (isDesk ? ", " + (it.blocked ? t("blockedDesk") : it.pc ? t("pcDesk") : tItem("desk")) : "") + (isAbsent ? ", " + t("absent") : ""));
     placeEl(el, it);
     let dot = el.querySelector(".dot");
     const wantDot = lessonMode && !selfMode && isDesk && it.studentId && !!lessonNote(it.studentId);
@@ -4866,6 +5328,11 @@ function renderStage(full){
   if(pcBtn){
     pcBtn.style.display = (editMode === "desks" && selAllDesks.length && !lessonMode) ? "" : "none";
     $("#sb-pc-t").textContent = selAllDesks.length && selAllDesks.every(d => d.pc) ? t("pcUnmake") : t("pcMake");
+  }
+  const blkBtn = $("#sb-block");
+  if(blkBtn){
+    blkBtn.style.display = (editMode === "desks" && selAllDesks.length && !lessonMode) ? "" : "none";
+    $("#sb-block-t").textContent = selAllDesks.length && selAllDesks.every(d => d.blocked) ? t("blockUnmake") : t("blockMake");
   }
   if(lockBtn){
     lockBtn.style.display = (editMode === "desks" && selDesks.length) ? "" : "none";
@@ -5812,7 +6279,7 @@ function renameDesk(it){
     pushUndo();
     if(sel.value){
       planDesks().forEach(d => { if(d !== it && d.studentId === sel.value) delete d.studentId; }); // doppelte Belegung verhindern
-      it.studentId = sel.value; delete it.label;
+      it.studentId = sel.value; delete it.label; delete it.blocked;     // ausdrücklich zugewiesen: Sperre aufheben
     } else { delete it.studentId; delete it.locked; it.label = ""; }
     clearConflicts();
     closeModal(); save(); renderStage(false); renderUnseated();
@@ -5866,6 +6333,16 @@ $("#sb-clear").onclick = () => {
 $("#sb-note").onclick = () => { const d = selectedSeat(); if(d) openLessonSheet(d); };
 $("#sb-grade").onclick = () => gradeSelectedSeat();
 /* Plätze festhalten: Automatisch setzen, Mischen und Gruppen lassen sie unverändert */
+/* Platz sperren: z. B. hinter der Säule – automatisches Setzen, Mischen und Gruppen lassen ihn frei */
+$("#sb-block").onclick = () => {
+  const ds = planDesks().filter(d => selected.has(d.id));
+  if(!ds.length) return;
+  pushUndo();
+  const on = !ds.every(d => d.blocked);
+  ds.forEach(d => { if(on){ d.blocked = true; delete d.studentId; delete d.locked; } else delete d.blocked; });
+  clearConflicts(); save(); renderStage(false); renderUnseated();
+  toast(on ? t("blockedOn").replace("{n}", String(ds.length)) : t("blockedOff"));
+};
 $("#sb-lock").onclick = () => {
   const ds = planDesks().filter(d => selected.has(d.id) && d.studentId);
   if(!ds.length) return;
@@ -6216,7 +6693,7 @@ $("#btn-shuffle").onclick = () => {
   const p = curPlan(); if(!p || !p.desks.length){ toast(t("noDesks")); return; }
   pushUndo();
   /* Festgehaltene Plätze bleiben stehen, nur die übrigen Namen werden gemischt */
-  const free = p.desks.filter(d => !(d.locked && d.studentId));
+  const free = p.desks.filter(d => !(d.locked && d.studentId) && !d.blocked);
   const ids = shuffled(free.map(d => d.studentId || null));
   free.forEach((d, i) => { if(ids[i]) d.studentId = ids[i]; else delete d.studentId; });
   clearConflicts();
@@ -6272,7 +6749,7 @@ function renderUnseated(){
   const seated = new Set(p.desks.map(d => d.studentId).filter(Boolean));
   const info = document.createElement("div");
   info.className = "hint";
-  info.textContent = t("seatedFrom").replace("{a}", String(seated.size)).replace("{b}", String(p.desks.length));
+  info.textContent = t("seatedFrom").replace("{a}", String(seated.size)).replace("{b}", String(p.desks.filter(d => !d.blocked).length));
   box.appendChild(info);
   renderConflicts();
   /* Wer heute fehlt, steht am Ende und ist gekennzeichnet – sonst wirkt es wie ein Fehler */
@@ -6519,6 +6996,7 @@ function placeStudent(studentId, desk, fromDesk){
   if(!desk || desk === fromDesk) return;
   /* Festgehaltene Plätze ändern sich nur nach „Lösen“ – sonst wanderte die Sperre zum neuen Namen */
   if(desk.locked && desk.studentId || fromDesk && fromDesk.locked){ toast(t("seatLocked")); haptic(); return; }
+  if(desk.blocked){ toast(t("blockedNo")); haptic(); return; }
   pushUndo();
   const prev = desk.studentId || null;
   planDesks().forEach(x => { if(x !== desk && x !== fromDesk && x.studentId === studentId) delete x.studentId; });
@@ -6682,6 +7160,7 @@ function layoutDesks(kind, noUndo){
     d.x = Math.round(q.x); d.y = Math.round(q.y); d.rot = q.rot || 0;
     if(q.g !== undefined) d.groupId = "g_" + kind + "_" + q.g;
     if(q.tbl) d.tbl = q.tbl;
+    delete d.blocked;                           // neue Anordnung: der gesperrte Platz „hinter der Säule“ wäre jetzt irgendwo
     if(PC_LAYOUTS.indexOf(kind) >= 0) d.pc = true;   // PC-Raum: alle Plätze mit Bildschirm
     else delete d.pc;                           // andere Vorlagen ordnen neu – Bildschirme stünden sonst irgendwo
     keepInRoom(d);                              // Sicherheitsnetz für jede Vorlage
@@ -7514,7 +7993,8 @@ function autoSeat(quiet, noUndo){
   desks.forEach((d, i) => {
     if(d.locked && d.studentId && sIdx.has(d.studentId)){ lockedSeats.add(i); lockedStud.add(sIdx.get(d.studentId)); }
   });
-  const freeSeats = desks.map((_, i) => i).filter(i => !lockedSeats.has(i));
+  const freeSeats = desks.map((_, i) => i).filter(i => !lockedSeats.has(i) && !desks[i].blocked);
+  const nBlocked = desks.filter(d => d.blocked).length;
   const pool = shuffled(c.students.map((_, i) => i).filter(i => !lockedStud.has(i) && !absent.has(c.students[i].id)));
   let assign = new Array(nSeats).fill(-1);
   lockedSeats.forEach(i => { assign[i] = sIdx.get(desks[i].studentId); });
@@ -7582,7 +8062,7 @@ function autoSeat(quiet, noUndo){
   }
 
   best.forEach((studentIdx, seat) => {
-    if(studentIdx >= 0 && c.students[studentIdx]) desks[seat].studentId = c.students[studentIdx].id;
+    if(studentIdx >= 0 && c.students[studentIdx] && !desks[seat].blocked) desks[seat].studentId = c.students[studentIdx].id;
     else delete desks[seat].studentId;
   });
   save(); renderStage(false); renderUnseated(); haptic(14);
@@ -7613,10 +8093,14 @@ function autoSeat(quiet, noUndo){
   });
   renderConflicts();
   const broken = lastConflicts.length;
+  /* geprüfte Regeln: Paare plus „vorne“/„ruhig“ bei Gesetzten – dieselben, die oben gezählt werden */
+  let total = rules.length;
+  if(useTags) c.students.forEach((st, i) => { if(seatOf[i] < 0) return; if(hasTag(st, "front")) total++; if(hasTag(st, "quiet")) total++; });
   if(!quiet){
-    let msg = broken === 0 ? t("seatedOk") : t("seatedPartial").replace("{n}", String(broken));
+    let msg = total ? t("seatedRules").replace("{a}", String(Math.max(0, total - broken))).replace("{b}", String(total)) : t("seatedNone");
     if(absentIds.size) msg += " · " + t("absentSkipped").replace("{n}", String(absentIds.size));
     if(lockedSeats.size) msg += " · " + t("lockedKept").replace("{n}", String(lockedSeats.size));
+    if(nBlocked) msg += " · " + t("blockedSkipped").replace("{n}", String(nBlocked));
     toastUndo(msg);
   }
 }
@@ -7656,7 +8140,7 @@ function seatByGroups(quiet){
   const absent = absentToday(c);
   const lockedIds = new Set(p.desks.filter(d => d.locked && d.studentId).map(d => d.studentId));
   p.desks.forEach(d => { if(!(d.locked && d.studentId)) delete d.studentId; });
-  const isFree = i => !p.desks[i].studentId;
+  const isFree = i => !p.desks[i].studentId && !p.desks[i].blocked;
   /* Nur freie Plätze zählen; Festgehaltene und Abwesende werden nicht verteilt */
   const clusters = deskClusters(p.desks).map(cl => cl.filter(isFree)).filter(cl => cl.length)
     .sort((a, b) => b.length - a.length);
@@ -7678,8 +8162,8 @@ function seatByGroups(quiet){
   /* Alle ohne Gruppe und übrig Gebliebene auf die freien Plätze */
   const grouped = new Set(groups.flat());
   const rest = shuffled(overflow.concat(c.students.filter(s => !grouped.has(s.id) && !absent.has(s.id) && !lockedIds.has(s.id)).map(s => s.id)));
-  const free = shuffled(p.desks.map((d, i) => i).filter(i => !p.desks[i].studentId && !used.has(clusters.findIndex(cl => cl.indexOf(i) >= 0))));
-  const free2 = p.desks.map((d, i) => i).filter(i => !p.desks[i].studentId && free.indexOf(i) < 0);
+  const free = shuffled(p.desks.map((d, i) => i).filter(i => isFree(i) && !used.has(clusters.findIndex(cl => cl.indexOf(i) >= 0))));
+  const free2 = p.desks.map((d, i) => i).filter(i => isFree(i) && free.indexOf(i) < 0);
   free.concat(free2).forEach(i => { if(rest.length) p.desks[i].studentId = rest.shift(); });
   lastConflicts = [];
   rest.forEach(id => {
@@ -7712,10 +8196,10 @@ function seatOrder(desks){
   return { no, col };
 }
 function assignExamGroups(p){
-  const { col } = seatOrder(p.desks);
-  p.desks.forEach(d => { const rc = col.get(d.id); d.var = ((rc.row + rc.col) % 2) ? "B" : "A"; });
+  const { col } = seatOrder(p.desks.filter(d => !d.blocked));       // gesperrte Plätze bekommen weder Gruppe noch Nummer
+  p.desks.forEach(d => { const rc = col.get(d.id); if(rc) d.var = ((rc.row + rc.col) % 2) ? "B" : "A"; else delete d.var; });
 }
-function examNumbers(p){ return p && p.exam ? seatOrder(p.desks).no : null; }
+function examNumbers(p){ return p && p.exam ? seatOrder(p.desks.filter(d => !d.blocked)).no : null; }
 function deskPrintLabel(cls, plan, it, nums){
   let name = "";
   const st = cls ? cls.students.find(x => x.id === it.studentId) : null;
@@ -7753,7 +8237,7 @@ function openExamSheet(){
         /* Wer zwischendurch dazugekommen ist, bekommt einen freien Platz */
         const seated = new Set(p.desks.map(d => d.studentId).filter(Boolean));
         const absent = absentToday(c);
-        const free = p.desks.filter(d => !d.studentId);
+        const free = p.desks.filter(d => !d.studentId && !d.blocked);
         c.students.forEach(st => { if(!seated.has(st.id) && !absent.has(st.id) && free.length) free.shift().studentId = st.id; });
       } else p.desks.forEach(d => { delete d.var; });
       p.exam = false; delete p.examPrev;
@@ -7785,7 +8269,7 @@ function openExamSheet(){
     assignExamGroups(p);
     save(); renderStage(false); renderSeatOptions();
     const cntA = p.desks.filter(d => d.var === "A").length;
-    toastUndo(t("examReady").replace("{a}", String(cntA)).replace("{b}", String(p.desks.length - cntA)));
+    toastUndo(t("examReady").replace("{a}", String(cntA)).replace("{b}", String(p.desks.filter(d => d.var === "B").length)));
   });
 }
 
@@ -8288,6 +8772,9 @@ function renderSettings(){
   box.appendChild(switchRow(t("setTheme"), t("setThemeSub"),
     () => DB.theme === "dark",
     () => { DB.theme = DB.theme === "dark" ? "light" : "dark"; applyTheme(); save(); }));
+  const bigRow = switchRow(t("setBig"), t("setBigSub"), () => DB.big === true,
+    () => { if(DB.big) delete DB.big; else DB.big = true; applyBig(); save(); });
+  bigRow.id = "set-big"; box.appendChild(bigRow);
 
   const c = curClass();
   if(S.history && c && Array.isArray(c.history) && c.history.length){
@@ -8551,7 +9038,8 @@ const WINANSI_EXTRA = { 0x20AC:0x80, 0x201A:0x82, 0x0192:0x83, 0x201E:0x84, 0x20
   0x02DC:0x98, 0x2122:0x99, 0x0161:0x9A, 0x203A:0x9B, 0x0153:0x9C, 0x017E:0x9E, 0x0178:0x9F };
 /* Buchstaben ohne Zerlegung in Grundbuchstabe + Akzent */
 const PDF_TRANSLIT = { "ı":"i", "İ":"I", "ł":"l", "Ł":"L", "đ":"d", "Đ":"D", "ħ":"h", "Ħ":"H",
-  "ŀ":"l", "Ŀ":"L", "ĳ":"ij", "Ĳ":"IJ", "ſ":"s", "ə":"e", "Ə":"E", "ŋ":"n", "Ŋ":"N", "ŧ":"t", "Ŧ":"T" };
+  "ŀ":"l", "Ŀ":"L", "ĳ":"ij", "Ĳ":"IJ", "ſ":"s", "ə":"e", "Ə":"E", "ŋ":"n", "Ŋ":"N", "ŧ":"t", "Ŧ":"T",
+  "→":"->", "−":"-", "≈":"~" };                           // Rechenweg: Pfeile und echte Minuszeichen
 /* Kyrillisch (Russisch, Ukrainisch) in deutscher Umschrift – Namen geflüchteter
    Kinder stehen manchmal so in der Liste */
 const CYR = "а:a,б:b,в:w,г:g,ґ:g,д:d,е:e,ё:jo,є:je,ж:sch,з:s,и:i,і:i,ї:ji,й:j,к:k,л:l,м:m,н:n,о:o,п:p,р:r,с:s,т:t,у:u,ф:f,х:ch,ц:z,ч:tsch,ш:sch,щ:schtsch,ъ:,ы:y,ь:,э:e,ю:ju,я:ja";
@@ -8816,6 +9304,7 @@ async function decryptBackup(enc, pw){
 /* Gelöschtes (Papierkorb) gehört nicht in eine Sicherung, die das Gerät verlässt */
 function backupData(){
   const d = sanitizeDB(clone(DB)) || clone(DB); d.trash = []; d.settings.lock = false;
+  delete d.lastBackupEnc; delete d.selfGuardSeen; delete d.big; delete d.targetLock;   // gehören zum Gerät
   /* Zeitstempel nur für Einträge, die es noch gibt (z. B. keine Noten gelöschter Schüler) */
   const ents = syncEntities(d); Object.keys(d.stamps || {}).forEach(k => { if(!ents.has(k)) delete d.stamps[k]; });
   d.stamps = packStamps(d.stamps); d.del = packStamps(d.del); delete d.syncAt;
@@ -8846,7 +9335,8 @@ function writeBackup(obj, encrypted){
   const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
   const stamp = new Date().toISOString().slice(0, 10);
   if(download(blob, "fairseat-backup-" + stamp + (encrypted ? "-geschuetzt" : "") + ".json", "application/json")){
-    DB.lastBackup = new Date().toISOString(); save(); renderStart(); toast(t(encrypted ? "backupOkEnc" : "backupOk"));
+    DB.lastBackup = new Date().toISOString(); if(encrypted) DB.lastBackupEnc = true; else delete DB.lastBackupEnc;
+    save(); renderStart(); toast(t(encrypted ? "backupOkEnc" : "backupOk"));
   }
   else toast(t("exportFail"));
 }
@@ -8881,7 +9371,9 @@ $("#btn-backup").onclick = () => {
   const pl = document.createElement("button");
   pl.className = "ghost"; pl.id = "bk-plain"; pl.style.width = "100%"; pl.style.marginTop = "8px";
   pl.textContent = t("backupPlainBtn");
-  pl.onclick = () => { const ok = !lockedNow(); closeModal(); if(ok) plain(); };
+  /* ohne Passwort: erst nachfragen – die Datei verlässt das Gerät lesbar */
+  pl.onclick = () => { if(lockedNow()){ closeModal(); return; } closeModal();
+    askConfirm(t("bkPlainQ"), t("bkPlainT"), t("bkPlainOk"), () => { if(!lockedNow()) plain(); }); };
   sheet.appendChild(pl);
   const cancel = document.createElement("button");
   cancel.className = "ghost"; cancel.style.width = "100%"; cancel.style.marginTop = "8px";
@@ -8984,14 +9476,16 @@ function applyRestore(newDB, msg){
   const prev = Store.get(KEY);
   if(prev) Store.set(KEY_PREV, JSON.stringify({ at: new Date().toISOString(), data: prev }));
   const keepLock = DB.settings.lock === true;        // Sperre gilt für dieses Gerät, nicht für die Datei
+  const keepDev = { lastBackup: DB.lastBackup, lastBackupEnc: DB.lastBackupEnc, selfGuardSeen: DB.selfGuardSeen, big: DB.big };   // ebenso: eigene Sicherung, Hinweis gesehen
   DB = newDB; LANG = DB.lang; DB.settings.lock = keepLock; DB.syncAt = syncNow();
+  Object.keys(keepDev).forEach(k => { if(keepDev[k] === undefined) delete DB[k]; else DB[k] = keepDev[k]; });
   syncReset();
   curClassId = null; curPlanId = null; curRoomId = null;
   undoStack = []; redoStack = []; updateUndoButtons();
   /* Reicht der Speicher nicht für beide Stände, hat der neue Vorrang */
   let undoOk = !!prev && !!Store.get(KEY_PREV);
   if(!flushSave()){ try{ window.localStorage.removeItem(KEY_PREV); }catch(e){} flushSave(); undoOk = false; }
-  applyTheme(); applyLang(); show("start"); renderStart();
+  applyTheme(); applyBig(); applyLang(); show("start"); renderStart();
   toast(prev && !undoOk ? msg + " – " + t("syncNoUndo") : msg);
 }
 
@@ -9278,13 +9772,66 @@ function openLessonPlan(L){
   goPlans(); $("#btn-add-plan").click();
   wizRoomHint = null;
 }
+/* Stunden eines Tages aus dem Stundenplan (A/B-Woche beachtet), nach Beginn sortiert */
+function lessonsOnDate(date){
+  const day = (date.getDay() + 6) % 7;
+  if(day >= DB.tt.days) return [];
+  const wk = abWeek(date), times = periodTimes();
+  return DB.lessons.filter(L => L.day === day && (!L.week || !wk || L.week === wk) && times[L.period])
+    .map(L => ({ L, start: times[L.period].start, end: times[Math.min(times.length - 1, L.period + L.span - 1)].end }))
+    .sort((a, b) => a.start - b.start);
+}
+/* Offene Aufgaben für die Startseite: Kursheft-Lücken der letzten 14 Tage (nur Klassen, die das
+   Kursheft nutzen, ab dem ersten Eintrag) und unvollständige Abhaklisten der letzten 60 Tage */
+function dayTasks(now){
+  now = now || new Date();
+  const out = [], m = now.getHours() * 60 + now.getMinutes();
+  if(ttOn() && DB.lessons.length){
+    const gaps = new Map(), first = new Map();
+    /* erster Kursheft-Eintrag je Klasse und Fach – Fächer ohne Kursheft werden nie gemahnt */
+    DB.classes.forEach(c => (c.journal || []).forEach(e => { const key = c.id + "|" + (e.s || ""); if(!first.has(key) || e.d < first.get(key)) first.set(key, e.d); }));
+    /* Tage ohne jede Spur in der App (Ferien, krank): nicht mahnen */
+    const active = new Set();
+    DB.classes.forEach(c => {
+      (c.journal || []).forEach(e => active.add(e.d)); (c.absLog || []).forEach(e => active.add(e.d));
+      (c.assess || []).forEach(a => { if(a.date) active.add(a.date); }); (c.attendance || []).forEach(a => active.add(a.date));
+      if(c.lesson && c.lesson.date) active.add(c.lesson.date); (c.late || []).forEach(e => active.add(e.d));
+    });
+    for(let k = 0; k <= 14; k++){
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - k), iso = isoDay(d);
+      if(k > 0 && !active.has(iso)) continue;
+      lessonsOnDate(d).forEach(x => {
+        const L = x.L, c = classById(L.classId);
+        if(!c || c.archived || !(c.journal || []).length || (k === 0 && x.end > m) || isCancelled(L, iso)) return;
+        const fd = first.get(c.id + "|" + (L.subjectId || ""));
+        if(!fd || iso < fd) return;                                                  // vor dem ersten Eintrag dieses Fachs nicht mahnen
+        if(c.journal.some(e => e.d === iso && (e.p === L.period || (e.p < 0 && (!e.s || e.s === L.subjectId))))) return;
+        const key = c.id + "|" + (L.subjectId || "");
+        const g = gaps.get(key) || { c, s: L.subjectId || "", n: 0 }; g.n++; gaps.set(key, g);
+      });
+    }
+    gaps.forEach(g => { const sj = subjectById(g.s);
+      out.push({ id: "j-" + g.c.id + "-" + g.s, text: t(g.n === 1 ? "dayJournal1" : "dayJournal").replace("{c}", g.c.name).replace(" {s}", sj ? " " + (sj.short || sj.name) : "").replace("{n}", String(g.n)),
+        go: () => { setCurClass(g.c.id); openJournalList(g.c, g.s); } }); });
+  }
+  DB.classes.filter(c => !c.archived).forEach(c => (c.checks || []).forEach(k => {
+    if(isTally(k) || !k.date || daysSince(k.date + "T12:00:00") > 60) return;
+    const missing = c.students.filter(st => k.done.indexOf(st.id) < 0).length;
+    if(!missing || missing === c.students.length && !k.done.length && daysSince(k.date + "T12:00:00") > 14) return;   // nie begonnene alte Listen nicht ewig zeigen
+    out.push({ id: "k-" + k.id, text: t(missing === 1 ? "dayCheck1" : "dayCheck").replace("{t}", k.title).replace("{c}", c.name).replace("{n}", String(missing)),
+      go: () => { setCurClass(c.id); save(); openCheckList(k, () => renderStart()); } });
+  }));
+  return out;
+}
 function renderNowCard(){
   const box = $("#now-card"); if(!box) return;
   box.textContent = "";
   const show = ttOn() && DB.lessons.length;
   const nl = show ? nowLessons() : { now: null, next: null };
   const items = [["ttNow", nl.now], ["ttNext", nl.next]].filter(x => x[1]);
-  box.style.display = items.length ? "" : "none";
+  const tasks = dayTasks();
+  const later = show ? lessonsOnDate(new Date()).filter(x => x.start > (new Date().getHours() * 60 + new Date().getMinutes()) && (!nl.next || x.L !== nl.next.L)) : [];
+  box.style.display = items.length || tasks.length || later.length ? "" : "none";
   items.forEach(([k, x]) => {
     const L = x.L, s = subjectById(L.subjectId);
     const row = document.createElement("div"); row.className = "nowrow";
@@ -9318,6 +9865,26 @@ function renderNowCard(){
     row.appendChild(cx);
     box.appendChild(row);
   });
+  /* Weitere Stunden heute: ein Tipp öffnet den Sitzplan */
+  if(later.length){
+    const h = document.createElement("div"); h.className = "eyebrow"; h.style.marginTop = "10px"; h.textContent = t("dayLater"); box.appendChild(h);
+    const wrap = document.createElement("div"); wrap.className = "daychips"; wrap.id = "day-later";
+    later.forEach(x => { const L = x.L, sj = subjectById(L.subjectId), b = document.createElement("button");
+      b.style.borderLeftColor = sj ? sj.color : "var(--line)";
+      b.textContent = fmtHM(x.start) + " · " + (lessonLabel(L) || t("ttEmpty"));
+      if(isCancelled(L, isoDay(new Date()))) b.classList.add("cancelled");
+      b.onclick = () => openLessonPlan(L); wrap.appendChild(b); });
+    box.appendChild(wrap);
+  }
+  if(tasks.length){
+    const h = document.createElement("div"); h.className = "eyebrow"; h.style.marginTop = "10px"; h.textContent = t("dayTasks"); box.appendChild(h);
+    const list = document.createElement("div"); list.id = "day-tasks";
+    tasks.slice(0, 5).forEach(x => { const b = document.createElement("button"); b.className = "daytask"; b.dataset.id = x.id;
+      b.appendChild(icon("note")); const sp = document.createElement("span"); sp.textContent = x.text; b.appendChild(sp);
+      b.onclick = x.go; list.appendChild(b); });
+    if(tasks.length > 5){ const mo = document.createElement("div"); mo.className = "hint"; mo.textContent = t("dayMore").replace("{n}", String(tasks.length - 5)); list.appendChild(mo); }
+    box.appendChild(list);
+  }
 }
 function goTimetable(){ show("timetable"); renderTimetable(); }
 let ttWeekView = "";
@@ -10110,6 +10677,10 @@ function studentDetail(c, s, st, term){
   const zr = switchRow(t("zdLabel"), t("zdSub"), () => isZd(c, s.id, st.id), () => { setZd(c, s.id, st.id, !isZd(c, s.id, st.id)); save();
     if($("#screen-grades").classList.contains("active")) renderGrades(); });   // Kennzeichen und 30-%-Hinweis in der Übersicht
   zr.id = "zd-switch"; zr.style.marginTop = "10px"; sheet.appendChild(zr);
+  const cb = document.createElement("button"); cb.className = "cbtn outline"; cb.id = "calc-open"; cb.style.width = "100%"; cb.style.marginTop = "10px";
+  cb.appendChild(icon("info")); const cbs = document.createElement("span"); cbs.textContent = t("calcBtn"); cb.appendChild(cbs);
+  cb.onclick = () => openGradeCalc(c, s, st, term);
+  sheet.appendChild(cb);
   const ab = document.createElement("button"); ab.className = "cbtn outline"; ab.id = "abs-open"; ab.style.width = "100%"; ab.style.marginTop = "10px";
   ab.appendChild(icon("calendar")); const abs = document.createElement("span"); abs.textContent = t("absTitle") + " · " + absenceLine(c, st.id); ab.appendChild(abs);
   ab.onclick = () => openAbsences(c, st, () => studentDetail(c, s, st, term));
@@ -10523,9 +11094,41 @@ function startSelfSetup(){
       A = { id: uid(), subjectId: sid, title: question, date: today, kind: "self", scale: "smiley", weight: 1, marks: {} };
       c.assess = (c.assess || []).concat([A]);
     }
-    c.lastSubject = sid; save(); closeModal(); startSelfMode(A.id);
+    c.lastSubject = sid; save(); closeModal(); selfGuard(() => startSelfMode(A.id));
   });
 }
+/* Gerät in Schülerhand: ohne eingeschaltete Sperre einmal darauf hinweisen und das Einschalten anbieten */
+function selfGuard(fn){
+  if(DB.settings.lock === true || !window.cordova || DB.selfGuardSeen === true){ fn(); return; }
+  const sheet = sheetBase(t("selfGuardTitle"));
+  const p = document.createElement("p"); p.className = "hint"; p.style.fontSize = "14px"; p.style.lineHeight = "1.5"; p.textContent = t("selfGuardText"); sheet.appendChild(p);
+  const on = document.createElement("button"); on.className = "primary"; on.id = "self-guard-on"; on.style.width = "100%"; on.style.marginTop = "8px";
+  on.textContent = t("selfGuardOn");
+  on.onclick = () => {
+    closeModal();
+    const F = window.Fingerprint;
+    if(!F){ toast(t("lockNoBio")); DB.selfGuardSeen = true; save(); fn(); return; }
+    F.isAvailable(() => bioAuth(() => { DB.settings.lock = true; DB.selfGuardSeen = true; save(); toast(t("lockOn")); fn(); }, lockError),
+      () => { toast(t("lockNoBio")); DB.selfGuardSeen = true; save(); fn(); }, { allowBackup: true });
+  };
+  sheet.appendChild(on);
+  const skip = document.createElement("button"); skip.className = "ghost"; skip.id = "self-guard-skip"; skip.style.width = "100%"; skip.style.marginTop = "8px";
+  skip.textContent = t("selfGuardSkip");
+  skip.onclick = () => { DB.selfGuardSeen = true; save(); closeModal(); fn(); };
+  sheet.appendChild(skip);
+}
+/* Beenden nach dem Halten des ✕ (Selbsteinschätzung, Zielscheibe): mit Sperre erst nach Face ID, Fingerabdruck oder Geräte-PIN */
+function pupilExit(end){
+  if(!(DB.settings.lock === true && window.cordova)){ end(); return; }
+  toast(t("selfUnlockExit"));
+  bioAuth(() => { end(); lockOpen = true; }, e => {
+    const code = e && e.code;
+    /* Entsperren auf diesem Gerät gar nicht möglich: nicht im Schülermodus festsetzen – Noten bleiben gesperrt */
+    if(LOCK_UNUSABLE.indexOf(code) >= 0){ lockBrokenAfterSelf = true; end(); return; }
+    toast(t(code === -111 || code === -112 ? "lockLockedOut" : "lockCancelled"));
+  });
+}
+function selfExitRequest(){ if(selfMode) pupilExit(() => endSelfMode()); }
 function startSelfMode(id){
   if(!curPlan()) return;
   if(gradeMode) endGradeMode(true);
@@ -10582,23 +11185,292 @@ function openSelfSheet(sid){
   sheet.appendChild(no);
 }
 /* ✕ zwei Sekunden halten */
+function holdToExit(btn, fire){
+  let timer = null;
+  const stop = () => { clearTimeout(timer); timer = null; btn.classList.remove("holding"); };
+  btn.addEventListener("pointerdown", e => { e.preventDefault(); stop(); void btn.offsetWidth; btn.classList.add("holding"); timer = setTimeout(() => { stop(); fire(); }, 2000); });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(ev => btn.addEventListener(ev, stop));
+  btn.addEventListener("keydown", e => {
+    if((e.key === "Enter" || e.key === " ") && !e.repeat){ e.preventDefault(); stop(); void btn.offsetWidth; btn.classList.add("holding"); timer = setTimeout(() => { stop(); fire(); }, 2000); }
+  });
+  btn.addEventListener("keyup", e => { if(e.key === "Enter" || e.key === " ") stop(); });
+  btn.addEventListener("click", e => e.preventDefault());
+  btn.addEventListener("contextmenu", e => e.preventDefault());
+}
 (function(){
   const btn = $("#self-exit"); let timer = null;
   const stop = () => { clearTimeout(timer); timer = null; btn.classList.remove("holding"); };
   btn.addEventListener("pointerdown", e => {
     e.preventDefault(); stop();
     void btn.offsetWidth; btn.classList.add("holding");
-    timer = setTimeout(() => { stop(); endSelfMode(); }, 2000);
+    timer = setTimeout(() => { stop(); selfExitRequest(); }, 2000);
   });
   ["pointerup", "pointerleave", "pointercancel"].forEach(ev => btn.addEventListener(ev, stop));
   /* Kurzer Tipp tut nichts – kein Hinweis, wie man herauskommt. Tastatur: Enter/Leertaste halten. */
   btn.addEventListener("keydown", e => {
-    if((e.key === "Enter" || e.key === " ") && !e.repeat){ e.preventDefault(); stop(); void btn.offsetWidth; btn.classList.add("holding"); timer = setTimeout(() => { stop(); endSelfMode(); }, 2000); }
+    if((e.key === "Enter" || e.key === " ") && !e.repeat){ e.preventDefault(); stop(); void btn.offsetWidth; btn.classList.add("holding"); timer = setTimeout(() => { stop(); selfExitRequest(); }, 2000); }
   });
   btn.addEventListener("keyup", e => { if(e.key === "Enter" || e.key === " ") stop(); });
   btn.addEventListener("click", e => e.preventDefault());
   btn.addEventListener("contextmenu", e => e.preventDefault());
 })();
+/* ============ Feedback-Zielscheibe ============
+   1–4 Bereiche, drei Ringe; innen = sehr gut. Je Person ein Punkt pro Bereich, dann „Nächster“.
+   Gespeichert werden nur Punkte (Bereich k, Abstand r 0…1, Lage a 0…1 im Bereich), an zufälliger Stelle. */
+const TG_COL = ["#2E86DE", "#20A464", "#E08A00", "#8E44AD"];
+const TG_START = { 1: -90, 2: 90, 3: -90, 4: -180 };          // Bereich 1 beginnt hier (Grad, im Uhrzeigersinn)
+const tgSpan = n => 360 / n;
+function tgSector(n, deg){ return Math.floor(((((deg - TG_START[n]) % 360) + 360) % 360) / tgSpan(n)); }
+function tgPoint(n, k, r, a){ const deg = TG_START[n] + (k + a) * tgSpan(n), rad = deg * Math.PI / 180; return { x: 100 * r * Math.cos(rad), y: 100 * r * Math.sin(rad) }; }
+/* Rein zufällige Kennung – uid() enthält die Uhrzeit, daraus ließe sich die Reihenfolge ablesen */
+function randId(){
+  try{ const a = new Uint32Array(2); crypto.getRandomValues(a); return a[0].toString(36) + a[1].toString(36); }
+  catch(e){ return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2, 8); }
+}
+const tgMeanP = (tg, k) => { const q = tg.pts.filter(x => x.k === k); return q.length ? Math.round((1 - q.reduce((s, x) => s + x.r, 0) / q.length) * 100) : null; };
+const tgResponses = tg => Math.round(tg.pts.length / Math.max(1, tg.areas.length));
+const tgCountText = tg => tgResponses(tg) === 1 ? t("tgCount1") : t("tgCount").replace("{n}", String(tgResponses(tg)));
+/* Ring-Ausschnitt als Pfad (für n = 1 ein voller Ring) */
+function tgRingPath(n, k, r0, r1){
+  if(n === 1) return "M " + r1 + " 0 A " + r1 + " " + r1 + " 0 1 1 " + (-r1) + " 0 A " + r1 + " " + r1 + " 0 1 1 " + r1 + " 0 Z" +
+    (r0 ? " M " + r0 + " 0 A " + r0 + " " + r0 + " 0 1 0 " + (-r0) + " 0 A " + r0 + " " + r0 + " 0 1 0 " + r0 + " 0 Z" : "");
+  const a0 = (TG_START[n] + k * tgSpan(n)) * Math.PI / 180, a1 = (TG_START[n] + (k + 1) * tgSpan(n)) * Math.PI / 180, big = tgSpan(n) > 180 ? 1 : 0;
+  const P = (r, a) => (r * Math.cos(a)).toFixed(2) + " " + (r * Math.sin(a)).toFixed(2);
+  return "M " + P(r1, a0) + " A " + r1 + " " + r1 + " 0 " + big + " 1 " + P(r1, a1) + " L " + P(r0, a1) + (r0 ? " A " + r0 + " " + r0 + " 0 " + big + " 0 " + P(r0, a0) : "") + " Z";
+}
+/* Zielscheibe zeichnen; dots: [{k, r, a, big}], means: Mittelwert-Bögen zeigen */
+function drawTarget(svg, tg, dots, means){
+  svg.textContent = "";
+  const n = tg.areas.length;
+  for(let k = 0; k < n; k++) [[66, 100, 0.13], [33, 66, 0.24], [0, 33, 0.38]].forEach(([r0, r1, op]) =>
+    svg.appendChild(svgEl("path", { d: tgRingPath(n, k, r0, r1), fill: TG_COL[k], "fill-opacity": op, "fill-rule": "evenodd" })));
+  [33, 66, 100].forEach(r => svg.appendChild(svgEl("circle", { cx: 0, cy: 0, r, fill: "none", class: "tgring", "stroke-width": 0.8, "stroke-dasharray": "3 3" })));
+  if(n > 1) for(let k = 0; k < n; k++){ const p = tgPoint(n, k, 1.06, 0); svg.appendChild(svgEl("line", { x1: 0, y1: 0, x2: p.x, y2: p.y, stroke: "#fff", "stroke-width": 2.2 })); }
+  const sm = svgEl("text", { x: 0, y: 5, "text-anchor": "middle", "font-size": 15, class: "tgsm" }); sm.textContent = "☺"; svg.appendChild(sm);
+  /* Beschriftung außen, mittig über dem Bereich, höchstens zwei Zeilen */
+  tg.areas.forEach((lab, k) => {
+    if(!lab) return;
+    const LP = { 2: [[-72, -126], [72, -126]], 3: [[78, -126], [0, 128], [-78, -126]] };
+    const p = LP[n] ? { x: LP[n][k][0], y: LP[n][k][1] } : tgPoint(n, k, n === 1 ? 0 : 1.28, 0.5), words = lab.split(" "), lines = [""];
+    words.forEach(w => { if((lines[lines.length - 1] + " " + w).trim().length > 16 && lines[lines.length - 1] && lines.length < 2) lines.push(w); else lines[lines.length - 1] = (lines[lines.length - 1] + " " + w).trim(); });
+    const tx = svgEl("text", { x: clamp(p.x, -110, 110).toFixed(1), y: (clamp(p.y, -136, 136) - (lines.length - 1) * 5).toFixed(1), "text-anchor": "middle", "font-size": 10 });
+    lines.forEach((l, i) => { const ts = svgEl("tspan", { x: clamp(p.x, -110, 110).toFixed(1), dy: i ? 11 : 0 }); ts.textContent = l; tx.appendChild(ts); });
+    tx.setAttribute("fill", TG_COL[k]); svg.appendChild(tx);
+  });
+  if(means) for(let k = 0; k < n; k++){
+    const m = tgMeanP(tg, k); if(m === null) continue;
+    const r = 100 * (1 - m / 100);
+    if(n === 1) svg.appendChild(svgEl("circle", { cx: 0, cy: 0, r: r.toFixed(1), fill: "none", class: "tgmean", "stroke-width": 2, "stroke-dasharray": "5 3" }));
+    else { const a = tgPoint(n, k, r / 100, 0), b = tgPoint(n, k, r / 100, 1);
+      svg.appendChild(svgEl("path", { d: "M " + a.x.toFixed(1) + " " + a.y.toFixed(1) + " A " + r.toFixed(1) + " " + r.toFixed(1) + " 0 " + (tgSpan(n) > 180 ? 1 : 0) + " 1 " + b.x.toFixed(1) + " " + b.y.toFixed(1), fill: "none", class: "tgmean", "stroke-width": 2, "stroke-dasharray": "5 3" })); }
+  }
+  dots.forEach(d => { const p = tgPoint(n, d.k, d.r, d.a);
+    svg.appendChild(svgEl("circle", { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: d.big ? 7 : 3.2, fill: TG_COL[d.k], stroke: "#fff", "stroke-width": d.big ? 2.2 : 0.9 })); });
+}
+let targetRun = null;          // { cid, tid, cur: [{r, a} | null], order: [k…], result, back }
+function openTargets(c){
+  c = c || curClass(); if(!c) return;
+  c.targets = Array.isArray(c.targets) ? c.targets : [];
+  const sheet = sheetBase(t("tgTitle") + " – " + c.name);
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("tgHint"); sheet.appendChild(h);
+  sheetLabel(sheet, t("tgQuestion"));
+  const q = document.createElement("input"); q.className = "field"; q.id = "tg-question"; q.maxLength = 100; q.placeholder = t("tgQuestionPh"); sheet.appendChild(q);
+  sheetLabel(sheet, t("tgAreas"));
+  let n = 4;
+  const seg = document.createElement("div"); seg.className = "segmented"; seg.id = "tg-count";
+  const box = document.createElement("div"); box.id = "tg-labels";
+  const inputs = [];
+  const defs = k => k === 1 ? [""] : t("tgDef" + k).split("|");
+  const paint = () => {
+    Array.from(seg.children).forEach(b => { const on = +b.dataset.v === n; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    const keep = inputs.map(i => i.value); box.textContent = ""; inputs.length = 0;
+    if(n > 1) for(let k = 0; k < n; k++){
+      const row = document.createElement("div"); row.className = "obsform";
+      const dot = document.createElement("i"); dot.className = "gdot"; dot.style.background = TG_COL[k]; dot.style.flex = "0 0 14px"; dot.style.height = "14px"; dot.style.borderRadius = "4px";
+      const inp = document.createElement("input"); inp.className = "field"; inp.id = "tg-a" + k; inp.maxLength = 60;
+      inp.placeholder = t("tgArea").replace("{n}", String(k + 1)); inp.value = keep[k] !== undefined && keep[k] !== defsAll[keep.length]?.[k] ? keep[k] : defs(n)[k] || "";
+      inp.setAttribute("aria-label", t("tgArea").replace("{n}", String(k + 1)));
+      row.appendChild(dot); row.appendChild(inp); box.appendChild(row); inputs.push(inp);
+    }
+  };
+  const defsAll = { 1: [""], 2: defs(2), 3: defs(3), 4: defs(4) };
+  [[1, "tgOne"], [2, null], [3, null], [4, null]].forEach(([v, k]) => { const b = document.createElement("button"); b.dataset.v = String(v); b.textContent = k ? t(k) : String(v);
+    b.onclick = () => { n = v; paint(); }; seg.appendChild(b); });
+  sheet.appendChild(seg); sheet.appendChild(box); paint();
+  const go = document.createElement("button"); go.className = "primary"; go.id = "tg-start"; go.style.width = "100%"; go.style.marginTop = "10px"; go.textContent = t("tgStart");
+  go.onclick = () => {
+    const title = q.value.trim().slice(0, 100);
+    if(!title){ toast(t("tgNeedQ")); q.focus(); return; }
+    const areas = n === 1 ? [""] : inputs.map(i => i.value.trim().slice(0, 60));
+    if(areas.some(a => n > 1 && !a)){ toast(t("tgNeedArea")); return; }
+    if(c.targets.length >= MAX_TARGETS){ toast(t("tgLimit")); return; }
+    const tg = { id: uid(), title, date: isoDay(new Date()), areas, pts: [] };
+    c.targets.push(tg); save(); closeModal();
+    selfGuard(() => startTarget(c, tg));
+  };
+  sheet.appendChild(go);
+  if(c.targets.length){
+    const lab = document.createElement("div"); lab.className = "eyebrow"; lab.style.marginTop = "16px"; lab.textContent = t("tgRounds"); sheet.appendChild(lab);
+    const list = document.createElement("div"); list.id = "tg-rounds";
+    c.targets.slice().reverse().forEach(tg => {
+      const b = document.createElement("button"); b.className = "grpcard"; b.dataset.tid = tg.id;
+      const hb = document.createElement("b"); hb.textContent = tg.title; b.appendChild(hb);
+      const d = document.createElement("div"); d.textContent = t("tgRoundMeta").replace("{d}", fmtDateLong(tg.date)).replace("{n}", tgCountText(tg)); b.appendChild(d);
+      const ch = document.createElement("div"); ch.className = "tgchips";
+      tg.areas.forEach((a, k) => { const m = tgMeanP(tg, k); if(m === null) return; const sp = document.createElement("span"); sp.style.background = TG_COL[k];
+        sp.textContent = (a ? a + ": " : "") + m + " %"; ch.appendChild(sp); });
+      b.appendChild(ch);
+      b.onclick = () => openTargetResult(c, tg);
+      list.appendChild(b);
+    });
+    sheet.appendChild(list);
+  }
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "10px";
+  close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
+}
+function targetById(c, id){ return c && (c.targets || []).find(x => x.id === id) || null; }
+function startTarget(c, tg, result){
+  const back = $$(".screen.active").map(s => s.id.replace("screen-", ""))[0] || "start";
+  targetRun = { cid: c.id, tid: tg.id, cur: tg.areas.map(() => null), order: [], result: !!result, back: back === "target" ? "start" : back };
+  if(!result){ DB.targetLock = { classId: c.id, targetId: tg.id }; flushSave(); lockOpen = false; }   // Gerät in Schülerhand: Noten wieder sperren
+  $("#screen-target").classList.toggle("result", !!result);
+  $("#tg-a11y").textContent = "";
+  show("target"); paintTarget();
+}
+function paintTarget(){
+  const R = targetRun; if(!R) return;
+  const c = classById(R.cid), tg = targetById(c, R.tid); if(!tg){ endTarget(); return; }
+  $("#tg-q").textContent = tg.title;
+  $("#tg-n").textContent = tgCountText(tg);
+  const svg = $("#tg-svg");
+  svg.setAttribute("aria-label", tg.title);
+  if(R.result){ drawTarget(svg, tg, tg.pts, true); return; }
+  drawTarget(svg, tg, R.cur.map((p, k) => p && { k, r: p.r, a: p.a, big: true }).filter(Boolean), false);
+  /* Bedienung ohne Zeigen (VoiceOver, Tastatur): je Bereich drei Knöpfe innen/mitte/außen */
+  const ax = $("#tg-a11y");
+  if(ax && !ax.childElementCount) tg.areas.forEach((a, k) => [[0.15, "tgV1"], [0.5, "tgV2"], [0.85, "tgV3"]].forEach(([r, v]) => {
+    const b = document.createElement("button"); b.textContent = t("tgA11y").replace("{a}", a || t("tgWhole")).replace("{v}", t(v));
+    b.onclick = () => setTargetPoint(k, r, 0.5); ax.appendChild(b); }));
+  const open = tg.areas.map((a, k) => R.cur[k] ? null : (a || "")).filter(x => x !== null);
+  $("#tg-hint").textContent = !R.order.length ? t(tg.areas.length === 1 ? "tgTap1" : "tgTap") : open.length ? t("tgMissing").replace("{a}", open.join(", ")) : t("tgReady");
+  $("#tg-next").disabled = R.cur.some(p => !p);
+  $("#tg-undo").disabled = !R.order.length;
+}
+/* Tipp in Zielscheiben-Koordinaten (Mitte 0/0, Rand 100) */
+function targetTap(x, y){
+  const R = targetRun; if(!R || R.result) return;
+  const tg = targetById(classById(R.cid), R.tid); if(!tg) return;
+  const n = tg.areas.length, d = Math.hypot(x, y) / 100;
+  if(d > 1.06) return;                                      // daneben getippt
+  const deg = Math.atan2(y, x) * 180 / Math.PI, k = n === 1 ? 0 : tgSector(n, deg);
+  const a = n === 1 ? ((deg + 90 + 360) % 360) / 360 : ((((deg - TG_START[n]) % 360) + 360) % 360) / tgSpan(n) - k;
+  setTargetPoint(k, Math.min(1, d), a);
+}
+function setTargetPoint(k, r, a){
+  const R = targetRun; if(!R || R.result || k < 0 || k >= R.cur.length) return;
+  R.cur[k] = { r: r2(r), a: r2(a) };
+  R.order = R.order.filter(x2 => x2 !== k).concat([k]);
+  haptic(8); paintTarget();
+}
+$("#tg-svg").addEventListener("pointerdown", e => {
+  e.preventDefault();
+  const svg = $("#tg-svg"), m = svg.getScreenCTM && svg.getScreenCTM();
+  if(!m) return;
+  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  const q = pt.matrixTransform(m.inverse());
+  targetTap(q.x, q.y);
+});
+$("#tg-undo").onclick = () => { const R = targetRun; if(!R || !R.order.length) return; R.cur[R.order.pop()] = null; paintTarget(); };
+$("#tg-next").onclick = () => {
+  const R = targetRun; if(!R || R.cur.some(p => !p)) return;
+  const tg = targetById(classById(R.cid), R.tid); if(!tg) return;
+  if(tg.pts.length + R.cur.length > MAX_TPTS){ toast(t("tgFull")); return; }
+  /* an zufälliger Stelle einfügen: aus der Reihenfolge lässt sich niemand zuordnen */
+  R.cur.forEach((p, k) => tg.pts.splice(Math.floor(Math.random() * (tg.pts.length + 1)), 0, { id: randId(), k, r: p.r, a: p.a }));
+  R.cur = tg.areas.map(() => null); R.order = [];
+  save(); haptic(14); toast(t("tgThanks")); paintTarget();
+};
+function endTarget(){
+  const R = targetRun; if(!R) return;
+  targetRun = null; delete DB.targetLock; flushSave();
+  if(!R.result) lockOpen = false;                           // Gerät war in Schülerhand
+  $("#screen-target").classList.remove("result");
+  const back = R.back === "editor" && !curPlanId ? "start" : R.back;
+  if(back === "names") goNames(); else if(back === "editor") show("editor"); else if(back === "start") goHome(); else show(back);
+  const c = classById(R.cid), tg = targetById(c, R.tid);
+  if(!R.result){ toast(t("tgEnded")); if(tg) setTimeout(() => openTargetResult(c, tg), 80); }
+  else if(tg) setTimeout(() => openTargetResult(c, tg), 80);
+}
+holdToExit($("#tg-exit"), () => { if(!targetRun) return; if(targetRun.result){ endTarget(); return; } pupilExit(endTarget); });
+/* Ansicht „groß“: kurzer Tipp aufs ✕ genügt */
+$("#tg-exit").addEventListener("click", () => { if(targetRun && targetRun.result) endTarget(); });
+function openTargetResult(c, tg){
+  const sheet = sheetBase(t("tgResult") + ": " + tg.title);
+  const meta = document.createElement("div"); meta.className = "hint"; meta.textContent = c.name + " · " + t("tgRoundMeta").replace("{d}", fmtDateLong(tg.date)).replace("{n}", tgCountText(tg)); sheet.appendChild(meta);
+  const svg = svgEl("svg", { viewBox: "-150 -150 300 300", id: "tgr-svg", role: "img", "aria-label": tg.title }); sheet.appendChild(svg);
+  drawTarget(svg, tg, tg.pts, true);
+  const means = document.createElement("div"); means.className = "tgmeans"; means.id = "tg-means";
+  if(!tg.pts.length){ const e = document.createElement("div"); e.textContent = t("tgEmpty"); means.appendChild(e); }
+  tg.areas.forEach((a, k) => { const m = tgMeanP(tg, k), cnt = tg.pts.filter(x => x.k === k).length;
+    const r = document.createElement("div"); const i = document.createElement("i"); i.style.background = TG_COL[k]; r.appendChild(i);
+    const sp = document.createElement("span"); const name = a || tg.title;
+    sp.textContent = m === null ? t("tgAreaNone").replace("{a}", name) : t("tgAreaRow").replace("{a}", name).replace("{p}", String(m)).replace("{n}", cnt === 1 ? t("tgPts1") : t("tgPts").replace("{n}", String(cnt)));
+    r.appendChild(sp); means.appendChild(r); });
+  sheet.appendChild(means);
+  const hm = document.createElement("div"); hm.className = "hint"; hm.textContent = t("tgMeanHint"); sheet.appendChild(hm);
+  const row = document.createElement("div"); row.className = "btnrow"; row.style.marginTop = "10px";
+  const big = document.createElement("button"); big.className = "cbtn outline"; big.id = "tg-big"; big.textContent = t("tgBig");
+  big.onclick = () => { closeModal(); startTarget(c, tg, true); };
+  const more = document.createElement("button"); more.className = "cbtn purple"; more.id = "tg-more"; more.textContent = t("tgMore");
+  more.onclick = () => { closeModal(); selfGuard(() => startTarget(c, tg)); };
+  row.appendChild(big); row.appendChild(more); sheet.appendChild(row);
+  const pdf = document.createElement("button"); pdf.className = "cbtn outline"; pdf.id = "tg-pdf"; pdf.style.width = "100%"; pdf.style.marginTop = "8px";
+  pdf.appendChild(icon("pdf")); const ps = document.createElement("span"); ps.textContent = t("tgPdf"); pdf.appendChild(ps);
+  pdf.onclick = () => exportTargetPdf(c, tg); sheet.appendChild(pdf);
+  const del = document.createElement("button"); del.className = "ghost"; del.id = "tg-delete"; del.style.width = "100%"; del.style.marginTop = "8px"; del.style.color = "var(--warn)";
+  del.textContent = t("tgDelete");
+  del.onclick = () => { closeModal(); askConfirm(t("tgDeleteQ"), t("tgDeleteT").replace("{t}", tg.title), t("delete"), () => {
+    c.targets = (c.targets || []).filter(x => x !== tg); save(); toast(t("tgDeleted")); setTimeout(() => openTargets(c), 60); }, () => openTargetResult(c, tg)); };
+  sheet.appendChild(del);
+  const back = document.createElement("button"); back.className = "primary"; back.style.width = "100%"; back.style.marginTop = "10px";
+  back.textContent = t("back"); back.onclick = () => openTargets(c); sheet.appendChild(back);
+}
+/* PDF: Zielscheibe mit allen Punkten, Mittelwert-Bögen und Liste */
+function targetPdfPages(c, tg){
+  const W = A4P_W, H = A4P_H, M = 44, cur = [], cx = W / 2, cy = H - 330, R = 190, n = tg.areas.length;
+  const rgb = hex => [1, 3, 5].map(i => (parseInt(hex.slice(i, i + 2), 16) / 255).toFixed(3)).join(" ");
+  const mix = (hex, f) => [1, 3, 5].map(i => (1 - f + f * parseInt(hex.slice(i, i + 2), 16) / 255).toFixed(3)).join(" ");
+  const P = (r, deg) => { const a = deg * Math.PI / 180; return [cx + R * r * Math.cos(a), cy - R * r * Math.sin(a)]; };   // Bildschirm-y zeigt nach unten, PDF-y nach oben
+  const poly = (pts, op) => pts.map((p, i) => p[0].toFixed(1) + " " + p[1].toFixed(1) + (i ? " l" : " m")).join(" ") + " " + op;
+  cur.push(pdfText(M, H - M - 10, 18, tg.title));
+  cur.push(pdfText(M, H - M - 30, 10.5, c.name + " · " + fmtDateLong(tg.date) + " · " + tgCountText(tg), "0.353 0.420 0.459"));
+  for(let k = 0; k < n; k++) [[0.66, 1, 0.13], [0.33, 0.66, 0.24], [0, 0.33, 0.38]].forEach(([r0, r1, op]) => {
+    const a0 = TG_START[n] + k * tgSpan(n), a1 = a0 + tgSpan(n), pts = [], st = Math.max(8, Math.round(tgSpan(n) / 4));
+    for(let i = 0; i <= st; i++) pts.push(P(r1, a0 + (a1 - a0) * i / st));
+    for(let i = st; i >= 0; i--) pts.push(P(r0, a0 + (a1 - a0) * i / st));
+    cur.push(mix(TG_COL[k], op) + " rg " + poly(pts, "f"));
+  });
+  [0.33, 0.66, 1].forEach(r => cur.push("0.6 0.6 0.65 RG 0.6 w [3 3] 0 d " + pdfEllipse(cx, cy, R * r, R * r) + " S [] 0 d"));
+  if(n > 1) for(let k = 0; k < n; k++){ const p = P(1.03, TG_START[n] + k * tgSpan(n)); cur.push("1 1 1 RG 2 w " + cx + " " + cy + " m " + p[0].toFixed(1) + " " + p[1].toFixed(1) + " l S"); }
+  for(let k = 0; k < n; k++){ const m = tgMeanP(tg, k); if(m === null) continue; const r = 1 - m / 100, a0 = TG_START[n] + k * tgSpan(n), pts = [];
+    for(let i = 0; i <= 24; i++) pts.push(P(r, a0 + tgSpan(n) * i / 24));
+    cur.push("0.18 0.10 0.33 RG 1.6 w [5 3] 0 d " + poly(pts, "S") + " [] 0 d"); }
+  tg.pts.forEach(q => { const deg = TG_START[n] + (q.k + q.a) * tgSpan(n), p = P(q.r, deg); cur.push(rgb(TG_COL[q.k]) + " rg " + pdfEllipse(p[0], p[1], 3, 3) + " f"); });
+  let y = cy - R - 40;
+  tg.areas.forEach((a, k) => { const m = tgMeanP(tg, k), cnt = tg.pts.filter(x => x.k === k).length, name = a || tg.title;
+    cur.push(rgb(TG_COL[k]) + " rg " + M + " " + (y - 2) + " 10 10 re f");
+    cur.push(pdfText(M + 18, y, 11, m === null ? t("tgAreaNone").replace("{a}", name) : t("tgAreaRow").replace("{a}", name).replace("{p}", String(m)).replace("{n}", cnt === 1 ? t("tgPts1") : t("tgPts").replace("{n}", String(cnt))))); y -= 18; });
+  cur.push(pdfText(M, y - 6, 9, t("tgMeanHint"), "0.353 0.420 0.459"));
+  return [{ content: cur.join("\n"), w: W, h: H }];
+}
+function exportTargetPdf(c, tg){
+  try{
+    if(download(buildPDF(targetPdfPages(c, tg)), safeName(t("tgFile") + " " + c.name + " " + tg.date) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
+$("#lb-target").onclick = () => { const c = curClass(); if(c) openTargets(c); };
+$("#btn-class-targets").onclick = () => { const c = curClass(); if(c) openTargets(c); };
 /* Vor dem ersten Mal: Datenschutzhinweis, und ohne Fach gleich eines anlegen */
 function withGradesReady(fn){
   if(needUnlock(() => withGradesReady(fn))) return;
@@ -10692,6 +11564,132 @@ function proposeGrade(c, sid, av){
     if(!best || d < best.d - eps || (Math.abs(d - best.d) < eps && (R.fav ? x < best.x : x > best.x))) best = { tok, x, d };
   });
   return best.tok;
+}
+/* ---- Rechenweg: dieselben Schritte wie studentAverages/proposeGrade/missedLessons, nur mitgeschrieben.
+   Liefert Zeilen { k: "h"|"row"|"sum"|"note", a, b } – daraus entstehen Blatt und PDF. */
+function gradeCalc(c, s, sid, term){
+  const list = courseAssess(c, s.id, term), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
+  const L = [], f = (v, d) => fmtNum(v, d === undefined ? dg : d);
+  /* Gesamtwert: so genau, dass die Rundung nachvollziehbar bleibt (1,497 statt gerundet 1,50 → 1) */
+  const fx = v => { const r = Math.round(v * 10 ** dg) / 10 ** dg; return Math.abs(r - v) < 1e-9 ? f(v) : fmtNum(v, 3); };
+  const wtxt = w => fmtNum(w, w % 1 ? 1 : 0);
+  L.push({ k: "note", a: sc === "points" ? t("calcScalePoints") : t("calcScaleGrade") });
+  if(sc === "grade" && list.some(a => a.scale === "points" && a.marks[sid])) L.push({ k: "note", a: t("calcMixed") });
+  const W = own(c.gradeW || {}, s.id) ? c.gradeW[s.id] : 50;
+  const res = {};
+  [["written", "gWritten", W], ["other", "gOther", 100 - W]].forEach(([kind, lk, pct]) => {
+    L.push({ k: "h", a: t("calcPart").replace("{k}", t(lk)).replace("{w}", String(pct)) });
+    let sv = 0, sw = 0, n = 0;
+    list.filter(a => a.kind === kind && a.marks[sid]).forEach(a => {
+      const tok = a.marks[sid], v = valIn(a, tok, sc);
+      const pts = hasTasks(a) ? studentPoints(a, sid) : null;
+      const left = fmtDate(a.date) + " " + a.title + (pts !== null ? " (" + t("calcFromPts").replace("{a}", fmtNum(pts, pts % 1 ? 1 : 0)).replace("{b}", fmtNum(taskMax(a), taskMax(a) % 1 ? 1 : 0)) + ")" : "");
+      if(v === null){
+        L.push({ k: "row", a: left, b: (tok === "x" ? t("calcMiss") + " – " : SMILEY[tok] ? t("calcSmiley") + " – " : "") + t("calcNotCounted"), off: true });
+        return;
+      }
+      const shown = a.scale === "points" && sc === "grade" ? t("calcPtsTo").replace("{p}", tok).replace("{g}", f(v, 1)) : sc === "grade" ? tok + " = " + f(v, 1) : tok;
+      L.push({ k: "row", a: left, b: shown + " " + t("calcWeight").replace("{w}", wtxt(a.weight)) });
+      sv += v * a.weight; sw += a.weight; n++;
+    });
+    const avg = sw ? sv / sw : null;
+    res[kind] = avg;
+    L.push(avg === null ? { k: "note", a: t("calcNone") }
+      : { k: "sum", a: t("calcAvg").replace("{s}", f(sv, 2)).replace("{w}", wtxt(sw)).replace("{a}", f(avg)) });
+  });
+  /* Gesamt: wie studentAverages – nur Teile mit Wert und Gewicht > 0 */
+  const av = studentAverages(c, s.id, sid, term);
+  L.push({ k: "h", a: t("calcTotal") });
+  const wr = res.written, ot = res.other;
+  if(av.total === null){
+    if(wr !== null && W === 0) L.push({ k: "note", a: t("calcTotalZero").replace("{k}", t("gWritten")) });
+    if(ot !== null && W === 100) L.push({ k: "note", a: t("calcTotalZero").replace("{k}", t("gOther")) });
+    L.push({ k: "note", a: t("calcNone") });
+  }
+  else if(wr !== null && ot !== null && W > 0 && W < 100)
+    L.push({ k: "sum", a: t("calcTotalBoth").replace("{w1}", String(W)).replace("{a1}", f(wr)).replace("{w2}", String(100 - W)).replace("{a2}", f(ot)).replace("{t}", fx(av.total)) });
+  else {
+    const only = (wr !== null && W > 0) ? "gWritten" : "gOther";
+    if(W === 100 && ot !== null) L.push({ k: "note", a: t("calcTotalZero").replace("{k}", t("gOther")) });
+    if(W === 0 && wr !== null) L.push({ k: "note", a: t("calcTotalZero").replace("{k}", t("gWritten")) });
+    L.push({ k: "sum", a: t("calcTotalOnly").replace("{k}", t(only)).replace("{t}", fx(av.total)) });
+  }
+  /* Rundung */
+  const R = roundRule(c, s.id), pv = proposeGrade(c, s.id, av);      // Rundung gilt je Fach
+  L.push({ k: "h", a: t("calcRound") });
+  L.push({ k: "note", a: sc === "points" ? t("calcRoundPts") : R.tend ? t(R.fav ? "calcRoundTendFav" : "calcRoundTendMath") : t(R.fav ? "calcRoundFav" : "calcRoundMath") });
+  L.push(pv ? { k: "sum", a: t("calcArrow").replace("{v}", fx(av.total)).replace("{g}", pv) } : { k: "note", a: t("calcNoTotal") });
+  /* Fehlstunden: dieselben Filter wie missedLessons */
+  const off = cancelledSlots(c), rows = [];
+  (c.absLog || []).forEach(e => {
+    if(e.ids.indexOf(sid) < 0 || off.has(e.d + "|" + e.p) || !inTerm({ date: e.d }, term) || (e.s || "") !== s.id) return;
+    rows.push(e);
+  });
+  rows.sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p);
+  L.push({ k: "h", a: t("calcMissed").replace("{s}", s.name).replace("{t}", termLabel(term)) });
+  let tot = 0, exc = 0;
+  rows.forEach(e => { const ex = isExcused(c, e.d, sid); tot += e.n; if(ex) exc += e.n;
+    L.push({ k: "row", a: fmtDate(e.d) + (e.p >= 0 ? " · " + t("calcPeriod").replace("{p}", String(e.p + 1)) : ""), b: t("calcMissedRow").replace("{n}", String(e.n)) + (ex ? " · " + t("calcExc") : "") }); });
+  L.push(rows.length ? { k: "sum", a: t("calcMissedSum").replace("{n}", String(tot)).replace("{e}", String(exc)) } : { k: "note", a: t("calcMissedNone") });
+  const noSubj = (c.absLog || []).filter(e => e.ids.indexOf(sid) >= 0 && !off.has(e.d + "|" + e.p) && inTerm({ date: e.d }, term) && !(e.s || "")).reduce((a, e) => a + e.n, 0);
+  if(noSubj) L.push({ k: "note", a: t("calcNoSubj").replace("{n}", String(noSubj)) });
+  L.push({ k: "note", a: t("calcMissedNote") });
+  return { lines: L, av, proposal: pv, missed: tot, excused: exc };
+}
+function openGradeCalc(c, s, st, term){
+  if(needUnlock(() => openGradeCalc(c, s, st, term))) return;
+  const sheet = sheetBase(t("calcTitle").replace("{n}", st.name).replace("{s}", s.name) + (term === "h1" || term === "h2" ? " · " + termLabel(term) : ""));
+  sheet.dataset.sens = "1";
+  const box = document.createElement("div"); box.id = "calc-lines"; box.className = "calcbox";
+  gradeCalc(c, s, st.id, term).lines.forEach(l => {
+    const r = document.createElement("div"); r.className = "calc-" + l.k + (l.off ? " off" : "");
+    if(l.k === "h"){ r.setAttribute("role", "heading"); r.setAttribute("aria-level", "4"); }
+    const a = document.createElement("span"); a.textContent = l.a; r.appendChild(a);
+    if(l.b){ const b = document.createElement("b"); b.textContent = l.b; r.appendChild(b); }
+    box.appendChild(r);
+  });
+  sheet.appendChild(box);
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("calcHint"); sheet.appendChild(h);
+  const sw = switchRow(t("calcTalk"), t("calcTalkSub"), () => DB.settings.talkCalc === true, () => {
+    if(DB.settings.talkCalc) delete DB.settings.talkCalc; else DB.settings.talkCalc = true; save(); });
+  sw.id = "calc-talk"; sheet.appendChild(sw);
+  const pdf = document.createElement("button"); pdf.className = "cbtn outline"; pdf.id = "calc-pdf"; pdf.style.width = "100%"; pdf.style.marginTop = "10px";
+  pdf.appendChild(icon("pdf")); const ps = document.createElement("span"); ps.textContent = t("calcPdf"); pdf.appendChild(ps);
+  pdf.onclick = () => exportGradeCalc(c, s, st, term);
+  sheet.appendChild(pdf);
+  const back = document.createElement("button"); back.className = "primary"; back.id = "calc-back"; back.style.width = "100%"; back.style.marginTop = "10px";
+  back.textContent = t("back"); back.onclick = () => studentDetail(c, s, st, term);
+  sheet.appendChild(back);
+}
+/* Zeilen des Rechenwegs ins PDF – genutzt vom eigenen Blatt und vom Gesprächsblatt */
+function calcPdfLines(lines, add, need, x0, x1){
+  const grey = "0.353 0.420 0.459";
+  lines.forEach(l => {
+    const size = l.k === "h" ? 11 : 9.5, txt = l.a;
+    if(l.k === "h"){ need(24); add(y => pdfText(x0, y - 6, size, txt), 20); return; }
+    const wraps = pdfWrap(txt, l.b ? 60 : 95);
+    wraps.forEach((w, i) => { need(14); add(y => pdfText(x0 + 8, y, size, w, l.k === "note" || l.off ? grey : undefined) +
+      (i === 0 && l.b ? "\n" + pdfText(x1 - pdfTextW(l.b, size), y, size, l.b, l.off ? grey : undefined) : ""), 13); });
+    if(l.k === "sum") add(() => "", 3);
+  });
+}
+function gradeCalcPages(c, s, st, term){
+  const W = A4P_W, H = A4P_H, M = 44, pages = [];
+  let cur = [], y = 0;
+  const start = () => { cur = []; cur.push(pdfText(M, H - M - 10, 16, t("calcTitle").replace("{n}", st.name).replace("{s}", s.name)));
+    cur.push(pdfText(M, H - M - 28, 10, c.name + " · " + termLabel(term) + " · " + new Date().toLocaleDateString(LANG === "en" ? "en-GB" : "de-DE"), "0.353 0.420 0.459")); y = H - M - 56; };
+  const need = h => { if(y - h < M + 10){ pages.push({ content: cur.join("\n"), w: W, h: H }); start(); } };
+  start();
+  calcPdfLines(gradeCalc(c, s, st.id, term).lines, (fn, dy) => { const out = fn(y); if(out) cur.push(out); y -= dy; }, need, M, W - M);
+  need(30); y -= 8; cur.push(pdfText(M, y, 9, t("calcHint"), "0.353 0.420 0.459"));
+  pages.push({ content: cur.join("\n"), w: W, h: H });
+  return pages;
+}
+function exportGradeCalc(c, s, st, term){
+  try{
+    if(download(buildPDF(gradeCalcPages(c, s, st, term)), safeName(t("calcFile") + " " + st.name + " " + s.name + termFileSuffix(term)) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
 }
 const smileyWord = tok => t("gSm_" + tok);
 function csvValue(tok){ return tok === "x" ? t("gMissing") : SMILEY[tok] ? smileyWord(tok) : String(tok || ""); }
@@ -10815,6 +11813,8 @@ function talkSheetPages(c, st){
         y -= 14;
       });
     }
+    /* auf Wunsch der vollständige Rechenweg (Schuljahr) */
+    if(DB.settings.talkCalc === true){ y -= 4; calcPdfLines(gradeCalc(c, s, st.id).lines, (fn, dy) => { const out = fn(y); if(out) cur.push(out); y -= dy; }, need, M, W - M); }
     y -= 10;
   });
   /* Beobachtungen (älteste zuerst) und offene Abhaklisten */
@@ -11238,6 +12238,21 @@ const isZd = (c, subj, sid) => Array.isArray(c.zd) && c.zd.indexOf(zdKey(subj, s
 function setZd(c, subj, sid, on){
   c.zd = (Array.isArray(c.zd) ? c.zd : []).filter(x => x !== zdKey(subj, sid));
   if(on) c.zd.push(zdKey(subj, sid));
+}
+/* Feedback-Zielscheiben: nur Punkte (Bereich, Abstand zur Mitte, Lage im Bereich) – kein Bezug zu Namen */
+const MAX_TARGETS = 100, MAX_TPTS = 2000;
+const r2 = v => Math.round(clamp(v, 0, 1) * 100) / 100;
+function sanTargets(arr){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(x => x && typeof x === "object" && typeof x.title === "string" && Array.isArray(x.areas)).map(x => {
+    const areas = x.areas.filter(a => typeof a === "string").map(a => a.slice(0, 60)).slice(0, 4);
+    const n = Math.max(1, areas.length), ps = new Set();
+    return { id: safeId(x.id), title: x.title.slice(0, 100), date: typeof x.date === "string" && DAY_RX.test(x.date) ? x.date : isoDay(new Date()),
+      areas: areas.length ? areas : [""],
+      pts: (Array.isArray(x.pts) ? x.pts : []).filter(q => q && Number.isInteger(q.k) && q.k >= 0 && q.k < n && typeof q.r === "number" && isFinite(q.r) && typeof q.a === "number" && isFinite(q.a))
+        .map(q => ({ id: safeId(q.id), k: q.k, r: r2(q.r), a: r2(q.a) })).filter(q => !ps.has(q.id) && ps.add(q.id)).slice(0, MAX_TPTS) };
+  }).filter(x => !seen.has(x.id) && seen.add(x.id)).slice(-MAX_TARGETS);
 }
 function sanJournal(arr){
   if(!Array.isArray(arr)) return [];
@@ -11707,7 +12722,7 @@ function openTallyList(kArg, back){
    Änderung der anderen (samt allem, was daran hängt) gelöscht wurde, bleibt gelöscht.
    Gerätebezogenes (Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse) wird nie übernommen. */
 const SYNC_MAX_STAMPS = 200000, SYNC_MAX_DEL = 20000, SYNC_DEL_DAYS = 400, SYNC_FUTURE = 86400;
-const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd)(\||$)/;
+const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|tg|tp)(\||$)/;
 const SYNC_HASH = /^[0-9a-z]{6,14}$/;
 const syncNow = () => Math.floor(Date.now() / 1000);
 const jsonOf = v => JSON.stringify(v === undefined ? null : v);
@@ -11768,6 +12783,10 @@ function syncClass(c, add){
     (x.ticks || []).forEach(v => add("kt|" + cid + "|" + idk(x.id) + "|" + idk(v), 1, kk, [sk(v.slice(11))]));
   });
   (c.journal || []).forEach(x => add("j|" + cid + "|" + idk(x.id), x, ck, x.s ? ["subj|" + idk(x.s)] : null));
+  /* Zielscheiben: Kopf und jeder Punkt einzeln – zwei Geräte sammeln, ohne sich zu überschreiben */
+  (c.targets || []).forEach(x => { const tk = "tg|" + cid + "|" + idk(x.id);
+    add(tk, { title: x.title, date: x.date, areas: x.areas }, ck);
+    (x.pts || []).forEach(q => add("tp|" + cid + "|" + idk(x.id) + "|" + idk(q.id), q, tk)); });
   (c.exc || []).forEach(v => add("ex|" + cid + "|" + idk(v), 1, ck, [sk(v.slice(11))]));
   (c.zd || []).forEach(v => { const i = v.indexOf("|"); add("zd|" + cid + "|" + idk(v), 1, ck, [sk(v.slice(i + 1)), "subj|" + idk(v.slice(0, i))]); });
   (c.late || []).forEach(x => add("lt|" + cid + "|" + idk(x.d + "." + x.p + "|" + x.sid), { min: x.min, s: x.s }, ck, [sk(x.sid)]));
@@ -11829,7 +12848,10 @@ function syncStamp(){
     cur.forEach((e, k) => {
       const o = prev.get(k);
       /* immer später als der bisherige Stempel bzw. die Löschung */
-      if(!o || o.v !== e.v){ const h = hk(k); DB.stamps[k] = Math.max(now, (DB.stamps[k] || 0) + 1, (DB.del[h] || 0) + 1); delete DB.del[h]; changed = true; }
+      if(!o || o.v !== e.v){ const h = hk(k);
+        /* Zielscheiben-Punkte ändern sich nie: fester Stempel statt Uhrzeit – sonst verriete er die Reihenfolge der Antworten */
+        DB.stamps[k] = k.slice(0, 3) === "tp|" ? Math.max(1, (DB.del[h] || 0) + 1) : Math.max(now, (DB.stamps[k] || 0) + 1, (DB.del[h] || 0) + 1);
+        delete DB.del[h]; changed = true; }
     });
     prev.forEach((e, k) => {
       if(cur.has(k)) return;
@@ -11991,6 +13013,11 @@ function mergeDB(L0, R){
       return k;
     });
     sub("j", "journal", x => x.id);
+    sub("tg", "targets", x => x.id, (t1, t2, w) => {
+      const x = clone(w === "R" || !t1 ? t2 : t1);
+      if(t1) x.pts = mergeList(t1.pts, t2.pts, q => "tp|" + cid + "|" + idk(t1.id) + "|" + idk(q.id));
+      return x;
+    });
     c.exc = mergeList(cl.exc, cr.exc, v => "ex|" + cid + "|" + idk(v));
     c.zd = mergeList(cl.zd, cr.zd, v => "zd|" + cid + "|" + idk(v));
     sub("lt", "late", x => x.d + "." + x.p + "|" + x.sid);
@@ -12030,7 +13057,7 @@ function mergeDB(L0, R){
   };
   /* Leere Klasse als Gegenstück, wenn nur eine Seite die Klasse hat */
   classMerge.shell = x => ({ id: x.id, name: x.name, archived: false, levelMode: "off", subNote: "", color: "", gradeW: {}, gradeRound: {}, gradeSubjects: [],
-    students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [], zd: [],
+    students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [], zd: [], targets: [],
     lesson: { date: "", absent: [], picked: [], notes: {} }, lastSubject: "", lastGradePlan: "" });
   out.classes = mergeList(L.classes, R.classes, c => "c|" + idk(c.id), classMerge);
   /* Papierkorb: was durch den Abgleich wieder da ist, gehört nicht mehr hinein */
@@ -12300,9 +13327,12 @@ function bioAuth(ok, fail){
 /* Ohne nutzbare Entsperrung (Biometrie entfernt, Plugin fehlt) bietet die App an, die Sperre
    auszuschalten – das kann nur, wer das Gerät selbst entsperrt hat und die Einstellungen ändern konnte */
 const LOCK_UNUSABLE = [-101, -104, -106, -110, "noplugin"];
+/* Nach einem Schülermodus ohne nutzbare Entsperrung hält vielleicht ein Schüler das Gerät – dann
+   bis zum nächsten Start nicht anbieten, die Sperre auszuschalten */
+var lockBrokenAfterSelf = false;
 function lockError(e){
   const c = e && e.code;
-  if(LOCK_UNUSABLE.indexOf(c) >= 0 && DB.settings.lock === true){
+  if(LOCK_UNUSABLE.indexOf(c) >= 0 && DB.settings.lock === true && !lockBrokenAfterSelf){
     askConfirm(t("lockBrokenQ"), t("lockBrokenT"), t("lockBrokenOk"), () => { DB.settings.lock = false; save(); renderSettings(); toast(t("lockOff")); });
     return;
   }
@@ -12342,6 +13372,109 @@ function relock(){
   if($("#modal").classList.contains("on") && !selfMode && (onGrades || $("#sheet").dataset.sens === "1")) closeModal();
   if(onGrades) goHome();
 }
+/* ---- Daten & Datenschutz: Sicherung, Sperre, Speicher, alte Klassen ---- */
+function storageUse(){
+  let n = 0;
+  [KEY, KEY_PREV, KEY + ".defekt"].forEach(k => { const v = Store.get(k); if(v) n += v.length; });
+  return { chars: n, pct: Math.min(100, Math.round(n / STORE_CAP * 100)), full: !Store.available };
+}
+/* Letzte Änderung einer Klasse aus den Zeitstempeln des Abgleichs (Sekunden) */
+/* Letzte Änderung je Klasse aus den Zeitstempeln des Abgleichs (Sekunden) – ein Durchlauf für alle */
+function classChangeMap(){
+  const m = new Map(), S = DB.stamps || {};
+  for(const k in S){
+    const a = k.indexOf("|"); if(a < 0) continue;
+    const b = k.indexOf("|", a + 1), id = b < 0 ? k.slice(a + 1) : k.slice(a + 1, b);
+    if(S[k] > (m.get(id) || 0)) m.set(id, S[k]);
+  }
+  return m;
+}
+function openPrivacy(){
+  if(needUnlock(openPrivacy)) return;
+  const sheet = sheetBase(t("pvTitle")); sheet.dataset.sens = "1";
+  const intro = document.createElement("div"); intro.className = "hint"; intro.textContent = t("pvLocal"); sheet.appendChild(intro);
+  const box = document.createElement("div"); box.className = "calcbox"; box.id = "pv-status"; sheet.appendChild(box);
+  const row = (id, ok, title, sub, btn) => {
+    const r = document.createElement("div"); r.className = "pvrow"; r.id = id;
+    const i = document.createElement("span"); i.className = "pvi" + (ok ? "" : " warn"); i.textContent = ok ? "✓" : "!"; i.setAttribute("aria-hidden", "true"); r.appendChild(i);
+    if(!ok){ const sr = document.createElement("span"); sr.className = "sr"; sr.textContent = t("pvAttn"); r.appendChild(sr); }
+    const tx = document.createElement("div"); tx.className = "pvt";
+    const b = document.createElement("b"); b.textContent = title; tx.appendChild(b);
+    const sp = document.createElement("span"); sp.textContent = sub; tx.appendChild(sp);
+    r.appendChild(tx);
+    if(btn){ const bb = document.createElement("button"); bb.className = "minibtn outline"; bb.textContent = btn[0]; bb.setAttribute("aria-label", btn[0] + ": " + title); bb.onclick = btn[1]; r.appendChild(bb); }
+    box.appendChild(r);
+    return tx;
+  };
+  /* Sicherung */
+  const lb = DB.lastBackup, old = !lb || daysSince(lb) >= 30;
+  row("pv-backup", !old && DB.lastBackupEnc === true, t("pvBackup"),
+    lb ? new Date(lb).toLocaleDateString(LANG === "en" ? "en-GB" : "de-DE") + " · " + t(DB.lastBackupEnc ? "pvBackupEnc" : "pvBackupPlain") + (old ? " · " + t("pvBackupOld") : "") : t("pvBackupNever"),
+    [t("pvBackupNow"), () => { closeModal(); setTimeout(() => $("#btn-backup").onclick(), 60); }]);
+  /* Sperre */
+  const app = !!window.cordova;
+  row("pv-lock", DB.settings.lock === true, t("pvLock"), app ? t(DB.settings.lock ? "pvLockOn" : "pvLockOff") : t("pvLockWeb"),
+    app ? [t("pvLockToggle"), () => { closeModal(); toggleLock(); }] : null);
+  /* Umfang */
+  const nS = DB.classes.reduce((a, c) => a + c.students.length, 0), nA = DB.classes.reduce((a, c) => a + (c.assess || []).length, 0), nO = DB.classes.reduce((a, c) => a + (c.obs || []).length, 0);
+  row("pv-counts", true, t("pvStored"), t("pvCounts").replace("{c}", String(DB.classes.length)).replace("{s}", String(nS)).replace("{a}", String(nA)).replace("{o}", String(nO)));
+  /* Speicher */
+  flushSave();
+  const u = storageUse(), warn = u.full || u.pct >= 70;
+  const st = row("pv-storage", !warn, t("pvStorage"), t("pvStorageVal").replace("{p}", u.chars && u.pct < 1 ? "< 1 %" : u.pct + " %").replace("{m}", fmtNum(u.chars * 2 / 1e6, 1)));
+  const bar = document.createElement("div"); bar.className = "pvbar" + (warn ? " warn" : ""); const bi = document.createElement("i"); bi.style.width = Math.max(2, u.pct) + "%"; bar.appendChild(bi); st.appendChild(bar);
+  if(warn){ const w = document.createElement("span"); w.id = "pv-storage-warn"; w.style.color = "var(--warn)"; w.textContent = t("pvStorageWarn"); st.appendChild(w); }
+  /* Alte Klassen */
+  if(DB.classes.length){
+    const lab = document.createElement("div"); lab.className = "eyebrow"; lab.style.marginTop = "16px"; lab.textContent = t("pvOld"); sheet.appendChild(lab);
+    const h = document.createElement("div"); h.className = "hint"; h.textContent = t("pvOldHint"); sheet.appendChild(h);
+    const pick = new Set(), list = document.createElement("div"); list.id = "pv-classes";
+    const cm = classChangeMap();
+    DB.classes.map(c => ({ c, at: cm.get(idk(c.id)) || 0 })).sort((a, b) => a.at - b.at).forEach(({ c, at }) => {
+      const r = switchRow(c.name + (c.archived ? " (" + t("archived") + ")" : ""),
+        t("pvOldMeta").replace("{s}", String(c.students.length)).replace("{d}", at ? new Date(at * 1000).toLocaleDateString(LANG === "en" ? "en-GB" : "de-DE") : t("pvUnknown")),
+        () => pick.has(c.id), () => { if(pick.has(c.id)) pick.delete(c.id); else pick.add(c.id); });
+      r.dataset.cid = c.id; list.appendChild(r);
+    });
+    sheet.appendChild(list);
+    const del = document.createElement("button"); del.className = "cbtn red"; del.id = "pv-delete"; del.style.width = "100%"; del.style.marginTop = "8px";
+    del.textContent = t("pvOldDelete");
+    del.onclick = () => {
+      if(!pick.size){ toast(t("pvOldNone")); return; }
+      const ids = Array.from(pick);
+      closeModal();
+      const doDelete = () => {
+        if(needUnlock(doDelete)) return;
+        DB.classes.filter(c => ids.indexOf(c.id) >= 0).forEach(c => trashPush("class", c.name, c));
+        DB.classes = DB.classes.filter(c => ids.indexOf(c.id) < 0);
+        if(ids.indexOf(curClassId) >= 0){ curClassId = null; ensureCurClass(); }
+        save(); renderStart(); toast(t("pvOldDone").replace("{n}", String(ids.length)));
+        setTimeout(openPrivacy, 60);
+      };
+      askConfirm(t("pvOldQ").replace("{n}", String(ids.length)), t("pvOldT"), t("delete"), doDelete, () => openPrivacy());
+    };
+    sheet.appendChild(del);
+  }
+  /* Papierkorb */
+  if((DB.trash || []).length){
+    const tr = document.createElement("button"); tr.className = "linkbtn"; tr.id = "pv-trash";
+    tr.textContent = t("pvTrashN").replace("{n}", String(DB.trash.length)) + " – " + t("pvTrash");
+    tr.onclick = () => { closeModal(); askConfirm(t("pvTrashQ"), t("pvTrashT"), t("delete"), () => {
+      DB.trash = []; save(); renderStart(); toast(t("pvTrashDone")); setTimeout(openPrivacy, 60); }, () => openPrivacy()); };
+    sheet.appendChild(tr);
+  }
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "12px";
+  close.textContent = t("close"); close.onclick = closeModal; sheet.appendChild(close);
+}
+$("#btn-privacy").onclick = openPrivacy;
+/* Einmal je Start: warnen, bevor der Speicher voll ist */
+var storageWarned = false;                             // var: renderStart kann vorher laufen
+function checkStorage(){
+  if(storageWarned) return;
+  storageWarned = true;                                  // einmal je Start prüfen – das Lesen kostet bei großen Daten
+  const u = storageUse();
+  if(u.pct >= 80){ setTimeout(() => toast(t("storageLow").replace("{p}", String(u.pct))), 900); }
+}
 function lockPause(){ lockPausedAt = Date.now(); }
 function lockResume(){ if(lockPausedAt && Date.now() - lockPausedAt >= LOCK_GRACE) relock(); lockPausedAt = 0; }
 document.addEventListener("pause", lockPause, false);
@@ -12364,11 +13497,19 @@ function showSchoolPrivacy(){
 /* ============ 22. Start ============ */
 load();
 if(DB.lastClass && DB.classes.some(c => c.id === DB.lastClass)) curClassId = DB.lastClass;
-applyTheme();
+applyTheme(); applyBig();
 applyLang();
 renderStart();
 updateUndoButtons();
 if(!DB.onboarded) setTimeout(showWelcome, 250);
+/* Lief beim Beenden der App eine Zielscheibe, geht es dort weiter */
+function resumeTargetLock(){
+  const L = DB.targetLock; if(!L) return;
+  const c = DB.classes.find(x => x.id === L.classId), tg = c && (c.targets || []).find(x => x.id === L.targetId);
+  if(!tg){ delete DB.targetLock; save(); return; }
+  setCurClass(c.id); startTarget(c, tg);
+}
+resumeTargetLock();
 /* Lief beim Beenden der App eine Selbsteinschätzung, geht es genau dort weiter */
 (function resumeSelfLock(){
   const L = DB.selfLock; if(!L) return;
@@ -12406,7 +13547,9 @@ if(window.visualViewport){
 }
 /* Ohne eigene Behandlung beendet die Zurücktaste unter Android sofort die App */
 function navBack(){
+  if(targetRun && !targetRun.result) return true;                    // Zielscheibe in Schülerhand: nur über langes Drücken auf ✕
   if($("#modal").classList.contains("on")){ closeModal(); return true; }
+  if(targetRun){ endTarget(); return true; }
   if($("#screen-editor").classList.contains("active")){
     if(presenting){ setPresenting(false); return true; }
     if(selfMode) return true;                         // Selbsteinschätzung: nur über langes Drücken auf ✕

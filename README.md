@@ -172,6 +172,21 @@ Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfun
 - Elternkontakte: Beobachtungen mit `k: "parent"` und Art `m` (Gespräch, Telefonat, Brief, E-Mail), eigener
   Abschnitt im Gesprächsblatt.
 - Unterrichtsblatt: Mitarbeit für „Heute“ oder die letzte Stunde laut Stundenplan (`lastLessonDate`).
+- Feedback-Zielscheibe (`c.targets`): Thema, 1–4 Bereiche, Punkte `{ id, k, r, a }` ohne Namen, an zufälliger Stelle eingefügt.
+  Schülermodus auf eigenem Bildschirm (`#screen-target`), Beenden wie bei der Selbsteinschätzung (✕ halten, mit Sperre entsperren),
+  nach Neustart zurück (`DB.targetLock`). Auswertung mit Mittelwert je Bereich (100 % = Mitte), groß und als PDF. Abgleich: `tg|`/`tp|`.
+- Namen aus Excel (.xlsx, entpackt per `DecompressionStream`) und CSV (UTF-8 oder Windows-1252): Überschriften Vorname/Nachname/Name
+  erkennen, Format wählbar, Vorschau mit Doppelten. Einfügen räumt Nummern, Datumsangaben und Kopfzeilen auf. Testdateien in `test/`.
+- Plätze sperren (`desk.blocked`): automatisch setzen, mischen, Gruppen und Klassenarbeits-Nummern lassen sie aus. Meldung „x von y Regeln erfüllt“.
+- Tagesübersicht: weitere Stunden heute, offene Aufgaben (Kursheft-Lücken der letzten 14 Tage, unvollständige Abhaklisten).
+- „Größere Schrift und Knöpfe“ (`DB.big`, nur dieses Gerät).
+- Rechenweg: „Wie berechnet?“ unter einem Namen (Bewertungen) zeigt jede Bewertung mit Wert und Gewicht, die Teildurchschnitte,
+  die Gewichtung, die Rundungsregel und die Fehlstunden des Fachs (`gradeCalc` nutzt dieselben Schritte wie `studentAverages`,
+  `proposeGrade` und `missedLessons`). Als PDF und auf Wunsch (`settings.talkCalc`) im Gesprächsblatt.
+- Schülermodus: Ist die Sperre an, verlangt das Beenden (✕ halten) zusätzlich Face ID/Geräte-PIN; ohne nutzbare Entsperrung endet er,
+  Noten bleiben gesperrt. Ohne Sperre einmaliger Hinweis (`DB.selfGuardSeen`) mit „Sperre einschalten“.
+- Daten & Datenschutz (Startseite): letzte Sicherung (`DB.lastBackupEnc`), Sperre, Anzahlen, belegter Speicher (Warnung ab 70 %,
+  beim Start ab 80 %), alte Klassen in den Papierkorb, Papierkorb leeren. „Ohne Passwort sichern“ fragt nach.
 - Größe: „Größe“ in der Auswahlleiste gilt für jeden Gegenstand (Breite/Tiefe in cm, ±10 cm, Standardgröße; Tische mit Einzel-/Doppel-/Gruppentisch).
   Wandgegenstände (Tür, Fenster, Wand, Tafeln) nur in der Länge und bleiben an der Wand, Rundes (Pflanze, Uhr, runder Tisch, Säule) nur im Durchmesser.
   Bei genau einem Gegenstand ohne Gruppe zusätzlich ein Ziehgriff an der Ecke (10-cm-Raster, gegenüberliegende Ecke bleibt stehen); nicht im Vorführ- und Unterrichtsmodus.

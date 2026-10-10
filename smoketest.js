@@ -112,13 +112,19 @@ test('Klasse und Namen', app => {
   erwarte(app.E('curClass().students.length') === 13, 'Doppelter Name wurde nicht übersprungen');
   erwarte(app.$$('#student-list .namerow').length === 13, 'Namensliste zeigt nicht alle Namen');
   erwarte(app.$('#names-title').textContent === '7b', 'Klassenname fehlt in der Überschrift');
-  // Excel: Tabulator-getrennt mit Spaltenauswahl
+  // Excel mit Überschrift: Vorschau wie beim Datei-Import
   app.$('#student-input').value = 'Nr\tName\n1\tXaver\n2\tYara';
+  app.klick('#btn-add-students');
+  erwarte(app.$$('#nf-list .nfrow').length === 2 && !app.$('#nf-format'), 'Tabelle mit Überschrift nicht als Vorschau');
+  app.klick('#nf-ok');
+  erwarte(app.E('curClass().students.some(s => s.name === "Yara") && curClass().students.some(s => s.name === "Xaver")'), 'Namen aus der Tabelle nicht übernommen');
+  // Excel ohne Überschrift: Spaltenauswahl
+  app.$('#student-input').value = 'a1\tWilma\na2\tVera';
   app.klick('#btn-add-students');
   erwarte(!!app.$('#sheet select'), 'Mehrspaltiger Import zeigt keine Spaltenauswahl');
   const sel = app.$('#sheet select'); sel.value = '1'; sel.dispatchEvent(new app.w.Event('change'));
   app.sheetOk();
-  erwarte(app.E('curClass().students.some(s => s.name === "Yara")'), 'Spalte 2 wurde nicht übernommen');
+  erwarte(app.E('curClass().students.some(s => s.name === "Vera")'), 'Spalte 2 wurde nicht übernommen');
 });
 
 test('Stufen', app => {
@@ -3345,6 +3351,228 @@ test('Größe ändern: Ziehgriff an der Ecke', async app => {
   app.E('setEditMode("desks")');
 });
 
+test('Rechenweg: „Wie berechnet?“ stimmt mit Durchschnitt, Vorschlag und Fehlstunden überein', async app => {
+  bewertungsKlasse(app);
+  const anna = sid(app, 'Anna');
+  app.E(`(() => { const c = curClass(); c.gradeW = { ma: 60 };
+    c.assess = [
+      { id: "a1", subjectId: "ma", title: "KA 1", date: "2026-09-20", kind: "written", scale: "grade", weight: 2, marks: { "${anna}": "2-" } },
+      { id: "a2", subjectId: "ma", title: "Test", date: "2026-10-01", kind: "written", scale: "points", weight: 1, marks: { "${anna}": "11" } },
+      { id: "a3", subjectId: "ma", title: "Mitarbeit", date: "2026-10-02", kind: "other", scale: "grade", weight: 1, marks: { "${anna}": "1" } },
+      { id: "a4", subjectId: "ma", title: "Referat", date: "2026-10-03", kind: "other", scale: "grade", weight: 1, marks: { "${anna}": "x" } },
+      { id: "a5", subjectId: "ma", title: "Stimmung", date: "2026-10-03", kind: "other", scale: "smiley", weight: 1, marks: { "${anna}": "s1" } }];
+    c.absLog = [{ d: "2026-10-05", p: 0, n: 2, s: "ma", ids: ["${anna}"] }, { d: "2026-10-06", p: 1, n: 1, s: "ma", ids: ["${anna}"] },
+      { d: "2026-10-07", p: 2, n: 4, s: "de", ids: ["${anna}"] }];
+    c.exc = [excKey("2026-10-05", "${anna}")]; })()`);
+  const calc = JSON.parse(app.E(`JSON.stringify(gradeCalc(curClass(), subjectById("ma"), "${anna}"))`));
+  const av = JSON.parse(app.E(`JSON.stringify(studentAverages(curClass(), "ma", "${anna}"))`));
+  const txt = calc.lines.map(l => l.a + ' ' + (l.b || '')).join('\n');
+  erwarte(calc.proposal === app.E(`proposeGrade(curClass(), "ma", studentAverages(curClass(), "ma", "${anna}"))`) && calc.av.total === av.total, 'Rechenweg weicht vom Vorschlag ab');
+  erwarte(/2- = 2,3 × 2/.test(txt) && /11 P\. → 2,0 × 1/.test(txt), 'Einzelwerte oder Umrechnung fehlen: ' + txt);
+  erwarte(/fehlt – zählt nicht/.test(txt) && /Stimmung Smiley – zählt nicht/.test(txt), '„fehlt“ nicht erklärt oder Smiley-Bewertung mitgezählt');
+  erwarte(txt.includes('Ø ' + app.E(`fmtNum(${av.written}, 2)`)) && txt.includes('60 % × ' + app.E(`fmtNum(${av.written}, 2)`) + ' + 40 % × ' + app.E(`fmtNum(${av.other}, 2)`) + ' = ' + app.E(`fmtNum(${av.total}, 2)`)), 'Gewichtung im Rechenweg falsch: ' + txt);
+  erwarte(/umgerechnet/.test(txt) && /zugunsten/.test(txt) && txt.includes(app.E(`fmtNum(${av.total}, 2)`) + ' → ' + calc.proposal), 'Rundungsregel oder Ergebnis fehlt');
+  erwarte(calc.missed === 3 && calc.excused === 2 && calc.missed === app.E(`missedLessons(curClass(), "${anna}").bySubject.ma`) && /Gesamt 3, davon entschuldigt 2/.test(txt), 'Fehlstunden im Rechenweg falsch');
+  // ausgefallene Stunde zählt nicht – wie in der Übersicht
+  app.E(`(() => { const c = curClass(); DB.lessons.push({ id: "L1", classId: c.id, subjectId: "ma", day: new Date(2026, 9, 6).getDay() - 1, period: 1, room: "" }); DB.cancelled = ["L1|2026-10-06"]; })()`);
+  erwarte(app.E(`gradeCalc(curClass(), subjectById("ma"), "${anna}").missed`) === app.E(`missedLessons(curClass(), "${anna}").bySubject.ma || 0`), 'Rechenweg und Übersicht zählen ausgefallene Stunden verschieden');
+  // 100 % schriftlich, andere Rundung
+  app.E(`curClass().gradeW = { ma: 100 }; curClass().gradeRound = { ma: { fav: false, tend: true } }`);
+  const c2 = JSON.parse(app.E(`JSON.stringify(gradeCalc(curClass(), subjectById("ma"), "${anna}"))`)), t2 = c2.lines.map(l => l.a).join('\n');
+  erwarte(/mit 0 % gewichtet/.test(t2) && /Nur Schriftlich|Nur schriftlich/i.test(t2) && /Tendenz/.test(t2) && c2.proposal === app.E(`proposeGrade(curClass(), "ma", studentAverages(curClass(), "ma", "${anna}"))`), 'Sonderfälle im Rechenweg falsch: ' + t2);
+  // Halbjahr: nur Bewertungen und Fehlstunden darin
+  app.E('DB.settings.termSplit = "2026-09-30"');
+  const c3 = JSON.parse(app.E(`JSON.stringify(gradeCalc(curClass(), subjectById("ma"), "${anna}", "h1"))`));
+  erwarte(c3.lines.filter(l => l.k === 'row' && /KA 1/.test(l.a)).length === 1 && !c3.lines.some(l => /Test/.test(l.a)) && c3.missed === 0, 'Halbjahr im Rechenweg nicht beachtet');
+  app.E('delete DB.settings.termSplit; curClass().gradeW = { ma: 60 }; curClass().gradeRound = {}');
+  // Gesamtwert knapp unter ,5: genau genug zeigen, damit „→ 1“ stimmig ist
+  app.E(`(() => { const c = curClass(); c.gradeW = { ma: 40 }; c.__a = c.assess; c.assess = [
+    { id: "b1", subjectId: "ma", title: "A", date: "2026-09-20", kind: "written", scale: "grade", weight: 3, marks: { "${anna}": "1" } },
+    { id: "b2", subjectId: "ma", title: "B", date: "2026-09-21", kind: "written", scale: "grade", weight: 0.5, marks: { "${anna}": "1-" } },
+    { id: "b3", subjectId: "ma", title: "C", date: "2026-09-22", kind: "other", scale: "grade", weight: 2, marks: { "${anna}": "2+" } },
+    { id: "b4", subjectId: "ma", title: "D", date: "2026-09-23", kind: "other", scale: "grade", weight: 1, marks: { "${anna}": "2" } }]; })()`);
+  const c4 = JSON.parse(app.E(`JSON.stringify(gradeCalc(curClass(), subjectById("ma"), "${anna}"))`)), t4 = c4.lines.map(l => l.a).join('\n');
+  erwarte(/1,497 → 1/.test(t4) && !/1,50 → 1/.test(t4), 'Gesamtwert gerundet angezeigt, Vorschlag wirkt falsch: ' + t4);
+  // 0 % schriftlich, nur schriftliche Noten: Erklärung statt Widerspruch
+  app.E('curClass().gradeW = { ma: 0 }; curClass().assess = curClass().assess.filter(a => a.kind === "written")');
+  const t5 = app.E(`gradeCalc(curClass(), subjectById("ma"), "${anna}").lines.map(l => l.a).join("\\n")`);
+  erwarte(/Schriftlich mit 0 % gewichtet|schriftlich mit 0 % gewichtet/i.test(t5), 'Fehlende Erklärung bei 0 % schriftlich: ' + t5);
+  app.E('curClass().assess = curClass().__a; delete curClass().__a; curClass().gradeW = { ma: 60 }');
+  // Fehlstunden ohne Fach: Hinweis; englische Einheit
+  app.E(`curClass().absLog.push({ d: "2026-10-08", p: 3, n: 2, s: "", ids: ["${anna}"] })`);
+  erwarte(/2 Fehlstunden ohne Fach/.test(app.E(`gradeCalc(curClass(), subjectById("ma"), "${anna}").lines.map(l => l.a).join(" ")`)), 'Fehlstunden ohne Fach nicht erwähnt');
+  erwarte(/11 pts → 2\.0/.test(app.E(`(() => { const L0 = LANG; LANG = "en"; const r = gradeCalc(curClass(), subjectById("ma"), "${anna}").lines.map(l => l.b || "").join(" "); LANG = L0; return r; })()`)), 'Englisch zeigt „P.“');
+  // Oberfläche: aus dem Namen heraus, zurück, PDF
+  app.E('goGrades("ma")'); app.klick('#g-tab-overview');
+  app.E(`studentDetail(curClass(), subjectById("ma"), studentById(curClass(), "${anna}"), "year")`);
+  app.klick('#calc-open');
+  erwarte(app.$$('#calc-lines .calc-h').length === 5 && app.$('#sheet').dataset.sens === '1', 'Rechenweg-Blatt fehlt oder ist nicht als sensibel markiert');
+  const box = downloadAbfangen(app);
+  app.klick('#calc-pdf');
+  const pdf = await blobText(app, box.blob);
+  erwarte(/^Rechenweg_Anna_Mathe/.test(box.name) && /-> /.test(pdf) && !/\?\d/.test(pdf.replace(/\\\d{3}/g, '')), 'PDF des Rechenwegs fehlt oder Zeichen falsch: ' + box.name);
+  app.klick('#calc-back');
+  erwarte(!!app.$('#zd-switch') && !!app.$('#calc-open'), 'Zurück führt nicht zum Namen');
+  // Gesprächsblatt: nur auf Wunsch
+  const talk = () => app.E(`talkSheetPages(curClass(), studentById(curClass(), "${anna}")).map(p => p.content).join("\\n")`);
+  erwarte(!/Notenvorschlag/.test(talk()), 'Rechenweg ungefragt im Gesprächsblatt');
+  app.klick('#calc-open'); app.klick('#calc-talk');
+  erwarte(app.E('DB.settings.talkCalc') === true && /Notenvorschlag/.test(talk()), 'Rechenweg fehlt im Gesprächsblatt');
+  erwarte(app.E('sanitizeDB({ v: 2, settings: { talkCalc: "ja" } }).settings.talkCalc') === undefined && app.E('sanitizeDB({ v: 2, settings: { talkCalc: true } }).settings.talkCalc') === true, 'Einstellung beim Laden falsch geprüft');
+  app.E('closeModal()');
+});
+
+test('Schülermodus: Beenden nur mit Entsperren, Hinweis ohne Sperre', async app => {
+  klasseMitNamen(app);
+  neuerPlan(app, 0, 'Zufällig');
+  app.E('DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }); DB.gradesAck = true; setLesson(true)');
+  const m = bioMock(app);
+  const body = app.w.document.body;
+  // ohne Sperre: Hinweis mit Einschalten / Weiter
+  app.klick('#lb-self'); app.sheetOk();
+  erwarte(!!app.$('#self-guard-on') && !!app.$('#self-guard-skip') && !body.classList.contains('selfmode'), 'Kein Hinweis auf die Sperre vor dem Schülermodus');
+  app.klick('#self-guard-skip');
+  erwarte(body.classList.contains('selfmode') && app.E('DB.selfGuardSeen') === true, '„Ohne Sperre weiter“ startet nicht');
+  app.$('#self-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150);
+  erwarte(!body.classList.contains('selfmode') && m.calls === 0, 'Ohne Sperre wird beim Beenden entsperrt oder es endet nicht');
+  // einmalig: beim nächsten Mal kein Hinweis
+  app.klick('#lb-self'); app.sheetOk();
+  erwarte(body.classList.contains('selfmode') && !app.$('#self-guard-on'), 'Hinweis erscheint jedes Mal');
+  app.E('endSelfMode(true)');
+  // „Sperre einschalten“ schaltet ein und startet
+  app.E('delete DB.selfGuardSeen');
+  app.klick('#lb-self'); app.sheetOk(); app.klick('#self-guard-on');
+  erwarte(app.E('DB.settings.lock') === true && body.classList.contains('selfmode'), 'Einschalten aus dem Hinweis klappt nicht');
+  // mit Sperre: Halten allein genügt nicht – Abbruch bleibt im Modus
+  m.next = 'abbruch'; const c0 = m.calls;
+  app.$('#self-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150);
+  erwarte(body.classList.contains('selfmode') && m.calls === c0 + 1 && /Nicht entsperrt/.test(app.$('#toast').textContent), 'Schülermodus endet ohne Entsperren');
+  // erfolgreich: beendet, Noten danach offen (Lehrkraft hat sich ausgewiesen)
+  m.next = 'ok';
+  app.$('#self-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150);
+  erwarte(!body.classList.contains('selfmode') && app.E('lockOpen') === true, 'Entsperren beendet den Schülermodus nicht');
+  // Gerät ohne nutzbare Entsperrung: nicht festsetzen, Noten bleiben zu
+  app.klick('#lb-self'); app.sheetOk();
+  erwarte(body.classList.contains('selfmode') && !app.$('#self-guard-on'), 'Mit Sperre trotzdem Hinweis');
+  m.next = 'nobio';
+  app.$('#self-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150);
+  erwarte(!body.classList.contains('selfmode') && app.E('lockOpen') === false, 'Ohne nutzbare Entsperrung festgesetzt oder Noten offen');
+  // danach darf das Gerät (vielleicht in Schülerhand) nicht anbieten, die Sperre auszuschalten
+  app.E('lockError({ code: -106 })');
+  erwarte(!app.$('#modal').classList.contains('on') && app.E('DB.settings.lock') === true, 'Nach dem Schülermodus lässt sich die Sperre ohne Entsperren ausschalten');
+  app.E('lockBrokenAfterSelf = false');
+  // Browser (keine App): wie bisher, kein Hinweis
+  app.E('window.__c = window.cordova; delete window.cordova; delete DB.selfGuardSeen; DB.settings.lock = false');
+  app.klick('#lb-self'); app.sheetOk();
+  erwarte(body.classList.contains('selfmode') && !app.$('#self-guard-on'), 'Hinweis im Browser, obwohl es dort keine Sperre gibt');
+  app.E('endSelfMode(true); window.cordova = window.__c');
+  // Hilfe nennt den geführten Zugriff
+  erwarte(app.E('I18N.de.info.some(s => /Geführten Zugriff|Geführter Zugriff/.test((s.p || []).join(" ")))') && app.E('I18N.en.info.some(s => /Guided Access/.test((s.p || []).join(" ")))'), 'Tipp „Geführter Zugriff“ fehlt in der Hilfe');
+});
+
+test('Daten & Datenschutz: Übersicht, Speicher, alte Klassen, Sicherung ohne Passwort', async app => {
+  klasseMitNamen(app, '5a', ['Anna', 'Ben']);
+  klasseMitNamen(app, '9c', ['Cem', 'Dana', 'Emil']);
+  app.E('goHome()');
+  app.klick('#btn-privacy');
+  erwarte(!!app.$('#pv-backup .pvi.warn') && /Noch keine Sicherung/.test(app.$('#pv-backup').textContent), 'Fehlende Sicherung nicht gewarnt');
+  erwarte(/nur in der App/.test(app.$('#pv-lock').textContent), 'Sperre im Browser falsch dargestellt');
+  erwarte(/Klassen: 2 · Namen: 5/.test(app.$('#pv-counts').textContent), 'Anzahlen falsch: ' + app.$('#pv-counts').textContent);
+  erwarte(!!app.$('#pv-storage .pvbar') && !app.$('#pv-storage-warn'), 'Speicheranzeige fehlt oder warnt grundlos');
+  // Sicherung verschlüsselt und frisch: kein Warnzeichen
+  app.E('closeModal(); DB.lastBackup = new Date().toISOString(); DB.lastBackupEnc = true'); app.klick('#btn-privacy');
+  erwarte(!app.$('#pv-backup .pvi.warn') && /verschlüsselt/.test(app.$('#pv-backup').textContent), 'Verschlüsselte Sicherung nicht erkannt');
+  erwarte(app.E('sanitizeDB({ v: 2, lastBackupEnc: true }).lastBackupEnc') === true && app.E('sanitizeDB({ v: 2, lastBackupEnc: "ja" }).lastBackupEnc') === undefined, 'Merkmal beim Laden falsch');
+  // frisch, aber ohne Passwort: Warnzeichen
+  app.E('closeModal(); delete DB.lastBackupEnc'); app.klick('#btn-privacy');
+  erwarte(!!app.$('#pv-backup .pvi.warn') && /ohne Passwort/.test(app.$('#pv-backup').textContent) && /Achtung/.test(app.$('#pv-backup').textContent), 'Sicherung ohne Passwort nicht gewarnt');
+  app.E('closeModal(); DB.lastBackupEnc = true; DB.selfGuardSeen = true'); app.klick('#btn-privacy');
+  // Gerätebezogenes nicht in die Sicherung
+  erwarte(app.E('backupData().lastBackupEnc') === undefined && app.E('backupData().selfGuardSeen') === undefined, 'Gerätebezogene Merkmale landen in der Sicherung');
+  // Laden einer Sicherung behält die Merkmale dieses Geräts
+  app.E('closeModal(); window.__lb = DB.lastBackup; applyRestore(sanitizeDB(Object.assign(backupData(), { lastBackup: "2020-01-01T00:00:00.000Z" })), "x")');
+  erwarte(app.E('DB.lastBackupEnc') === true && app.E('DB.selfGuardSeen') === true && app.E('DB.lastBackup === window.__lb'), 'Laden überschreibt Sicherungsstand oder Hinweis dieses Geräts');
+  app.klick('#btn-privacy');
+  // alte Klasse löschen → Papierkorb
+  const id5 = app.E('DB.classes.find(c => c.name === "5a").id');
+  app.klick(`#pv-classes [data-cid="${id5}"]`);
+  app.klick('#pv-delete'); app.sheetOk(); await pause(90);
+  erwarte(app.E('DB.classes.length') === 1 && app.E('DB.trash.some(e => e.kind === "class" && e.name === "5a")') && !!app.$('#pv-status'), 'Klasse nicht in den Papierkorb oder Übersicht nicht wieder offen');
+  app.klick('#pv-delete');
+  erwarte(/mindestens eine/.test(app.$('#toast').textContent), 'Löschen ohne Auswahl nicht abgefangen');
+  // Papierkorb leeren
+  app.klick('#pv-trash'); app.sheetOk(); await pause(90);
+  erwarte(app.E('DB.trash.length') === 0 && !app.$('#pv-trash'), 'Papierkorb nicht geleert');
+  app.E('closeModal()');
+  // Speicher knapp: Warnung in der Übersicht und einmal beim Start
+  app.E('window.__get = Store.get; Store.get = k => k === KEY ? "x".repeat(2100000) : window.__get.call(Store, k); flushSave = () => true');
+  app.E('openPrivacy()');
+  erwarte(!!app.$('#pv-storage-warn') && /8\d %/.test(app.$('#pv-storage').textContent), 'Knapper Speicher nicht gewarnt: ' + app.$('#pv-storage').textContent);
+  app.E('closeModal(); storageWarned = false; renderStart()'); await pause(1000);
+  erwarte(/zu 8\d % belegt/.test(app.$('#toast').textContent), 'Keine Warnung beim Start');
+  app.E('Store.get = window.__get');
+  // Sicherung ohne Passwort: Rückfrage
+  if(app.E('hasCrypto()')){
+    const box = downloadAbfangen(app);
+    app.klick('#btn-backup'); app.klick('#bk-plain');
+    erwarte(/Ohne Passwort sichern\?/.test(app.$('#sheet h3').textContent) && !box.name, 'Keine Rückfrage vor unverschlüsselter Sicherung');
+    app.sheetOk();
+    erwarte(/fairseat-backup/.test(box.name || '') && app.E('DB.lastBackupEnc') === undefined, 'Sicherung ohne Passwort nach Rückfrage fehlt oder bleibt als verschlüsselt markiert');
+  }
+});
+
+test('Namen aus Excel- und CSV-Datei, klügeres Einfügen', async app => {
+  klasseMitNamen(app, '7b', ['Ida W.']);
+  const fs = require('fs'), path = require('path');
+  if(typeof app.w.DecompressionStream === 'undefined') app.w.DecompressionStream = DecompressionStream;
+  if(typeof app.w.TextDecoder === 'undefined') app.w.TextDecoder = TextDecoder;
+  const bytes = f => { const b = fs.readFileSync(path.join(__dirname, 'test', f)); return new app.w.Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.length)); };
+  // Excel: Überschrift in Zeile 3, „Name“ neben „Vorname“ = Nachname, Blatt über die Verknüpfung, Rich-Text, Inline-Text
+  await app.w.importNameFile(bytes('namen.xlsx'), 'namen.xlsx');
+  erwarte(!!app.$('#nf-list') && /5 Namen gefunden/.test(app.$('#nf-info').textContent) && /Vorname/.test(app.$('#nf-info').textContent), 'Excel-Datei nicht gelesen: ' + (app.$('#nf-info') || {}).textContent);
+  const rows = () => app.$$('#nf-list .nfrow').map(r => r.querySelector('span').textContent + (r.querySelector('small') ? '|' + r.querySelector('small').textContent : ''));
+  erwarte(JSON.stringify(rows()) === JSON.stringify(['Anna M.|doppelt – anderes Format wählen', 'Anna M.|doppelt – anderes Format wählen', 'Hasan Ö.', 'Ida W.|schon in der Klasse', 'Rosa L.']), 'Vorschau falsch: ' + JSON.stringify(rows()));
+  erwarte(!/Falsches Blatt|Seite|Klassenliste|Geburtsdatum/.test(app.$('#nf-list').textContent), 'Kopfzeilen oder falsches Blatt übernommen');
+  app.klick('#nf-format button[data-v="full"]');
+  erwarte(JSON.stringify(rows()) === JSON.stringify(['Anna Müller', 'Anna Meyer', 'Hasan Öztürk', 'Ida Weiß', 'Rosa Lindqvist']) && app.$('#nf-ok').textContent === 'Übernehmen (5)', 'Format „Vorname Nachname“ falsch: ' + JSON.stringify(rows()));
+  // abwählen
+  const cb = app.$$('#nf-list input')[4]; cb.checked = false; cb.dispatchEvent(new app.w.Event('change'));
+  erwarte(app.$('#nf-ok').textContent === 'Übernehmen (4)', 'Abwählen zählt nicht');
+  app.klick('#nf-ok');
+  erwarte(app.E('curClass().students.map(s => s.name).join()') === 'Ida W.,Anna Müller,Anna Meyer,Hasan Öztürk,Ida Weiß', 'Falsche Namen übernommen: ' + app.E('curClass().students.map(s => s.name).join()'));
+  // CSV aus Excel unter Windows (Windows-1252, Semikolon, Anführungszeichen); Adressen bleiben außen vor
+  await app.w.importNameFile(bytes('namen.csv'), 'namen.csv');
+  app.klick('#nf-format button[data-v="first"]');
+  erwarte(JSON.stringify(rows()) === JSON.stringify(['Uwe', 'Jörg']) && !/Haupt|Weg/.test(app.$('#nf-list').textContent), 'CSV falsch gelesen: ' + JSON.stringify(rows()));
+  app.E('closeModal()');
+  // „Nachname, Vorname“ zeilenweise ohne Überschrift; Excel „Unicode-Text“ (UTF-16)
+  const enc = str => new app.w.Uint8Array(Array.from(Buffer.from(str, 'utf8')));
+  await app.w.importNameFile(enc('Kowalski, Anna\nBerg, Tom\n'), 'l.csv');
+  erwarte(JSON.stringify(rows()) === JSON.stringify(['Anna K.', 'Tom B.']), '„Nachname, Vorname“ verliert den Vornamen: ' + JSON.stringify(rows()));
+  app.E('closeModal()');
+  const u16 = Buffer.concat([Buffer.from([0xFF, 0xFE]), Buffer.from('Vorname\tNachname\r\nZoë\tÅberg\r\n', 'utf16le')]);
+  await app.w.importNameFile(new app.w.Uint8Array(Array.from(u16)), 'u.txt');
+  erwarte(JSON.stringify(rows()) === JSON.stringify(['Zoë Å.']), 'UTF-16 falsch gelesen: ' + JSON.stringify(rows()));
+  app.E('closeModal()');
+  // alte .xls und kaputte Dateien
+  await app.w.importNameFile(new app.w.Uint8Array([0xD0, 0xCF, 0x11, 0xE0, 0, 0]), 'x.xls');
+  erwarte(/\.xls/.test(app.$('#toast').textContent), 'Hinweis zu .xls fehlt');
+  await app.w.importNameFile(new app.w.Uint8Array([0x50, 0x4B, 3, 4, 0, 0, 0]), 'x.xlsx');
+  erwarte(/nicht lesen/.test(app.$('#toast').textContent), 'Kaputte Datei nicht abgefangen');
+  const DS = app.w.DecompressionStream; delete app.w.DecompressionStream; app.w.DecompressionStream = undefined;
+  await app.w.importNameFile(bytes('namen.xlsx'), 'namen.xlsx');
+  erwarte(/als CSV speichern/.test(app.$('#toast').textContent), 'Ohne Entpacken kein Hinweis');
+  app.w.DecompressionStream = DS;
+  // Einfügen aus einer PDF: Nummern, Datum, Kopfzeilen
+  const vorher = app.E('curClass().students.length');
+  app.$('#student-input').value = 'Klassenliste 7b\nSchuljahr 2026/27\n1. Tom Berg 12.03.2013\n2) Lea Sommer\nSeite 1 von 2\n17\nKind 3\nBen Ott 2012-05-01\nPage Miller';
+  app.klick('#btn-add-students');
+  erwarte(app.E('curClass().students.slice(-5).map(s => s.name).join()') === 'Tom Berg,Lea Sommer,Kind 3,Ben Ott,Page Miller' && app.E('curClass().students.length') === vorher + 5, 'Einfügen räumt nicht auf: ' + app.E('curClass().students.slice(-4).map(s => s.name).join()'));
+  // reine Hilfsfunktionen
+  erwarte(app.E('JSON.stringify(parseCsvRows("a,b\\n\\"x, y\\",z"))') === '[["a","b"],["x, y","z"]]', 'CSV mit Komma in Anführungszeichen falsch');
+  erwarte(app.E('JSON.stringify(rowsToNameEntries([["Schüler/in"],["Berg, Tom"],["Lea Sommer"]]).entries)') === '[{"first":"Tom","last":"Berg"},{"first":"Lea","last":"Sommer"}]', '„Nachname, Vorname“ nicht gedreht');
+});
+
 test('Abgleich: zieldifferent, Elternkontakte, PC-Plätze', async app => {
   const B = neueApp();
   try{
@@ -3360,6 +3588,217 @@ test('Abgleich: zieldifferent, Elternkontakte, PC-Plätze', async app => {
     uhr(app, 4000); app.E(`setZd(curClass(), "ma", "${ben}", false); flushSave()`);
     uhr(B, 4100); await laden(B, datei(app), 'merge');
     erwarte(B.E(`isZd(curClass(), "ma", "${ben}")`) === false, 'Entfernen des Merkmals nicht übertragen');
+  } finally { B.ende(); }
+});
+
+test('Platz sperren und Regel-Meldung', async app => {
+  klasseMitNamen(app);                                   // 12 Namen
+  neuerPlan(app, 0, 'Zufällig');
+  const sel = ids => app.E(`selected.clear(); ${JSON.stringify(ids)}.forEach(i => selected.add(i)); renderStage(false)`);
+  app.E('while(curPlan().desks.length < 14) curPlan().desks.push({ id: uid(), type: "desk", x: 40 + curPlan().desks.length * 5, y: 600, w: 90, h: 55, rot: 0 }); renderStage(false)');
+  const d0 = app.E('curPlan().desks[0].id'), d1 = app.E('curPlan().desks[1].id');
+  sel([d0, d1]);
+  erwarte(app.$('#sb-block').style.display !== 'none' && /Platz sperren/.test(app.$('#sb-block').textContent), 'Knopf „Platz sperren“ fehlt');
+  app.klick('#sb-block');
+  erwarte(app.E(`["${d0}","${d1}"].every(id => { const d = curPlan().desks.find(x => x.id === id); return d.blocked && !d.studentId; })`), 'Sperren leert die Plätze nicht');
+  erwarte(app.$(`#stage .item[data-id="${d0}"]`).classList.contains('blocked') && /gesperrt/.test(app.$(`#stage .item[data-id="${d0}"]`).textContent), 'Gesperrter Platz nicht erkennbar');
+  erwarte(/Platz freigeben/.test(app.$('#sb-block').textContent), 'Umschalten zeigt nicht „freigeben“');
+  // automatisch setzen, mischen, Gruppen: nie auf gesperrte Plätze
+  for(let i = 0; i < 5; i++){ app.E('autoSeat(true, true)'); erwarte(app.E('curPlan().desks.filter(d => d.blocked).every(d => !d.studentId)') && app.E('curPlan().desks.filter(d => d.studentId).length') === 12, 'Automatisch setzt auf gesperrte Plätze'); }
+  app.klick('#btn-shuffle');
+  erwarte(app.E('curPlan().desks.filter(d => d.blocked).every(d => !d.studentId)') && app.E('curPlan().desks.filter(d => d.studentId).length') === 12, 'Mischen setzt auf gesperrte Plätze');
+  app.E('curClass().groups = [{ id: "g1", name: "G", members: curClass().students.slice(0, 4).map(s => s.id) }]; seatByGroups(true)');
+  erwarte(app.E('curPlan().desks.filter(d => d.blocked).every(d => !d.studentId)'), 'Gruppen setzen auf gesperrte Plätze');
+  // Ziehen auf gesperrten Platz wird abgelehnt
+  const sidA = app.E('curClass().students[0].id');
+  app.E(`placeStudent("${sidA}", curPlan().desks.find(d => d.id === "${d0}"), curPlan().desks.find(d => d.studentId === "${sidA}"))`);
+  erwarte(!app.E(`curPlan().desks.find(d => d.id === "${d0}").studentId`) && /gesperrt/.test(app.$('#toast').textContent), 'Name lässt sich auf gesperrten Platz ziehen');
+  // Klassenarbeit: keine Nummer, keine Gruppe
+  app.E('curPlan().exam = true; assignExamGroups(curPlan()); renderStage(false)');
+  erwarte(!app.E(`curPlan().desks.find(d => d.id === "${d0}").var`) && !app.E(`examNumbers(curPlan()).has("${d0}")`) && app.E('examNumbers(curPlan()).size') === 12, 'Gesperrter Platz bekommt Nummer oder Gruppe');
+  app.E('curPlan().exam = false; curPlan().desks.forEach(d => delete d.var)');
+  // Laden: Sperre nur bei leeren Tischen
+  erwarte(app.E('sanitizeItem({ type: "desk", blocked: true }).blocked') === true && app.E('sanitizeItem({ type: "desk", blocked: true, studentId: "x" }).blocked') === undefined && app.E('sanitizeItem({ type: "window", blocked: true }).blocked') === undefined, 'Sperre beim Laden falsch geprüft');
+  app.E('renderUnseated()');
+  erwarte(/12 von 12 Plätzen belegt/.test(app.w.document.body.textContent), 'Gesperrte Plätze zählen bei „belegt“ mit');
+  // neue Vorlage: Sperre fällt weg (der Platz „hinter der Säule“ wäre jetzt irgendwo)
+  app.E('pushUndo(); layoutDesks("rows", true)');
+  erwarte(app.E('curPlan().desks.every(d => !d.blocked)'), 'Sperre wandert mit der Vorlage');
+  app.E('undo()');
+  // freigeben
+  sel([d0, d1]); app.klick('#sb-block');
+  erwarte(app.E(`!curPlan().desks.find(d => d.id === "${d0}").blocked`), 'Freigeben geht nicht');
+  // Regel-Meldung: „x von y Regeln erfüllt“
+  const [a, b, c2] = app.E('curClass().students.slice(0, 3).map(s => s.id)');
+  app.E(`curClass().rules = [{ id: "r1", a: "${a}", b: "${b}", type: "apart" }, { id: "r2", a: "${a}", b: "${c2}", type: "apart" }]; DB.settings.rules = true`);
+  app.klick('#btn-auto');
+  erwarte(/2 von 2 Regeln erfüllt/.test(app.$('#toast').textContent), 'Regel-Meldung fehlt: ' + app.$('#toast').textContent);
+  app.E(`DB.settings.tags = true; curClass().students[5].tags = ["front"]`);
+  app.klick('#btn-auto');
+  erwarte(/\d von 3 Regeln/.test(app.$('#toast').textContent), 'Sitzwunsch „vorne“ nicht mitgezählt: ' + app.$('#toast').textContent);
+  app.E('curClass().rules = []; curClass().students.forEach(s => s.tags = [])');
+  app.klick('#btn-auto');
+  erwarte(/^Namen gesetzt/.test(app.$('#toast').textContent), 'Ohne Regeln falsche Meldung: ' + app.$('#toast').textContent);
+});
+
+test('Größere Schrift und Knöpfe', app => {
+  app.E('renderSettings(); show("settings")');
+  erwarte(!!app.$('#set-big') && !app.w.document.body.classList.contains('big'), 'Einstellung fehlt');
+  app.klick('#set-big');
+  erwarte(app.E('DB.big') === true && app.w.document.body.classList.contains('big'), 'Größere Schrift lässt sich nicht einschalten');
+  erwarte(app.E('backupData().big') === undefined && app.E('sanitizeDB({ v: 2, big: true }).big') === true && app.E('sanitizeDB({ v: 2, big: "ja" }).big') === undefined, 'Merkmal falsch gesichert oder geladen');
+  app.klick('#set-big');
+  erwarte(app.E('DB.big') === undefined && !app.w.document.body.classList.contains('big'), 'Ausschalten geht nicht');
+});
+
+test('Tagesübersicht: weitere Stunden und offene Aufgaben', app => {
+  klasseMitNamen(app, '7b', ['Anna', 'Ben', 'Cem']);
+  const now = new Date(), wd = (now.getDay() + 6) % 7;
+  app.E(`(() => { const c = curClass(); DB.settings.timetable = true; DB.tt.days = 7; DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" });
+    const T = periodTimes(); DB.lessons = [];
+    for(let p = 0; p < T.length; p++) DB.lessons.push({ id: "L" + p, classId: c.id, subjectId: "ma", day: ${wd}, period: p, span: 1, room: "" });
+    for(let d = 0; d < 7; d++) if(d !== ${wd}) DB.lessons.push({ id: "X" + d, classId: c.id, subjectId: "ma", day: d, period: 0, span: 1, room: "" });
+    c.journal = [{ id: "j0", d: isoDay(new Date(Date.now() - 20 * 86400000)), p: 0, s: "ma", topic: "Brüche", hw: "" }]; })()`);
+  // Uhr auf 23:59: alle heutigen Stunden sind vorbei
+  const late = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59).getTime();
+  app.E(`Date.now = () => ${late}; window.__D = Date; Date = class extends window.__D { constructor(...a){ if(a.length) super(...a); else super(${late}); } static now(){ return ${late}; } }`);
+  const P = app.E('periodTimes().length');
+  const gap = () => { const m = /(\d+) Stunden? ohne Kursheft/.exec(app.E('JSON.stringify(dayTasks(new Date()))')); return m ? +m[1] : 0; };
+  // nur heute (Tage ohne jede Spur in der App, z. B. Ferien, zählen nicht)
+  erwarte(gap() === P, 'Kursheft-Lücken heute falsch: ' + gap() + ' statt ' + P);
+  // vor 7 Tagen gab es Fehlzeiten → dieser Tag zählt mit
+  app.E(`curClass().absLog = [{ d: isoDay(new Date(Date.now() - 7 * 86400000)), p: 0, n: 1, s: "ma", ids: [curClass().students[0].id] }]`);
+  erwarte(gap() === 2 * P, 'Tag mit Spuren nicht gezählt: ' + gap());
+  // Eintrag ohne Stunde (p = -1), aber mit Fach: deckt die Stunden dieses Tages
+  app.E('curClass().journal.push({ id: "j1", d: isoDay(new Date()), p: -1, s: "ma", topic: "x", hw: "" })');
+  erwarte(gap() === P, 'Eintrag ohne Stunde nicht erkannt: ' + gap());
+  // erster Eintrag erst gestern: davor nicht mahnen
+  app.E('curClass().journal = [{ id: "j2", d: isoDay(new Date(Date.now() - 86400000)), p: 0, s: "ma", topic: "x", hw: "" }]');
+  erwarte(gap() === P, 'Vor dem ersten Eintrag gemahnt: ' + gap());
+  // anderes Fach ohne Kursheft: nie
+  app.E('DB.subjects.push({ id: "de", name: "Deutsch", short: "De", color: "#20A464" }); DB.lessons.forEach(L => L.subjectId = "de")');
+  erwarte(gap() === 0, 'Fach ohne Kursheft gemahnt');
+  app.E('DB.lessons.forEach(L => L.subjectId = "ma")');
+  // Klassen ohne Kursheft: keine Mahnung
+  app.E('curClass().journal = []');
+  erwarte(!/Kursheft/.test(app.E('JSON.stringify(dayTasks(new Date()))')), 'Mahnung, obwohl das Kursheft nicht genutzt wird');
+  // offene Abhakliste
+  app.E(`curClass().checks = [{ id: "k1", title: "Elternbrief", date: isoDay(new Date()), done: [curClass().students[0].id] }, { id: "k2", title: "Alt", date: "2020-01-01", done: [] },
+    { id: "k3", title: "Unberührt", date: isoDay(new Date(Date.now() - 20 * 86400000)), done: [] }, { id: "k4", title: "Neu", date: isoDay(new Date()), done: [] }]`);
+  app.E('Date = window.__D; goHome()');
+  erwarte(/Elternbrief \(7b\): 2 fehlen noch/.test(app.$('#day-tasks').textContent) && !/Alt|Unberührt/.test(app.$('#day-tasks').textContent) && /Neu \(7b\): 3 fehlen/.test(app.$('#day-tasks').textContent), 'Offene Abhakliste falsch: ' + (app.$('#day-tasks') || {}).textContent);
+  app.klick('#day-tasks .daytask[data-id="k-k1"]');
+  erwarte(!!app.$('#ck-names'), 'Tipp öffnet die Abhakliste nicht');
+  app.E('closeModal()');
+});
+
+test('Feedback-Zielscheibe: anonym sammeln, auswerten, schützen, abgleichen', async app => {
+  klasseMitNamen(app, '7b', ['Anna', 'Ben']);
+  app.E('goNames()');
+  app.klick('#btn-class-targets');
+  erwarte(app.$$('#tg-count button').length === 4 && app.$$('#tg-labels input').length === 4 && app.$('#tg-a0').value === 'Thema und Lerninhalte', 'Einrichten: Bereiche oder Vorgaben fehlen');
+  app.klick('#tg-count button[data-v="2"]');
+  erwarte(app.$$('#tg-labels input').length === 2 && app.$('#tg-a1').value === 'Methoden', 'Zwei Bereiche falsch');
+  app.klick('#tg-count button[data-v="1"]');
+  erwarte(app.$$('#tg-labels input').length === 0, 'Ohne Einteilung zeigt Bereichsfelder');
+  app.klick('#tg-count button[data-v="4"]');
+  app.klick('#tg-start');
+  erwarte(/Thema/.test(app.$('#toast').textContent) && app.E('curClass().targets.length') === 0, 'Ohne Frage gestartet');
+  app.$('#tg-question').value = 'Wie war die Einheit Brüche?';
+  app.klick('#tg-start');
+  const body = app.w.document.body;
+  erwarte(app.$('#screen-target').classList.contains('active') && app.E('DB.targetLock.targetId') === app.E('curClass().targets[0].id'), 'Schülermodus der Zielscheibe startet nicht');
+  erwarte(app.$('#tg-next').disabled && app.$$('#tg-svg path').length === 12, 'Zielscheibe falsch gezeichnet oder „Nächster“ zu früh aktiv');
+  // Tippen: je Bereich ein Punkt (oben links, oben rechts, unten rechts, unten links)
+  app.E('targetTap(-30, -30); targetTap(40, -10)');
+  erwarte(/Noch offen: Lernklima in der Klasse, Meine Motivation/.test(app.$('#tg-hint').textContent) && app.$('#tg-next').disabled, 'Hinweis auf offene Bereiche fehlt: ' + app.$('#tg-hint').textContent);
+  app.E('targetTap(20, 50); targetTap(-60, 30); targetTap(200, 0)');          // letzter Tipp daneben
+  erwarte(!app.$('#tg-next').disabled && app.E('targetRun.cur.map(p => p.r).join()') === '0.42,0.41,0.54,0.67', 'Punkte falsch: ' + app.E('targetRun.cur.map(p => p && p.r).join()'));
+  app.E('targetTap(-5, -5)');                                              // im selben Bereich: Punkt wandert
+  erwarte(app.E('targetRun.cur[0].r') === 0.07 && app.E('targetRun.order.join()') === '1,2,3,0', 'Erneuter Tipp verschiebt nicht');
+  app.klick('#tg-undo');
+  erwarte(app.E('targetRun.cur[0]') === null && app.$('#tg-next').disabled, 'Rückgängig nimmt den letzten Punkt nicht weg');
+  app.E('targetTap(-5, -5)'); app.klick('#tg-next');
+  erwarte(app.E('curClass().targets[0].pts.length') === 4 && /1 Rückmeldung$/.test(app.$('#tg-n').textContent) && app.E('targetRun.cur.every(p => !p)'), '„Nächster“ speichert nicht oder leert nicht');
+  erwarte(app.E('curClass().targets[0].pts.every(q => Object.keys(q).sort().join() === "a,id,k,r")'), 'Mehr als Punkte gespeichert');
+  // Kennungen ohne Uhrzeit, Zeitstempel ohne Uhrzeit – sonst ließe sich die Reihenfolge rekonstruieren
+  const t36 = Date.now().toString(36).slice(0, 5);
+  erwarte(app.E(`curClass().targets[0].pts.every(q => q.id.slice(0, 5) !== "${t36}")`), 'Punkt-Kennungen enthalten die Uhrzeit');
+  app.E('flushSave()');
+  erwarte(app.E('Object.keys(DB.stamps).filter(k => k.startsWith("tp|")).every(k => DB.stamps[k] === 1)') && app.E('Object.keys(DB.stamps).some(k => k.startsWith("tp|"))'), 'Punkte tragen einen Zeitstempel');
+  // ohne Zeigen bedienbar
+  erwarte(app.$$('#tg-a11y button').length === 12 && /Meine Motivation: weniger gut/.test(app.$('#tg-a11y').textContent), 'Knöpfe für Bedienung ohne Zeigen fehlen');
+  app.klick(app.$$('#tg-a11y button')[0]);
+  erwarte(app.E('targetRun.cur[0].r') === 0.15, 'Knopf setzt keinen Punkt');
+  app.klick('#tg-undo');
+  app.E('targetTap(-90, -10); targetTap(10, -10); targetTap(10, 10); targetTap(-10, 10)'); app.klick('#tg-next');
+  // Zurück-Taste und kurzer Tipp beenden nicht
+  app.E('navBack()'); app.klick('#tg-exit');
+  erwarte(app.$('#screen-target').classList.contains('active'), 'Zielscheibe lässt sich ohne Halten verlassen');
+  app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150); await pause(120);
+  erwarte(app.$('#screen-names').classList.contains('active') && !app.E('DB.targetLock') && !!app.$('#tg-means'), 'Halten beendet nicht oder Auswertung fehlt');
+  // Mittelwerte: Bereich 1 hat r = 0,07 und 0,91 → Ø 51 %
+  erwarte(/Thema und Lerninhalte: Ø 51 % \(2 Punkte\)/.test(app.$('#tg-means').textContent), 'Mittelwert falsch: ' + app.$('#tg-means').textContent);
+  // PDF
+  const box = downloadAbfangen(app);
+  app.klick('#tg-pdf');
+  const pdf = await blobText(app, box.blob);
+  erwarte(/^Zielscheibe_7b/.test(box.name) && /Wie war die Einheit/.test(pdf), 'PDF der Zielscheibe fehlt: ' + box.name);
+  // groß zeigen und mit kurzem Tipp zurück
+  app.klick('#tg-big');
+  erwarte(app.$('#screen-target').classList.contains('result') && !app.E('DB.targetLock') && app.$$('#tg-svg circle').length >= 8 + 3, 'Große Ansicht fehlt');
+  app.klick('#tg-exit'); await pause(120);
+  erwarte(app.$('#screen-names').classList.contains('active') && !!app.$('#tg-means'), 'Große Ansicht lässt sich nicht schließen');
+  // Liste: Runde mit Mittelwerten
+  app.E('closeModal(); openTargets(curClass())');
+  erwarte(app.$$('#tg-rounds .grpcard').length === 1 && /2 Rückmeldungen/.test(app.$('#tg-rounds').textContent) && app.$$('#tg-rounds .tgchips span').length === 4, 'Rundenliste falsch');
+  app.E('closeModal()');
+  // mit Sperre: Beenden nur nach Entsperren; Start sperrt die Noten wieder
+  const m = bioMock(app);
+  app.E('DB.settings.lock = true; DB.selfGuardSeen = true; lockOpen = true; startTarget(curClass(), curClass().targets[0])');
+  erwarte(app.E('lockOpen') === false, 'Noten bleiben während der Zielscheibe entsperrt');
+  m.next = 'abbruch';
+  app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150);
+  erwarte(app.$('#screen-target').classList.contains('active'), 'Mit Sperre ohne Entsperren beendet');
+  m.next = 'ok';
+  app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150); await pause(100);
+  erwarte(!app.$('#screen-target').classList.contains('active') && app.E('lockOpen') === true, 'Mit Entsperren nicht beendet');
+  app.E('closeModal(); DB.settings.lock = false');
+  // nach einem Neustart weiter im Schülermodus
+  app.E('DB.targetLock = { classId: curClass().id, targetId: curClass().targets[0].id }; show("start"); resumeTargetLock()');
+  erwarte(app.$('#screen-target').classList.contains('active') && !app.$('#screen-target').classList.contains('result'), 'Nach Neustart nicht zurück in der Zielscheibe');
+  app.E('endTarget(); closeModal()');
+  // Ohne Einteilung: ein Punkt
+  app.E(`curClass().targets.push({ id: "one", title: "Verstanden?", date: isoDay(new Date()), areas: [""], pts: [] }); startTarget(curClass(), curClass().targets[1])`);
+  erwarte(/einmal auf die Zielscheibe/.test(app.$('#tg-hint').textContent) && app.$$('#tg-svg line').length === 0 && app.$$('#tg-a11y button').length === 3, 'Ohne Einteilung falsch');
+  app.E('targetTap(0, 50)'); app.klick('#tg-next');
+  erwarte(app.E('curClass().targets[1].pts.length') === 1 && app.E('curClass().targets[1].pts[0].k') === 0, 'Ein Punkt nicht gespeichert');
+  app.E('endTarget(); closeModal()');
+  // Laden prüft
+  const san = app.E(`JSON.stringify(sanTargets([{ id: "t", title: "T", areas: ["a", "b"], pts: [{ id: "p1", k: 1, r: 1.7, a: 0.5 }, { id: "p2", k: 2, r: 0.3, a: 0.1 }, { id: "p1", k: 0, r: 0.2, a: 0 }, { k: 0, r: "x", a: 0 }] }, { title: 5 }]))`);
+  erwarte(san === '[{"id":"t","title":"T","date":"' + app.E('isoDay(new Date())') + '","areas":["a","b"],"pts":[{"id":"p1","k":1,"r":1,"a":0.5}]}]', 'Laden prüft Zielscheiben falsch: ' + san);
+  // löschen
+  app.E('openTargetResult(curClass(), curClass().targets[1])'); app.klick('#tg-delete'); app.sheetOk(); await pause(90);
+  erwarte(app.E('curClass().targets.length') === 1 && !!app.$('#tg-rounds'), 'Löschen geht nicht');
+  app.E('closeModal()');
+  // Unterrichtsleiste
+  erwarte(!!app.$('#lb-target'), 'Knopf in der Unterrichtsleiste fehlt');
+});
+
+test('Abgleich: Zielscheiben-Punkte von zwei Geräten', async app => {
+  const B = neueApp();
+  try{
+    uhr(app, 1000); grundstand(app);
+    app.E('curClass().targets = [{ id: "t1", title: "Feedback", date: "2026-10-10", areas: ["A", "B"], pts: [] }]; flushSave()');
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    uhr(app, 2000); app.E('curClass().targets[0].pts.push({ id: "p1", k: 0, r: 0.2, a: 0.5 }, { id: "p2", k: 1, r: 0.4, a: 0.5 }); flushSave()');
+    uhr(B, 2100); B.E('curClass().targets[0].pts.push({ id: "p3", k: 0, r: 0.6, a: 0.5 }, { id: "p4", k: 1, r: 0.8, a: 0.5 }); flushSave()');
+    uhr(app, 3000); await laden(app, datei(B), 'merge');
+    uhr(B, 3100); await laden(B, datei(app), 'merge');
+    erwarte(app.E('curClass().targets[0].pts.length') === 4 && B.E('curClass().targets[0].pts.length') === 4 && inhalt(app) === inhalt(B), 'Punkte zweier Geräte nicht zusammengeführt');
+    uhr(app, 4000); app.E('curClass().targets = []; flushSave()');
+    uhr(B, 4100); await laden(B, datei(app), 'merge');
+    erwarte(B.E('curClass().targets.length') === 0, 'Gelöschte Zielscheibe kehrt zurück');
   } finally { B.ende(); }
 });
 
