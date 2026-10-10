@@ -57,6 +57,9 @@ async function alleTests(){
   }
 }
 const pause = ms => new Promise(r => setTimeout(r, ms || 30));
+// Wartet, bis eine Bedingung gilt (höchstens max ms). Für Abläufe mit setTimeout in der App:
+// feste Pausen sind auf langsamen CI-Läufern zu knapp.
+const bis = async (fn, max = 3000) => { for(let i = 0; i <= max / 20; i++){ try { if(fn()) return true; } catch(e){} await pause(20); } return false; };   // zählt Runden statt Date.now – die Tests verstellen die Uhr
 /* Datei in ein <input type=file> legen und "change" auslösen (jsdom erlaubt kein Setzen von files) */
 function dateiWaehlen(app, sel, name, inhalt){
   const input = app.$(sel);
@@ -3735,7 +3738,7 @@ test('Feedback-Zielscheibe: anonym sammeln, auswerten, schützen, abgleichen', a
   // Zurück-Taste und kurzer Tipp beenden nicht
   app.E('navBack()'); app.klick('#tg-exit');
   erwarte(app.$('#screen-target').classList.contains('active'), 'Zielscheibe lässt sich ohne Halten verlassen');
-  app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150); await pause(120);
+  app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(1900); await bis(() => app.$('#screen-names').classList.contains('active') && !!app.$('#tg-means'));
   erwarte(app.$('#screen-names').classList.contains('active') && !app.E('DB.targetLock') && !!app.$('#tg-means'), 'Halten beendet nicht oder Auswertung fehlt');
   // Mittelwerte: Bereich 1 hat r = 0,07 und 0,91 → Ø 51 %
   erwarte(/Thema und Lerninhalte: Ø 51 % \(2 Punkte\)/.test(app.$('#tg-means').textContent), 'Mittelwert falsch: ' + app.$('#tg-means').textContent);
@@ -3747,7 +3750,7 @@ test('Feedback-Zielscheibe: anonym sammeln, auswerten, schützen, abgleichen', a
   // groß zeigen und mit kurzem Tipp zurück
   app.klick('#tg-big');
   erwarte(app.$('#screen-target').classList.contains('result') && !app.E('DB.targetLock') && app.$$('#tg-svg circle').length >= 8 + 3, 'Große Ansicht fehlt');
-  app.klick('#tg-exit'); await pause(120);
+  app.klick('#tg-exit'); await bis(() => app.$('#screen-names').classList.contains('active') && !!app.$('#tg-means'));
   erwarte(app.$('#screen-names').classList.contains('active') && !!app.$('#tg-means'), 'Große Ansicht lässt sich nicht schließen');
   // Liste: Runde mit Mittelwerten
   app.E('closeModal(); openTargets(curClass())');
@@ -3761,7 +3764,7 @@ test('Feedback-Zielscheibe: anonym sammeln, auswerten, schützen, abgleichen', a
   app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150);
   erwarte(app.$('#screen-target').classList.contains('active'), 'Mit Sperre ohne Entsperren beendet');
   m.next = 'ok';
-  app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(2150); await pause(100);
+  app.$('#tg-exit').dispatchEvent(new app.w.Event('pointerdown')); await pause(1900); await bis(() => !app.$('#screen-target').classList.contains('active'));
   erwarte(!app.$('#screen-target').classList.contains('active') && app.E('lockOpen') === true, 'Mit Entsperren nicht beendet');
   app.E('closeModal(); DB.settings.lock = false');
   // nach einem Neustart weiter im Schülermodus
@@ -3778,7 +3781,7 @@ test('Feedback-Zielscheibe: anonym sammeln, auswerten, schützen, abgleichen', a
   const san = app.E(`JSON.stringify(sanTargets([{ id: "t", title: "T", areas: ["a", "b"], pts: [{ id: "p1", k: 1, r: 1.7, a: 0.5 }, { id: "p2", k: 2, r: 0.3, a: 0.1 }, { id: "p1", k: 0, r: 0.2, a: 0 }, { k: 0, r: "x", a: 0 }] }, { title: 5 }]))`);
   erwarte(san === '[{"id":"t","title":"T","date":"' + app.E('isoDay(new Date())') + '","areas":["a","b"],"pts":[{"id":"p1","k":1,"r":1,"a":0.5}]}]', 'Laden prüft Zielscheiben falsch: ' + san);
   // löschen
-  app.E('openTargetResult(curClass(), curClass().targets[1])'); app.klick('#tg-delete'); app.sheetOk(); await pause(90);
+  app.E('openTargetResult(curClass(), curClass().targets[1])'); app.klick('#tg-delete'); app.sheetOk(); await bis(() => app.E('curClass().targets.length') === 1 && !!app.$('#tg-rounds'));
   erwarte(app.E('curClass().targets.length') === 1 && !!app.$('#tg-rounds'), 'Löschen geht nicht');
   app.E('closeModal()');
   // Unterrichtsleiste
