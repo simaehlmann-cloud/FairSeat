@@ -3770,18 +3770,23 @@ test('Feedback-Zielscheibe: anonym sammeln, auswerten, schützen, abgleichen', a
   // nach einem Neustart weiter im Schülermodus
   app.E('DB.targetLock = { classId: curClass().id, targetId: curClass().targets[0].id }; show("start"); resumeTargetLock()');
   erwarte(app.$('#screen-target').classList.contains('active') && !app.$('#screen-target').classList.contains('result'), 'Nach Neustart nicht zurück in der Zielscheibe');
-  app.E('endTarget(); closeModal()');
+  app.E('endTarget()'); await pause(150); app.E('closeModal()');   // Auswertung öffnet verzögert – abwarten, sonst überdeckt sie spätere Blätter
   // Ohne Einteilung: ein Punkt
   app.E(`curClass().targets.push({ id: "one", title: "Verstanden?", date: isoDay(new Date()), areas: [""], pts: [] }); startTarget(curClass(), curClass().targets[1])`);
   erwarte(/einmal auf die Zielscheibe/.test(app.$('#tg-hint').textContent) && app.$$('#tg-svg line').length === 0 && app.$$('#tg-a11y button').length === 3, 'Ohne Einteilung falsch');
   app.E('targetTap(0, 50)'); app.klick('#tg-next');
   erwarte(app.E('curClass().targets[1].pts.length') === 1 && app.E('curClass().targets[1].pts[0].k') === 0, 'Ein Punkt nicht gespeichert');
-  app.E('endTarget(); closeModal()');
+  app.E('endTarget()'); await pause(150); app.E('closeModal()');   // Auswertung öffnet verzögert – abwarten, sonst überdeckt sie spätere Blätter
   // Laden prüft
   const san = app.E(`JSON.stringify(sanTargets([{ id: "t", title: "T", areas: ["a", "b"], pts: [{ id: "p1", k: 1, r: 1.7, a: 0.5 }, { id: "p2", k: 2, r: 0.3, a: 0.1 }, { id: "p1", k: 0, r: 0.2, a: 0 }, { k: 0, r: "x", a: 0 }] }, { title: 5 }]))`);
   erwarte(san === '[{"id":"t","title":"T","date":"' + app.E('isoDay(new Date())') + '","areas":["a","b"],"pts":[{"id":"p1","k":1,"r":1,"a":0.5}]}]', 'Laden prüft Zielscheiben falsch: ' + san);
+  // inzwischen gelöscht: die verzögerte Auswertung darf kein anderes Blatt überdecken
+  app.E(`curClass().targets.push({ id: "tmp", title: "Weg", date: isoDay(new Date()), areas: [""], pts: [] }); startTarget(curClass(), curClass().targets[2], true); endTarget(); closeModal(); curClass().targets.pop(); openTargets(curClass())`);
+  await pause(150);
+  erwarte(!!app.$('#tg-rounds') && !app.$('#tg-means'), 'Auswertung einer gelöschten Zielscheibe öffnet sich');
+  app.E('closeModal()');
   // löschen
-  app.E('openTargetResult(curClass(), curClass().targets[1])'); app.klick('#tg-delete'); app.sheetOk(); await bis(() => app.E('curClass().targets.length') === 1 && !!app.$('#tg-rounds'));
+  app.E('openTargetResult(curClass(), curClass().targets[1])'); app.klick('#tg-delete'); app.sheetOk(); await bis(() => app.E('curClass().targets.length') === 1 && !!app.$('#tg-rounds')); await pause(150);   // nichts Verzögertes darf die Liste danach noch überdecken
   erwarte(app.E('curClass().targets.length') === 1 && !!app.$('#tg-rounds'), 'Löschen geht nicht');
   app.E('closeModal()');
   // Unterrichtsleiste

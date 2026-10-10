@@ -11398,8 +11398,9 @@ function endTarget(){
   const back = R.back === "editor" && !curPlanId ? "start" : R.back;
   if(back === "names") goNames(); else if(back === "editor") show("editor"); else if(back === "start") goHome(); else show(back);
   const c = classById(R.cid), tg = targetById(c, R.tid);
-  if(!R.result){ toast(t("tgEnded")); if(tg) setTimeout(() => openTargetResult(c, tg), 80); }
-  else if(tg) setTimeout(() => openTargetResult(c, tg), 80);
+  const later = () => { if(targetById(c, R.tid) === tg) openTargetResult(c, tg); };   // inzwischen gelöscht: nichts öffnen
+  if(!R.result){ toast(t("tgEnded")); if(tg) setTimeout(later, 80); }
+  else if(tg) setTimeout(later, 80);
 }
 holdToExit($("#tg-exit"), () => { if(!targetRun) return; if(targetRun.result){ endTarget(); return; } pupilExit(endTarget); });
 /* Ansicht „groß“: kurzer Tipp aufs ✕ genügt */
