@@ -53,7 +53,8 @@
   <h2>2. Grundsatz: keine Datenerhebung</h2>
   <p>
     FairSeat verarbeitet keine personenbezogenen Daten auf Servern des Anbieters.
-    Die App arbeitet vollständig offline. Es gibt keine Benutzerkonten, keine Registrierung,
+    Die App arbeitet vollständig offline (Ausnahme: der optionale Abgleich über WebDAV, siehe Abschnitt 6,
+    mit einem Speicher, den Sie selbst angeben). Es gibt keine Benutzerkonten beim Anbieter, keine Registrierung,
     keine Analyse- oder Trackingdienste, keine Werbung und keine Weitergabe von Daten an Dritte.
   </p>
 
@@ -170,8 +171,26 @@
 
   <h2>6. Verbindungen ins Internet</h2>
   <p>
-    Die App baut von sich aus keine Netzwerkverbindungen auf. Sie enthält keine externen
-    Bibliotheken, keine Schriftarten von Fremdservern und keine eingebetteten Inhalte.
+    Ohne eingerichteten Abgleich (siehe unten) baut die App keine Netzwerkverbindungen auf. Sie lädt
+    keine Skripte, Schriftarten oder sonstigen Inhalte von fremden Servern nach.
+  </p>
+  <h3>Optionaler Abgleich über WebDAV</h3>
+  <p>
+    Nur wenn Sie unter „Einstellungen → Abgleich über WebDAV“ einen Speicher eintragen (z. B. IServ Ihrer
+    Schule oder eine eigene Nextcloud), verbindet sich die App mit genau diesem Server – beim Öffnen und
+    Verlassen der App, kurz nach Änderungen und auf Ihren Wunsch. Sie legt dort die Datei
+    „FairSeat-Abgleich.json“ ab und liest sie wieder. Die Datei enthält Ihre Daten wie eine Sicherung,
+    ist aber auf dem Gerät mit Ihrem Abgleich-Passwort verschlüsselt (AES-256-GCM, Schlüssel per PBKDF2 aus
+    dem Passwort). Der Betreiber des Speichers sieht nur unlesbare Zeichen sowie technische Angaben wie
+    Dateigröße, Zeitpunkt und Ihre IP-Adresse; für diese Verarbeitung gelten seine Bedingungen.
+    Die Verbindung ist immer mit HTTPS verschlüsselt.
+  </p>
+  <p>
+    Adresse und Benutzername speichert die App auf dem Gerät; Server-Passwort und Abgleich-Passwort
+    werden mit einem nur auf diesem Gerät vorhandenen Schlüssel verschlüsselt abgelegt. Keine dieser Angaben
+    gelangt in eine Sicherung, an den Anbieter oder an Dritte. „Abgleich ausschalten“ löscht sie; die Datei
+    auf dem Server löschen Sie dort selbst. Klären Sie vor der Nutzung mit Ihrer Schulleitung, ob Sie
+    (verschlüsselte) dienstliche Daten auf diesem Speicher ablegen dürfen.
   </p>
 
   <h2>7. Bezug über einen App-Vertrieb</h2>
