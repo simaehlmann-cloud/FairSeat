@@ -3810,6 +3810,263 @@ test('Abgleich: Zielscheiben-Punkte von zwei Geräten', async app => {
   } finally { B.ende(); }
 });
 
+/* WebDAV-Server zum Testen: hält Dateien im Speicher, prüft Anmeldung, ETag (If-Match / If-None-Match) und Ordner */
+function davServer(){
+  const S = { files: new Map(), log: [], user: 'simon.m', pw: 'iserv-geheim', dir: 'https://kgs-test.de/webdav/Files/', n: 0, vorPut: null, aus: false,
+    verz: 5, umleiten: false, schwach: false, kekse: 0, optionen: [] };
+  S.installiere = app => {
+    app.w.cordova = { platformId: 'ios', plugin: { http: { clearCookies(){ S.kekse++; }, setFollowRedirect(v){ S.folgen = v; }, sendRequest(url, o, ok, fail){
+      S.optionen.push(o);
+      const h = o.headers || {}, m = String(o.method).toUpperCase();
+      S.log.push(m + ' ' + url + (h['If-Match'] ? ' if-match ' + h['If-Match'] : '') + (h['If-None-Match'] ? ' if-none ' + h['If-None-Match'] : ''));
+      const antwort = (status, data, etag) => setTimeout(() => {
+        const r = { status, headers: etag ? { ETag: etag } : {}, data: data || '' };
+        if(status >= 200 && status < 300) ok(r); else fail(Object.assign(r, { error: data || '' }));
+      }, S.verz);
+      if(S.aus) return antwort(-1, 'offline');
+      if(S.umleiten) return antwort(302, '<html>Anmeldung</html>');
+      const erwartet = 'Basic ' + Buffer.from(S.user + ':' + S.pw, 'utf8').toString('base64');
+      if(h.Authorization !== erwartet) return antwort(401, 'Unauthorized');
+      if(url.indexOf(S.dir) !== 0) return antwort(409, 'Conflict');
+      const f = S.files.get(url);
+      if(m === 'GET'){
+        if(!f) return antwort(404, 'Not Found');
+        if(h['If-None-Match'] && h['If-None-Match'] === f.etag) return antwort(304, '', f.etag);
+        return antwort(200, f.data, f.etag);
+      }
+      if(m === 'PUT'){
+        if(S.vorPut){ const v = S.vorPut; S.vorPut = null; v(); }
+        const g = S.files.get(url);
+        if(h['If-Match'] && (!g || g.etag !== h['If-Match'])) return antwort(412, 'Precondition Failed');
+        if(h['If-None-Match'] === '*' && g) return antwort(412, 'Precondition Failed');
+        if(typeof o.data !== 'string') return antwort(400, 'Bad Request');
+        const etag = (S.schwach ? 'W/' : '') + '"e' + (++S.n) + '"';
+        S.files.set(url, { data: o.data, etag });
+        return antwort(g ? 204 : 201, '', etag);
+      }
+      return antwort(405, 'Method Not Allowed');
+    } } } };
+  };
+  S.datei = () => S.files.get(S.dir + 'FairSeat-Abgleich.json');
+  S.puts = () => S.log.filter(x => x.indexOf('PUT') === 0).length;
+  return S;
+}
+/* Einrichten über die Oberfläche */
+async function davEinrichten(app, S, key, opt){
+  opt = opt || {};
+  app.E('goHome()'); app.klick('#btn-settings'); app.klick('#set-dav');
+  app.$('#dav-url').value = opt.url || 'kgs-test.de';
+  app.$('#dav-user').value = opt.user || S.user;
+  app.$('#dav-pw').value = opt.pw || S.pw;
+  app.$$('#sheet input[autocomplete="new-password"]').forEach(f => { f.value = key; });
+  const knopf = app.$('#dav-connect');
+  knopf.click();
+  await bis(() => !knopf.disabled, 15000);
+}
+const davLauf = (app, why) => app.E(`davSync("${why || 'test'}")`);
+
+test('WebDAV: Adresse prüfen', app => {
+  const n = u => { const r = app.E(`JSON.stringify(davNormUrl(${JSON.stringify(u)}))`); return r === undefined ? 'null' : r; };
+  erwarte(n('kgs-kirchweyhe.eu') === '{"url":"https://kgs-kirchweyhe.eu/webdav/Files/"}', 'IServ-Adresse nicht ergänzt: ' + n('kgs-kirchweyhe.eu'));
+  erwarte(n(' https://kgs-kirchweyhe.eu/webdav ') === '{"url":"https://kgs-kirchweyhe.eu/webdav/Files/"}', '„/webdav“ ohne Files: ' + n('https://kgs-kirchweyhe.eu/webdav'));
+  erwarte(n('https://kgs-kirchweyhe.eu/webdav/Files/FairSeat-Abgleich.json') === '{"url":"https://kgs-kirchweyhe.eu/webdav/Files/"}', 'Dateiname nicht abgetrennt');
+  erwarte(n('https://cloud.x.de/remote.php/dav/files/simon') === '{"url":"https://cloud.x.de/remote.php/dav/files/simon/"}', 'Nextcloud-Pfad verändert');
+  erwarte(n('https://kgs-kirchweyhe.eu/webdav/Groups/Mathe/') === '{"url":"https://kgs-kirchweyhe.eu/webdav/Groups/Mathe/"}', 'Gruppenordner verändert');
+  erwarte(n('http://x.de') === '{"err":"davEHttp"}' && n('ftp://x.de') === 'null' && n('localhost') === 'null' && n('https://a:b@x.de') === 'null' && n('') === 'null', 'Unsichere oder ungültige Adressen angenommen');
+});
+
+test('WebDAV: einrichten, verschlüsselt ablegen, zweites Gerät übernimmt', async app => {
+  const S = davServer(), B = neueApp();
+  try{
+    S.installiere(app); S.installiere(B);
+    uhr(app, 1000); grundstand(app);
+    // ohne Plugin (Browser): nur Hinweis
+    const C = neueApp();
+    try{ C.E('openDavSetup()'); erwarte(!!C.$('#dav-noapp') && !C.$('#dav-connect'), 'Ohne App kein Hinweis'); } finally { C.ende(); }
+    // falsches Abgleich-Passwort zu kurz
+    app.E('goHome()'); app.klick('#btn-settings'); app.klick('#set-dav');
+    erwarte(/Aus/.test(app.$('#set-dav-status') ? app.$('#set-dav-status').textContent : 'Aus'), 'Status ohne Abgleich nicht „Aus“');
+    app.$('#dav-url').value = 'kgs-test.de'; app.$('#dav-user').value = S.user; app.$('#dav-pw').value = S.pw;
+    app.$$('#sheet input[autocomplete="new-password"]').forEach(f => { f.value = 'kurz'; });
+    app.klick('#dav-connect'); await pause(60);
+    erwarte(S.log.length === 0 && app.E('davCfg()') === null, 'Zu kurzes Abgleich-Passwort angenommen');
+    app.E('closeModal()');
+    await davEinrichten(app, S, 'abgleich-123');
+    erwarte(!!S.datei() && S.puts() === 1, 'Datei nicht hochgeladen: ' + S.log.join(' | '));
+    const roh = S.datei().data;
+    erwarte(!/Anna|Dana|KA 1|Mathe/.test(roh) && /"enc"/.test(roh), 'Datei auf dem Server nicht verschlüsselt');
+    erwarte(!app.$('#modal').classList.contains('on') && /eingerichtet/.test(app.$('#toast').textContent), 'Einrichten ohne Abschluss: ' + app.$('#toast').textContent);
+    // Passwörter: nicht im Klartext gespeichert, nie in einer Sicherung
+    const alles = app.E('JSON.stringify(Object.keys(localStorage).map(k => localStorage.getItem(k)))');
+    erwarte(alles.indexOf(S.pw) < 0 && alles.indexOf('abgleich-123') < 0, 'Passwort steht im Speicher');
+    erwarte(app.E('JSON.stringify(backupData())').indexOf('webdav') < 0 && app.E('JSON.stringify(DB)').indexOf('kgs-test') < 0, 'Abgleich-Einstellungen landen in der Sicherung');
+    erwarte(/Zuletzt abgeglichen: heute/.test(app.$('#set-dav-status').textContent), 'Status in den Einstellungen fehlt: ' + app.$('#set-dav-status').textContent);
+    // Datei lässt sich auch als Sicherung einlesen
+    erwarte(app.E(`(async () => JSON.parse(await decryptBackup(${roh}.enc, "abgleich-123")).data.classes[0].name)()`) !== undefined, 'Entschlüsseln nicht möglich');
+    const nameAusDatei = await app.E(`(async () => JSON.parse(await decryptBackup(${roh}.enc, "abgleich-123")).data.classes[0].name)()`);
+    erwarte(nameAusDatei === '7b', 'Datei ist keine gültige Sicherung: ' + nameAusDatei);
+    // Nichts geändert: kein erneutes Hochladen (304)
+    await davLauf(app);
+    erwarte(S.puts() === 1 && /if-none "e1"/.test(S.log[S.log.length - 1]), 'Ohne Änderung hochgeladen oder ohne ETag gefragt: ' + S.log.join(' | '));
+    // zweites Gerät, leer: übernimmt den Stand, ohne zurückzuschicken
+    uhr(B, 1500);
+    await davEinrichten(B, S, 'abgleich-123');
+    erwarte(B.E('DB.classes.length') === 1 && B.E('curClass() ? 1 : DB.classes[0].students.length') && inhalt(B) === inhalt(app), 'Zweites Gerät hat den Stand nicht');
+    erwarte(S.puts() === 1, 'Leeres Gerät hat zurückgeschickt');
+    // Gerät B ändert, A holt
+    uhr(B, 2000); B.E('DB.classes[0].assess[0].marks[DB.classes[0].students[1].id] = "1"; flushSave()');
+    await davLauf(B);
+    erwarte(S.puts() === 2, 'Änderung nicht hochgeladen');
+    uhr(app, 2100); await davLauf(app, 'resume');
+    erwarte(app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[1].id]') === '1', 'Änderung kommt nicht an');
+    erwarte(S.puts() === 2, 'Nur geholt, trotzdem hochgeladen');
+    uhr(app, 2150); await davLauf(app);
+    erwarte(S.puts() === 2, 'Nach dem Holen beim nächsten Mal hochgeladen');
+    // gerade getippt (Speichern wartet noch): wird mit Zeitstempel mitgenommen
+    uhr(B, 2160); B.E('DB.classes[0].assess[0].marks[DB.classes[0].students[2].id] = "5"; save()');
+    await davLauf(B);
+    uhr(app, 2170); await davLauf(app);
+    erwarte(app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[2].id]') === '5', 'Ungespeicherte Änderung nicht mitgenommen');
+    // Datenschutz-Cockpit zeigt den Abgleich
+    app.E('openPrivacy()');
+    erwarte(!!app.$('#pv-sync') && /Zuletzt abgeglichen/.test(app.$('#pv-sync').textContent) && !app.$('#pv-sync .pvi.warn'), 'Cockpit zeigt den Abgleich nicht');
+    erwarte(/eigenen Speicher/.test(app.$('#sheet .hint').textContent), 'Cockpit behauptet bei Abgleich, nichts ins Internet zu senden');
+    app.E('closeModal()');
+  } finally { B.ende(); }
+});
+
+test('WebDAV: gleichzeitig ändern, Fehler, Warten auf offene Fenster, ausschalten', async app => {
+  const S = davServer(), B = neueApp(), C = neueApp();
+  try{
+    S.installiere(app); S.installiere(B); S.installiere(C);
+    uhr(app, 1000); grundstand(app);
+    await davEinrichten(app, S, 'abgleich-123');
+    uhr(B, 1100); await davEinrichten(B, S, 'abgleich-123');
+    // beide ändern; A schiebt sich zwischen Lesen und Schreiben von B → 412, B holt neu und führt zusammen
+    uhr(app, 2000); app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[1].id] = "3"; flushSave()');
+    uhr(B, 2050); B.E('DB.classes[0].obs = [{ id: "o1", sid: DB.classes[0].students[2].id, d: "2026-10-01", text: "arbeitet mit" }]; flushSave()');
+    uhr(app, 2100); await davLauf(app);
+    uhr(B, 2200);
+    S.vorPut = () => { const f = S.datei(); S.files.set(S.dir + 'FairSeat-Abgleich.json', { data: f.data, etag: '"fremd"' }); };
+    const r = await B.E('davSync("test")');
+    erwarte(r && r.ok && S.log.filter(x => /PUT/.test(x)).length >= 4, 'Konflikt nicht neu versucht: ' + JSON.stringify(r) + ' ' + S.log.join(' | '));
+    uhr(app, 2300); await davLauf(app);
+    erwarte(app.E('DB.classes[0].obs.length') === 1 && B.E('DB.classes[0].assess[0].marks[DB.classes[0].students[1].id]') === '3' && inhalt(app) === inhalt(B), 'Gleichzeitige Änderungen nicht zusammengeführt');
+    // falsches Abgleich-Passwort: nichts verändert
+    const vorher = S.datei().data, putsVorher = S.puts();
+    uhr(C, 2400);
+    await davEinrichten(C, S, 'anderes-pw-9');
+    erwarte(S.datei().data === vorher && S.puts() === putsVorher && C.E('DB.classes.length') === 0, 'Falsches Abgleich-Passwort hat etwas verändert');
+    erwarte(/passt nicht/.test(C.$('#toast').textContent) && C.$('#modal').classList.contains('on'), 'Falsches Abgleich-Passwort nicht gemeldet: ' + C.$('#toast').textContent);
+    C.E('closeModal()');
+    // falsches Server-Passwort
+    C.E('davCfgSet(null)');
+    await davEinrichten(C, S, 'abgleich-123', { pw: 'falsch' });
+    erwarte(/Anmeldung abgelehnt/.test(C.$('#toast').textContent) && C.E('DB.classes.length') === 0, '401 nicht gemeldet');
+    C.E('closeModal()');
+    // fremde Datei wird nicht überschrieben
+    S.files.set(S.dir + 'FairSeat-Abgleich.json', { data: '{"hallo":1}', etag: '"x"' });
+    const rf = await davLauf(app);
+    erwarte(rf.err === 'davEForeign' && S.datei().data === '{"hallo":1}' && /keine verschlüsselte FairSeat-Datei/.test(app.E('davStatusText()')), 'Fremde Datei überschrieben oder nicht gemeldet');
+    S.files.set(S.dir + 'FairSeat-Abgleich.json', { data: vorher, etag: '"zurück"' });
+    // kein Netz
+    S.aus = true; const rn = await davLauf(app); S.aus = false;
+    erwarte(rn.err === -1 && /nicht erreichbar/.test(app.E('davStatusText()')), 'Ohne Netz nicht gemeldet');
+    app.E('openPrivacy()');
+    erwarte(!!app.$('#pv-sync .pvi.warn') && !!app.$('#pv-sync .davstatus.warn'), 'Cockpit warnt nicht bei Fehler');
+    app.E('closeModal()');
+    await davLauf(app);
+    erwarte(app.E('davCfg().err') === null, 'Fehler bleibt nach erfolgreichem Abgleich stehen');
+    // offenes Fenster: Eingehendes wartet, bis es geschlossen ist
+    uhr(B, 3000); B.E('DB.classes[0].assess[0].marks[DB.classes[0].students[0].id] = "1"; flushSave()'); await davLauf(B);
+    uhr(app, 3100); app.E('openPrivacy()');
+    const rp = await davLauf(app);
+    erwarte(rp.postponed && app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[0].id]') === '2', 'Abgleich griff in ein offenes Fenster ein');
+    app.E('closeModal()');
+    await bis(() => app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[0].id]') === '1', 6000);
+    erwarte(app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[0].id]') === '1' && !app.E('davPending'), 'Abgleich nach dem Schließen nicht nachgeholt');
+    // nach einer Änderung von selbst
+    app.E('DAV_CHANGE_DELAY = 40');
+    const p0 = S.puts();
+    uhr(app, 3200); app.E('DB.classes[0].assess[0].title = "KA 1 neu"; save()');
+    await bis(() => S.puts() > p0, 6000);
+    erwarte(S.puts() === p0 + 1, 'Änderung nicht von selbst abgeglichen');
+    // ausschalten
+    app.E('openDavSetup()'); app.klick('#dav-off'); app.sheetOk(); await pause(60);
+    erwarte(app.E('davCfg()') === null && app.E('localStorage.getItem("fairseat-dav-sec")') === null && /ausgeschaltet/.test(app.$('#toast').textContent) && app.E('DB.classes.length') === 1, 'Ausschalten unvollständig');
+    const rz = await davLauf(app);
+    erwarte(rz.skip === true, 'Nach dem Ausschalten noch abgeglichen');
+  } finally { B.ende(); C.ende(); }
+});
+
+test('WebDAV: Prüfbericht – Eingaben während des Abgleichs, Einrichten während eines Laufs, Sperren', async app => {
+  const S = davServer(), B = neueApp();
+  try{
+    S.installiere(app); S.installiere(B);
+    erwarte(app.E('JSON.stringify(davNormUrl("https://kgs-test.de/webdav/Files/Meine Dateien"))') === '{"url":"https://kgs-test.de/webdav/Files/Meine%20Dateien/"}' && app.E('davNormUrl("kgs test.de")') === null, 'Leerzeichen im Pfad falsch behandelt');
+    uhr(app, 1000); grundstand(app);
+    await davEinrichten(app, S, 'abgleich-123');
+    erwarte(S.optionen.every(o => o.connectTimeout === 15 && o.readTimeout === 60 && o.followRedirect === false && o.timeout === undefined) && S.folgen === false, 'Zeitlimits oder Weiterleitung falsch eingestellt');
+    erwarte(S.kekse >= 1, 'Cookies nach dem Abgleich nicht gelöscht');
+    uhr(B, 1100); await davEinrichten(B, S, 'abgleich-123');
+    // Eingabe, während B entschlüsselt: muss trotzdem hochgehen
+    uhr(app, 2000); app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[1].id] = "3"; flushSave()'); await davLauf(app);
+    uhr(B, 2100);
+    B.E(`window.__dec = decryptBackup; decryptBackup = async (e, k) => { const r = await window.__dec(e, k); DB.classes[0].assess[0].marks[DB.classes[0].students[2].id] = "6"; save(); return r; }`);
+    const p0 = S.puts();
+    await davLauf(B);
+    B.E('decryptBackup = window.__dec');
+    erwarte(S.puts() === p0 + 1 && B.E('DB.classes[0].assess[0].marks[DB.classes[0].students[1].id]') === '3', 'Eingabe während des Entschlüsselns nicht hochgeladen: ' + (S.puts() - p0));
+    uhr(app, 2200); await davLauf(app);
+    erwarte(app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[2].id]') === '6', 'Eingabe während des Entschlüsselns kommt nicht an');
+    // Design wechseln ist keine Änderung für den Abgleich
+    const p1 = S.puts(); uhr(app, 2300); app.E('DB.theme = DB.theme === "dark" ? "light" : "dark"; DB.lastBackup = new Date().toISOString(); flushSave()'); await davLauf(app);
+    erwarte(S.puts() === p1, 'Design oder Sicherungsdatum lösen einen Upload aus');
+    // Einrichten, während ein Abgleich läuft: neue (falsche) Angaben werden wirklich geprüft
+    S.verz = 300; const lauf = app.E('davSync("resume")');
+    app.E('openDavSetup()'); app.$('#dav-pw').value = 'falsch-falsch';
+    const knopf = app.$('#dav-connect'); knopf.click();
+    await bis(() => !knopf.disabled, 15000); await lauf; S.verz = 5;
+    erwarte(/Anmeldung abgelehnt/.test(app.$('#toast').textContent), 'Einrichten während eines Laufs meldet Erfolg: ' + app.$('#toast').textContent);
+    erwarte(app.E('davCfg().on') === true && app.E('davCfg().err') === null, 'Gescheitertes Einrichten zerstört die bisherige Einrichtung');
+    const r0 = await davLauf(app); erwarte(r0.ok, 'Alte Zugangsdaten nach gescheitertem Einrichten verloren');
+    app.E('closeModal()');
+    // Nach 401 nicht automatisch weiterprobieren
+    S.pw = 'neu-am-server'; await davLauf(app);
+    const n401 = S.log.length;
+    await app.E('davAuto("resume")'); await app.E('davAuto("change")');
+    erwarte(S.log.length === n401 && /Anmeldung abgelehnt/.test(app.E('davStatusText()')), 'Nach abgelehnter Anmeldung automatisch weiterprobiert');
+    S.pw = 'iserv-geheim';
+    await davLauf(app);
+    erwarte(app.E('davCfg().err') === null, '„Jetzt abgleichen“ hebt die Pause nicht auf');
+    // Weiterleitung auf eine Anmeldeseite
+    S.umleiten = true; const ru = await davLauf(app); S.umleiten = false;
+    erwarte(ru.err === 'davERedirect' && /leitet/.test(app.E('davStatusText()')), 'Weiterleitung nicht als Fehler erkannt');
+    await davLauf(app);
+    // schwache ETags: ohne If-Match schreiben statt dauerhaft 412
+    S.schwach = true; uhr(app, 2400); app.E('DB.classes[0].assess[0].title = "KA 1b"; flushSave()'); await davLauf(app);
+    uhr(app, 2500); app.E('DB.classes[0].assess[0].title = "KA 1c"; flushSave()'); const rw = await davLauf(app); S.schwach = false;
+    erwarte(rw.ok && rw.sent && !/PUT.*if-match W\//.test(S.log.join('|')), 'Schwaches ETag als If-Match benutzt');
+    // Alles gelöscht: kein „leeres Gerät“ – die Löschung geht an die anderen
+    uhr(B, 2600); await davLauf(B);
+    uhr(app, 2650); app.E('DB.classes[0].assess[0].title = "KA 1d"; flushSave()'); await davLauf(app);   // Server hat Neues, B weiß es noch nicht
+    uhr(B, 2700); B.E('DB.classes = []; DB.subjects = []; DB.rooms = []; DB.lessons = []; flushSave()'); await davLauf(B);
+    uhr(app, 2800); await davLauf(app);
+    erwarte(app.E('DB.classes.length') === 0 && B.E('DB.classes.length') === 0 && app.E('DB.subjects.length') === 0, 'Gelöschte Klassen kehren zurück');
+    // Neues Abgleich-Passwort: Datei ersetzen
+    const C = neueApp();
+    try{
+      S.installiere(C); uhr(C, 2900); grundstand(C);
+      await davEinrichten(C, S, 'ganz-neues-pw');
+      erwarte(!!C.$('#dav-replace') && C.E('davCfg()') === null, 'Ersetzen nicht angeboten oder halbe Einrichtung bleibt');
+      C.klick('#dav-replace'); C.sheetOk();
+      await bis(() => /ersetzt/.test(C.$('#toast').textContent), 15000);
+      const neu = await C.E(`(async () => JSON.parse(await decryptBackup(${S.datei().data}.enc, "ganz-neues-pw")).data.classes.length)()`);
+      erwarte(neu === 1 && C.E('davCfg().on') === true, 'Datei nicht mit neuem Passwort ersetzt');
+    } finally { C.ende(); }
+  } finally { B.ende(); }
+});
+
 /* ------------------------------------------------------------------ */
 alleTests().then(() => {
   console.log(bestanden + ' Prüfungen bestanden, ' + fehler + ' Fehler.');

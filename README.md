@@ -247,3 +247,26 @@ Wurzelverzeichnis bzw. nach `res/android/` kopieren.
   Gerät, das die Aufgaben noch nicht kannte, hat später direkt eine Note gesetzt – dann gilt diese Note.
 - Gerätebezogen und nie übernommen: Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse.
 - Grenzen: Datum und Uhrzeit sollten auf beiden Geräten stimmen; unabhängig angelegte Klassen erscheinen doppelt.
+
+## Abgleich über WebDAV (z. B. IServ)
+
+- Einstellungen → „Abgleich über WebDAV“ (`openDavSetup`), auch im Datenschutz-Cockpit (`#pv-sync`).
+  Eine Datei `FairSeat-Abgleich.json` im Ordner des Servers, Inhalt wie eine verschlüsselte Sicherung
+  (`encryptBackup`, Abgleich-Passwort, auf allen Geräten gleich) – lässt sich notfalls über „Wiederherstellen“ laden.
+- Adresse (`davNormUrl`): nur https. Nur der Servername oder `…/webdav` → `…/webdav/Files/` (IServ: oberste Ebene
+  hat nur „Files“ und „Groups“). Andere Server: WebDAV-Adresse des Ordners (z. B. Nextcloud `…/remote.php/dav/files/NAME/`).
+- Ablauf (`davRun`): GET mit `If-None-Match` → 304 (nichts Neues) / 404 (noch keine Datei) / 200 (entschlüsseln,
+  `mergeDB`, still übernehmen per `davApply`). Hochladen nur, wenn sich hier seit dem letzten Abgleich etwas
+  geändert hat (Fingerabdruck `davHash` über `backupData`), mit `If-Match` bzw. `If-None-Match: *`; 412 → neu
+  holen und zusammenführen (höchstens 3 Runden). Leeres Gerät übernimmt den Stand, ohne zurückzuschicken.
+- Nie mitten in eine Eingabe: Ist ein Fenster offen oder läuft Bewertungs-, Abhak-, Schüler-, Zielscheiben- oder
+  Vorführmodus, wartet Eingehendes (`davPending`) bis zum Schließen. Das Einrichtungsfenster selbst zählt nicht.
+- Automatisch: `deviceready`, Zurückkehren (höchstens alle 30 s), Verlassen, 2 Minuten nach `save()`.
+  Fehler nur in der Statuszeile (`.davstatus`), Rückmeldung bei eingegangenen Änderungen.
+- Gerätebezogen: Einstellungen in `localStorage["fairseat-dav"]`, Passwörter in `fairseat-dav-sec`,
+  verschlüsselt mit einem nicht auslesbaren AES-Schlüssel in IndexedDB (`Secrets`); ohne IndexedDB nur im Speicher.
+  Nichts davon steht in `DB`, also nie in Sicherung oder Abgleich.
+- Nativ über `cordova-plugin-advanced-http` (3.3.1, braucht `cordova-plugin-file`), weil der WebView fremde Server
+  per CORS sperrt. Im Browser: nur Hinweis. Deren Required-Reason-Gründe (C617.1, E174.1) stehen in
+  `res/ios/PrivacyInfo.xcprivacy`, weil der iOS-Build mitgelieferte Manifeste durch unseres ersetzt.
+- Tests: `davServer()` in `smoketest.js` bildet einen WebDAV-Server nach (Anmeldung, ETag, 412, Ordner, offline).

@@ -795,6 +795,8 @@ body.big #sheet{max-height:calc(88vh / 1.15)}
 .pvrow .pvt{flex:1;min-width:0}
 .pvrow .pvt b{display:block;font-size:14px}
 .pvrow .pvt span{display:block;font-size:13px;color:var(--ink-soft);margin-top:2px}
+.davstatus.warn,.pvrow .pvt span.davstatus.warn{color:var(--warn);font-weight:650}
+#dav-status{padding:10px 12px;font-size:13.5px}
 .pvrow .minibtn{flex:0 0 auto;padding:6px 10px;font-size:12.5px}
 .pvbar{height:8px;border-radius:4px;background:var(--line);margin-top:6px;overflow:hidden}
 .pvbar i{display:block;height:100%;background:var(--accent);border-radius:4px}
@@ -1602,7 +1604,7 @@ const I18N = {
     clearHistory:"Historie löschen", historyCount:"{n} gespeicherte Sitzordnungen",
     newClass:"Neue Klasse", 
     backupSave:"Sicherung speichern", backupLoad:"Sicherung laden", transferBtn:"Auf anderes Gerät übertragen",
-    privacy:"Alle Daten bleiben auf diesem Gerät, solange du sie nicht selbst teilst. Keine Anmeldung, kein Server, keine Verbindung ins Internet. Die App funktioniert vollständig offline. Erstelle regelmäßig eine Sicherung — beim Deinstallieren der App werden sonst alle Sitzpläne gelöscht.",
+    privacy:"Alle Daten bleiben auf diesem Gerät, solange du sie nicht selbst teilst. Keine Anmeldung beim Anbieter, kein Server des Anbieters. Die App funktioniert vollständig offline – nur wenn du den Abgleich über WebDAV einrichtest, verbindet sie sich mit deinem eigenen Speicher (verschlüsselt). Erstelle regelmäßig eine Sicherung — beim Deinstallieren der App werden sonst alle Sitzpläne gelöscht.",
     noClasses:"Noch keine Klasse angelegt. Beginne mit „Neue Klasse“ — zum Beispiel „5b“ oder „Deutsch Q1“.",
     students:"Schüler:innen", plans:"Sitzpläne", rules:"Regeln",
     newPlan:"Neuer Sitzplan", addNames:"Namen hinzufügen",
@@ -1794,7 +1796,7 @@ const I18N = {
     clearHistory:"Clear history", historyCount:"{n} stored seatings",
     newClass:"New class", 
     backupSave:"Save backup", backupLoad:"Load backup", transferBtn:"Transfer to another device",
-    privacy:"All data stays on this device unless you share it yourself. No account, no server, no internet connection. The app works fully offline. Save a backup from time to time — uninstalling the app deletes every seating plan otherwise.",
+    privacy:"All data stays on this device unless you share it yourself. No account with the provider, no provider server. The app works fully offline – only if you set up sync via WebDAV does it connect to your own storage (encrypted). Save a backup from time to time — uninstalling the app deletes every seating plan otherwise.",
     noClasses:"No classes yet. Start with “New class” — for example “5b” or “English 10”.",
     students:"Students", plans:"Seating plans", rules:"Rules",
     newPlan:"New seating plan", addNames:"Add names",
@@ -2749,6 +2751,70 @@ I18N.en.info.push({ h:"Target, name lists and today",
   p:["The feedback target (lesson bar or “Manage classes”) collects anonymous feedback: enter a topic, name 1 to 4 areas, start and pass the device around. Each person places one dot per area – the centre means very good – and taps “Next”. Only the dots are stored; the results show all dots and the average per area, also large on the projector and as a PDF.",
      "Load name lists from your school administration under “Manage classes” with “From an Excel or CSV file”. The app recognises first and last name columns; you choose whether “Anna”, “Anna K.” or “Anna Kowalski” appears. Lists copied from a PDF can simply be pasted into the name field – numbers, dates and headings are dropped.",
      "A seat nobody should use (e.g. behind a pillar) can be blocked in the selection bar. Below the current lesson, the start page shows the rest of today's lessons and open items: lessons without a course log entry and incomplete checklists. The settings offer “Larger text and buttons”."] });
+Object.assign(I18N.de, {
+  davTitle:"Abgleich über WebDAV", davToday:"heute",
+  davIntro:"Hält mehrere Geräte (z. B. iPhone und iPad) auf demselben Stand – über eine verschlüsselte Datei in deinem eigenen Speicher, etwa IServ der Schule oder Nextcloud. Verschlüsselt wird auf dem Gerät; der Server sieht nur unlesbare Zeichen.",
+  davENoApp:"Der Abgleich über WebDAV ist nur in der App möglich. Im Browser bleibt der Abgleich über Sicherungsdateien.",
+  davNow:"Jetzt abgleichen", davRunning:"Gleiche ab …", davLater:"Gerade ist ein Fenster offen – der Abgleich folgt gleich.", davSame:"Alles auf dem gleichen Stand",
+  davUrl:"Adresse", davUrlPh:"z. B. eure-schule.de", davUrlHint:"IServ: einfach die Adresse eures IServ eingeben – „/webdav/Files/“ wird ergänzt. Andere Server: die WebDAV-Adresse des Ordners.",
+  davUser:"Benutzername", davPw:"Passwort für den Server", davPwKeep:"leer lassen = unverändert",
+  davKey:"Abgleich-Passwort", davKeyHint:"Auf allen Geräten dasselbe. Damit wird die Datei verschlüsselt – ohne dieses Passwort kann niemand die Daten lesen, auch du nicht. Gut merken!",
+  davConnect:"Verbinden und abgleichen", davSaveConn:"Änderungen speichern und abgleichen",
+  davEUrl:"Bitte eine gültige Adresse eingeben", davEHttp:"Nur verschlüsselte Verbindungen (https://) sind möglich", davNeedUser:"Bitte den Benutzernamen eingeben", davNeedPw:"Bitte das Passwort für den Server eingeben",
+  davOk:"Abgleich eingerichtet", davNoKeep:"Abgleich eingerichtet – die Passwörter merkt sich dieses Gerät nur bis zum Schließen der App",
+  davOff:"Abgleich ausschalten", davOffQ:"Abgleich ausschalten?", davOffBtn:"Ausschalten", davOffDone:"Abgleich ausgeschaltet",
+  davOffT:"Die Daten auf diesem Gerät bleiben, die Passwörter werden gelöscht. Die Datei „{f}“ auf dem Server bleibt ebenfalls – du kannst sie dort selbst löschen.",
+  davE401:"Anmeldung abgelehnt – Benutzername oder Passwort prüfen", davE403:"Der Server erlaubt das Speichern in diesem Ordner nicht",
+  davE404:"Ordner nicht gefunden – Adresse prüfen", davE507:"Auf dem Server ist kein Platz mehr", davENet:"Server nicht erreichbar – später noch einmal",
+  davEOther:"Der Server meldet einen Fehler ({n})", davENoCrypto:"Dieses Gerät kann nicht verschlüsseln – Abgleich nicht möglich",
+  davENoPw:"Passwörter fehlen – bitte den Abgleich neu einrichten", davEForeign:"Die Datei auf dem Server ist keine verschlüsselte FairSeat-Datei – nichts verändert",
+  davEKey:"Das Abgleich-Passwort passt nicht zur Datei auf dem Server – bitte dasselbe wie auf dem anderen Gerät eingeben", davEMerge:"Zusammenführen fehlgeschlagen – nichts verändert",
+  davERace:"Ein anderes Gerät gleicht gerade ab – bitte gleich noch einmal",
+  davERedirect:"Der Server leitet auf eine andere Seite um – bitte die Adresse prüfen (bei IServ: …/webdav/Files/)",
+  davReplaceHint:"Die Datei auf dem Server wurde mit einem anderen Abgleich-Passwort verschlüsselt. Gib dasselbe ein wie auf dem anderen Gerät – oder ersetze die Datei, wenn du das Passwort ändern willst.",
+  davReplace:"Datei auf dem Server ersetzen …", davReplaceQ:"Datei auf dem Server ersetzen?", davReplaceBtn:"Ersetzen",
+  davReplaceT:"Die Datei wird durch den Stand dieses Geräts ersetzt und mit dem neuen Abgleich-Passwort verschlüsselt. Was nur in der alten Datei steht, geht verloren. Auf den anderen Geräten musst du danach das neue Abgleich-Passwort eingeben.",
+  davReplaced:"Datei auf dem Server ersetzt – Abgleich eingerichtet", davNoKeepShort:"Passwörter nur bis zum Schließen gemerkt",
+  davOffState:"Aus", davNever:"Noch nicht abgeglichen", davLast:"Zuletzt abgeglichen: {d}", davFirst:"Stand vom Server übernommen",
+  pvLocalSync:"Alle Daten liegen auf diesem Gerät. Für den Abgleich geht nur eine auf dem Gerät verschlüsselte Datei an deinen eigenen Speicher – an den Anbieter von FairSeat nichts.",
+  pvSync:"Abgleich zwischen Geräten", pvSyncOff:"Aus – nur über Sicherungsdateien", pvSyncEdit:"Ändern", pvSyncSet:"Einrichten"
+});
+Object.assign(I18N.en, {
+  davTitle:"Sync via WebDAV", davToday:"today",
+  davIntro:"Keeps several devices (e.g. iPhone and iPad) in step – via an encrypted file in your own storage, such as your school's IServ or Nextcloud. Encryption happens on the device; the server only sees unreadable characters.",
+  davENoApp:"Sync via WebDAV is only available in the app. In the browser, sync via backup files remains.",
+  davNow:"Sync now", davRunning:"Syncing …", davLater:"A window is open right now – sync follows shortly.", davSame:"Everything is up to date",
+  davUrl:"Address", davUrlPh:"e.g. your-school.org", davUrlHint:"IServ: just enter your IServ address – “/webdav/Files/” is added. Other servers: the folder's WebDAV address.",
+  davUser:"User name", davPw:"Server password", davPwKeep:"leave empty = unchanged",
+  davKey:"Sync password", davKeyHint:"The same on every device. It encrypts the file – without it nobody can read the data, not even you. Keep it safe!",
+  davConnect:"Connect and sync", davSaveConn:"Save changes and sync",
+  davEUrl:"Please enter a valid address", davEHttp:"Only encrypted connections (https://) are possible", davNeedUser:"Please enter the user name", davNeedPw:"Please enter the server password",
+  davOk:"Sync set up", davNoKeep:"Sync set up – this device only remembers the passwords until the app is closed",
+  davOff:"Turn off sync", davOffQ:"Turn off sync?", davOffBtn:"Turn off", davOffDone:"Sync turned off",
+  davOffT:"The data on this device stays, the passwords are deleted. The file “{f}” on the server stays too – you can delete it there yourself.",
+  davE401:"Sign-in refused – check user name and password", davE403:"The server does not allow saving in this folder",
+  davE404:"Folder not found – check the address", davE507:"The server is out of space", davENet:"Server not reachable – try again later",
+  davEOther:"The server reports an error ({n})", davENoCrypto:"This device cannot encrypt – sync not possible",
+  davENoPw:"Passwords missing – please set up sync again", davEForeign:"The file on the server is not an encrypted FairSeat file – nothing changed",
+  davEKey:"The sync password does not match the file on the server – please enter the same one as on the other device", davEMerge:"Merging failed – nothing changed",
+  davERace:"Another device is syncing right now – please try again in a moment",
+  davERedirect:"The server redirects to another page – please check the address (for IServ: …/webdav/Files/)",
+  davReplaceHint:"The file on the server was encrypted with a different sync password. Enter the same one as on the other device – or replace the file if you want to change the password.",
+  davReplace:"Replace file on the server …", davReplaceQ:"Replace file on the server?", davReplaceBtn:"Replace",
+  davReplaceT:"The file is replaced with the data on this device and encrypted with the new sync password. Anything only in the old file is lost. On your other devices you then need to enter the new sync password.",
+  davReplaced:"File on the server replaced – sync set up", davNoKeepShort:"passwords only kept until the app closes",
+  davOffState:"Off", davNever:"Not synced yet", davLast:"Last synced: {d}", davFirst:"Data taken over from the server",
+  pvLocalSync:"All data lives on this device. For sync, only a file encrypted on the device goes to your own storage – nothing goes to the FairSeat provider.",
+  pvSync:"Sync between devices", pvSyncOff:"Off – only via backup files", pvSyncEdit:"Change", pvSyncSet:"Set up"
+});
+I18N.de.info.push({ h:"Abgleich über WebDAV (z. B. IServ)",
+  p:["Unter Einstellungen → „Abgleich über WebDAV“ trägst du Adresse, Benutzername und Passwort deines Speichers ein – bei IServ genügt die Adresse eures IServ – und ein eigenes Abgleich-Passwort, das auf allen Geräten gleich ist. Die App legt dort die Datei „FairSeat-Abgleich.json“ ab, auf dem Gerät verschlüsselt.",
+     "Abgeglichen wird beim Öffnen und Verlassen der App, zwei Minuten nach einer Änderung und mit „Jetzt abgleichen“. Änderungen beider Geräte werden zusammengeführt wie beim Abgleich per Datei. Ohne Netz arbeitest du normal weiter.",
+     "Die Passwörter bleiben auf dem Gerät und landen nie in einer Sicherung. Kläre vorher mit der Schulleitung, ob du verschlüsselte Notendaten dort ablegen darfst."] });
+I18N.en.info.push({ h:"Sync via WebDAV (e.g. IServ)",
+  p:["Under Settings → “Sync via WebDAV”, enter the address, user name and password of your storage – for IServ the IServ address is enough – plus your own sync password, the same on every device. The app stores the file “FairSeat-Abgleich.json” there, encrypted on the device.",
+     "Sync runs when you open and leave the app, two minutes after a change and with “Sync now”. Changes from both devices are merged as with syncing via a file. Without a network you keep working as usual.",
+     "The passwords stay on the device and never end up in a backup. Check with your school management beforehand whether you may store encrypted grade data there."] });
 /* ============ 2. Helfer ============ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
@@ -3139,6 +3205,7 @@ function flushSave(){
 function save(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(flushSave, 200);     // fasst schnelle Folgeänderungen zusammen
+  davNoteChange();                            // Abgleich über WebDAV etwas später
 }
 
 /* ---- Papierkorb: Löschen ist umkehrbar, das verhindert Datenverlust ---- */
@@ -3547,6 +3614,7 @@ let modalCloseHook = null;                           // einmalig nach dem Schlie
 function closeModal(){
   const hook = modalCloseHook; modalCloseHook = null;
   if(hook) setTimeout(hook, 0);
+  if(davPending) setTimeout(() => { if(davPending) davAuto("retry"); }, 1500);   // Abgleich wartete auf das Fenster
   $("#modal").classList.remove("on");
   $("#modal").removeEventListener("keydown", onModalKey, true);
   $("#sheet").textContent = "";
@@ -8749,6 +8817,11 @@ function renderSettings(){
       const lr = switchRow(t("lockSet"), t("lockSetSub"), () => S.lock === true, () => toggleLock());
       lr.id = "set-lock"; box.appendChild(lr);
     }
+    /* Abgleich über WebDAV: Knopf und Stand */
+    const dv = document.createElement("button"); dv.className = "ghost"; dv.id = "set-dav"; dv.style.width = "100%"; dv.style.margin = "4px 0 0";
+    dv.textContent = t("davTitle") + " …"; dv.onclick = openDavSetup; box.appendChild(dv);
+    const ds = document.createElement("div"); ds.className = "hint davstatus"; ds.id = "set-dav-status"; ds.style.margin = "4px 0 8px";
+    ds.textContent = davStatusText(); box.appendChild(ds);
     const ny = document.createElement("button"); ny.className = "ghost"; ny.id = "set-newyear"; ny.style.width = "100%"; ny.style.margin = "4px 0 8px";
     ny.textContent = t("nyTitle") + " …"; ny.onclick = openNewYear; box.appendChild(ny);
     if(S.grades !== false){
@@ -13155,6 +13228,376 @@ function openRestoreChoice(file, fileTime, opts){
   cb.textContent = t("cancel"); cb.onclick = closeModal; sheet.appendChild(cb);
 }
 
+/* ============ 29b. Abgleich über WebDAV ============
+   Eine Datei im eigenen Speicher der Lehrkraft (z. B. IServ: …/webdav/Files/FairSeat-Abgleich.json).
+   Inhalt wie eine verschlüsselte Sicherung: auf dem Gerät verschlüsselt, der Server sieht nur Zufallszeichen,
+   und die Datei lässt sich notfalls über „Wiederherstellen“ einlesen. Zusammengeführt wird mit mergeDB –
+   dieselben Regeln wie beim Abgleich per Datei. Gleichzeitiges Hochladen fängt die Versionskennung (ETag) ab.
+   Einstellungen und Zugangsdaten gehören zum Gerät: nie in DB, also nie in Sicherung oder Abgleich. */
+/* var statt const/let: save() und closeModal() fragen schon beim Start danach, bevor dieser Teil gelaufen ist */
+var DAV_CFG = "fairseat-dav", DAV_SEC = "fairseat-dav-sec", DAV_FILE = "FairSeat-Abgleich.json";
+var DAV_GAP = 30000, DAV_CHANGE_DELAY = 120000;
+var davBusy = null, davTimer = null, davPending = false;
+var DAV_HARD = [401, 403, "davEKey", "davENoPw", "davEForeign", "davERedirect"];
+const davHttp = () => (window.cordova && window.cordova.plugin && window.cordova.plugin.http) || null;
+function davCfg(){
+  try{ const o = JSON.parse(Store.get(DAV_CFG) || "null"); return o && typeof o === "object" && typeof o.url === "string" && typeof o.user === "string" ? o : null; }
+  catch(e){ return null; }
+}
+function davCfgSet(o){
+  if(o){ Store.set(DAV_CFG, JSON.stringify(o)); return; }
+  try{ window.localStorage.removeItem(DAV_CFG); }catch(e){}
+  delete Store.memory[DAV_CFG];
+}
+/* Passwörter: mit einem nicht auslesbaren Schlüssel verschlüsselt, der nur in IndexedDB dieses Geräts liegt –
+   so tauchen sie in keiner Sicherung, keinem Export und keinem Speicherabzug lesbar auf.
+   Ohne IndexedDB bleiben sie nur bis zum Schließen der App im Speicher. */
+const Secrets = (() => {
+  let mem = null;
+  const open = () => new Promise((res, rej) => {
+    if(!window.indexedDB) return rej(new Error("noidb"));
+    const r = indexedDB.open("fairseat-secrets", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("k");
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  const tx = (db, mode, fn) => new Promise((res, rej) => {
+    const tr = db.transaction("k", mode), rq = fn(tr.objectStore("k"));
+    tr.oncomplete = () => res(rq ? rq.result : undefined); tr.onerror = () => rej(tr.error); tr.onabort = () => rej(tr.error);
+  });
+  async function key(create){
+    const db = await open();
+    let k = await tx(db, "readonly", s => s.get("aes"));
+    if(!k && create){
+      k = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+      await tx(db, "readwrite", s => s.put(k, "aes"));
+    }
+    return k || null;
+  }
+  return {
+    async set(obj){
+      mem = obj;
+      try{
+        const k = await key(true), iv = crypto.getRandomValues(new Uint8Array(12));
+        const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, k, new TextEncoder().encode(JSON.stringify(obj))));
+        return Store.set(DAV_SEC, JSON.stringify({ iv: b64(iv), d: b64(ct) }));
+      }catch(e){ return false; }
+    },
+    async get(){
+      if(mem) return mem;
+      try{
+        const raw = JSON.parse(Store.get(DAV_SEC) || "null"); if(!raw) return null;
+        const k = await key(false); if(!k) return null;
+        const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(raw.iv) }, k, unb64(raw.d));
+        mem = JSON.parse(new TextDecoder().decode(pt));
+        return mem;
+      }catch(e){ return null; }
+    },
+    async clear(){
+      mem = null;
+      try{ window.localStorage.removeItem(DAV_SEC); }catch(e){} delete Store.memory[DAV_SEC];
+      try{ const db = await open(); await tx(db, "readwrite", s => s.delete("aes")); }catch(e){}
+    }
+  };
+})();
+/* Adresse prüfen und ergänzen. Nur https. Bei IServ genügt die Schuladresse: Die oberste WebDAV-Ebene
+   enthält nur „Files“ (eigene Dateien) und „Groups“ – die Datei gehört nach „Files“. */
+function davNormUrl(raw){
+  let s = String(raw || "").trim();
+  if(!s) return null;
+  if(/^http:\/\//i.test(s)) return { err: "davEHttp" };
+  if(!/^https:\/\//i.test(s)){ if(/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) return null; s = "https://" + s.replace(/^\/+/, ""); }
+  const host = s.slice(8).split("/")[0];
+  if(!host || /\s/.test(host)) return null;                 // Leerzeichen nur im Pfad (werden kodiert)
+  let u; try{ u = new URL(s); }catch(e){ return null; }
+  if(u.protocol !== "https:" || !u.hostname || u.username || u.password || u.hostname.indexOf(".") < 0) return null;
+  let p = u.pathname.replace(/\/+$/, "");
+  if(p.toLowerCase().endsWith("/" + DAV_FILE.toLowerCase())) p = p.slice(0, -DAV_FILE.length - 1);
+  if(p === "") p = "/webdav/Files";
+  else if(/^\/webdav$/i.test(p)) p += "/Files";
+  return { url: u.origin + p + "/" };
+}
+/* Eine Anfrage über das native Plugin. Ergebnis immer { status, headers (klein geschrieben), data } –
+   auch bei Fehlern (status ≤ 0: kein Netz, Zeitüberschreitung, Zertifikat). */
+function davReq(method, url, user, pw, opt){
+  opt = opt || {};
+  const H = davHttp();
+  if(!H) return Promise.resolve({ status: -100, headers: {}, data: "" });
+  const headers = Object.assign({ Authorization: "Basic " + b64(new TextEncoder().encode(user + ":" + pw)), "Cache-Control": "no-cache" }, opt.headers || {});
+  /* 3.3.1 kennt nur connectTimeout/readTimeout (Sekunden). Weiterleitungen nicht folgen: eine Umleitung
+     auf eine Anmeldeseite soll als Fehler auffallen, nicht als „fremde Datei“. */
+  try{ if(H.setFollowRedirect) H.setFollowRedirect(false); }catch(e){}
+  const o = { method, headers, serializer: "utf8", responseType: "text", connectTimeout: 15, readTimeout: 60, followRedirect: false };
+  if(opt.data !== undefined){ o.data = opt.data; headers["Content-Type"] = "application/json"; }
+  const norm = r => {
+    const h = {}; Object.keys((r && r.headers) || {}).forEach(k => { h[k.toLowerCase()] = String(r.headers[k]); });
+    return { status: r && typeof r.status === "number" ? r.status : -1, headers: h, data: r && typeof r.data === "string" ? r.data : "" };
+  };
+  return new Promise(res => { try{ H.sendRequest(url, o, r => res(norm(r)), e => res(norm(e))); }catch(e){ res(norm(null)); } });
+}
+/* Kurzer Fingerabdruck eines Stands: hat sich seit dem letzten Abgleich hier etwas geändert? */
+function davHash(str){
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for(let i = 0; i < str.length; i++){ const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (h2 >>> 0).toString(36) + "." + (h1 >>> 0).toString(36) + "." + str.length;
+}
+function davErrText(e){
+  if(typeof e === "string") return t(e);
+  if(e === 401) return t("davE401");
+  if(e === 403 || e === 405) return t("davE403");
+  if(e === 404 || e === 409) return t("davE404");
+  if(e === 507 || e === 413) return t("davE507");
+  if(e === -100) return t("davENoApp");
+  if(!(e > 0)) return t("davENet");
+  return t("davEOther").replace("{n}", String(e));
+}
+/* Nicht mitten in eine Eingabe hinein: offene Fenster und laufende Modi halten Verweise auf die alten Daten */
+function davCanApply(fromSheet){
+  if($("#modal").classList.contains("on") && !(fromSheet && document.getElementById("dav-connect"))) return false;   // nur das eigene Fenster hält nichts fest
+  return !targetRun && !selfMode && !gradeMode && !checkMode && !dragging && !presenting;
+}
+function davApply(newDB){
+  const keepLock = DB.settings.lock === true;
+  const keepDev = { lastBackup: DB.lastBackup, lastBackupEnc: DB.lastBackupEnc, selfGuardSeen: DB.selfGuardSeen, big: DB.big, theme: DB.theme };
+  DB = newDB; DB.settings.lock = keepLock; DB.lang = LANG; DB.syncAt = syncNow();
+  Object.keys(keepDev).forEach(k => { if(keepDev[k] === undefined) delete DB[k]; else DB[k] = keepDev[k]; });
+  syncReset();
+  if(curClassId && !curClass()){ curClassId = null; curPlanId = null; }
+  if(curPlanId && !curPlan()) curPlanId = null;
+  if(curRoomId && !curRoom()) curRoomId = null;
+  undoStack = []; redoStack = []; updateUndoButtons();       // Rückgängig würde sonst den Abgleich zurückdrehen
+  flushSave();
+  const act = ($$(".screen.active")[0] || {}).id || "screen-start";
+  if((act === "screen-editor" && !curPlan()) || (act === "screen-assess" && !curAssess()) || (["screen-names", "screen-plans", "screen-grades"].indexOf(act) >= 0 && !curClass())){
+    goHome(); applyLang(); return;
+  }
+  applyLang();
+  if(act === "screen-names") renderNames();
+  else if(act === "screen-plans") renderPlansScreen();
+  else if(act === "screen-grades") renderGrades();
+  else if(act === "screen-assess") renderAssess();
+  else if(act === "screen-timetable") renderTimetable();
+}
+function davSync(why){
+  if(davBusy) return davBusy;
+  davBusy = davRun(why).catch(() => ({ err: "davEMerge" })).finally(() => { davBusy = null; });
+  return davBusy;
+}
+/* Fingerabdruck nur über die abgeglichenen Einträge – Design, letzte Sicherung u. Ä. lösen keinen Upload aus */
+function davFinger(){
+  const m = syncEntities(DB), ks = Array.from(m.keys()).sort();
+  return davHash(ks.map(k => k + "\u0001" + m.get(k).v).join("\u0002"));
+}
+const davWeak = e => !e || /^W\//i.test(e);               // schwache ETags taugen nicht für If-Match
+async function davRun(why){
+  const cfg = davCfg();
+  if(!cfg || !cfg.on) return { skip: true };
+  const done = r => davDone(cfg, r);
+  if(!davHttp()) return done({ err: -100 });
+  if(!hasCrypto()) return done({ err: "davENoCrypto" });
+  const sec = await Secrets.get();
+  if(!sec || !sec.pw || !sec.key) return done({ err: "davENoPw" });
+  const url = cfg.url + DAV_FILE;
+  for(let round = 0; round < 3; round++){
+    const g = await davReq("get", url, cfg.user, sec.pw, cfg.etag && why !== "replace" ? { headers: { "If-None-Match": cfg.etag } } : null);
+    let etag = null, got = null, remote = null, replace = false;
+    if(g.status >= 300 && g.status < 400 && g.status !== 304) return done({ err: "davERedirect" });
+    if(g.status === 304) etag = cfg.etag;
+    else if(g.status === 404) etag = null;
+    else if(g.status >= 200 && g.status < 300){
+      etag = g.headers.etag || null;
+      let outer = null; try{ outer = JSON.parse(g.data); }catch(e){}
+      if(!outer || outer.app !== "fairseat" || !outer.enc || typeof outer.enc !== "object") return done({ err: "davEForeign" });
+      if(why === "replace") replace = true;                   // bewusst ersetzen (neues Abgleich-Passwort): nicht entschlüsseln
+      else {
+        let inner = null;
+        try{ inner = JSON.parse(await decryptBackup(outer.enc, sec.key)); }catch(e){ return done({ err: "davEKey" }); }
+        try{ remote = inner && inner.data && inner.data.v === 2 ? sanitizeDB(inner.data) : null; }catch(e){ remote = null; }
+        if(!remote) return done({ err: "davEForeign" });
+      }
+    } else return done({ err: g.status });
+    /* Ab hier ohne await bis zum Fingerabdruck: alles, was die Lehrkraft während der Anfrage
+       oder des Entschlüsselns eingetragen hat, zählt als eigene Änderung */
+    flushSave();
+    let localChanged = replace || g.status === 404 || davFinger() !== cfg.up;
+    if(remote){
+      const hasLocal = DB.classes.length || DB.rooms.length || DB.subjects.length || DB.lessons.length || Object.keys(DB.del || {}).length;
+      let res = null;
+      if(!hasLocal) res = { db: remote, report: { add: 1, upd: 0, rem: 0, first: true } };   // leeres Gerät: Stand übernehmen
+      else { try{ res = mergeDB(DB, remote); }catch(e){ return done({ err: "davEMerge" }); } }
+      if(res.report.add || res.report.upd || res.report.rem){
+        if(!davCanApply(why === "setup" || why === "manual")){ davPending = true; return done({ postponed: true }); }
+        davApply(res.db); got = res.report;
+        if(res.report.first) localChanged = false;          // nur übernommen – nichts zurückzuschicken
+      }
+    }
+    const data = JSON.stringify(backupData()), finger = davFinger();
+    if(!localChanged){ return done({ ok: true, got, etag, up: finger }); }
+    /* Hochladen – nur, wenn die Datei seit dem Lesen unverändert ist (sonst neu holen und zusammenführen) */
+    let body;
+    try{ body = JSON.stringify(await encryptBackup('{"app":"fairseat","v":2,"data":' + data + "}", sec.key)); }catch(e){ return done({ err: "davENoCrypto" }); }
+    const cond = g.status === 404 ? { "If-None-Match": "*" } : (!davWeak(etag) ? { "If-Match": etag } : {});
+    const p = await davReq("put", url, cfg.user, sec.pw, { headers: cond, data: body });
+    if(p.status === 412){ cfg.etag = null; continue; }      // jemand war schneller: neu holen und zusammenführen
+    if(p.status >= 300 && p.status < 400) return done({ err: "davERedirect", got });
+    if(!(p.status >= 200 && p.status < 300)) return done({ err: p.status, got });
+    return done({ ok: true, got, sent: true, etag: p.headers.etag || null, up: finger });
+  }
+  return done({ err: "davERace" });
+}
+/* Nur die eigenen Felder in die aktuelle Einstellung schreiben – sie kann sich während des Laufs geändert haben */
+function davDone(cfg, r){
+  try{ const H = davHttp(); if(H && H.clearCookies) H.clearCookies(); }catch(e){}   // Sitzungs-Cookies nicht im Klartext liegen lassen
+  const now = davCfg();
+  if(!now || now.gen !== cfg.gen || !now.on) return r;      // inzwischen ausgeschaltet oder neu eingerichtet
+  if(r.err !== undefined) now.err = r.err;
+  else if(!r.postponed){ now.err = null; now.last = Date.now(); now.etag = r.etag === undefined ? now.etag : r.etag; now.up = r.up === undefined ? now.up : r.up; davPending = false; }
+  davCfgSet(now); davShowStatus();
+  return r;
+}
+function davStatusText(){
+  const c = davCfg();
+  if(!c || !c.on) return t("davOffState");
+  if(c.err !== null && c.err !== undefined) return davErrText(c.err);
+  if(!c.last) return t("davNever");
+  const d = new Date(c.last), today = new Date(Date.now()).toDateString() === d.toDateString();
+  return t("davLast").replace("{d}", (today ? t("davToday") : d.toLocaleDateString(LANG === "en" ? "en-GB" : "de-DE")) + " " + d.toLocaleTimeString(LANG === "en" ? "en-GB" : "de-DE", { hour: "2-digit", minute: "2-digit" }));
+}
+function davShowStatus(){
+  const c = davCfg(), bad = !!(c && c.on && c.err !== null && c.err !== undefined);
+  $$(".davstatus").forEach(el => { el.textContent = davStatusText(); el.classList.toggle("warn", bad); });
+  const ic = document.querySelector("#pv-sync .pvi");
+  if(ic){ ic.classList.toggle("warn", bad); ic.textContent = bad ? "!" : "✓"; }
+}
+const davGotText = g => g && g.first ? t("davFirst") : t("syncMerged").replace("{a}", String(g.add)).replace("{u}", String(g.upd)).replace("{r}", String(g.rem));
+/* Automatisch: beim Start, beim Zurückkehren in die App (höchstens alle 30 s), beim Verlassen und
+   zwei Minuten nach der letzten Änderung. Fehler zeigt nur die Statuszeile – kein Hinweis-Gewitter. */
+function davAuto(why){
+  const c = davCfg();
+  if(!c || !c.on) return Promise.resolve(null);
+  /* Nach abgelehnter Anmeldung, falschem Abgleich-Passwort o. Ä. nicht automatisch weiterprobieren – sonst sperrt
+     der Server womöglich das Konto. Erst „Jetzt abgleichen“ oder neu einrichten. */
+  if(DAV_HARD.indexOf(c.err) >= 0) return Promise.resolve(null);
+  if(why === "resume" && c.last && Date.now() - c.last < DAV_GAP && !davPending && !c.err) return Promise.resolve(null);
+  return davSync(why).then(r => { if(r && r.got && why !== "pause") toast(davGotText(r.got)); return r; });
+}
+function davNoteChange(){
+  if(!davCfg()) return;
+  clearTimeout(davTimer);
+  davTimer = setTimeout(() => { if(document.visibilityState !== "hidden") davAuto("change"); }, DAV_CHANGE_DELAY);
+}
+document.addEventListener("deviceready", () => setTimeout(() => davAuto("start"), 1500), false);
+document.addEventListener("resume", () => setTimeout(() => davAuto("resume"), 600), false);
+document.addEventListener("pause", () => { davAuto("pause"); }, false);
+document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden") davAuto("pause"); else setTimeout(() => davAuto("resume"), 600); });
+
+/* Abgleich-Passwort passt nicht zur Datei: auf Wunsch die Datei durch den Stand dieses Geräts ersetzen
+   (z. B. nach einem Wechsel des Abgleich-Passworts). Was nur in der alten Datei stand, geht dabei verloren. */
+function davOfferReplace(url, user, pw, key, kept){
+  const box = document.getElementById("dav-replace-box");
+  if(box) box.remove();
+  const go = document.getElementById("dav-connect"); if(!go) return;
+  const d = document.createElement("div"); d.className = "syncwarn"; d.id = "dav-replace-box"; d.textContent = t("davReplaceHint");
+  const b = document.createElement("button"); b.className = "ghost"; b.id = "dav-replace"; b.style.width = "100%"; b.style.marginTop = "8px"; b.style.color = "var(--warn)";
+  b.textContent = t("davReplace");
+  b.onclick = () => askConfirm(t("davReplaceQ"), t("davReplaceT"), t("davReplaceBtn"), async () => {
+    const prevCfg = davCfg(), old = await Secrets.get();
+    await Secrets.set({ pw, key });
+    davCfgSet({ url, user, on: true, gen: uid(), etag: null, up: null, err: null, last: 0 });
+    const r = await davSync("replace");
+    if(r && r.err !== undefined){ davCfgSet(prevCfg); if(prevCfg && old) await Secrets.set(old); else if(!prevCfg) await Secrets.clear(); toast(davErrText(r.err)); renderSettings(); return; }
+    renderSettings(); toast(t("davReplaced") + (kept ? "" : " – " + t("davNoKeepShort")));
+  });
+  go.parentNode.insertBefore(d, go.nextSibling); d.after(b);
+}
+function openDavSetup(){
+  if(needUnlock(openDavSetup)) return;
+  const cfg = davCfg();
+  const sheet = sheetBase(t("davTitle")); sheet.dataset.sens = "1";
+  const intro = document.createElement("div"); intro.className = "hint"; intro.textContent = t("davIntro"); sheet.appendChild(intro);
+  if(!davHttp()){
+    const n = document.createElement("div"); n.className = "syncwarn"; n.id = "dav-noapp"; n.textContent = t("davENoApp"); sheet.appendChild(n);
+    const cl = document.createElement("button"); cl.className = "ghost"; cl.style.width = "100%"; cl.style.marginTop = "12px";
+    cl.textContent = t("close"); cl.onclick = closeModal; sheet.appendChild(cl);
+    return;
+  }
+  if(cfg && cfg.on){
+    const st = document.createElement("div"); st.className = "calcbox davstatus"; st.id = "dav-status"; sheet.appendChild(st);
+    const now = document.createElement("button"); now.className = "primary"; now.id = "dav-now"; now.style.width = "100%"; now.style.marginTop = "8px";
+    now.textContent = t("davNow");
+    now.onclick = async () => {
+      now.disabled = true; st.textContent = t("davRunning");
+      const r = await davSync("manual"); now.disabled = false;
+      if(r && r.postponed) toast(t("davLater"));
+      else if(r && r.err === undefined) toast(r.got ? davGotText(r.got) : t("davSame"));
+      davShowStatus();
+    };
+    sheet.appendChild(now);
+  }
+  sheetLabel(sheet, t("davUrl"));
+  const url = document.createElement("input"); url.className = "field"; url.id = "dav-url"; url.type = "url"; url.inputMode = "url"; url.autocapitalize = "off"; url.spellcheck = false; url.maxLength = 300;
+  url.placeholder = t("davUrlPh"); url.value = cfg ? cfg.url : ""; sheet.appendChild(url);
+  const uh = document.createElement("div"); uh.className = "hint"; uh.textContent = t("davUrlHint"); sheet.appendChild(uh);
+  sheetLabel(sheet, t("davUser"));
+  const user = document.createElement("input"); user.className = "field"; user.id = "dav-user"; user.autocomplete = "username"; user.autocapitalize = "off"; user.spellcheck = false; user.maxLength = 120;
+  user.value = cfg ? cfg.user : ""; sheet.appendChild(user);
+  sheetLabel(sheet, t("davPw"));
+  const pw = document.createElement("input"); pw.className = "field"; pw.id = "dav-pw"; pw.type = "password"; pw.autocomplete = "current-password"; pw.maxLength = 200;
+  pw.placeholder = cfg ? t("davPwKeep") : ""; sheet.appendChild(pw);
+  sheetLabel(sheet, t("davKey"));
+  const kh = document.createElement("div"); kh.className = "hint"; kh.textContent = t("davKeyHint"); sheet.appendChild(kh);
+  const kf = newPasswordFields(sheet, "dav"), kIn = Array.from(sheet.querySelectorAll('input[autocomplete="new-password"]'));
+  if(cfg) kIn.forEach(f => { f.placeholder = t("davPwKeep"); });
+  const go = document.createElement("button"); go.className = cfg && cfg.on ? "ghost" : "primary"; go.id = "dav-connect"; go.style.width = "100%"; go.style.marginTop = "12px";
+  go.textContent = cfg && cfg.on ? t("davSaveConn") : t("davConnect");
+  go.onclick = async () => {
+    if(go.disabled) return;
+    go.disabled = true;                                   // sofort: kein doppelter Tipp während der Prüfung
+    try{ await davConnect(); } finally { go.disabled = false; }
+  };
+  const davConnect = async () => {
+    const n = davNormUrl(url.value);
+    if(!n || n.err){ toast(t(n && n.err ? n.err : "davEUrl")); url.focus(); return; }
+    url.value = n.url;
+    const u = user.value.trim();
+    if(!u){ toast(t("davNeedUser")); user.focus(); return; }
+    if(davBusy){ try{ await davBusy; }catch(e){} }          // laufender Abgleich nutzt noch die alten Angaben
+    const prevCfg = davCfg(), old = await Secrets.get();
+    const same = !!(prevCfg && prevCfg.url === n.url && prevCfg.user === u);
+    let p = pw.value;
+    if(!p && same && old && old.pw) p = old.pw;
+    if(!p){ toast(t("davNeedPw")); pw.focus(); return; }
+    let key;
+    if(kIn.every(f => !f.value) && old && old.key && prevCfg) key = old.key;
+    else { key = kf.check(); if(!key) return; }
+    const keep = same && !!old && old.key === key && prevCfg;
+    const kept = await Secrets.set({ pw: p, key });
+    davCfgSet({ url: n.url, user: u, on: true, gen: uid(), etag: keep ? prevCfg.etag || null : null, up: keep ? prevCfg.up || null : null, err: null, last: same && prevCfg ? prevCfg.last || 0 : 0 });
+    const r = await davSync("setup");
+    if(r && r.err !== undefined){
+      /* Nichts Halbes stehen lassen: vorherige Einrichtung (oder keine) wiederherstellen; die Felder bleiben zum Korrigieren */
+      davCfgSet(prevCfg); if(prevCfg && old) await Secrets.set(old); else if(!prevCfg) await Secrets.clear();
+      toast(davErrText(r.err)); renderSettings();
+      if(r.err === "davEKey") davOfferReplace(n.url, u, p, key, kept);
+      return;
+    }
+    closeModal(); renderSettings();
+    toast((r && r.got ? davGotText(r.got) + " – " : "") + (kept ? t("davOk") : t("davNoKeep")));
+  };
+  sheet.appendChild(go);
+  if(cfg){
+    const off = document.createElement("button"); off.className = "ghost"; off.id = "dav-off"; off.style.width = "100%"; off.style.marginTop = "8px"; off.style.color = "var(--warn)";
+    off.textContent = t("davOff");
+    off.onclick = () => { closeModal(); askConfirm(t("davOffQ"), t("davOffT").replace("{f}", DAV_FILE), t("davOffBtn"), async () => {
+      davCfgSet(null); clearTimeout(davTimer); davPending = false; await Secrets.clear(); renderSettings(); toast(t("davOffDone")); }, () => openDavSetup()); };
+    sheet.appendChild(off);
+  }
+  const cl = document.createElement("button"); cl.className = "ghost"; cl.style.width = "100%"; cl.style.marginTop = "8px";
+  cl.textContent = t("close"); cl.onclick = closeModal; sheet.appendChild(cl);
+  davShowStatus();
+}
+
 /* ============ 30. Excel-Export (.xlsx) ohne Bibliothek ============
    Eine .xlsx ist ein ZIP mit wenigen XML-Dateien. Gespeichert wird ohne Kompression (Methode 0),
    Texte als „inlineStr“ – dadurch werden Zelleninhalte nie als Formel ausgeführt. */
@@ -13416,6 +13859,11 @@ function openPrivacy(){
   const app = !!window.cordova;
   row("pv-lock", DB.settings.lock === true, t("pvLock"), app ? t(DB.settings.lock ? "pvLockOn" : "pvLockOff") : t("pvLockWeb"),
     app ? [t("pvLockToggle"), () => { closeModal(); toggleLock(); }] : null);
+  /* Abgleich zwischen Geräten */
+  { const dc = davCfg(), on = !!(dc && dc.on), bad = on && dc.err !== null && dc.err !== undefined;
+    const tx = row("pv-sync", !bad, t("pvSync"), on ? davStatusText() : t("pvSyncOff"), [on ? t("pvSyncEdit") : t("pvSyncSet"), () => { closeModal(); setTimeout(openDavSetup, 60); }]);
+    tx.lastChild.classList.add("davstatus"); if(bad) tx.lastChild.classList.add("warn");
+    if(on) intro.textContent = t("pvLocalSync"); }
   /* Umfang */
   const nS = DB.classes.reduce((a, c) => a + c.students.length, 0), nA = DB.classes.reduce((a, c) => a + (c.assess || []).length, 0), nO = DB.classes.reduce((a, c) => a + (c.obs || []).length, 0);
   row("pv-counts", true, t("pvStored"), t("pvCounts").replace("{c}", String(DB.classes.length)).replace("{s}", String(nS)).replace("{a}", String(nA)).replace("{o}", String(nO)));

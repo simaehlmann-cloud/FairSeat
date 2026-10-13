@@ -16,7 +16,8 @@
     <content src="index.html" />
 
     <!-- Offline-App: kein <access origin="*">. Externe Links öffnen im
-         System-Browser, nicht im WebView. -->
+         System-Browser, nicht im WebView. Der WebDAV-Abgleich läuft nativ
+         (cordova-plugin-advanced-http) und braucht keine Freigabe hier. -->
     <allow-intent href="mailto:*" />
     <allow-intent href="https://*/*" />
 
@@ -107,6 +108,11 @@
     <plugin name="cordova-plugin-statusbar" spec="^4.0.0" />
     <!-- Optionale Sperre für Bewertungen und Beobachtungen: Face ID, Fingerabdruck
          oder Geräte-PIN. Die App erfährt nur, ob entsperrt wurde. -->
+    <!-- Abgleich über WebDAV (z. B. IServ): Anfragen an den Server, den die Lehrkraft einträgt.
+         Nativ statt fetch, weil der WebView fremde Server sonst per CORS sperrt.
+         cordova-plugin-file ist eine Abhängigkeit davon; beide fest gepinnt. -->
+    <plugin name="cordova-plugin-file" spec="8.1.3" />
+    <plugin name="cordova-plugin-advanced-http" spec="3.3.1" />
     <plugin name="cordova-plugin-fingerprint-aio" spec="6.0.1">
         <variable name="FACEID_USAGE_DESCRIPTION" value="FairSeat nutzt Face ID nur, um deine Bewertungen und Beobachtungen zu entsperren. Es werden keine Gesichtsdaten an die App übermittelt." />
     </plugin>

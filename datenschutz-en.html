@@ -53,7 +53,8 @@
   <h2>2. Principle: no data collection</h2>
   <p>
     FairSeat does not process any personal data on the provider's servers. The app
-    works entirely offline. There are no user accounts, no registration, no analytics or
+    works entirely offline (exception: the optional sync via WebDAV, see section 6, with a storage you
+    specify yourself). There are no user accounts with the provider, no registration, no analytics or
     tracking services, no advertising and no sharing of data with third parties.
   </p>
 
@@ -166,8 +167,24 @@
 
   <h2>6. Internet connections</h2>
   <p>
-    The app does not establish any network connections of its own. It contains no
-    external libraries, no fonts from third-party servers and no embedded content.
+    Unless sync is set up (see below), the app does not establish any network connections. It does
+    not load scripts, fonts or other content from third-party servers.
+  </p>
+  <h3>Optional sync via WebDAV</h3>
+  <p>
+    Only if you enter a storage under “Settings → Sync via WebDAV” (e.g. your school's IServ or your own
+    Nextcloud) does the app connect to exactly that server – when you open and leave the app, shortly
+    after changes and on request. It stores the file “FairSeat-Abgleich.json” there and reads it back.
+    The file contains your data like a backup but is encrypted on the device with your sync password
+    (AES-256-GCM, key derived via PBKDF2). The storage operator only sees unreadable characters plus
+    technical details such as file size, time and your IP address; its own terms apply to this processing.
+    The connection is always encrypted with HTTPS.
+  </p>
+  <p>
+    The app keeps the address and user name on the device; the server password and sync password are
+    stored encrypted with a key that exists only on this device. None of this goes into a backup, to the
+    provider or to third parties. “Turn off sync” deletes it; you delete the file on the server yourself.
+    Before use, check with your school management whether you may store (encrypted) work data there.
   </p>
 
   <h2>7. Distribution via an app store</h2>
