@@ -180,6 +180,11 @@ Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfun
 - Plätze sperren (`desk.blocked`): automatisch setzen, mischen, Gruppen und Klassenarbeits-Nummern lassen sie aus. Meldung „x von y Regeln erfüllt“.
 - Tagesübersicht: weitere Stunden heute, offene Aufgaben (Kursheft-Lücken der letzten 14 Tage, unvollständige Abhaklisten).
 - „Größere Schrift und Knöpfe“ (`DB.big`, nur dieses Gerät).
+- Zeugnisnoten (`c.zn`: `{ s: Fach, t: "h1" | "y", sid, g }`): Spalte „Zeugnis“ in der Übersicht (`openFinalPick`), im
+  1. Halbjahr fürs Halbjahreszeugnis, sonst fürs Jahreszeugnis (2. Halbjahr → Jahr, Vorschlag mit dem ganzen Schuljahr, `znRange`).
+  Skala wie der Kurs (1–6 ganz bzw. 0–15). Abweichung vom Vorschlag markiert. „Vorschläge übernehmen“ füllt nur Leeres,
+  ohne Tendenz (`znFromProposal`). Notenliste aller Fächer der Klasse mit Fehlstunden als PDF (`finalsPdfPages`) und als
+  eigenes Blatt der Excel-Auswertung (hinter den Fächern). Abgleich: `zn|`. Fach löschen und Schuljahreswechsel (Bewertungen leeren) räumen auf.
 - Rechenweg: „Wie berechnet?“ unter einem Namen (Bewertungen) zeigt jede Bewertung mit Wert und Gewicht, die Teildurchschnitte,
   die Gewichtung, die Rundungsregel und die Fehlstunden des Fachs (`gradeCalc` nutzt dieselben Schritte wie `studentAverages`,
   `proposeGrade` und `missedLessons`). Als PDF und auf Wunsch (`settings.talkCalc`) im Gesprächsblatt.
@@ -266,7 +271,9 @@ Wurzelverzeichnis bzw. nach `res/android/` kopieren.
 - Gerätebezogen: Einstellungen in `localStorage["fairseat-dav"]`, Passwörter in `fairseat-dav-sec`,
   verschlüsselt mit einem nicht auslesbaren AES-Schlüssel in IndexedDB (`Secrets`); ohne IndexedDB nur im Speicher.
   Nichts davon steht in `DB`, also nie in Sicherung oder Abgleich.
-- Nativ über `cordova-plugin-advanced-http` (3.3.1, braucht `cordova-plugin-file`), weil der WebView fremde Server
-  per CORS sperrt. Im Browser: nur Hinweis. Deren Required-Reason-Gründe (C617.1, E174.1) stehen in
-  `res/ios/PrivacyInfo.xcprivacy`, weil der iOS-Build mitgelieferte Manifeste durch unseres ersetzt.
+- Nativ über das eigene Plugin `plugins-src/cordova-plugin-fairseat-http` (Swift/URLSession, Java/HttpURLConnection,
+  `window.FairSeatHttp.sendRequest`), weil der WebView fremde Server per CORS sperrt. Ohne Cookies, Zwischenspeicher und
+  Weiterleitungen; nur https. Ersetzt `cordova-plugin-advanced-http`, dessen AFNetworking unter Xcode 26 nicht mehr
+  übersetzt (`netinet6/in6.h`). `config.xml` verweist mit `../plugins-src/…` darauf (vom Ordner `build/` aus).
+  Im Browser: nur Hinweis.
 - Tests: `davServer()` in `smoketest.js` bildet einen WebDAV-Server nach (Anmeldung, ETag, 412, Ordner, offline).

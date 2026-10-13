@@ -1571,6 +1571,7 @@ test('Neues Schuljahr', app => {
     a.attendance = [{ date: "2026-09-12", absent: [a.students[0].id] }]; a.absLog = [{ d: "2026-09-12", p: 0, n: 1, s: "ma", ids: [a.students[0].id] }];
     (b.assess = b.assess || []).push({ id: "w9", subjectId: "ma", title: "KA", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: { [b.students[0].id]: "3" } });
     a.history = [{ at: 1, pairs: [] }]; a.plans[0].exam = true; a.plans[0].examPrev = {};
+    a.zn = [{ s: "ma", t: "y", sid: a.students[0].id, g: "2" }]; b.zn = [{ s: "ma", t: "y", sid: b.students[0].id, g: "3" }];
     DB.lessons.push({ id: "L", day: 0, period: 0, span: 1, week: "", subjectId: "ma", classId: a.id, roomId: "", planId: "" });
     DB.cancelled = ["2026-09-14|L"]; a.obs = [{ id: "o", sid: a.students[0].id, d: "2026-09-01", s: "", text: "x" }]; a.checks = [{ id: "k", title: "T", date: "", done: [] }];
   })(); renderSettings()`);
@@ -1597,6 +1598,7 @@ test('Neues Schuljahr', app => {
   erwarte(a && !a.plans[0].exam && !('examPrev' in a.plans[0]), 'Klassenarbeit bleibt aktiv');
   erwarte(app.E('DB.classes.find(c => c.name === "9a").archived') === true, 'Klasse nicht archiviert');
   erwarte(app.E('DB.classes.find(c => c.name === "9a").assess.length') === 1, 'Archivierte Klasse verliert ihre Noten');
+  erwarte(a && a.zn.length === 0 && app.E('DB.classes.find(c => c.name === "9a").zn.length') === 1, 'Zeugnisnoten beim Schuljahreswechsel nicht wie gewählt behandelt');
   erwarte(!app.E('DB.classes.some(c => c.name === "Q1" || c.name === "Q2")') && app.E('DB.trash.some(x => x.kind === "class" && x.name === "Q1")'), 'Gelöschte Klasse nicht im Papierkorb');
   erwarte(app.E('DB.lessons.length') === 0, 'Stundenplan nicht geleert');
   erwarte(app.E('DB.cancelled.length') === 0 && a.obs.length === 0 && a.checks.length === 0, 'Ausfälle, Beobachtungen oder Abhaklisten bleiben');
@@ -1893,7 +1895,7 @@ test('Bewertungen als Excel-Datei', async app => {
       { id: "z1", subjectId: "ma", title: "Selbst", date: "2026-09-12", kind: "self", scale: "smiley", weight: 1, marks: { [s[0].id]: "s4" } }];
     c.absLog = [{ d: "2026-09-01", p: 0, n: 2, s: "ma", ids: [s[0].id] }]; })(); goGrades("ma")`);
   const box = downloadAbfangen(app);
-  app.klick('#g-tab-overview'); app.klick('#g-xlsx');
+  app.E('gradeTerm = "year"'); app.klick('#g-tab-overview'); app.klick('#g-xlsx');
   erwarte(!!box.blob && /\.xlsx$/.test(box.name) && box.blob.type.indexOf('spreadsheetml') >= 0, 'Excel-Datei wird nicht erzeugt: ' + box.name);
   const bytes = new Uint8Array(await new Promise(r => { const f = new app.w.FileReader(); f.onload = () => r(f.result); f.readAsArrayBuffer(box.blob); }));
   const z = zipLesen(bytes), namen = Object.keys(z.files);
@@ -2934,9 +2936,9 @@ test('Bewertungen: Halbjahre', async app => {
     { id: "a2", subjectId: "ma", title: "KA 2", date: "2027-03-01", kind: "written", scale: "grade", weight: 1, marks: { "${anna}": "3", "${ben}": "2" } },
     { id: "a3", subjectId: "ma", title: "alt", date: "2025-12-01", kind: "written", scale: "grade", weight: 1, marks: { "${anna}": "6" } }]`);
   app.E('goGrades("ma")'); app.klick('#g-tab-overview');
-  erwarte(app.$$('#g-term button').length === 3 && app.$('#g-term button.on').dataset.v === 'year', 'Halbjahr-Umschalter fehlt');
+  erwarte(app.$$('#g-term button').length === 3 && app.$('#g-term button.on').dataset.v === app.E('defaultGradeTerm()'), 'Halbjahr-Umschalter fehlt');
   app.klick('#g-term button[data-v="h1"]');
-  erwarte(app.$$('#g-table tr')[0].querySelectorAll('th').length === 1 + 1 + 5 && /^1$/.test(app.$('#g-table .prop').textContent), '1. Halbjahr zeigt falsche Spalten oder Vorschlag: ' + app.$('#g-table .prop').textContent);
+  erwarte(app.$$('#g-table tr')[0].querySelectorAll('th').length === 1 + 1 + 6 && /^1$/.test(app.$('#g-table .prop').textContent), '1. Halbjahr zeigt falsche Spalten oder Vorschlag: ' + app.$('#g-table .prop').textContent);
   app.klick('#g-term button[data-v="h2"]');
   erwarte(app.$('#g-table .prop').textContent === '3', '2. Halbjahr falsch: ' + app.$('#g-table .prop').textContent);
   erwarte(app.E(`studentAverages(curClass(), "ma", "${anna}", "year").total`) === 10 / 3, 'Schuljahr rechnet nicht alles');
@@ -3810,12 +3812,99 @@ test('Abgleich: Zielscheiben-Punkte von zwei Geräten', async app => {
   } finally { B.ende(); }
 });
 
+test('Zeugnisnoten: festlegen, Vorschläge übernehmen, Notenliste, Abgleich', async app => {
+  bewertungsKlasse(app);
+  app.E(`(() => { const c = curClass(), s = c.students; DB.settings.termSplit = "2027-01-31";
+    DB.subjects.push({ id: "de", name: "Deutsch", short: "De", color: "#E67E22" }); c.gradeSubjects = ["ma", "de"];
+    c.assess = [{ id: "a1", subjectId: "ma", title: "KA 1", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: { [s[0].id]: "2", [s[1].id]: "3", [s[2].id]: "5" } },
+                { id: "a2", subjectId: "ma", title: "Mitarbeit", date: "2026-09-12", kind: "other", scale: "grade", weight: 1, marks: { [s[0].id]: "1", [s[1].id]: "3", [s[2].id]: "4" } },
+                { id: "a3", subjectId: "ma", title: "KA 2", date: "2027-03-01", kind: "written", scale: "grade", weight: 1, marks: { [s[0].id]: "6" } },
+                { id: "d1", subjectId: "de", title: "Aufsatz", date: "2026-09-20", kind: "written", scale: "points", weight: 1, marks: { [s[0].id]: "11" } }];
+    c.absLog = [{ d: "2026-09-15", p: 0, n: 2, s: "ma", ids: [s[0].id] }]; c.exc = ["2026-09-15|" + s[0].id]; })(); save()`);
+  app.E('gradeSubject = "ma"; gradeTab = "overview"; gradeTerm = "h1"; goGrades("ma")');
+  erwarte(app.$$('#g-table .znbtn').length === 4 && app.$$('#g-table .znbtn.set').length === 0 && /0 von 4/.test(app.$('#zn-status').textContent) && /Halbjahreszeugnis/.test(app.$('#zn-status').textContent), 'Spalte Zeugnis oder Status fehlt');
+  // einzeln festlegen: Anna (Ø 1,5 → Vorschlag 1) bekommt 2
+  const anna = sid(app, 'Anna');
+  app.klick(`#g-table .znbtn[data-sid="${anna}"]`);
+  erwarte(/Vorschlag: 1/.test(app.$('#zn-info').textContent) && app.$$('#zn-pad button').length === 6 && app.$('#zn-pad button.prop').dataset.tok === '1', 'Auswahl zeigt Vorschlag oder Noten nicht');
+  app.klick('#zn-pad button[data-tok="2"]');
+  erwarte(app.E(`finalGrade(curClass(), "ma", "${anna}", "h1")`) === '2' && app.$(`#g-table .znbtn[data-sid="${anna}"]`).classList.contains('diff'), 'Zeugnisnote nicht gespeichert oder Abweichung nicht markiert');
+  // Vorschläge übernehmen: nur leere, ganzzahlig; Dana ohne Bewertung bleibt leer, Cem (zieldifferent) auch
+  app.E(`setZd(curClass(), "ma", "${sid(app, 'Cem')}", true); renderGrades()`);
+  app.klick('#zn-all'); app.sheetOk();
+  const g = n => app.E(`finalGrade(curClass(), "ma", "${sid(app, n)}", "h1")`);
+  erwarte(g('Anna') === '2' && g('Ben') === '3' && g('Cem') === null && g('Dana') === null, 'Übernahme falsch: ' + [g('Anna'), g('Ben'), g('Cem'), g('Dana')].join());
+  erwarte(/2 von 4/.test(app.$('#zn-status').textContent), 'Status nicht aktualisiert');
+  app.E(`setZd(curClass(), "ma", "${sid(app, 'Cem')}", false); setFinalGrade(curClass(), "ma", "${sid(app, 'Cem')}", "h1", "4"); renderGrades()`);
+  erwarte(app.E('gradeTerm = null; defaultGradeTerm()') === 'h1', 'Vor dem Stichtag nicht das 1. Halbjahr vorgewählt');
+  app.E('gradeTerm = "h1"; renderGrades()');
+  // Halbjahr und Jahr getrennt; das 2. Halbjahr gehört zum Jahreszeugnis – festgelegt wird in der Ansicht „Schuljahr“
+  app.klick('#g-term button[data-v="h2"]');
+  erwarte(app.$$('#g-table .znbtn').length === 0 && !app.$('#zn-all') && /Ansicht „Schuljahr“/.test(app.$('#zn-status').textContent), '2. Halbjahr bietet Zeugnisnoten mit unpassendem Vorschlag an');
+  app.klick('#g-term button[data-v="year"]');
+  erwarte(app.$$('#g-table .znbtn.set').length === 0 && /Jahreszeugnis: 0 von 4/.test(app.$('#zn-status').textContent), 'Jahreszeugnis nicht getrennt vom Halbjahr');
+  app.klick(`#g-table .znbtn[data-sid="${anna}"]`);
+  erwarte(/Vorschlag: 2 \(Ø 2,50\)/.test(app.$('#zn-info').textContent), 'Jahresvorschlag rechnet nicht mit dem ganzen Schuljahr: ' + app.$('#zn-info').textContent);
+  app.klick('#zn-pad button[data-tok="3"]');
+  erwarte(app.E(`finalGrade(curClass(), "ma", "${anna}", "year")`) === '3' && app.E(`finalGrade(curClass(), "ma", "${anna}", "h2")`) === '3' && app.E(`finalGrade(curClass(), "ma", "${anna}", "h1")`) === '2', 'Halbjahr und Jahr vermischt');
+  // entfernen
+  app.klick(`#g-table .znbtn[data-sid="${anna}"]`); app.klick('#zn-clear');
+  erwarte(app.E(`finalGrade(curClass(), "ma", "${anna}", "year")`) === null, 'Entfernen geht nicht');
+  // Punkte-Kurs: 0–15
+  app.E('gradeSubject = "de"; gradeTerm = "h1"; renderGrades()');
+  app.klick(`#g-table .znbtn[data-sid="${anna}"]`);
+  erwarte(app.$$('#zn-pad button').length === 16 && app.$('#zn-pad').classList.contains('k-points') && /Vorschlag: 11/.test(app.$('#zn-info').textContent), 'Punkte-Kurs bietet nicht 0–15');
+  app.klick('#zn-pad button[data-tok="12"]');
+  // Kurs wechselt danach die Skala: Note bleibt erkennbar, Auswahl warnt
+  app.E(`curClass().assess.push({ id: "d2", subjectId: "de", title: "Mitarbeit", date: "2026-09-25", kind: "other", scale: "grade", weight: 1, marks: { ["${anna}"]: "2" } }); renderGrades()`);
+  erwarte(app.$(`#g-table .znbtn[data-sid="${anna}"]`).textContent === '12 P.', 'Punktenote nach Skalenwechsel nicht gekennzeichnet: ' + app.$(`#g-table .znbtn[data-sid="${anna}"]`).textContent);
+  app.klick(`#g-table .znbtn[data-sid="${anna}"]`);
+  erwarte(!!app.$('#zn-scale') && !app.$('#zn-pad button.on'), 'Skalenwechsel in der Auswahl nicht gemeldet');
+  app.E('closeModal()');
+  app.E('curClass().assess = curClass().assess.filter(a => a.id !== "d2"); save()');
+  // Detailblatt
+  app.E(`studentDetail(curClass(), subjectById("ma"), curClass().students[0], "h1")`);
+  erwarte(/Zeugnis: 2/.test(app.$('#zn-detail').textContent), 'Detailblatt zeigt die Zeugnisnote nicht');
+  app.klick('#zn-detail'); app.klick('#zn-pad button[data-tok="1"]');
+  erwarte(app.E(`finalGrade(curClass(), "ma", "${anna}", "h1")`) === '1' && /Zeugnis: 1/.test(app.$('#zn-detail').textContent), 'Ändern im Detailblatt kehrt nicht zurück');
+  app.E('closeModal()');
+  // Notenliste als PDF und als erstes Excel-Blatt
+  const box = downloadAbfangen(app);
+  app.E('gradeSubject = "ma"; renderGrades()'); app.klick('#zn-list');
+  const pdf = await blobText(app, box.blob);
+  erwarte(/Notenliste/.test(box.name) && /Halbjahreszeugnis/.test(box.name) && /\(Anna\)/.test(pdf) && /\(Ma\)/.test(pdf) && /\(De\)/.test(pdf) && /\(12\)/.test(pdf) && /4 Noten noch offen/.test(pdf), 'Notenliste unvollständig: ' + box.name);
+  const sh = app.E('JSON.stringify(gradesXlsxSheets(curClass(), "h1").find(x => /Zeugnisnoten/.test(x.name)))');
+  const S0 = JSON.parse(sh);
+  erwarte(/Zeugnisnoten/.test(S0.name) && S0.rows[0].join('|') === 'Name|Mathe|Deutsch|Fehlstd.|unentsch.' && S0.rows[1].join('|') === 'Anna|1|12|2|0' && S0.rows[4][1] === '', 'Excel-Blatt Zeugnisnoten falsch: ' + sh);
+  // Laden prüft, Löschen eines Fachs räumt auf
+  const san = app.E(`JSON.stringify(sanFinals([{ s: "ma", t: "h1", sid: "${anna}", g: "2" }, { s: "ma", t: "h1", sid: "${anna}", g: "3" }, { s: "ma", t: "h2", sid: "${anna}", g: "2" }, { s: "ma", t: "y", sid: "weg", g: "2" }, { s: "ma", t: "y", sid: "${anna}", g: "2+" }, { s: "ma", t: "y", sid: "${anna}", g: "16" }], new Set(["${anna}"])))`);
+  erwarte(san === `[{"s":"ma","t":"h1","sid":"${anna}","g":"2","sc":"grade"}]`, 'Laden prüft Zeugnisnoten falsch: ' + san);
+  erwarte(app.E(`JSON.stringify(sanFinals([{ s: "x", t: "y", sid: "${anna}", g: "9" }, { s: "z", t: "y", sid: "${anna}", g: "9", sc: "grade" }], new Set(["${anna}"])))`) === `[{"s":"x","t":"y","sid":"${anna}","g":"9","sc":"points"}]`, 'Skala beim Laden falsch erkannt');
+  // Abgleich: zwei Geräte, unterschiedliche Noten – die spätere gilt; Löschen kommt an
+  uhr(app, 1000); app.E('flushSave()');
+  const B = neueApp();
+  try{
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    erwarte(B.E(`finalGrade(curClass() || DB.classes[0], "ma", "${anna}", "h1")`) === '1', 'Zeugnisnote nicht übertragen');
+    uhr(B, 2000); B.E(`setFinalGrade(DB.classes[0], "ma", "${anna}", "h1", "2"); flushSave()`);
+    uhr(app, 2100); app.E(`setFinalGrade(curClass(), "ma", "${sid(app, 'Ben')}", "h1", null); flushSave()`);
+    uhr(app, 2200); await laden(app, datei(B), 'merge');
+    erwarte(app.E(`finalGrade(curClass(), "ma", "${anna}", "h1")`) === '2' && app.E(`finalGrade(curClass(), "ma", "${sid(app, 'Ben')}", "h1")`) === null, 'Abgleich der Zeugnisnoten falsch');
+    uhr(B, 2300); await laden(B, datei(app), 'merge');
+    erwarte(inhalt(app) === inhalt(B), 'Geräte nach dem Abgleich nicht gleich');
+  } finally { B.ende(); }
+  app.E(`editSubject(subjectById("ma"))`);
+  const delBtn = app.$$('#sheet button').find(b => /Fach löschen/.test(b.textContent));
+  if(delBtn){ app.klick(delBtn); app.sheetOk(); }
+  erwarte(!!delBtn && app.E('curClass().zn.every(x => x.s !== "ma") && curClass().zn.some(x => x.s === "de")'), 'Zeugnisnoten eines gelöschten Fachs bleiben (oder andere verschwinden)');
+});
+
 /* WebDAV-Server zum Testen: hält Dateien im Speicher, prüft Anmeldung, ETag (If-Match / If-None-Match) und Ordner */
 function davServer(){
   const S = { files: new Map(), log: [], user: 'simon.m', pw: 'iserv-geheim', dir: 'https://kgs-test.de/webdav/Files/', n: 0, vorPut: null, aus: false,
     verz: 5, umleiten: false, schwach: false, kekse: 0, optionen: [] };
   S.installiere = app => {
-    app.w.cordova = { platformId: 'ios', plugin: { http: { clearCookies(){ S.kekse++; }, setFollowRedirect(v){ S.folgen = v; }, sendRequest(url, o, ok, fail){
+    app.w.FairSeatHttp = { sendRequest(url, o, ok, fail){
       S.optionen.push(o);
       const h = o.headers || {}, m = String(o.method).toUpperCase();
       S.log.push(m + ' ' + url + (h['If-Match'] ? ' if-match ' + h['If-Match'] : '') + (h['If-None-Match'] ? ' if-none ' + h['If-None-Match'] : ''));
@@ -3845,7 +3934,7 @@ function davServer(){
         return antwort(g ? 204 : 201, '', etag);
       }
       return antwort(405, 'Method Not Allowed');
-    } } } };
+    } };
   };
   S.datei = () => S.files.get(S.dir + 'FairSeat-Abgleich.json');
   S.puts = () => S.log.filter(x => x.indexOf('PUT') === 0).length;
@@ -3864,6 +3953,33 @@ async function davEinrichten(app, S, key, opt){
   await bis(() => !knopf.disabled, 15000);
 }
 const davLauf = (app, why) => app.E(`davSync("${why || 'test'}")`);
+
+test('WebDAV: eigenes Plugin – Schnittstelle', app => {
+  /* www/fairseat-http.js mit einem nachgebauten cordova/exec */
+  const code = fs.readFileSync(require('path').join(__dirname, 'plugins-src', 'cordova-plugin-fairseat-http', 'www', 'fairseat-http.js'), 'utf8');
+  let aufruf = null, antwort = null;
+  const module = { exports: {} };
+  new Function('require', 'module', 'exports', code)(n => n === 'cordova/exec' ? (ok, fail, svc, act, args) => { aufruf = { svc, act, args }; antwort(ok, fail); } : null, module, module.exports);
+  const H = module.exports, erg = [];
+  antwort = ok => ok({ status: 201, headers: { etag: '"a"' }, data: '' });
+  H.sendRequest('https://x.de/f', { method: 'put', headers: { 'If-Match': '"z"' }, data: 'abc', connectTimeout: 15, readTimeout: 60 }, r => erg.push(['ok', r]), r => erg.push(['fail', r]));
+  erwarte(aufruf.svc === 'FairSeatHttp' && aufruf.act === 'request' && JSON.stringify(aufruf.args) === '["PUT","https://x.de/f",{"If-Match":"\\"z\\""},"abc",15,60]', 'Plugin bekommt falsche Argumente: ' + JSON.stringify(aufruf));
+  erwarte(erg[0][0] === 'ok' && erg[0][1].status === 201 && erg[0][1].headers.etag === '"a"', '2xx nicht als Erfolg gemeldet');
+  antwort = ok => ok({ status: 412, headers: {}, data: 'Precondition' });
+  H.sendRequest('https://x.de/f', { method: 'get' }, r => erg.push(['ok', r]), r => erg.push(['fail', r]));
+  erwarte(erg[1][0] === 'fail' && erg[1][1].status === 412 && aufruf.args[3] === null && aufruf.args[4] === 15, 'Status außerhalb 2xx nicht als Fehler gemeldet');
+  antwort = (ok, fail) => fail({ status: -4, error: 'timeout' });
+  H.sendRequest('https://x.de/f', {}, r => erg.push(['ok', r]), r => erg.push(['fail', r]));
+  erwarte(erg[2][0] === 'fail' && erg[2][1].status === -4 && aufruf.args[0] === 'GET', 'Netzfehler nicht durchgereicht');
+  antwort = (ok, fail) => fail('kaputt');
+  H.sendRequest('https://x.de/f', {}, r => erg.push(['ok', r]), r => erg.push(['fail', r]));
+  erwarte(erg[3][0] === 'fail' && erg[3][1].status === -1, 'Unerwartete Fehlerform nicht abgefangen');
+  // native Quellen: nur https, keine Weiterleitungen, keine Cookies
+  const sw = fs.readFileSync(require('path').join(__dirname, 'plugins-src', 'cordova-plugin-fairseat-http', 'src', 'ios', 'FairSeatHttp.swift'), 'utf8');
+  const jv = fs.readFileSync(require('path').join(__dirname, 'plugins-src', 'cordova-plugin-fairseat-http', 'src', 'android', 'FairSeatHttp.java'), 'utf8');
+  erwarte(/completionHandler\(nil\)/.test(sw) && /httpCookieStorage = nil/.test(sw) && /urlCache = nil/.test(sw) && /scheme\?\.lowercased\(\) == "https"/.test(sw), 'iOS-Plugin: Weiterleitung, Cookies, Cache oder https-Prüfung fehlt');
+  erwarte(/setInstanceFollowRedirects\(false\)/.test(jv) && /setUseCaches\(false\)/.test(jv) && /"https"\.equalsIgnoreCase/.test(jv), 'Android-Plugin: Weiterleitung, Cache oder https-Prüfung fehlt');
+});
 
 test('WebDAV: Adresse prüfen', app => {
   const n = u => { const r = app.E(`JSON.stringify(davNormUrl(${JSON.stringify(u)}))`); return r === undefined ? 'null' : r; };
@@ -4006,8 +4122,7 @@ test('WebDAV: Prüfbericht – Eingaben während des Abgleichs, Einrichten währ
     erwarte(app.E('JSON.stringify(davNormUrl("https://kgs-test.de/webdav/Files/Meine Dateien"))') === '{"url":"https://kgs-test.de/webdav/Files/Meine%20Dateien/"}' && app.E('davNormUrl("kgs test.de")') === null, 'Leerzeichen im Pfad falsch behandelt');
     uhr(app, 1000); grundstand(app);
     await davEinrichten(app, S, 'abgleich-123');
-    erwarte(S.optionen.every(o => o.connectTimeout === 15 && o.readTimeout === 60 && o.followRedirect === false && o.timeout === undefined) && S.folgen === false, 'Zeitlimits oder Weiterleitung falsch eingestellt');
-    erwarte(S.kekse >= 1, 'Cookies nach dem Abgleich nicht gelöscht');
+    erwarte(S.optionen.every(o => o.connectTimeout === 15 && o.readTimeout === 60 && /^(get|put)$/.test(o.method)), 'Zeitlimits oder Methode falsch übergeben');
     uhr(B, 1100); await davEinrichten(B, S, 'abgleich-123');
     // Eingabe, während B entschlüsselt: muss trotzdem hochgehen
     uhr(app, 2000); app.E('DB.classes[0].assess[0].marks[DB.classes[0].students[1].id] = "3"; flushSave()'); await davLauf(app);

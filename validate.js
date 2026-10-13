@@ -117,6 +117,17 @@ pruefe(icon1024 && icon1024.farbtyp === 2, 'icon-1024.png muss ohne Alphakanal s
 for(const m of config.matchAll(/(?:src|foreground)="(res\/android\/[^"]+)"/g)){
   pruefe(fs.existsSync(m[1]), 'In config.xml genannt, aber nicht vorhanden: ' + m[1]);
 }
+/* Eigene Plugins: spec="../plugins-src/…" gilt vom Build-Ordner build/ aus – im Repository ohne "../" */
+for(const m of config.matchAll(/<plugin name="([^"]+)" spec="\.\.\/([^"]+)"/g)){
+  const dir = m[2], px = path.join(dir, 'plugin.xml'), pj = path.join(dir, 'package.json');
+  pruefe(fs.existsSync(px) && fs.existsSync(pj), 'Eigenes Plugin fehlt: ' + dir);
+  if(fs.existsSync(px)){
+    const xml = fs.readFileSync(px, 'utf8');
+    pruefe(xml.includes('id="' + m[1] + '"'), 'Plugin-ID in ' + px + ' passt nicht zu config.xml');
+    for(const f of xml.matchAll(/src="([^"]+)"/g)) pruefe(fs.existsSync(path.join(dir, f[1])), 'Plugin-Datei fehlt: ' + path.join(dir, f[1]));
+  }
+  if(fs.existsSync(pj)) pruefe(JSON.parse(fs.readFileSync(pj, 'utf8')).name === m[1], 'package.json des Plugins heißt nicht ' + m[1]);
+}
 const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
 for(const ic of manifest.icons){
   const m = fs.existsSync(ic.src) ? pngMasse(ic.src) : null;

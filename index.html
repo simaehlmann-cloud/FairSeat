@@ -795,6 +795,14 @@ body.big #sheet{max-height:calc(88vh / 1.15)}
 .pvrow .pvt{flex:1;min-width:0}
 .pvrow .pvt b{display:block;font-size:14px}
 .pvrow .pvt span{display:block;font-size:13px;color:var(--ink-soft);margin-top:2px}
+.gtable td.zn{padding:2px 4px}
+.znbtn{min-width:40px;min-height:36px;border-radius:8px;border:1.5px dashed var(--line);background:transparent;color:var(--ink-soft);font-weight:800;font-size:14px}
+.znbtn.set{border-style:solid;border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.znbtn.diff{box-shadow:inset 0 -3px 0 #E7A65A}
+.keypad button.prop{outline:2px dashed var(--accent);outline-offset:-4px}
+.propchip.znchip{border:0;cursor:pointer;font:inherit}
+.propchip.znchip{font-weight:650}
+.propchip.znchip.set{font-weight:850;box-shadow:inset 0 0 0 1.5px var(--accent)}
 .davstatus.warn,.pvrow .pvt span.davstatus.warn{color:var(--warn);font-weight:650}
 #dav-status{padding:10px 12px;font-size:13.5px}
 .pvrow .minibtn{flex:0 0 auto;padding:6px 10px;font-size:12.5px}
@@ -2815,6 +2823,40 @@ I18N.en.info.push({ h:"Sync via WebDAV (e.g. IServ)",
   p:["Under Settings → “Sync via WebDAV”, enter the address, user name and password of your storage – for IServ the IServ address is enough – plus your own sync password, the same on every device. The app stores the file “FairSeat-Abgleich.json” there, encrypted on the device.",
      "Sync runs when you open and leave the app, two minutes after a change and with “Sync now”. Changes from both devices are merged as with syncing via a file. Without a network you keep working as usual.",
      "The passwords stay on the device and never end up in a backup. Check with your school management beforehand whether you may store encrypted grade data there."] });
+Object.assign(I18N.de, {
+  znCol:"Zeugnis", znH1:"Halbjahreszeugnis", znYear:"Jahreszeugnis", znH1Short:"1. Hj.", znYearShort:"Jahr",
+  znPickTitle:"Zeugnisnote – {n}, {s}", znProp:"Vorschlag: {g} (Ø {a})", znNoProp:"Noch kein Vorschlag – es fehlen Bewertungen",
+  znClear:"Zeugnisnote entfernen", znNotSet:"noch nicht festgelegt", znDiff:"Vorschlag wäre {g}",
+  znStatus:"{z}: {n} von {m} Noten festgelegt.", znH2Hint:"Zeugnisnoten: Das 2. Halbjahr gehört zum Jahreszeugnis – das legst du in der Ansicht „Schuljahr“ fest, wo auch der Vorschlag das ganze Jahr umfasst.",
+  znAll:"Vorschläge übernehmen", znAllNone:"Keine offenen Vorschläge – alle Noten sind festgelegt oder es fehlen Bewertungen",
+  znAllQ:"Vorschläge übernehmen?", znAllT:"{n} noch offene Noten ({z}) werden aus den Vorschlägen gesetzt (ohne Tendenz, zieldifferent Unterrichtete ausgenommen). Bereits festgelegte Noten bleiben unverändert – prüfe die Liste danach.",
+  znAllBtn:"Übernehmen", znAllDone:"{n} Zeugnisnoten gesetzt",
+  znListBtn:"Notenliste (alle Fächer) als PDF", znListTitle:"Notenliste", znOpen:"{n} Noten noch offen",
+  znMissed:"Fehlstd.", znUnexc:"unentsch.", znSheet:"Zeugnisnoten", znPts:"P.", znGr:"(Note)",
+  znScaleChanged:"Festgelegt war {g} – der Kurs rechnet inzwischen in einer anderen Skala. Bitte neu festlegen.",
+  znListNote:"Festgelegte Zeugnisnoten; „–“ = noch nicht festgelegt. Fehlstunden laut Anwesenheit im Zeitraum, ohne ausgefallene Stunden.",
+  znListCut:"Es passen {n} Fächer auf die Seite – alle stehen in der Excel-Auswertung."
+});
+Object.assign(I18N.en, {
+  znCol:"Report", znH1:"Half-year report", znYear:"End-of-year report", znH1Short:"H1", znYearShort:"Year",
+  znPickTitle:"Report grade – {n}, {s}", znProp:"Suggested: {g} (avg. {a})", znNoProp:"No suggestion yet – assessments are missing",
+  znClear:"Remove report grade", znNotSet:"not set yet", znDiff:"suggestion would be {g}",
+  znStatus:"{z}: {n} of {m} grades set.", znH2Hint:"Report grades: the second half-year belongs to the end-of-year report – set it in the “School year” view, where the suggestion covers the whole year.",
+  znAll:"Use suggestions", znAllNone:"No open suggestions – all grades are set or assessments are missing",
+  znAllQ:"Use suggestions?", znAllT:"{n} open grades ({z}) are filled from the suggestions (without +/−). Grades already set stay unchanged – check the list afterwards.",
+  znAllBtn:"Use", znAllDone:"{n} report grades set",
+  znListBtn:"Grade list (all subjects) as PDF", znListTitle:"Grade list", znOpen:"{n} grades still open",
+  znMissed:"Missed", znUnexc:"unexcused", znSheet:"Report grades", znPts:"pts", znGr:"(grade)",
+  znScaleChanged:"{g} was set – the course now uses a different scale. Please set it again.",
+  znListNote:"Report grades as set; “–” = not set yet. Missed lessons from attendance in this period, without cancelled lessons.",
+  znListCut:"{n} subjects fit on the page – all of them are in the Excel export."
+});
+I18N.de.info.push({ h:"Zeugnisnoten und Notenliste",
+  p:["In der Bewertungsübersicht steht neben dem Vorschlag die Spalte „Zeugnis“. Ein Tipp legt die Zeugnisnote fest – im 1. Halbjahr für das Halbjahreszeugnis, sonst für das Jahreszeugnis. Weicht sie vom Vorschlag ab, ist sie markiert.",
+     "„Vorschläge übernehmen“ füllt nur leere Felder, ganzzahlig. „Notenliste (alle Fächer)“ erstellt ein PDF für die Zeugniskonferenz mit allen Fächern der Klasse und den Fehlstunden; in der Excel-Auswertung steht sie als eigenes Blatt."] });
+I18N.en.info.push({ h:"Report grades and grade list",
+  p:["In the assessment overview, the column “Report” sits next to the suggestion. One tap sets the report grade – in the first half-year for the half-year report, otherwise for the end-of-year report. If it differs from the suggestion, it is marked.",
+     "“Use suggestions” only fills empty fields, as whole grades. “Grade list (all subjects)” creates a PDF for the report conference with all subjects of the class and missed lessons; in the Excel export it has its own sheet."] });
 /* ============ 2. Helfer ============ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
@@ -3072,6 +3114,8 @@ function sanitizeDB(raw){
       exc: sanDayIds(c?.exc, ids, 5000),
       /* zieldifferent unterrichtet: "Fach|Schüler-ID" – nur das Merkmal, keine Begründung */
       zd: sanSubjIds(c?.zd, ids),
+      /* festgelegte Zeugnisnoten je Fach und Zeugnis */
+      zn: sanFinals(c?.zn, ids),
       late: sanLate(c?.late, ids),
       /* Aus FairMix übernommene Gruppen: Mitglieder als Schüler-IDs */
       groups: Array.isArray(c?.groups) ? c.groups.filter(g => g && Array.isArray(g.members)).map(g => ({
@@ -3590,7 +3634,7 @@ function fillClassSelect(sel){
 }
 function newClassObj(name){
   return { id: uid(), name, archived: false, students: [], rules: [], plans: [], groups: [], levelMode: "off",
-           history: [], attendance: [], journal: [], exc: [], late: [], zd: [], targets: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
+           history: [], attendance: [], journal: [], exc: [], late: [], zd: [], zn: [], targets: [], lesson: { date:"", absent:[], picked:[], notes:{} } };
 }
 
 /* ============ 9. Modale Dialoge ============ */
@@ -10159,6 +10203,7 @@ function editSubject(s, after, onCancel){
           c.gradeSubjects = (c.gradeSubjects || []).filter(x => x !== s.id);
           if(c.lastSubject === s.id) c.lastSubject = "";
           if(Array.isArray(c.zd)) c.zd = c.zd.filter(x => x.slice(0, x.indexOf("|")) !== s.id);
+          if(Array.isArray(c.zn)) c.zn = c.zn.filter(x => x.s !== s.id);
         });
         save(); refreshTTViews();
       });
@@ -10282,7 +10327,9 @@ const tokLabel = (tok, forPdf) => tok === "x" ? t("gMissing") : SMILEY[tok] ? (f
 const fmtNum = (v, d) => v === null || v === undefined || !isFinite(v) ? "–" : (LANG === "de" ? v.toFixed(d).replace(".", ",") : v.toFixed(d));
 const fmtDate = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); return m ? (LANG === "de" ? m[3] + "." + m[2] + "." : m[3] + "/" + m[2]) : ""; };
 /* ---- Halbjahre: Stichtag = Ende des 1. Halbjahres; Schuljahr vom 1.8. bis 31.7. ---- */
-let gradeTerm = "year";                                 // Ansicht der Übersicht: "h1", "h2" oder "year"
+let gradeTerm = null;                                   // Ansicht der Übersicht: "h1", "h2" oder "year" (null = nach Datum)
+/* Vor dem Halbjahresstichtag zuerst das 1. Halbjahr zeigen – sonst landen Zeugnisnoten im Januar versehentlich beim Jahreszeugnis */
+function defaultGradeTerm(){ const d = isoDay(new Date()); return inTerm({ date: d }, "h1") ? "h1" : "year"; }
 function defaultTermSplit(now){ now = now || new Date(); return (now.getMonth() >= 7 ? now.getFullYear() + 1 : now.getFullYear()) + "-01-31"; }
 function termSplit(){ const v = DB.settings.termSplit; return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : defaultTermSplit(); }
 function inTerm(a, term){
@@ -10410,6 +10457,7 @@ function renderGrades(){
     });
     renderSelfSection(body, c, s, false);
   } else {
+    if(gradeTerm === null) gradeTerm = defaultGradeTerm();
     /* Halbjahr wählen: Übersicht, Notenvorschlag und Ausgaben rechnen nur mit diesen Bewertungen */
     const tb = document.createElement("div"); tb.className = "segmented"; tb.id = "g-term";
     ["h1", "h2", "year"].forEach(k => { const b = document.createElement("button"); b.textContent = termLabel(k); b.dataset.v = k;
@@ -10707,7 +10755,10 @@ function renderOverview(body, c, s, list, term){
   const th = txt => { const e = document.createElement("th"); e.textContent = txt; hr.appendChild(e); return e; };
   th(t("subColName"));
   list.forEach(a => { const e = th(fmtDate(a.date)); e.title = a.title; const k = document.createElement("small"); k.textContent = a.kind === "written" ? t("gW") : t("gO"); e.appendChild(k); });
-  th("Ø " + t("gW")); th("Ø " + t("gO")); th(t("gTotal")).className = "tot"; th(t("gProposal")).className = "tot"; th(t("absMissedShort"));
+  th("Ø " + t("gW")); th("Ø " + t("gO")); th(t("gTotal")).className = "tot"; th(t("gProposal")).className = "tot";
+  const withZn = term !== "h2";                          // 2. Halbjahr: Jahreszeugnis in der Ansicht „Schuljahr“ – dort passt der Vorschlag dazu
+  if(withZn){ const zh = th(t("znCol")); zh.className = "tot zn"; zh.title = t(znTerm(term) === "h1" ? "znH1" : "znYear"); }
+  th(t("absMissedShort"));
   tb.appendChild(hr);
   c.students.forEach(st => {
     const tr = document.createElement("tr");
@@ -10719,10 +10770,33 @@ function renderOverview(body, c, s, list, term){
     const av = studentAverages(c, s.id, st.id, term);
     [av.written, av.other, av.total].forEach((v, k) => { const d = document.createElement("td"); d.textContent = v === null ? "" : fmtNum(v, dg); d.className = k === 2 ? "tot" : "avg"; tr.appendChild(d); });
     const pr = document.createElement("td"); pr.className = "tot prop"; pr.textContent = proposeGrade(c, s.id, av) || ""; tr.appendChild(pr);
+    /* Zeugnisnote: festgelegt (fett) oder Knopf zum Festlegen; weicht sie vom Vorschlag ab, ist das markiert */
+    if(withZn){
+    const zd = document.createElement("td"); zd.className = "tot zn";
+    const zb = document.createElement("button"); zb.className = "znbtn"; zb.dataset.sid = st.id;
+    const fg = finalText(c, s.id, st.id, term), zp = znFromProposal(c, s.id, st.id, term);
+    zb.textContent = fg === null ? "+" : fg; zb.classList.toggle("set", fg !== null); zb.classList.toggle("diff", fg !== null && zp !== null && fg !== zp);
+    zb.setAttribute("aria-label", t("znCol") + " " + st.name + ": " + (fg === null ? t("znNotSet") : fg) + (fg !== null && zp !== null && fg !== zp ? " (" + t("znDiff").replace("{g}", zp) + ")" : ""));
+    if(fg !== null && zp !== null && fg !== zp) zb.title = t("znDiff").replace("{g}", zp);
+    zb.onclick = () => openFinalPick(c, s, st, term);
+    zd.appendChild(zb); tr.appendChild(zd); }
     const ms = document.createElement("td"); ms.className = "avg"; const mc = missedLessons(c, st.id, term).bySubject[s.id] || 0; ms.textContent = mc ? String(mc) : ""; tr.appendChild(ms);
     tb.appendChild(tr);
   });
   wrap.appendChild(tb); body.appendChild(wrap);
+  /* Zeugnisnoten: Stand und Übernahme der Vorschläge */
+  { const n = c.students.filter(st => finalGrade(c, s.id, st.id, term) !== null).length;
+    const zi = document.createElement("div"); zi.className = "hint"; zi.id = "zn-status";
+    zi.textContent = term === "h2" ? t("znH2Hint") : t("znStatus").replace("{z}", t(znTerm(term) === "h1" ? "znH1" : "znYear")).replace("{n}", String(n)).replace("{m}", String(c.students.length));
+    body.appendChild(zi);
+    if(n < c.students.length && term !== "h2"){
+      const za = document.createElement("button"); za.className = "cbtn outline"; za.id = "zn-all"; za.style.width = "100%"; za.style.marginTop = "8px";
+      za.appendChild(icon("check")); const zs = document.createElement("span"); zs.textContent = t("znAll"); za.appendChild(zs);
+      za.onclick = () => finalsFromProposals(c, s, term); body.appendChild(za);
+    }
+    const zl = document.createElement("button"); zl.className = "cbtn outline"; zl.id = "zn-list"; zl.style.width = "100%"; zl.style.marginTop = "8px";
+    zl.appendChild(icon("pdf")); const zls = document.createElement("span"); zls.textContent = t("znListBtn"); zl.appendChild(zls);
+    zl.onclick = () => exportFinalsPdf(c, term); body.appendChild(zl); }
   const ex = document.createElement("button"); ex.className = "cbtn outline"; ex.id = "g-pdf"; ex.style.width = "100%"; ex.style.marginTop = "12px";
   ex.appendChild(icon("pdf")); const es = document.createElement("span"); es.textContent = t("gPdf"); ex.appendChild(es);
   ex.onclick = () => exportGradesPdf(c, s, term);
@@ -10744,6 +10818,10 @@ function studentDetail(c, s, st, term){
   [[t("gW"), av.written], [t("gO"), av.other], [t("gTotal"), av.total]].forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + fmtNum(v, dg); sum.appendChild(sp); });
   const pv = proposeGrade(c, s.id, av);
   if(pv){ const sp = document.createElement("span"); sp.className = "propchip"; sp.textContent = t("gProposal") + ": " + pv; sum.appendChild(sp); }
+  const fgv = term === "h2" ? null : finalText(c, s.id, st.id, term);
+  if(term !== "h2"){ const sp = document.createElement("button"); sp.className = "propchip znchip" + (fgv !== null ? " set" : ""); sp.id = "zn-detail";
+    sp.textContent = t("znCol") + ": " + (fgv !== null ? fgv : t("znNotSet"));
+    sp.onclick = () => openFinalPick(c, s, st, term, () => studentDetail(c, s, st, term)); sum.appendChild(sp); }
   const mi = missedLessons(c, st.id, term);
   if(mi.bySubject[s.id]){ const sp = document.createElement("span"); sp.textContent = t("absMissed").replace("{n}", String(mi.bySubject[s.id] || 0)); sum.appendChild(sp); }
   sheet.appendChild(sum);
@@ -11639,6 +11717,134 @@ function proposeGrade(c, sid, av){
   });
   return best.tok;
 }
+/* ---- Zeugnisnoten: legt die Lehrkraft fest – der Vorschlag bleibt Rechenhilfe.
+   c.zn = [{ s: Fach, t: "h1" (Halbjahreszeugnis) | "y" (Jahreszeugnis), sid: Schüler, g: "2" bzw. "11" }].
+   Das 2. Halbjahr gehört zum Jahreszeugnis. */
+const znTerm = term => term === "h1" ? "h1" : "y";
+const znRange = term => znTerm(term) === "h1" ? "h1" : "year";        // Zeitraum für Vorschlag und Fehlstunden
+const ZN_TOKS = { grade: ["1", "2", "3", "4", "5", "6"], points: ["15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0"] };
+function finalGrade(c, subj, sid, term){
+  const k = znTerm(term), e = (c.zn || []).find(x => x.s === subj && x.t === k && x.sid === sid);
+  return e ? e.g : null;
+}
+function setFinalGrade(c, subj, sid, term, g){
+  const k = znTerm(term);
+  c.zn = (Array.isArray(c.zn) ? c.zn : []).filter(x => !(x.s === subj && x.t === k && x.sid === sid));
+  if(g !== null && g !== undefined && g !== "") c.zn.push({ s: subj, t: k, sid, g: String(g), sc: znScale(c, subj, term) });
+}
+/* Skala, in der die Note festgelegt wurde – „5“ kann Note oder Punkte sein. Passt sie nicht mehr zum Kurs, steht „P.“ bzw. „N.“ dabei. */
+function finalEntry(c, subj, sid, term){ const k = znTerm(term); return (c.zn || []).find(x => x.s === subj && x.t === k && x.sid === sid) || null; }
+function finalText(c, subj, sid, term){
+  const e = finalEntry(c, subj, sid, term); if(!e) return null;
+  return e.sc === znScale(c, subj, term) ? e.g : e.g + " " + t(e.sc === "points" ? "znPts" : "znGr");
+}
+function sanFinals(arr, ids){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(x => x && typeof x.s === "string" && x.s && x.s.length <= 40 && (x.t === "h1" || x.t === "y") && typeof x.sid === "string" && ids.has(x.sid)
+    && typeof x.g === "string" && /^(1[0-5]|[0-9])$/.test(x.g) && !seen.has(x.s + "|" + x.t + "|" + x.sid) && seen.add(x.s + "|" + x.t + "|" + x.sid))
+    .map(x => ({ s: x.s, t: x.t, sid: x.sid, g: x.g, sc: x.sc === "points" || x.sc === "grade" ? x.sc : (+x.g > 6 || x.g === "0" ? "points" : "grade") }))
+    .filter(x => x.sc === "points" || +x.g >= 1 && +x.g <= 6).slice(0, 8000);
+}
+/* Maßstab des Zeugnisses: wie der Kurs (nur Punkte → Punkte, sonst Noten) */
+function znScale(c, subj, term){ return courseScale(courseAssess(c, subj, znRange(term))); }
+/* Ganze Note aus dem Vorschlag (Zeugnisse kennen keine Tendenz): „2+“ und „2−“ → „2“ */
+function znFromProposal(c, subj, sid, term){
+  const pv = proposeGrade(c, subj, studentAverages(c, subj, sid, znRange(term)));
+  if(!pv) return null;
+  const m = /^(\d+)/.exec(pv); return m ? m[1] : null;
+}
+function openFinalPick(c, s, st, term, back){
+  const sc = znScale(c, s.id, term), fe = finalEntry(c, s.id, st.id, term), cur = fe && fe.sc === sc ? fe.g : null, pv = znFromProposal(c, s.id, st.id, term);
+  const av = studentAverages(c, s.id, st.id, znRange(term));
+  const sheet = sheetBase(t("znPickTitle").replace("{n}", st.name).replace("{s}", s.name)); sheet.dataset.sens = "1";
+  const h = document.createElement("div"); h.className = "hint"; h.id = "zn-info";
+  h.textContent = t(znTerm(term) === "h1" ? "znH1" : "znYear") + " · " + (pv ? t("znProp").replace("{g}", pv).replace("{a}", fmtNum(av.total, sc === "points" ? 1 : 2)) : t("znNoProp"));
+  sheet.appendChild(h);
+  const pad = document.createElement("div"); pad.className = "keypad k-" + sc; pad.id = "zn-pad";
+  const done = () => { closeModal(); save(); if(back) back(); else if($("#screen-grades").classList.contains("active")) renderGrades(); };
+  ZN_TOKS[sc].forEach(tok => {
+    const b = document.createElement("button"); b.textContent = tok; b.dataset.tok = tok;
+    b.classList.toggle("on", cur === tok); b.setAttribute("aria-pressed", String(cur === tok));
+    if(tok === pv){ b.classList.add("prop"); b.setAttribute("aria-label", tok + " (" + t("gProposal") + ")"); }
+    b.onclick = () => { setFinalGrade(c, s.id, st.id, term, tok); done(); };
+    pad.appendChild(b);
+  });
+  sheet.appendChild(pad);
+  if(fe && fe.sc !== sc){ const w = document.createElement("div"); w.className = "syncwarn"; w.id = "zn-scale"; w.textContent = t("znScaleChanged").replace("{g}", finalText(c, s.id, st.id, term)); sheet.insertBefore(w, pad); }
+  if(fe){
+    const rm = document.createElement("button"); rm.className = "ghost"; rm.id = "zn-clear"; rm.style.width = "100%"; rm.style.marginTop = "10px"; rm.style.color = "var(--warn)";
+    rm.textContent = t("znClear"); rm.onclick = () => { setFinalGrade(c, s.id, st.id, term, null); done(); };
+    sheet.appendChild(rm);
+  }
+  const cl = document.createElement("button"); cl.className = "ghost"; cl.style.width = "100%"; cl.style.marginTop = "8px";
+  cl.textContent = t("cancel"); cl.onclick = () => { closeModal(); if(back) back(); }; sheet.appendChild(cl);
+}
+/* Alle noch leeren Zeugnisnoten eines Fachs aus den Vorschlägen füllen – Festgelegtes bleibt unangetastet */
+function finalsFromProposals(c, s, term){
+  /* zieldifferent Unterrichtete bekommen keine Ziffernnote aus dem Vorschlag – das entscheidet die Lehrkraft einzeln */
+  const todo = c.students.filter(st => !isZd(c, s.id, st.id)).map(st => ({ st, g: znFromProposal(c, s.id, st.id, term) })).filter(x => x.g && finalGrade(c, s.id, x.st.id, term) === null);
+  if(!todo.length){ toast(t("znAllNone")); return; }
+  askConfirm(t("znAllQ"), t("znAllT").replace("{n}", String(todo.length)).replace("{z}", t(znTerm(term) === "h1" ? "znH1" : "znYear")), t("znAllBtn"), () => {
+    todo.forEach(x => setFinalGrade(c, s.id, x.st.id, term, x.g));
+    save(); renderGrades(); toast(t("znAllDone").replace("{n}", String(todo.length)));
+  });
+}
+/* Notenliste für die Zeugniskonferenz: je Schüler die festgelegten Zeugnisnoten aller Fächer dieser Klasse und die Fehlstunden */
+function finalsTable(c, term){
+  const subs = courseSubjects(c), range = znRange(term);
+  let open = 0;
+  const rows = c.students.map(st => {
+    const g = subs.map(s => { const v = finalText(c, s.id, st.id, term); if(v === null) open++; return v === null ? null : v + (isZd(c, s.id, st.id) ? " (" + t("zdShort") + ")" : ""); });
+    const m = missedLessons(c, st.id, range);
+    return { st, g, missed: m.total, unexc: m.total - m.excused };
+  });
+  return { subs, rows, open };
+}
+function finalsPdfPages(c, term){
+  const T = finalsTable(c, term), M = PDF_M, grey = "0.353 0.420 0.459";
+  const fit = (txt, size, w) => { txt = String(txt); if(pdfTextW(txt, size) <= w) return txt; while(txt.length > 1 && pdfTextW(txt + "…", size) > w) txt = txt.slice(0, -1); return txt + "…"; };
+  const title = c.name + " – " + t("znListTitle") + " · " + t(znTerm(term) === "h1" ? "znH1" : "znYear");
+  const nameW = 190, tailW = 2 * 64, room = PDF_W - 2 * M - nameW - tailW;
+  const subs = T.subs.slice(0, Math.max(1, Math.floor(room / 34)));
+  const colW = Math.min(70, room / Math.max(1, subs.length));
+  const pages = []; let cur = [], y = 0;
+  const head = () => {
+    cur = [pdfText(M, PDF_H - M - 12, 15, fit(title, 15, PDF_W - 2 * M)), pdfText(M, PDF_H - M - 28, 9, t("printDate") + " " + new Date().toLocaleDateString(LANG === "en" ? "en-GB" : "de-DE") + (T.open ? " · " + t("znOpen").replace("{n}", String(T.open)) : ""), grey)];
+    y = PDF_H - M - 56;
+    cur.push(pdfText(M, y, 8.5, t("subColName"), grey));
+    subs.forEach((s, i) => cur.push(pdfText(M + nameW + i * colW, y, 8.5, fit(s.short || s.name, 8.5, colW - 4), grey)));
+    const x0 = M + nameW + subs.length * colW;
+    cur.push(pdfText(x0, y, 8.5, t("znMissed"), grey)); cur.push(pdfText(x0 + 64, y, 8.5, t("znUnexc"), grey));
+    y -= 16;
+  };
+  head();
+  T.rows.forEach((r, idx) => {
+    if(y < M + 30){ pages.push(cur.join("\n")); head(); }
+    if(idx % 2) cur.push("0.95 0.96 0.97 rg " + M + " " + (y - 4).toFixed(1) + " " + (PDF_W - 2 * M) + " 15 re f");
+    cur.push(pdfText(M, y, 9.5, fit(r.st.name, 9.5, nameW - 6)));
+    subs.forEach((s, i) => { const v = r.g[T.subs.indexOf(s)]; cur.push(pdfText(M + nameW + i * colW, y, 9.5, v === null ? "–" : fit(v, 9.5, colW - 4), v === null ? grey : undefined)); });
+    const x0 = M + nameW + subs.length * colW;
+    cur.push(pdfText(x0, y, 9.5, String(r.missed))); cur.push(pdfText(x0 + 64, y, 9.5, String(r.unexc)));
+    y -= 15;
+  });
+  /* Fußnote: an Wortgrenzen auf die Seitenbreite umbrechen */
+  const note = t("znListNote") + (subs.length < T.subs.length ? " " + t("znListCut").replace("{n}", String(subs.length)) : "");
+  const lines = []; let line = "";
+  note.split(" ").forEach(w => { const nx = line ? line + " " + w : w; if(pdfTextW(nx, 8) > PDF_W - 2 * M && line){ lines.push(line); line = w; } else line = nx; });
+  if(line) lines.push(line);
+  y -= 8;
+  if(y - lines.length * 11 < M){ pages.push(cur.join("\n")); cur = []; y = PDF_H - M - 20; }
+  lines.forEach(l => { cur.push(pdfText(M, y, 8, l, grey)); y -= 11; });
+  pages.push(cur.join("\n"));
+  return pages;
+}
+function exportFinalsPdf(c, term){
+  try{
+    if(download(buildPDF(finalsPdfPages(c, term)), safeName(c.name + " " + t("znListTitle") + " " + t(znTerm(term) === "h1" ? "znH1" : "znYear")) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
 /* ---- Rechenweg: dieselben Schritte wie studentAverages/proposeGrade/missedLessons, nur mitgeschrieben.
    Liefert Zeilen { k: "h"|"row"|"sum"|"note", a, b } – daraus entstehen Blatt und PDF. */
 function gradeCalc(c, s, sid, term){
@@ -11988,6 +12194,7 @@ function openNewYear(){
         if(x.action === "delete"){ trashPush("class", c.name, c); DB.classes = DB.classes.filter(y => y !== c); return; }
         if(x.action === "archive"){ c.archived = true; return; }     // Archiv bleibt als Nachweis vollständig
         if(opt.grades){ c.assess = []; c.gradeSubjects = []; c.lastSubject = ""; }
+        c.zn = [];                                              // Zeugnisnoten gehören zum alten Schuljahr – auch wenn Bewertungen bleiben
         if(opt.absence){ c.attendance = []; c.absLog = []; c.exc = []; c.late = []; c.journal = []; c.lesson = { date: "", absent: [], picked: [], notes: {} }; c.subNote = ""; }
         if(opt.history) c.history = [];
         if(opt.obs){ c.obs = []; c.checks = []; }
@@ -11995,7 +12202,7 @@ function openNewYear(){
         if(x.name.trim()) c.name = x.name.trim().slice(0, 60);
       });
       if(opt.timetable){ DB.lessons = []; DB.cancelled = []; DB.tt.ab = false; DB.tt.abRef = ""; }
-      delete DB.settings.termSplit; gradeTerm = "year";   // neues Schuljahr: Stichtag wieder automatisch
+      delete DB.settings.termSplit; gradeTerm = null;   // neues Schuljahr: Stichtag wieder automatisch
       curClassId = null; ensureCurClass(); undoStack = []; redoStack = []; updateUndoButtons();
       save(); renderStart(); renderSettings(); toast(t("nyDone"));
     });
@@ -12796,7 +13003,7 @@ function openTallyList(kArg, back){
    Änderung der anderen (samt allem, was daran hängt) gelöscht wurde, bleibt gelöscht.
    Gerätebezogenes (Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse) wird nie übernommen. */
 const SYNC_MAX_STAMPS = 200000, SYNC_MAX_DEL = 20000, SYNC_DEL_DAYS = 400, SYNC_FUTURE = 86400;
-const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|tg|tp)(\||$)/;
+const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|zn|tg|tp)(\||$)/;
 const SYNC_HASH = /^[0-9a-z]{6,14}$/;
 const syncNow = () => Math.floor(Date.now() / 1000);
 const jsonOf = v => JSON.stringify(v === undefined ? null : v);
@@ -12863,6 +13070,7 @@ function syncClass(c, add){
     (x.pts || []).forEach(q => add("tp|" + cid + "|" + idk(x.id) + "|" + idk(q.id), q, tk)); });
   (c.exc || []).forEach(v => add("ex|" + cid + "|" + idk(v), 1, ck, [sk(v.slice(11))]));
   (c.zd || []).forEach(v => { const i = v.indexOf("|"); add("zd|" + cid + "|" + idk(v), 1, ck, [sk(v.slice(i + 1)), "subj|" + idk(v.slice(0, i))]); });
+  (c.zn || []).forEach(x => add("zn|" + cid + "|" + idk(x.s + "|" + x.t + "|" + x.sid), x.g + "/" + x.sc, ck, [sk(x.sid), "subj|" + idk(x.s)]));
   (c.late || []).forEach(x => add("lt|" + cid + "|" + idk(x.d + "." + x.p + "|" + x.sid), { min: x.min, s: x.s }, ck, [sk(x.sid)]));
 }
 /* Alle Einträge eines Stands: key -> { v: Inhalt als Text, p: Elternschlüssel, r: Verweise } */
@@ -13095,6 +13303,7 @@ function mergeDB(L0, R){
     c.exc = mergeList(cl.exc, cr.exc, v => "ex|" + cid + "|" + idk(v));
     c.zd = mergeList(cl.zd, cr.zd, v => "zd|" + cid + "|" + idk(v));
     sub("lt", "late", x => x.d + "." + x.p + "|" + x.sid);
+    sub("zn", "zn", x => x.s + "|" + x.t + "|" + x.sid);
     /* Unterricht heute: der jüngere Tag gilt, der ältere wandert in die Anwesenheit (mit einem
        vorhandenen Eintrag desselben Tages zusammengeführt). Ein gelöschter Tag kommt nicht zurück. */
     const l1 = cl.lesson || {}, l2 = cr.lesson || {};
@@ -13125,13 +13334,14 @@ function mergeDB(L0, R){
     (c.journal || []).sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p || String(x.id).localeCompare(String(y.id)));
     (c.late || []).sort((x, y) => x.d.localeCompare(y.d) || x.p - y.p || x.sid.localeCompare(y.sid));
     (c.exc || []).sort(); (c.zd || []).sort();
+    (c.zn || []).sort((x, y) => (x.s + "|" + x.t + "|" + x.sid).localeCompare(y.s + "|" + y.t + "|" + y.sid));
     (c.history || []).sort((x, y) => String(x.t || "").localeCompare(String(y.t || "")));   // beide Geräte behalten dieselben 8
     c.lastSubject = cl.lastSubject; c.lastGradePlan = cl.lastGradePlan;      // Bedienzustand bleibt vom Gerät
     return c;
   };
   /* Leere Klasse als Gegenstück, wenn nur eine Seite die Klasse hat */
   classMerge.shell = x => ({ id: x.id, name: x.name, archived: false, levelMode: "off", subNote: "", color: "", gradeW: {}, gradeRound: {}, gradeSubjects: [],
-    students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [], zd: [], targets: [],
+    students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [], zd: [], zn: [], targets: [],
     lesson: { date: "", absent: [], picked: [], notes: {} }, lastSubject: "", lastGradePlan: "" });
   out.classes = mergeList(L.classes, R.classes, c => "c|" + idk(c.id), classMerge);
   /* Papierkorb: was durch den Abgleich wieder da ist, gehört nicht mehr hinein */
@@ -13239,7 +13449,7 @@ var DAV_CFG = "fairseat-dav", DAV_SEC = "fairseat-dav-sec", DAV_FILE = "FairSeat
 var DAV_GAP = 30000, DAV_CHANGE_DELAY = 120000;
 var davBusy = null, davTimer = null, davPending = false;
 var DAV_HARD = [401, 403, "davEKey", "davENoPw", "davEForeign", "davERedirect"];
-const davHttp = () => (window.cordova && window.cordova.plugin && window.cordova.plugin.http) || null;
+const davHttp = () => (window.FairSeatHttp && typeof window.FairSeatHttp.sendRequest === "function" ? window.FairSeatHttp : null);   // eigenes Plugin (plugins-src/)
 function davCfg(){
   try{ const o = JSON.parse(Store.get(DAV_CFG) || "null"); return o && typeof o === "object" && typeof o.url === "string" && typeof o.user === "string" ? o : null; }
   catch(e){ return null; }
@@ -13323,10 +13533,9 @@ function davReq(method, url, user, pw, opt){
   const H = davHttp();
   if(!H) return Promise.resolve({ status: -100, headers: {}, data: "" });
   const headers = Object.assign({ Authorization: "Basic " + b64(new TextEncoder().encode(user + ":" + pw)), "Cache-Control": "no-cache" }, opt.headers || {});
-  /* 3.3.1 kennt nur connectTimeout/readTimeout (Sekunden). Weiterleitungen nicht folgen: eine Umleitung
-     auf eine Anmeldeseite soll als Fehler auffallen, nicht als „fremde Datei“. */
-  try{ if(H.setFollowRedirect) H.setFollowRedirect(false); }catch(e){}
-  const o = { method, headers, serializer: "utf8", responseType: "text", connectTimeout: 15, readTimeout: 60, followRedirect: false };
+  /* Zeitlimits in Sekunden. Das Plugin folgt keinen Weiterleitungen und speichert keine Cookies:
+     eine Umleitung auf eine Anmeldeseite fällt als Fehler auf, nicht als „fremde Datei“. */
+  const o = { method, headers, connectTimeout: 15, readTimeout: 60 };
   if(opt.data !== undefined){ o.data = opt.data; headers["Content-Type"] = "application/json"; }
   const norm = r => {
     const h = {}; Object.keys((r && r.headers) || {}).forEach(k => { h[k.toLowerCase()] = String(r.headers[k]); });
@@ -13448,7 +13657,6 @@ async function davRun(why){
 }
 /* Nur die eigenen Felder in die aktuelle Einstellung schreiben – sie kann sich während des Laufs geändert haben */
 function davDone(cfg, r){
-  try{ const H = davHttp(); if(H && H.clearCookies) H.clearCookies(); }catch(e){}   // Sitzungs-Cookies nicht im Klartext liegen lassen
   const now = davCfg();
   if(!now || now.gen !== cfg.gen || !now.on) return r;      // inzwischen ausgeschaltet oder neu eingerichtet
   if(r.err !== undefined) now.err = r.err;
@@ -13717,6 +13925,13 @@ function gradesXlsxSheets(c, term){
     sheets.push({ name: s.name, rows, widths: [24].concat(list.map(() => 14), [10, 10, 10, 11, 10]),
       num: { [k + 1]: fmt, [k + 2]: fmt, [k + 3]: fmt, [k + 5]: 3 } });
   });
+  /* Zeugnisnoten aller Fächer – wie die Notenliste (hinter den Fächern, vor den Fehlzeiten) */
+  { const T = finalsTable(c, term);
+    if(T.subs.length && T.open < T.subs.length * c.students.length){          // nur, wenn schon Zeugnisnoten festgelegt sind
+      const rows = [[t("csvName")].concat(T.subs.map(s => s.name), [t("znMissed"), t("znUnexc")])];
+      T.rows.forEach(r => rows.push([r.st.name].concat(r.g.map(v => v === null ? "" : +v), [r.missed, r.unexc])));
+      sheets.push({ name: t("znSheet") + " " + t(znTerm(term) === "h1" ? "znH1Short" : "znYearShort"), rows, widths: [24].concat(T.subs.map(() => 12), [12, 12]), num: {} });
+    } }
   /* Fehlzeiten je Fach */
   /* Fehlstunden ohne Fach und aus gelöschten Fächern landen gemeinsam unter „ohne Fach“ */
   const key = id => subjectById(id) ? id : "";
