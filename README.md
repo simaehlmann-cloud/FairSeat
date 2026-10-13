@@ -185,6 +185,16 @@ Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfun
   Skala wie der Kurs (1–6 ganz bzw. 0–15). Abweichung vom Vorschlag markiert. „Vorschläge übernehmen“ füllt nur Leeres,
   ohne Tendenz (`znFromProposal`). Notenliste aller Fächer der Klasse mit Fehlstunden als PDF (`finalsPdfPages`) und als
   eigenes Blatt der Excel-Auswertung (hinter den Fächern). Abgleich: `zn|`. Fach löschen und Schuljahreswechsel (Bewertungen leeren) räumen auf.
+- Kategorien je Klasse und Fach (`c.gcat[Fach] = [{ id, n, w }]`, Summe 100): „written“ und „other“ bleiben immer
+  (30-%-Regel, „Mitarbeit heute“), eigene kommen dazu (`a.cat`, `catOfAssess`). Ohne eigene gilt wie bisher `gradeW`
+  (wird beim Speichern mitgeführt, damit ältere App-Stände weiter rechnen). `studentAverages` liefert `parts` je Kategorie;
+  Übersicht, Rechenweg, PDF, CSV, Excel und Gesprächsblatt zeigen je Kategorie eine Spalte. Abgleich: eigene Einträge `gc|` (je Fach)
+  und `ac|` (Zuordnung), damit ältere App-Stände sie nicht überschreiben; Prozent-Schlüssel über `tk|`.
+- Weitere Skalen: Drittelnoten (`third`, ±⅓), Prozent (`pct`, ganze Zahl 0–100, über Schlüssel `a.key.th` zur Note,
+  Vorlagen 50 %/40 %), eigene Skalen (`DB.scales`, `u:<id>`, Stufen `{ k, l, v }` mit Notenwert 1–6; eingetragen wird
+  der Stufenname, Umbenennen zieht Einträge mit, benutzte Stufen/Skalen (auch im Papierkorb) lassen sich nicht löschen; Abgleich `us|`, eine noch benutzte Skala bleibt nach
+  dem Zusammenführen erhalten). Wechsel einer leeren Bewertung auf eine neue Skala vergibt eine neue Kennung.
+  `markNum` = Wert in der Skala der Bewertung, `valIn` = Wert im Maßstab des Kurses. Aufgaben/Notenschlüssel nur bei Noten und Punkten.
 - Rechenweg: „Wie berechnet?“ unter einem Namen (Bewertungen) zeigt jede Bewertung mit Wert und Gewicht, die Teildurchschnitte,
   die Gewichtung, die Rundungsregel und die Fehlstunden des Fachs (`gradeCalc` nutzt dieselben Schritte wie `studentAverages`,
   `proposeGrade` und `missedLessons`). Als PDF und auf Wunsch (`settings.talkCalc`) im Gesprächsblatt.

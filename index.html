@@ -241,7 +241,14 @@ select.field{-webkit-appearance:none;appearance:none;
 .namerow .ed{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
 .lvlstats{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .gdot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:0 0 auto}
-.segmented.wrap{flex-wrap:wrap}.segmented.wrap button{flex:1 1 80px}
+.segmented.wrap{flex-wrap:wrap}
+.usrow{display:flex;gap:6px;align-items:center;margin-top:6px}
+.usrow .field{margin:0}
+.usrow .usv{flex:0 0 84px}
+.catrow .usv{flex:0 0 72px}
+.catrow .catpct{flex:0 0 auto;color:var(--ink-soft);font-weight:700}
+.catrow .catfix,.catrow .minibtn,.usrow .minibtn{flex:0 0 44px;width:44px;min-width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center}
+.wout.bad{color:var(--warn)}.segmented.wrap button{flex:1 1 80px}
 .lvlstats span{font-size:12.5px;font-weight:650;padding:4px 9px;border-radius:99px;background:var(--surface-2)}
 .pairpick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .pairpick select{flex:1 1 130px}
@@ -402,6 +409,16 @@ select.field{-webkit-appearance:none;appearance:none;
 .keypad.k-grade{grid-template-columns:repeat(6,minmax(0,1fr))}
 .keypad.k-points{grid-template-columns:repeat(6,minmax(0,1fr))}
 .keypad.k-smiley{grid-template-columns:repeat(6,minmax(0,1fr))}
+.keypad.k-third{grid-template-columns:repeat(6,minmax(0,1fr))}
+.keypad.k-user{grid-template-columns:repeat(auto-fit,minmax(96px,1fr))}
+.keypad.k-user button{font-size:14.5px;padding:0 6px}
+.keypad.k-pct{grid-template-columns:repeat(2,minmax(0,1fr))}
+.keypad .pctrow{grid-column:1 / -1;display:flex;gap:6px}
+.keypad .pctrow .field{flex:1;margin:0;min-height:44px;font-size:17px}
+.keypad .pctrow .kpts{flex:0 0 72px}
+.keypad .pcthint{grid-column:1 / -1;font-size:12.5px;color:var(--ink-soft);text-align:center}
+.segmented.wrap{flex-wrap:wrap}
+.segmented.wrap button{flex:1 1 28%}
 .keypad.k-tasks{grid-template-columns:2fr 1fr 1fr}
 .prtabs{margin:0 0 12px}
 .prtabs .pr-tab{display:flex;align-items:center;justify-content:center;gap:6px}
@@ -2857,6 +2874,44 @@ I18N.de.info.push({ h:"Zeugnisnoten und Notenliste",
 I18N.en.info.push({ h:"Report grades and grade list",
   p:["In the assessment overview, the column “Report” sits next to the suggestion. One tap sets the report grade – in the first half-year for the half-year report, otherwise for the end-of-year report. If it differs from the suggestion, it is marked.",
      "“Use suggestions” only fills empty fields, as whole grades. “Grade list (all subjects)” creates a PDF for the report conference with all subjects of the class and missed lessons; in the Excel export it has its own sheet."] });
+Object.assign(I18N.de, {
+  gScale_third:"Drittelnoten", gScale_pct:"Prozent", gScaleGone:"Skala gelöscht", pctKey:"Prozent → Note",
+  pctBad:"Bitte eine Zahl von 0 bis 100 eingeben", pctIs:"{p} % = Note {g}", calcPctTo:"{p} % → {g}",
+  usTitle:"Eigene Notenskalen", usHint:"Stufen mit Namen und Notenwert (1 = beste, 6 = schlechteste Note), z. B. „sicher“ = 2. Durchschnitte rechnen mit dem Notenwert.",
+  usNew:"Neue Skala", usEdit:"Skala bearbeiten", usLimit:"Höchstens 20 eigene Skalen", usName:"Name der Skala", usNamePh:"z. B. Kompetenzstufen",
+  usSteps:"Stufen", usStepsHint:"Name (bis 16 Zeichen) und Notenwert von 1 bis 6, Kommazahlen erlaubt.", usStep:"Stufe", usValue:"Notenwert",
+  usDefA:"sehr sicher", usDefB:"sicher", usDefC:"teilweise", usDefD:"noch nicht",
+  usMin:"Mindestens zwei Stufen", usMax:"Höchstens 12 Stufen", usNeedName:"Bitte die Skala benennen",
+  usBadStep:"Jede Stufe braucht einen eigenen Namen (ohne „|“, nicht „x“ oder „s1“–„s4“)", usBadValue:"Notenwerte bitte von 1 bis 6",
+  usStepUsed:"Eine gelöschte Stufe ist noch eingetragen – erst die Eintragungen ändern", usSaved:"Skala gespeichert",
+  usDelete:"Skala löschen", usInUse:"Wird in {n} Bewertungen benutzt – nicht löschbar", usDeleteQ:"„{s}“ löschen?", usDeleteT:"Die Skala wird nirgends benutzt und verschwindet.",
+  gCatX:"Kategorie", gCatSum:"Zusammen: {n} %", gCatName:"Name der Kategorie", gCatWeight:"Anteil in Prozent", gCatAdd:"Kategorie hinzufügen",
+  gCatMax:"Höchstens 8 Kategorien", gCatHint:"„Schriftlich“ (zählt für die 30-%-Regel) und „Mündlich & sonstige“ bleiben immer und lassen sich umbenennen. Eigene Kategorien z. B. für Tests oder Hausaufgaben.",
+  gCatBadW:"Anteile bitte als ganze Zahlen von 0 bis 100", gCatNot100:"Die Anteile müssen zusammen 100 % ergeben", gCatNeedName:"Bitte jede eigene Kategorie benennen", gCatDouble:"Zwei Kategorien heißen gleich",
+  calcCatEmpty:"{k} ({w} %) hat noch keine Note – zählt nicht mit.", calcTotalCats:"({f}) ÷ {w} % = {t}"
+});
+Object.assign(I18N.en, {
+  gScale_third:"Thirds", gScale_pct:"Percent", gScaleGone:"Scale deleted", pctKey:"Percent → grade",
+  pctBad:"Please enter a number from 0 to 100", pctIs:"{p} % = grade {g}", calcPctTo:"{p} % → {g}",
+  usTitle:"Own grading scales", usHint:"Levels with a name and grade value (1 = best, 6 = worst), e.g. “confident” = 2. Averages use the grade value.",
+  usNew:"New scale", usEdit:"Edit scale", usLimit:"At most 20 own scales", usName:"Scale name", usNamePh:"e.g. Competence levels",
+  usSteps:"Levels", usStepsHint:"Name (up to 16 characters) and a grade value from 1 to 6, decimals allowed.", usStep:"Level", usValue:"Grade value",
+  usDefA:"very confident", usDefB:"confident", usDefC:"partly", usDefD:"not yet",
+  usMin:"At least two levels", usMax:"At most 12 levels", usNeedName:"Please name the scale",
+  usBadStep:"Each level needs its own name (no “|”, not “x” or “s1”–“s4”)", usBadValue:"Grade values from 1 to 6, please",
+  usStepUsed:"A deleted level is still in use – change those entries first", usSaved:"Scale saved",
+  usDelete:"Delete scale", usInUse:"Used in {n} assessments – cannot be deleted", usDeleteQ:"Delete “{s}”?", usDeleteT:"The scale is not used anywhere and will disappear.",
+  gCatX:"Category", gCatSum:"Total: {n} %", gCatName:"Category name", gCatWeight:"Share in percent", gCatAdd:"Add category",
+  gCatMax:"At most 8 categories", gCatHint:"“Written” (counts for the 30 % rule) and “Oral & other” always stay and can be renamed. Own categories e.g. for tests or homework.",
+  gCatBadW:"Shares as whole numbers from 0 to 100, please", gCatNot100:"The shares must add up to 100 %", gCatNeedName:"Please name every own category", gCatDouble:"Two categories have the same name",
+  calcCatEmpty:"{k} ({w} %) has no grade yet – not counted.", calcTotalCats:"({f}) ÷ {w} % = {t}"
+});
+I18N.de.info.push({ h:"Kategorien und eigene Notenskalen",
+  p:["Unter „Gewichtung“ eines Fachs lassen sich eigene Kategorien mit Anteil anlegen, z. B. Klassenarbeiten 50 %, Mitarbeit 30 %, Tests 20 %. Beim Anlegen einer Bewertung wählst du die Kategorie. Ohne eigene Kategorien bleibt es bei schriftlich : mündlich.",
+     "Neben Noten, Punkten und Smileys gibt es Drittelnoten (2+ = 1,67, 2− = 2,33), Prozent (über einen Notenschlüssel zur Note) und eigene Skalen (Einstellungen → Eigene Notenskalen) mit selbst benannten Stufen und Notenwert."] });
+I18N.en.info.push({ h:"Categories and own grading scales",
+  p:["Under a subject's “Weighting” you can add own categories with a share, e.g. tests 50 %, participation 30 %, quizzes 20 %. When creating an assessment you choose its category. Without own categories it stays written : oral.",
+     "Besides grades, points and smileys there are thirds (2+ = 1.67, 2− = 2.33), percent (converted via a grading key) and own scales (Settings → Own grading scales) with named levels and a grade value."] });
 /* ============ 2. Helfer ============ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
@@ -2928,7 +2983,7 @@ function defaultSettings(){
 function emptyDB(){
   return { v:2, lang:"de", theme:"light", settings:defaultSettings(),
            rooms:[], classes:[], trash:[], lastBackup:"", lastClass:"", onboarded:false,
-           subjects:[], lessons:[], cancelled:[], tt:defaultTT(), gradesAck:false };
+           subjects:[], lessons:[], cancelled:[], tt:defaultTT(), gradesAck:false, scales:[] };
 }
 const TRASH_DAYS = 30;
 let DB = emptyDB();
@@ -3013,6 +3068,7 @@ function sanitizeDB(raw){
     breaks: Array.from({ length: 11 }, (_, i) => intIn(Array.isArray(tt0.breaks) ? tt0.breaks[i] : undefined, 0, 120, Array.isArray(tt0.breaks) ? 0 : (dt.breaks[i] || 0))),
     ab: tt0.ab === true, abRef: typeof tt0.abRef === "string" && /^\d{4}-\d{2}-\d{2}$/.test(tt0.abRef) ? tt0.abRef : ""
   };
+  out.scales = sanScales(raw.scales);
   const subjIds = new Set(out.subjects.map(x => x.id));
   out.lessons = Array.isArray(raw.lessons) ? raw.lessons.filter(L => L && subjIds.has(L.subjectId)).map(L => ({
     id: typeof L.id === "string" && L.id ? L.id.slice(0, 40) : uid(),
@@ -3071,20 +3127,24 @@ function sanitizeDB(raw){
       subNote: typeof c?.subNote === "string" ? c.subNote.slice(0, 1200) : "",
       color: typeof c?.color === "string" && /^#[0-9a-fA-F]{6}$/.test(c.color) ? c.color.toUpperCase() : "",
       /* Bewertungen je Fach */
-      assess: Array.isArray(c?.assess) ? c.assess.filter(a => a && typeof a.subjectId === "string" && own(SCALE_TOKS, a.scale)).map(a => {
-        const okTok = v => v === "x" || SCALE_TOKS[a.scale].indexOf(v) >= 0;
+      assess: Array.isArray(c?.assess) ? c.assess.filter(a => a && typeof a.subjectId === "string" && (BASE_SCALES.indexOf(a.scale) >= 0 || /^u:[a-z0-9]{1,16}$/.test(a.scale || ""))).map(a => {
+        /* eigene Skala: Stufe als Text (bis 16 Zeichen); Prozent: ganze Zahl 0–100 */
+        const okTok = v => v === "x" || (a.scale === "pct" ? typeof v === "string" && /^(100|[1-9]?[0-9])$/.test(v)
+          : a.scale.slice(0, 2) === "u:" ? typeof v === "string" && v.length >= 1 && v.length <= 16 && v.trim() === v && !/[\u0000-\u001f|]/.test(v)
+          : scaleToks(a.scale).indexOf(v) >= 0);
         const marks = {};
         if(a.marks && typeof a.marks === "object") Object.keys(a.marks).forEach(k => { if(ids.has(k) && own(a.marks, k) && okTok(a.marks[k])) marks[k] = a.marks[k]; });
         const out = { id: typeof a.id === "string" && a.id ? a.id.slice(0, 40) : uid(), subjectId: a.subjectId.slice(0, 40),
           title: typeof a.title === "string" ? a.title.slice(0, 100) : "", date: typeof a.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(a.date) ? a.date : "",
           kind: a.kind === "written" ? "written" : a.kind === "self" && a.scale === "smiley" ? "self" : "other", scale: a.scale, weight: [0.5, 1, 2, 3].indexOf(a.weight) >= 0 ? a.weight : 1,
-          marks, ...(a.auto === true ? { auto: true } : {}) };
+          marks, ...(a.auto === true ? { auto: true } : {}), ...(typeof a.cat === "string" && /^[a-z0-9]{1,16}$/.test(a.cat) ? { cat: a.cat } : {}) };
         sanTasks(out, a, ids);                        // Aufgabenpunkte und Notenschlüssel (nur wenn vorhanden)
         return out;
       }).slice(0, MAX_ASSESS) : [],
       gradeW: (c?.gradeW && typeof c.gradeW === "object") ? Object.keys(c.gradeW).reduce((o, k) => {
         const v = c.gradeW[k]; if(!(k in Object.prototype) && Number.isInteger(v) && v >= 0 && v <= 100) o[k.slice(0, 40)] = v; return o; }, {}) : {},
       gradeSubjects: Array.isArray(c?.gradeSubjects) ? c.gradeSubjects.filter(x => typeof x === "string").slice(0, MAX_SUBJECTS) : [],
+      gcat: sanCats(c?.gcat),
       lastSubject: typeof c?.lastSubject === "string" ? c.lastSubject.slice(0, 40) : "",
       lastGradePlan: typeof c?.lastGradePlan === "string" ? c.lastGradePlan.slice(0, 40) : "",
       gradeRound: (c?.gradeRound && typeof c.gradeRound === "object") ? Object.keys(c.gradeRound).reduce((o, k) => {
@@ -5393,7 +5453,7 @@ function renderStage(full){
     const gTok = ga && isDesk && it.studentId ? ga.marks[it.studentId] : null;
     if(gTok && !gm){ gm = document.createElement("i"); gm.className = "gmark"; el.appendChild(gm); }
     else if(!gTok && gm) gm.remove();
-    if(gTok){ gm.textContent = tokLabel(gTok); gm.classList.toggle("miss", gTok === "x"); gm.classList.toggle("sm", !!SMILEY[gTok]); }
+    if(gTok){ gm.textContent = markLabel(ga, gTok); gm.classList.toggle("miss", gTok === "x"); gm.classList.toggle("sm", !!SMILEY[gTok]); }
     el.classList.toggle("gsel", !!ga && isDesk && !!it.studentId && it.studentId === gradeSel);
     /* Verspätet in dieser Stunde */
     let lm = el.querySelector(".latemark");
@@ -8879,6 +8939,9 @@ function renderSettings(){
         qs.appendChild(b);
       });
       box.appendChild(qs);
+      const us = document.createElement("button"); us.className = "ghost"; us.id = "set-scales"; us.style.width = "100%"; us.style.marginBottom = "8px";
+      us.textContent = t("usTitle") + ((DB.scales || []).length ? " (" + DB.scales.length + ")" : "") + " …"; us.onclick = () => openScales();
+      box.appendChild(us);
     }
   }
 
@@ -10204,6 +10267,7 @@ function editSubject(s, after, onCancel){
           if(c.lastSubject === s.id) c.lastSubject = "";
           if(Array.isArray(c.zd)) c.zd = c.zd.filter(x => x.slice(0, x.indexOf("|")) !== s.id);
           if(Array.isArray(c.zn)) c.zn = c.zn.filter(x => x.s !== s.id);
+          if(c.gcat) delete c.gcat[s.id];
         });
         save(); refreshTTViews();
       });
@@ -10319,10 +10383,60 @@ const SMILEY_PDF = { s1: "++", s2: "+", s3: "-", s4: "--" };
 const SCALE_TOKS = { grade: GRADE_TOKS, points: POINT_TOKS, smiley: SMILEY_TOKS };
 function tokNum(tok, scale){
   if(scale === "grade"){ const m = /^([1-6])([+-]?)$/.exec(tok || ""); if(!m) return null; return +m[1] + (m[2] === "+" ? -0.3 : m[2] === "-" ? 0.3 : 0); }
+  /* Drittelnoten: 2+ = 1,67, 2− = 2,33 (statt ±0,3) */
+  if(scale === "third"){ const m = /^([1-6])([+-]?)$/.exec(tok || ""); if(!m) return null; return +m[1] + (m[2] === "+" ? -1 / 3 : m[2] === "-" ? 1 / 3 : 0); }
   if(scale === "points"){ const v = parseInt(tok, 10); return isFinite(v) && v >= 0 && v <= 15 && String(v) === tok ? v : null; }
   return null;
 }
 const pointsToGrade = p => tokNum(GRADE_TOKS[POINT_TOKS.indexOf(String(p))], "grade");
+/* ---- Weitere Skalen: Drittelnoten ("third"), Prozent ("pct"), eigene ("u:<id>", in DB.scales).
+   Eigene Skalen speichern die Stufe als Text (ihr Name) – so steht überall lesbar, was eingetragen wurde.
+   Jede Stufe hat einen Notenwert (1–6) für die Durchschnitte. Prozent wird über einen Notenschlüssel zur Note. */
+const BASE_SCALES = ["grade", "points", "smiley", "third", "pct"];
+function userScale(sc){ return typeof sc === "string" && sc.slice(0, 2) === "u:" ? (DB.scales || []).find(x => "u:" + x.id === sc) || null : null; }
+function isScale(sc){ return BASE_SCALES.indexOf(sc) >= 0 || !!userScale(sc); }
+function scaleToks(sc){ if(sc === "third") return GRADE_TOKS; if(own(SCALE_TOKS, sc)) return SCALE_TOKS[sc]; const u = userScale(sc); return u ? u.steps.map(x => x.l) : []; }
+function scaleName(sc){ const u = userScale(sc); return u ? u.name : own(I18N.de, "gScale_" + sc) ? t("gScale_" + sc) : t("gScaleGone"); }
+const PCT_KEY = () => KEY_PRESETS.grade[0][1];
+function pctKey(a){ return a && a.key && Array.isArray(a.key.th) && a.key.th.length === 5 ? a.key.th : PCT_KEY(); }
+function pctGrade(a, p){ const th = pctKey(a), i = th.findIndex(n => p >= n); return i < 0 ? 6 : i + 1; }
+/* Wert einer Eintragung in der Skala der Bewertung (Prozent bleibt Prozent) */
+function markNum(a, tok){
+  if(a.scale === "pct"){ const v = parseInt(tok, 10); return isFinite(v) && v >= 0 && v <= 100 && String(v) === tok ? v : null; }
+  const u = userScale(a.scale);
+  if(u){ const st = u.steps.find(x => x.l === tok); return st ? st.v : null; }
+  return tokNum(tok, a.scale);
+}
+const avgDigits = a => a.scale === "points" || a.scale === "pct" ? (a.scale === "pct" ? 0 : 1) : 2;
+const avgText = (a, v) => fmtNum(v, avgDigits(a)) + (a.scale === "pct" ? " %" : "");
+const MAX_SCALES = 20;
+function sanCats(o){
+  const out = {};
+  if(!o || typeof o !== "object" || Array.isArray(o)) return out;
+  Object.keys(o).forEach(k => {
+    const arr = o[k]; if(k in Object.prototype || k.length > 40 || !Array.isArray(arr)) return;
+    const seen = new Set();
+    const L = arr.filter(x => x && typeof x.id === "string" && /^[a-z0-9]{1,16}$/.test(x.id) && !seen.has(x.id) && seen.add(x.id) && Number.isInteger(x.w) && x.w >= 0 && x.w <= 100)
+      .map(x => ({ id: x.id, n: typeof x.n === "string" ? x.n.trim().slice(0, 20) : "", w: x.w })).slice(0, 8);
+    /* nur vollständig: beide festen Kategorien, Summe 100 – sonst gilt wieder die einfache Gewichtung */
+    if(L.some(x => x.id === "written") && L.some(x => x.id === "other") && L.every(x => x.id === "written" || x.id === "other" || x.n) && L.reduce((a, x) => a + x.w, 0) === 100
+       && L.some(x => x.id !== "written" && x.id !== "other" || x.n)) out[k] = L;      // nur feste, unbenannt: das ist gradeW
+  });
+  return out;
+}
+function sanScales(arr){
+  if(!Array.isArray(arr)) return [];
+  const ids = new Set();
+  return arr.filter(x => x && typeof x.id === "string" && /^[a-z0-9]{1,16}$/.test(x.id) && !ids.has(x.id) && ids.add(x.id) && typeof x.name === "string" && x.name.trim() && Array.isArray(x.steps))
+    .map(x => {
+      const seen = new Set(), ks = new Set();
+      const steps = x.steps.filter(st => st && typeof st.l === "string" && st.l.trim() === st.l && st.l.length >= 1 && st.l.length <= 16 && st.l !== "x" && !own(SMILEY, st.l) && !/[\u0000-\u001f|]/.test(st.l)
+        && typeof st.v === "number" && isFinite(st.v) && st.v >= 1 && st.v <= 6 && !seen.has(st.l) && seen.add(st.l))
+        .map(st => { let k = typeof st.k === "string" && /^[a-z0-9]{1,12}$/.test(st.k) && !ks.has(st.k) ? st.k : uid().slice(-8); ks.add(k); return { k, l: st.l, v: Math.round(st.v * 100) / 100 }; })
+        .slice(0, 12);
+      return { id: x.id, name: x.name.trim().slice(0, 30), steps };
+    }).filter(x => x.steps.length >= 2).slice(0, MAX_SCALES);
+}
 const tokLabel = (tok, forPdf) => tok === "x" ? t("gMissing") : SMILEY[tok] ? (forPdf ? SMILEY_PDF[tok] : SMILEY[tok]) : String(tok || "");
 const fmtNum = (v, d) => v === null || v === undefined || !isFinite(v) ? "–" : (LANG === "de" ? v.toFixed(d).replace(".", ",") : v.toFixed(d));
 const fmtDate = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); return m ? (LANG === "de" ? m[3] + "." + m[2] + "." : m[3] + "/" + m[2]) : ""; };
@@ -10352,22 +10466,41 @@ function teacherSameDay(c, subjectId, date, sid){
 }
 /* Durchschnitte im Maßstab des Fachs: nur Punkte → Punkte, sonst Noten (Punkte umgerechnet) */
 function courseScale(list){ const num = list.filter(a => a.scale !== "smiley"); return num.length && num.every(a => a.scale === "points") ? "points" : "grade"; }
-function valIn(a, tok, sc){ const v = tokNum(tok, a.scale); if(v === null) return null; return sc === "grade" && a.scale === "points" ? pointsToGrade(v) : v; }
+function valIn(a, tok, sc){
+  const v = markNum(a, tok); if(v === null) return null;
+  if(a.scale === "pct") return pctGrade(a, v);
+  return sc === "grade" && a.scale === "points" ? pointsToGrade(v) : v;
+}
+/* ---- Kategorien je Klasse und Fach: c.gcat[Fach] = [{ id, n, w }]. „written“ und „other“ gibt es immer
+   (Klassenarbeiten für die 30-%-Regel, „Mitarbeit heute“), eigene kommen dazu (Tests, Hausaufgaben …).
+   Ohne Eintrag gilt wie bisher gradeW: schriftlich W %, mündlich & sonstige 100 − W %. */
+function catsOf(c, subj){
+  const g = c && c.gcat && own(c.gcat, subj) && Array.isArray(c.gcat[subj]) ? c.gcat[subj] : null;
+  if(g && g.length) return g;
+  const W = own((c && c.gradeW) || {}, subj) ? c.gradeW[subj] : 50;
+  return [{ id: "written", n: "", w: W }, { id: "other", n: "", w: 100 - W }];
+}
+const hasOwnCats = (c, subj) => catsOf(c, subj).some(x => x.id !== "written" && x.id !== "other" || x.n);
+const catName = cat => cat.n || t(cat.id === "written" ? "gWritten" : cat.id === "other" ? "gOther" : "gCatX");
+const catShort = cat => cat.n ? (cat.n.length > 9 ? cat.n.slice(0, 8) + "." : cat.n) : t(cat.id === "written" ? "gW" : cat.id === "other" ? "gO" : "gCatX");
+function catOfAssess(c, a){ if(a.cat && catsOf(c, a.subjectId).some(x => x.id === a.cat)) return a.cat; return a.kind === "written" ? "written" : "other"; }
 function studentAverages(c, subjectId, sid, term){
   const list = courseAssess(c, subjectId, term), sc = courseScale(list);
-  const part = kind => { let s = 0, w = 0; list.filter(a => a.kind === kind).forEach(a => { const v = valIn(a, a.marks[sid], sc); if(v !== null){ s += v * a.weight; w += a.weight; } }); return w ? s / w : null; };
-  const wr = part("written"), ot = part("other");
-  const W = (own(c.gradeW || {}, subjectId) ? c.gradeW[subjectId] : 50) / 100;
+  const parts = catsOf(c, subjectId).map(cat => {
+    let s = 0, w = 0;
+    list.filter(a => catOfAssess(c, a) === cat.id).forEach(a => { const v = valIn(a, a.marks[sid], sc); if(v !== null){ s += v * a.weight; w += a.weight; } });
+    return { id: cat.id, name: catName(cat), short: catShort(cat), w: cat.w, avg: w ? s / w : null };
+  });
   /* Nur Teile mit Wert und Gewicht > 0 – bei 100 % schriftlich zählt Mündliches gar nicht */
-  const parts = [[wr, W], [ot, 1 - W]].filter(([v, w]) => v !== null && w > 0);
-  const sw = parts.reduce((a, [, w]) => a + w, 0);
-  const total = sw ? parts.reduce((a, [v, w]) => a + v * w, 0) / sw : null;
-  return { written: wr, other: ot, total, scale: sc };
+  const use = parts.filter(p => p.avg !== null && p.w > 0), sw = use.reduce((a, p) => a + p.w / 100, 0);
+  const total = sw ? use.reduce((a, p) => a + p.avg * (p.w / 100), 0) / sw : null;
+  const pv = id => { const p = parts.find(x => x.id === id); return p ? p.avg : null; };
+  return { written: pv("written"), other: pv("other"), parts, total, scale: sc, third: list.some(a => a.scale === "third") };
 }
 function assessAverage(a, c){
   c = c || curClass();
   const ids = c ? c.students.map(st => st.id) : Object.keys(a.marks);     // Gelöschte zählen nicht mehr mit
-  const v = ids.map(id => tokNum(a.marks[id], a.scale)).filter(x => x !== null);
+  const v = ids.map(id => markNum(a, a.marks[id])).filter(x => x !== null);
   return v.length ? v.reduce((p, q) => p + q, 0) / v.length : null;
 }
 let gradeSubject = null, gradeTab = "list", curAssessId = null, assessSel = null;
@@ -10422,7 +10555,8 @@ function renderGrades(){
   const wBtn = document.createElement("button"); wBtn.className = "setrow"; wBtn.id = "g-weight"; wBtn.style.marginTop = "12px";
   const wt = document.createElement("div"); wt.style.flex = "1";
   const w1 = document.createElement("div"); w1.className = "st"; w1.textContent = t("gWeight");
-  const w2 = document.createElement("div"); w2.className = "ss"; w2.textContent = t("gWeightSub").replace("{a}", String(W)).replace("{b}", String(100 - W));
+  const w2 = document.createElement("div"); w2.className = "ss";
+  w2.textContent = hasOwnCats(c, s.id) ? catsOf(c, s.id).map(x => catName(x) + " " + x.w + " %").join(" · ") : t("gWeightSub").replace("{a}", String(W)).replace("{b}", String(100 - W));
   wt.appendChild(w1); wt.appendChild(w2); wBtn.appendChild(wt); wBtn.appendChild(icon("edit"));
   wBtn.onclick = () => editWeight(c, s);
   body.appendChild(wBtn);
@@ -10444,13 +10578,13 @@ function renderGrades(){
       const card = document.createElement("button"); card.className = "acard";
       const top = document.createElement("div"); top.className = "at";
       const n = document.createElement("b"); n.textContent = a.title;
-      const kd = document.createElement("span"); kd.className = "akind " + a.kind; kd.textContent = t(a.kind === "written" ? "gWritten" : "gOther");
+      const kd = document.createElement("span"); kd.className = "akind " + a.kind; kd.textContent = catName(catsOf(c, a.subjectId).find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" });
       top.appendChild(n); top.appendChild(kd);
       const meta = document.createElement("div"); meta.className = "am";
       const done = c.students.filter(st => a.marks[st.id]).length;
       const avg = assessAverage(a);
-      meta.textContent = fmtDate(a.date) + " · " + t("gScale_" + a.scale) + (a.weight !== 1 ? " · ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") +
-        " · " + done + "/" + c.students.length + (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
+      meta.textContent = fmtDate(a.date) + " · " + scaleName(a.scale) + (a.weight !== 1 ? " · ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") +
+        " · " + done + "/" + c.students.length + (avg !== null ? " · Ø " + avgText(a, avg) : "");
       card.appendChild(top); card.appendChild(meta);
       card.onclick = () => openAssess(a.id);
       body.appendChild(card);
@@ -10492,17 +10626,57 @@ function pickCourseSubject(c){
 function editWeight(c, s){
   let W = own(c.gradeW || {}, s.id) ? c.gradeW[s.id] : 50;
   const R = Object.assign({}, roundRule(c, s.id));
+  /* Arbeitskopie der Kategorien; ohne eigene bleibt es beim Schieberegler schriftlich : mündlich */
+  let work = hasOwnCats(c, s.id) ? clone(catsOf(c, s.id)) : null;
   const sheet = sheetBase(t("gWeight") + " – " + s.name);
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("gWeightHint"); sheet.appendChild(h);
-  const out = document.createElement("div"); out.className = "wout";
-  const rng = document.createElement("input"); rng.type = "range"; rng.min = 0; rng.max = 100; rng.step = 5; rng.value = W; rng.className = "wrange"; rng.id = "g-weight-range";
-  const paint = () => { out.textContent = t("gWeightSub").replace("{a}", String(W)).replace("{b}", String(100 - W)); };
-  rng.oninput = () => { W = +rng.value; paint(); };
-  sheet.appendChild(out); sheet.appendChild(rng); paint();
-  const quick = document.createElement("div"); quick.className = "segmented";
-  [30, 40, 50, 60, 70].forEach(v => { const b = document.createElement("button"); b.textContent = v + ":" + (100 - v);
-    b.onclick = () => { W = v; rng.value = v; paint(); }; quick.appendChild(b); });
-  sheet.appendChild(quick);
+  const area = document.createElement("div"); area.id = "g-cats"; sheet.appendChild(area);
+  const paint = () => {
+    area.textContent = "";
+    if(!work){
+      const out = document.createElement("div"); out.className = "wout";
+      const rng = document.createElement("input"); rng.type = "range"; rng.min = 0; rng.max = 100; rng.step = 5; rng.value = W; rng.className = "wrange"; rng.id = "g-weight-range";
+      const show = () => { out.textContent = t("gWeightSub").replace("{a}", String(W)).replace("{b}", String(100 - W)); };
+      rng.oninput = () => { W = +rng.value; show(); };
+      area.appendChild(out); area.appendChild(rng); show();
+      const quick = document.createElement("div"); quick.className = "segmented";
+      [30, 40, 50, 60, 70].forEach(v => { const b = document.createElement("button"); b.textContent = v + ":" + (100 - v);
+        b.onclick = () => { W = v; rng.value = v; show(); }; quick.appendChild(b); });
+      area.appendChild(quick);
+    } else {
+      const sum = document.createElement("div"); sum.className = "wout"; sum.id = "g-cat-sum";
+      const total = () => work.reduce((a, x) => a + (Number.isInteger(x.w) ? x.w : 0), 0);
+      const show = () => { const t0 = total(); sum.textContent = t("gCatSum").replace("{n}", String(t0)); sum.classList.toggle("bad", t0 !== 100); };
+      area.appendChild(sum);
+      work.forEach((cat, i) => {
+        const r = document.createElement("div"); r.className = "usrow catrow";
+        const n = document.createElement("input"); n.className = "field"; n.maxLength = 20; n.value = cat.n; n.placeholder = cat.id === "written" ? t("gWritten") : cat.id === "other" ? t("gOther") : t("gCatName");
+        n.setAttribute("aria-label", t("gCatName") + " " + (i + 1)); n.oninput = () => { cat.n = n.value; };
+        const w = document.createElement("input"); w.className = "field usv"; w.type = "number"; w.min = "0"; w.max = "100"; w.step = "5"; w.inputMode = "numeric"; w.value = String(cat.w);
+        w.setAttribute("aria-label", t("gCatWeight") + " " + (i + 1)); w.oninput = () => { cat.w = Math.round(Number(w.value)); show(); };
+        const pc = document.createElement("span"); pc.className = "catpct"; pc.textContent = "%";
+        r.appendChild(n); r.appendChild(w); r.appendChild(pc);
+        if(cat.id !== "written" && cat.id !== "other"){
+          const x = document.createElement("button"); x.className = "minibtn"; x.textContent = "✕"; x.setAttribute("aria-label", t("delete") + " " + (cat.n || i + 1));
+          x.onclick = () => { work.splice(i, 1); if(!work.some(y => y.id !== "written" && y.id !== "other" || y.n)){ W = work.find(y => y.id === "written").w; work = null; } paint(); };
+          r.appendChild(x);
+        } else { const sp = document.createElement("span"); sp.className = "catfix"; sp.setAttribute("aria-hidden", "true"); r.appendChild(sp); }
+        area.appendChild(r);
+      });
+      show();
+    }
+    const add = document.createElement("button"); add.className = "ghost"; add.id = "g-cat-add"; add.style.width = "100%"; add.style.marginTop = "8px";
+    add.textContent = "+ " + t("gCatAdd");
+    add.onclick = () => {
+      if(!work) work = [{ id: "written", n: "", w: W }, { id: "other", n: "", w: 100 - W }];
+      if(work.length >= 8){ toast(t("gCatMax")); return; }
+      work.push({ id: uid().replace(/[^a-z0-9]/g, "").slice(-12), n: "", w: 0 }); paint();
+      const ins = area.querySelectorAll(".catrow .field:not(.usv)"); if(ins.length) ins[ins.length - 1].focus();
+    };
+    area.appendChild(add);
+    const ch = document.createElement("div"); ch.className = "hint"; ch.textContent = t("gCatHint"); area.appendChild(ch);
+  };
+  paint();
   /* Rundung für den Notenvorschlag */
   const seg = (labelKey, opts, key, id) => {
     sheetLabel(sheet, t(labelKey));
@@ -10515,6 +10689,20 @@ function editWeight(c, s){
   seg("gTendLabel", [[false, "gTendOff"], [true, "gTendOn"]], "tend", "g-tend");
   const rh = document.createElement("div"); rh.className = "hint"; rh.textContent = t("gRoundHint"); sheet.appendChild(rh);
   sheetButtons(sheet, t("save"), () => {
+    if(work){
+      work.forEach(x => { x.n = x.n.trim().slice(0, 20); });
+      if(work.some(x => !Number.isInteger(x.w) || x.w < 0 || x.w > 100)){ toast(t("gCatBadW")); return; }
+      if(work.reduce((a, x) => a + x.w, 0) !== 100){ toast(t("gCatNot100")); return; }
+      if(work.some(x => x.id !== "written" && x.id !== "other" && !x.n)){ toast(t("gCatNeedName")); return; }
+      const names = work.map(catName); if(new Set(names).size !== names.length){ toast(t("gCatDouble")); return; }
+      W = work.find(x => x.id === "written").w;                     // ältere App-Stände rechnen weiter mit schriftlich : Rest
+      if(work.some(x => x.id !== "written" && x.id !== "other" || x.n)) c.gcat = Object.assign({}, c.gcat, { [s.id]: work.map(x => ({ id: x.id, n: x.n, w: x.w })) });
+      else work = null;                                             // nur die festen, unbenannt: wieder einfache Gewichtung
+    }
+    if(!work && c.gcat && own(c.gcat, s.id)){ c.gcat = Object.assign({}, c.gcat); delete c.gcat[s.id]; }
+    /* Bewertungen gelöschter Kategorien zählen wieder zu ihrer Grundart */
+    const ids = new Set(catsOf(c, s.id).map(x => x.id));
+    (c.assess || []).forEach(a => { if(a.subjectId === s.id && a.cat && !ids.has(a.cat)) delete a.cat; });
     c.gradeW = Object.assign({}, c.gradeW, { [s.id]: W });
     c.gradeRound = Object.assign({}, c.gradeRound, { [s.id]: { fav: !!R.fav, tend: !!R.tend } });
     save(); closeModal(); renderGrades();
@@ -10537,9 +10725,37 @@ function assessForm(sheet, a){
     sheet.appendChild(row);
     return row;
   };
-  seg("gKind", [["written", t("gWritten")], ["other", t("gOther")]], "kind", "a-kind");
+  /* Kategorie: die festen (schriftlich, mündlich & sonstige) und die eigenen des Fachs */
+  { const c0 = curClass(), cats = catsOf(c0, a.subjectId), curCat = c0 ? catOfAssess(c0, a) : (a.kind === "written" ? "written" : "other");
+    sheetLabel(sheet, t("gKind"));
+    const row = document.createElement("div"); row.className = "segmented" + (cats.length > 3 ? " wrap" : ""); row.id = "a-kind";
+    cats.forEach(cat => { const b = document.createElement("button"); b.textContent = catName(cat); b.dataset.v = cat.id; b.classList.toggle("on", curCat === cat.id);
+      b.onclick = () => {
+        const nk = cat.id === "written" ? "written" : "other";
+        if(title.value === t(a.kind === "written" ? "gDefWritten" : "gDefOther")) title.value = t(nk === "written" ? "gDefWritten" : "gDefOther");
+        a.kind = nk; if(cat.id === "written" || cat.id === "other") delete a.cat; else a.cat = cat.id;
+        Array.from(row.children).forEach(x => x.classList.toggle("on", x === b));
+      };
+      row.appendChild(b); });
+    sheet.appendChild(row); }
   const hasMarks = Object.keys(a.marks || {}).length > 0;
-  if(!hasMarks) seg("gScale", [["grade", t("gScale_grade")], ["points", t("gScale_points")], ["smiley", t("gScale_smiley")]], "scale", "a-scale");
+  if(!hasMarks){
+    const sr = seg("gScale", [["grade", t("gScale_grade")], ["points", t("gScale_points")], ["smiley", t("gScale_smiley")], ["third", t("gScale_third")], ["pct", t("gScale_pct")]]
+      .concat((DB.scales || []).map(u => ["u:" + u.id, u.name])), "scale", "a-scale");
+    sr.classList.add("wrap");
+    /* Prozent: welcher Schlüssel macht daraus die Note? */
+    const pk = document.createElement("div"); pk.id = "a-pctkey"; sheet.appendChild(pk);
+    const paintKey = () => {
+      pk.textContent = ""; if(a.scale !== "pct") return;
+      sheetLabel(pk, t("pctKey"));
+      const row = document.createElement("div"); row.className = "segmented";
+      KEY_PRESETS.grade.forEach(([id, th]) => { const b = document.createElement("button"); b.textContent = t("tkPre_grade_" + id); b.dataset.v = id;
+        const on = () => pctKey(a).join() === th.join(); b.classList.toggle("on", on());
+        b.onclick = () => { a.key = { th: th.slice(), tend: false }; Array.from(row.children).forEach(x => x.classList.toggle("on", x === b)); }; row.appendChild(b); });
+      pk.appendChild(row);
+    };
+    Array.from(sr.children).forEach(b => b.addEventListener("click", paintKey)); paintKey();
+  }
   seg("gWeightOne", [[0.5, "½"], [1, "1"], [2, "2"], [3, "3"]], "weight", "a-weight");
   return () => { a.title = title.value.trim().slice(0, 60) || t(a.kind === "written" ? "gDefWritten" : "gDefOther"); a.date = /^\d{4}-\d{2}-\d{2}$/.test(date.value) ? date.value : a.date; };
 }
@@ -10567,10 +10783,10 @@ function renderAssess(){
   $("#assess-title").textContent = a.title;
   const head = $("#assess-head"); head.textContent = "";
   const m = document.createElement("div"); m.className = "hint"; m.style.marginTop = "0";
-  m.textContent = (s ? s.name + " · " : "") + fmtDate(a.date) + " · " + t(a.kind === "written" ? "gWritten" : "gOther") + " · " + t("gScale_" + a.scale);
+  m.textContent = (s ? s.name + " · " : "") + fmtDate(a.date) + " · " + catName(catsOf(c, a.subjectId).find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" }) + " · " + scaleName(a.scale);
   head.appendChild(m);
   const tasked = hasTasks(a);
-  if(a.scale !== "smiley" && !a.auto){               // Klassenarbeit mit Punkten je Aufgabe (nicht bei „Mitarbeit heute“)
+  if((a.scale === "grade" || a.scale === "points") && !a.auto){   // Klassenarbeit mit Punkten je Aufgabe (nicht bei „Mitarbeit heute“)
     const tb = document.createElement("button"); tb.className = "setrow"; tb.id = "a-tasks"; tb.style.marginTop = "6px";
     const tt = document.createElement("div"); tt.style.flex = "1";
     const t1 = document.createElement("div"); t1.className = "st"; t1.textContent = t(tasked ? "tkTitle" : "tkSetup");
@@ -10587,7 +10803,7 @@ function renderAssess(){
     const n = document.createElement("span"); n.className = "nr"; n.textContent = (i + 1) + ".";
     const nm = document.createElement("span"); nm.className = "an"; nm.textContent = st.name;
     const v = document.createElement("span"); v.className = "av" + (a.marks[st.id] === "x" ? " miss" : "") + (a.marks[st.id] ? "" : " empty");
-    v.textContent = a.marks[st.id] ? tokLabel(a.marks[st.id]) : "–";
+    v.textContent = a.marks[st.id] ? markLabel(a, a.marks[st.id]) : "–";
     row.appendChild(n); row.appendChild(nm);
     if(tasked){ const sp = studentPoints(a, st.id); const pe = document.createElement("span"); pe.className = "apts";
       pe.textContent = sp === null ? "" : fmtNum(sp, sp % 1 ? 1 : 0) + " " + t("tkP"); row.appendChild(pe); }
@@ -10600,7 +10816,7 @@ function renderAssess(){
   const done = Object.keys(a.marks).filter(id => studentById(c, id)).length;
   const avg = assessAverage(a);
   const p = document.createElement("div"); p.className = "astat";
-  p.textContent = t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) + (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
+  p.textContent = t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) + (avg !== null ? " · Ø " + avgText(a, avg) : "");
   stats.appendChild(p);
   const fs = failShare(c, a);
   if(fs && fs.share > 0.3){ const w = document.createElement("div"); w.className = "syncwarn"; w.id = "a-fail";
@@ -10615,23 +10831,122 @@ function renderAssess(){
   }
   /* Tastenfeld */
   const pad = $("#assess-pad"); pad.textContent = "";
-  pad.className = "keypad k-" + (tasked ? "tasks" : a.scale);
+  pad.className = "keypad k-" + (tasked ? "tasks" : padKind(a.scale));
   if(tasked){
     const st0 = assessSel ? studentById(c, assessSel) : null;
     const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "a-pts";
     pb.textContent = st0 ? t("ptEnter").replace("{n}", st0.name) : t("gTapSeat");
     pb.onclick = () => { if(assessSel) openPointsSheet(c, a, assessSel, nextWithoutPoints(c, a)); };
     pad.appendChild(pb);
-  } else SCALE_TOKS[a.scale].forEach(tok => {
-    const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
-    if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
-    b.classList.toggle("on", !!assessSel && a.marks[assessSel] === tok); b.setAttribute("aria-pressed", String(!!assessSel && a.marks[assessSel] === tok));
-    b.onclick = () => setMark(tok);
-    pad.appendChild(b);
-  });
+  } else scalePad(pad, a, assessSel ? a.marks[assessSel] : null, setMark, !!assessSel);
   const miss = document.createElement("button"); miss.className = "kx"; miss.textContent = t("gMissing"); miss.dataset.tok = "x"; miss.onclick = () => setMark("x"); pad.appendChild(miss);
   const clr = document.createElement("button"); clr.className = "kx"; clr.textContent = "⌫"; clr.setAttribute("aria-label", t("gClear")); clr.onclick = () => setMark(null); pad.appendChild(clr);
   const sel = list.querySelector(".arow.on"); if(sel && sel.scrollIntoView) sel.scrollIntoView({ block: "nearest" });
+}
+const padKind = sc => sc.slice(0, 2) === "u:" ? "user" : sc;
+/* Anzeige einer Eintragung mit Einheit (Prozent) */
+const markLabel = (a, tok, forPdf) => tokLabel(tok, forPdf) + (a.scale === "pct" && tok !== "x" ? " %" : "");
+/* ---- Eigene Notenskalen verwalten ---- */
+function scaleUse(id){
+  let n = 0; const cnt = c => (c && c.assess || []).forEach(a => { if(a.scale === "u:" + id) n++; });
+  DB.classes.forEach(cnt); (DB.trash || []).forEach(e => { if(e && e.kind === "class") cnt(e.payload); });   // auch Klassen im Papierkorb
+  return n;
+}
+function openScales(){
+  const sheet = sheetBase(t("usTitle"));
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("usHint"); sheet.appendChild(h);
+  const list = document.createElement("div"); list.id = "us-list";
+  (DB.scales || []).forEach(u => {
+    const b = document.createElement("button"); b.className = "grpcard"; b.dataset.id = u.id;
+    const n = document.createElement("b"); n.textContent = u.name; b.appendChild(n);
+    const dig = v => Number.isInteger(v) ? 0 : Math.abs(v * 10 - Math.round(v * 10)) < 1e-9 ? 1 : 2;
+    const d = document.createElement("div"); d.textContent = u.steps.map(x => x.l + " = " + fmtNum(x.v, dig(x.v))).join(" · "); b.appendChild(d);
+    b.onclick = () => editScale(u); list.appendChild(b);
+  });
+  sheet.appendChild(list);
+  const nw = document.createElement("button"); nw.className = "cbtn green"; nw.id = "us-new"; nw.style.width = "100%"; nw.style.marginTop = "10px";
+  nw.textContent = "+ " + t("usNew"); nw.onclick = () => { if((DB.scales || []).length >= MAX_SCALES){ toast(t("usLimit")); return; } editScale(null); };
+  sheet.appendChild(nw);
+  const cl = document.createElement("button"); cl.className = "ghost"; cl.style.width = "100%"; cl.style.marginTop = "8px"; cl.textContent = t("close"); cl.onclick = closeModal; sheet.appendChild(cl);
+}
+function editScale(u){
+  const work = u ? clone(u) : { id: uid().replace(/[^a-z0-9]/g, "").slice(-16), name: "", steps: [{ k: uid().slice(-8), l: t("usDefA"), v: 1 }, { k: uid().slice(-8), l: t("usDefB"), v: 2.5 }, { k: uid().slice(-8), l: t("usDefC"), v: 4 }, { k: uid().slice(-8), l: t("usDefD"), v: 5.5 }] };
+  const sheet = sheetBase(u ? t("usEdit") : t("usNew"));
+  sheetLabel(sheet, t("usName"));
+  const name = document.createElement("input"); name.className = "field"; name.id = "us-name"; name.maxLength = 30; name.value = work.name; name.placeholder = t("usNamePh"); sheet.appendChild(name);
+  sheetLabel(sheet, t("usSteps"));
+  const sh = document.createElement("div"); sh.className = "hint"; sh.textContent = t("usStepsHint"); sheet.appendChild(sh);
+  const box = document.createElement("div"); box.id = "us-steps"; sheet.appendChild(box);
+  const paint = () => {
+    box.textContent = "";
+    work.steps.forEach((st, i) => {
+      const r = document.createElement("div"); r.className = "usrow";
+      const l = document.createElement("input"); l.className = "field"; l.maxLength = 16; l.value = st.l; l.placeholder = t("usStep"); l.setAttribute("aria-label", t("usStep") + " " + (i + 1));
+      l.oninput = () => { st.l = l.value; };
+      const v = document.createElement("input"); v.className = "field usv"; v.type = "number"; v.min = "1"; v.max = "6"; v.step = "0.01"; v.inputMode = "decimal"; v.value = String(st.v);
+      v.setAttribute("aria-label", t("usValue") + " " + (i + 1)); v.oninput = () => { st.v = Number(String(v.value).replace(",", ".")); };
+      const x = document.createElement("button"); x.className = "minibtn"; x.textContent = "✕"; x.setAttribute("aria-label", t("delete") + " " + (st.l || i + 1));
+      x.onclick = () => { if(work.steps.length <= 2){ toast(t("usMin")); return; } work.steps.splice(i, 1); paint(); };
+      r.appendChild(l); r.appendChild(v); r.appendChild(x); box.appendChild(r);
+    });
+  };
+  paint();
+  const add = document.createElement("button"); add.className = "ghost"; add.id = "us-add"; add.style.width = "100%"; add.style.marginTop = "6px"; add.textContent = "+ " + t("usStep");
+  add.onclick = () => { if(work.steps.length >= 12){ toast(t("usMax")); return; } work.steps.push({ k: uid().slice(-8), l: "", v: 6 }); paint(); };
+  sheet.appendChild(add);
+  sheetButtons(sheet, t("save"), () => {
+    work.name = name.value.trim().slice(0, 30);
+    if(!work.name){ toast(t("usNeedName")); name.focus(); return; }
+    const labels = work.steps.map(st => st.l.trim());
+    if(labels.some(l => !l || l === "x" || own(SMILEY, l) || /[\u0000-\u001f|]/.test(l)) || new Set(labels).size !== labels.length){ toast(t("usBadStep")); return; }
+    if(work.steps.some(st => !isFinite(st.v) || st.v < 1 || st.v > 6)){ toast(t("usBadValue")); return; }
+    work.steps.forEach(st => { st.l = st.l.trim(); st.v = Math.round(st.v * 100) / 100; });
+    /* Umbenannte Stufen in allen Eintragungen mitziehen; gelöschte, aber benutzte Stufen verhindern */
+    if(u){
+      const old = new Map(u.steps.map(st => [st.k, st.l])), now = new Map(work.steps.map(st => [st.k, st.l]));
+      const gone = u.steps.filter(st => !now.has(st.k)).map(st => st.l);
+      let used = false;
+      DB.classes.forEach(c => (c.assess || []).forEach(a => { if(a.scale === "u:" + u.id && Object.values(a.marks).some(m => gone.indexOf(m) >= 0)) used = true; }));
+      if(used){ toast(t("usStepUsed")); return; }
+      const ren = new Map(); old.forEach((l, k) => { if(now.has(k) && now.get(k) !== l) ren.set(l, now.get(k)); });
+      if(ren.size) DB.classes.forEach(c => (c.assess || []).forEach(a => { if(a.scale !== "u:" + u.id) return;
+        Object.keys(a.marks).forEach(sid => { if(ren.has(a.marks[sid])) a.marks[sid] = ren.get(a.marks[sid]); }); }));
+      Object.assign(u, { name: work.name, steps: work.steps });
+    } else DB.scales = (DB.scales || []).concat([work]);
+    save(); closeModal(); toast(t("usSaved")); renderSettings(); setTimeout(openScales, 60);
+  });
+  if(u){
+    const del = document.createElement("button"); del.className = "ghost"; del.id = "us-delete"; del.style.width = "100%"; del.style.marginTop = "8px"; del.style.color = "var(--warn)";
+    del.textContent = t("usDelete");
+    del.onclick = () => {
+      const n = scaleUse(u.id);
+      if(n){ toast(t("usInUse").replace("{n}", String(n))); return; }
+      closeModal(); askConfirm(t("usDeleteQ").replace("{s}", u.name), t("usDeleteT"), t("delete"), () => {
+        DB.scales = DB.scales.filter(x => x !== u); save(); renderSettings(); setTimeout(openScales, 60); }, () => editScale(u));
+    };
+    sheet.appendChild(del);
+  }
+}
+/* Tastenfeld einer Bewertung: Knöpfe je Stufe; bei Prozent ein Zahlenfeld */
+function scalePad(pad, a, cur, pick, hasSel){
+  if(a.scale === "pct"){
+    const wrap = document.createElement("div"); wrap.className = "pctrow";
+    const inp = document.createElement("input"); inp.type = "number"; inp.min = "0"; inp.max = "100"; inp.step = "1"; inp.inputMode = "numeric"; inp.className = "field"; inp.id = "pct-in";
+    inp.placeholder = "0–100 %"; inp.value = cur && cur !== "x" ? cur : ""; inp.setAttribute("aria-label", t("gScale_pct"));
+    const ok = document.createElement("button"); ok.className = "kpts"; ok.id = "pct-ok"; ok.textContent = "OK";
+    const go = () => { const v = Math.round(Number(String(inp.value).replace(",", "."))); if(String(inp.value).trim() === "" || !isFinite(v) || v < 0 || v > 100){ toast(t("pctBad")); inp.focus(); return; }
+      pick(String(v)); setTimeout(() => { const el = document.getElementById("pct-in"); if(el){ el.focus(); if(el.select) el.select(); } }, 0); };   // Tastatur bleibt für den nächsten Namen offen
+    ok.onclick = go; inp.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); go(); } });
+    wrap.appendChild(inp); wrap.appendChild(ok); pad.appendChild(wrap);
+    if(cur && cur !== "x"){ const h = document.createElement("div"); h.className = "pcthint"; h.textContent = t("pctIs").replace("{p}", cur).replace("{g}", String(pctGrade(a, +cur))); pad.appendChild(h); }
+    return;
+  }
+  scaleToks(a.scale).forEach(tok => {
+    const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
+    if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
+    b.classList.toggle("on", hasSel && cur === tok); b.setAttribute("aria-pressed", String(hasSel && cur === tok));
+    b.onclick = () => pick(tok); pad.appendChild(b);
+  });
 }
 function setMark(tok){
   const c = curClass(), a = curAssess(); if(!c || !a || !assessSel) return;
@@ -10654,19 +10969,29 @@ function editAssessMeta(){
   del.textContent = t("gDelete");
   del.onclick = () => { closeModal(); askConfirm(t("gDeleteQ"), t("gDeleteT"), t("delete"), () => { c.assess = c.assess.filter(x => x.id !== a.id); save(); show("grades"); renderGrades(); }); };
   sheet.appendChild(del);
-  sheetButtons(sheet, t("save"), () => { read(); Object.assign(a, { title: copy.title, date: copy.date, kind: copy.kind, scale: copy.scale, weight: copy.weight }); save(); closeModal(); renderAssess(); });
+  sheetButtons(sheet, t("save"), () => { read();
+    /* Wechsel auf eine neue Skala: neue Kennung – ältere App-Stände kennen sie nicht und dürften sonst
+       Noten der alten Skala hineinschreiben, die dann falsch gelesen würden */
+    if(copy.scale !== a.scale && ["third", "pct"].concat((DB.scales || []).map(u => "u:" + u.id)).indexOf(copy.scale) >= 0 && !Object.keys(a.marks).length){
+      a.id = uid(); curAssessId = a.id;
+    }
+    Object.assign(a, { title: copy.title, date: copy.date, kind: copy.kind, scale: copy.scale, weight: copy.weight });
+    if(copy.cat) a.cat = copy.cat; else delete a.cat;
+    if(a.scale === "pct" && copy.key) a.key = copy.key; else if(a.scale !== "grade" && a.scale !== "points") delete a.key;
+    save(); closeModal(); renderAssess(); });
 }
 /* ---- Grafiken (SVG, eine Farbe, leise Achsen) ---- */
 const SVGNS = "http://www.w3.org/2000/svg";
 function svgEl(tag, attrs, parent){ const e = document.createElementNS(SVGNS, tag); Object.keys(attrs || {}).forEach(k => e.setAttribute(k, attrs[k])); if(parent) parent.appendChild(e); return e; }
 /* Notenspiegel: Balken je Note (bei +/− zusammengefasst), Anzahl über dem Balken */
 function distChart(a){
-  const cats = a.scale === "grade" ? ["1","2","3","4","5","6"] : a.scale === "points" ? POINT_TOKS.slice().reverse() : SMILEY_TOKS;
+  const gf = a.scale === "grade" || a.scale === "third" || a.scale === "pct";
+  const cats = gf ? ["1","2","3","4","5","6"] : a.scale === "points" ? POINT_TOKS.slice().reverse() : a.scale === "smiley" ? SMILEY_TOKS : scaleToks(a.scale);
   const cnt = cats.map(() => 0);
   const cl = curClass();
   (cl ? cl.students.map(st => a.marks[st.id]).filter(Boolean) : Object.values(a.marks)).forEach(tok => {
     if(tok === "x") return;
-    const k = a.scale === "grade" ? cats.indexOf(String(tok).charAt(0)) : cats.indexOf(tok);
+    const k = a.scale === "pct" ? (markNum(a, tok) === null ? -1 : pctGrade(a, markNum(a, tok)) - 1) : gf ? cats.indexOf(String(tok).charAt(0)) : cats.indexOf(tok);
     if(k >= 0) cnt[k]++;
   });
   const W = 320, H = 130, pb = 22, pt = 16, n = cats.length, gap = 2, bw = (W - (n - 1) * gap) / n;
@@ -10754,8 +11079,10 @@ function renderOverview(body, c, s, list, term){
   const hr = document.createElement("tr");
   const th = txt => { const e = document.createElement("th"); e.textContent = txt; hr.appendChild(e); return e; };
   th(t("subColName"));
-  list.forEach(a => { const e = th(fmtDate(a.date)); e.title = a.title; const k = document.createElement("small"); k.textContent = a.kind === "written" ? t("gW") : t("gO"); e.appendChild(k); });
-  th("Ø " + t("gW")); th("Ø " + t("gO")); th(t("gTotal")).className = "tot"; th(t("gProposal")).className = "tot";
+  list.forEach(a => { const e = th(fmtDate(a.date)); e.title = a.title; const k = document.createElement("small"); k.textContent = catShort(catsOf(c, s.id).find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" }); e.appendChild(k); });
+  const cats = catsOf(c, s.id);
+  cats.forEach(cat => { const e = th("Ø " + catShort(cat)); e.title = catName(cat) + " · " + cat.w + " %"; });
+  th(t("gTotal")).className = "tot"; th(t("gProposal")).className = "tot";
   const withZn = term !== "h2";                          // 2. Halbjahr: Jahreszeugnis in der Ansicht „Schuljahr“ – dort passt der Vorschlag dazu
   if(withZn){ const zh = th(t("znCol")); zh.className = "tot zn"; zh.title = t(znTerm(term) === "h1" ? "znH1" : "znYear"); }
   th(t("absMissedShort"));
@@ -10766,9 +11093,9 @@ function renderOverview(body, c, s, list, term){
     nb.onclick = () => studentDetail(c, s, st, term); n.appendChild(nb);
     if(isZd(c, s.id, st.id)){ const z = document.createElement("span"); z.className = "zdtag"; z.textContent = t("zdShort"); z.title = t("zdLabel"); n.appendChild(z); }
     tr.appendChild(n);
-    list.forEach(a => { const d = document.createElement("td"); d.textContent = a.marks[st.id] ? tokLabel(a.marks[st.id]) : ""; if(a.marks[st.id] === "x") d.className = "miss"; tr.appendChild(d); });
+    list.forEach(a => { const d = document.createElement("td"); d.textContent = a.marks[st.id] ? markLabel(a, a.marks[st.id]) : ""; if(a.marks[st.id] === "x") d.className = "miss"; tr.appendChild(d); });
     const av = studentAverages(c, s.id, st.id, term);
-    [av.written, av.other, av.total].forEach((v, k) => { const d = document.createElement("td"); d.textContent = v === null ? "" : fmtNum(v, dg); d.className = k === 2 ? "tot" : "avg"; tr.appendChild(d); });
+    av.parts.map(p => p.avg).concat([av.total]).forEach((v, k) => { const d = document.createElement("td"); d.textContent = v === null ? "" : fmtNum(v, dg); d.className = k === av.parts.length ? "tot" : "avg"; tr.appendChild(d); });
     const pr = document.createElement("td"); pr.className = "tot prop"; pr.textContent = proposeGrade(c, s.id, av) || ""; tr.appendChild(pr);
     /* Zeugnisnote: festgelegt (fett) oder Knopf zum Festlegen; weicht sie vom Vorschlag ab, ist das markiert */
     if(withZn){
@@ -10815,7 +11142,7 @@ function studentDetail(c, s, st, term){
   const list = courseAssess(c, s.id, term), sc = courseScale(list), av = studentAverages(c, s.id, st.id, term), dg = sc === "points" ? 1 : 2;
   const sheet = sheetBase(st.name + " – " + s.name + (term === "h1" || term === "h2" ? " · " + termLabel(term) : ""));
   const sum = document.createElement("div"); sum.className = "lvlstats";
-  [[t("gW"), av.written], [t("gO"), av.other], [t("gTotal"), av.total]].forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + fmtNum(v, dg); sum.appendChild(sp); });
+  av.parts.map(p => [p.short, p.avg]).concat([[t("gTotal"), av.total]]).forEach(([k, v]) => { const sp = document.createElement("span"); sp.textContent = k + ": " + fmtNum(v, dg); sum.appendChild(sp); });
   const pv = proposeGrade(c, s.id, av);
   if(pv){ const sp = document.createElement("span"); sp.className = "propchip"; sp.textContent = t("gProposal") + ": " + pv; sum.appendChild(sp); }
   const fgv = term === "h2" ? null : finalText(c, s.id, st.id, term);
@@ -10849,8 +11176,8 @@ function studentDetail(c, s, st, term){
   list.slice().reverse().forEach(a => {
     if(!a.marks[st.id]) return;
     const r = document.createElement("div"); r.className = "srow";
-    const l = document.createElement("span"); l.textContent = fmtDate(a.date) + " · " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + ")";
-    const v = document.createElement("b"); v.textContent = tokLabel(a.marks[st.id]);
+    const l = document.createElement("span"); l.textContent = fmtDate(a.date) + " · " + a.title + " (" + catShort(catsOf(c, a.subjectId).find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" }) + ")";
+    const v = document.createElement("b"); v.textContent = markLabel(a, a.marks[st.id]);
     r.appendChild(l); r.appendChild(v); sheet.appendChild(r);
   });
   const selfs = selfAssess(c, s.id).filter(a => a.marks[st.id]);
@@ -10873,15 +11200,15 @@ function gradesPdfPages(c, s, term){
   const list = courseAssess(c, s.id, term), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
   const cols = list.slice(-14);                                  // höchstens 14 Spalten passen auf A4 quer
   const M = PDF_M, title = c.name + " · " + s.name + " – " + t("gPdfTitle") + (term === "h1" || term === "h2" ? " · " + termLabel(term) : "");
-  const nameW = 170, colW = Math.min(44, (PDF_W - 2 * M - nameW - 4 * 46) / Math.max(1, cols.length));
+  const pcs = catsOf(c, s.id), nameW = 170, colW = Math.min(44, (PDF_W - 2 * M - nameW - (pcs.length + 2) * 46) / Math.max(1, cols.length));
   const pages = []; let cur = [], y = 0;
   const head = () => {
     cur = [pdfText(M, PDF_H - M - 12, 15, title), pdfText(M, PDF_H - M - 28, 9, t("printDate") + " " + new Date().toLocaleDateString(), "0.353 0.420 0.459")];
     y = PDF_H - M - 56;
     cur.push(pdfText(M, y, 8.5, t("subColName"), "0.353 0.420 0.459"));
-    cols.forEach((a, i) => { const x = M + nameW + i * colW; cur.push(pdfText(x, y + 9, 7.5, fmtDate(a.date), "0.353 0.420 0.459")); cur.push(pdfText(x, y, 7.5, (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " x" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : ""), "0.353 0.420 0.459")); });
+    cols.forEach((a, i) => { const x = M + nameW + i * colW; cur.push(pdfText(x, y + 9, 7.5, fmtDate(a.date), "0.353 0.420 0.459")); cur.push(pdfText(x, y, 7.5, catShort(pcs.find(x2 => x2.id === catOfAssess(c, a)) || { id: a.kind, n: "" }) + (a.weight !== 1 ? " x" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : ""), "0.353 0.420 0.459")); });
     const x0 = M + nameW + cols.length * colW;
-    ["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposalShort")].forEach((h, k) => cur.push(pdfText(x0 + k * 46, y, 8.5, h, "0.353 0.420 0.459")));
+    pcs.map(cat => "Ø " + catShort(cat)).concat([t("gTotal"), t("gProposalShort")]).forEach((h, k) => cur.push(pdfText(x0 + k * 46, y, 8.5, h, "0.353 0.420 0.459")));
     y -= 16;
   };
   head();
@@ -10889,10 +11216,10 @@ function gradesPdfPages(c, s, term){
     if(y < M + 10){ pages.push(cur.join("\n")); head(); }
     if(idx % 2) cur.push("0.95 0.96 0.97 rg " + M + " " + (y - 4).toFixed(1) + " " + (PDF_W - 2 * M) + " 15 re f");
     cur.push(pdfText(M, y, 9.5, st.name));
-    cols.forEach((a, i) => { const tok = a.marks[st.id]; if(tok) cur.push(pdfText(M + nameW + i * colW, y, 9.5, tokLabel(tok, true))); });
+    cols.forEach((a, i) => { const tok = a.marks[st.id]; if(tok){ let tx = markLabel(a, tok, true); while(tx.length > 1 && pdfTextW(tx, 9.5) > colW - 3) tx = tx.slice(0, -1); cur.push(pdfText(M + nameW + i * colW, y, 9.5, tx)); } });
     const av = studentAverages(c, s.id, st.id, term), x0 = M + nameW + cols.length * colW;
-    [av.written, av.other, av.total].forEach((v, k) => { if(v !== null) cur.push(pdfText(x0 + k * 46, y, 9.5, fmtNum(v, dg))); });
-    const pv = proposeGrade(c, s.id, av); if(pv) cur.push(pdfText(x0 + 3 * 46, y, 9.5, pv));
+    av.parts.map(p => p.avg).concat([av.total]).forEach((v, k) => { if(v !== null) cur.push(pdfText(x0 + k * 46, y, 9.5, fmtNum(v, dg))); });
+    const pv = proposeGrade(c, s.id, av); if(pv) cur.push(pdfText(x0 + (av.parts.length + 1) * 46, y, 9.5, pv));
     y -= 15;
   });
   if(list.length > cols.length){ y -= 8; cur.push(pdfText(M, Math.max(M, y), 8, t("gPdfCut").replace("{n}", String(cols.length)), "0.353 0.420 0.459")); }
@@ -10955,7 +11282,7 @@ function quickPad(parent, c, st, onSaved, date){
     const a = todays();
     const scale = quickScaleFor(c, subjectId(), day());
     pad.className = "keypad k-" + scale; pad.textContent = "";
-    SCALE_TOKS[scale].forEach(tok => {
+    scaleToks(scale).forEach(tok => {
       const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
       if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
       b.classList.toggle("on", !!a && a.marks[st.id] === tok); b.setAttribute("aria-pressed", String(!!a && a.marks[st.id] === tok));
@@ -11065,22 +11392,17 @@ function renderGradeBar(){
   $("#gb-title").textContent = a.title;
   const done = c.students.filter(st => a.marks[st.id]).length, avg = assessAverage(a);
   $("#gb-meta").textContent = (s ? s.name + " · " : "") + (a.date === isoDay(new Date()) ? t("gToday") : fmtDate(a.date)) + " · " + t("gEntered").replace("{a}", String(done)).replace("{b}", String(c.students.length)) +
-    (avg !== null ? " · Ø " + fmtNum(avg, a.scale === "points" ? 1 : 2) : "");
+    (avg !== null ? " · Ø " + avgText(a, avg) : "");
   const st = gradeSel ? studentById(c, gradeSel) : null;
-  $("#gb-who").textContent = st ? st.name + (a.marks[st.id] ? " · " + tokLabel(a.marks[st.id]) : "") : t("gTapSeat");
+  $("#gb-who").textContent = st ? st.name + (a.marks[st.id] ? " · " + markLabel(a, a.marks[st.id]) : "") : t("gTapSeat");
   const pad = $("#gb-pad"); pad.textContent = "";
-  pad.className = "keypad k-" + (hasTasks(a) ? "tasks" : a.scale);
+  pad.className = "keypad k-" + (hasTasks(a) ? "tasks" : padKind(a.scale));
   if(hasTasks(a)){
     const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "gb-pts";
     pb.textContent = st ? t("ptEnter").replace("{n}", st.name) : t("gTapSeat");
     pb.onclick = () => { if(gradeSel) openPointsSheet(c, a, gradeSel, seatNextWithoutMark(a)); else toast(t("gTapSeat")); };
     pad.appendChild(pb);
-  } else SCALE_TOKS[a.scale].forEach(tok => {
-    const b = document.createElement("button"); b.textContent = tokLabel(tok); b.dataset.tok = tok;
-    if(SMILEY[tok]) b.setAttribute("aria-label", t("gSm_" + tok));
-    b.classList.toggle("on", !!st && a.marks[st.id] === tok); b.setAttribute("aria-pressed", String(!!st && a.marks[st.id] === tok));
-    b.onclick = () => setGradeOnPlan(tok); pad.appendChild(b);
-  });
+  } else scalePad(pad, a, st ? a.marks[st.id] : null, setGradeOnPlan, !!st);
   const miss = document.createElement("button"); miss.className = "kx"; miss.textContent = t("gMissing"); miss.dataset.tok = "x"; miss.onclick = () => setGradeOnPlan("x"); pad.appendChild(miss);
   const clr = document.createElement("button"); clr.className = "kx"; clr.textContent = "⌫"; clr.setAttribute("aria-label", t("gClear")); clr.onclick = () => setGradeOnPlan(null); pad.appendChild(clr);
 }
@@ -11712,7 +12034,7 @@ function proposeGrade(c, sid, av){
   /* Mit Tendenz: nächster Wert aus 1+ … 6; bei Gleichstand entscheidet die Regel */
   let best = null;
   GRADE_TOKS.forEach(tok => {
-    const x = tokNum(tok, "grade"), d = Math.abs(x - v);
+    const x = tokNum(tok, av.third ? "third" : "grade"), d = Math.abs(x - v);
     if(!best || d < best.d - eps || (Math.abs(d - best.d) < eps && (R.fav ? x < best.x : x > best.x))) best = { tok, x, d };
   });
   return best.tok;
@@ -11856,11 +12178,12 @@ function gradeCalc(c, s, sid, term){
   L.push({ k: "note", a: sc === "points" ? t("calcScalePoints") : t("calcScaleGrade") });
   if(sc === "grade" && list.some(a => a.scale === "points" && a.marks[sid])) L.push({ k: "note", a: t("calcMixed") });
   const W = own(c.gradeW || {}, s.id) ? c.gradeW[s.id] : 50;
-  const res = {};
-  [["written", "gWritten", W], ["other", "gOther", 100 - W]].forEach(([kind, lk, pct]) => {
-    L.push({ k: "h", a: t("calcPart").replace("{k}", t(lk)).replace("{w}", String(pct)) });
+  const res = {}, cats = catsOf(c, s.id), ownCats = hasOwnCats(c, s.id);
+  cats.forEach(cat => {
+    const kind = cat.id;
+    L.push({ k: "h", a: t("calcPart").replace("{k}", catName(cat)).replace("{w}", String(cat.w)) });
     let sv = 0, sw = 0, n = 0;
-    list.filter(a => a.kind === kind && a.marks[sid]).forEach(a => {
+    list.filter(a => catOfAssess(c, a) === kind && a.marks[sid]).forEach(a => {
       const tok = a.marks[sid], v = valIn(a, tok, sc);
       const pts = hasTasks(a) ? studentPoints(a, sid) : null;
       const left = fmtDate(a.date) + " " + a.title + (pts !== null ? " (" + t("calcFromPts").replace("{a}", fmtNum(pts, pts % 1 ? 1 : 0)).replace("{b}", fmtNum(taskMax(a), taskMax(a) % 1 ? 1 : 0)) + ")" : "");
@@ -11868,7 +12191,9 @@ function gradeCalc(c, s, sid, term){
         L.push({ k: "row", a: left, b: (tok === "x" ? t("calcMiss") + " – " : SMILEY[tok] ? t("calcSmiley") + " – " : "") + t("calcNotCounted"), off: true });
         return;
       }
-      const shown = a.scale === "points" && sc === "grade" ? t("calcPtsTo").replace("{p}", tok).replace("{g}", f(v, 1)) : sc === "grade" ? tok + " = " + f(v, 1) : tok;
+      const shown = a.scale === "points" && sc === "grade" ? t("calcPtsTo").replace("{p}", tok).replace("{g}", f(v, 1))
+        : a.scale === "pct" ? t("calcPctTo").replace("{p}", tok).replace("{g}", f(v, 0))
+        : sc === "grade" ? tok + " = " + f(v, a.scale === "third" ? 2 : 1) : tok;
       L.push({ k: "row", a: left, b: shown + " " + t("calcWeight").replace("{w}", wtxt(a.weight)) });
       sv += v * a.weight; sw += a.weight; n++;
     });
@@ -11881,7 +12206,15 @@ function gradeCalc(c, s, sid, term){
   const av = studentAverages(c, s.id, sid, term);
   L.push({ k: "h", a: t("calcTotal") });
   const wr = res.written, ot = res.other;
-  if(av.total === null){
+  if(ownCats){
+    /* eigene Kategorien: Σ (Anteil × Durchschnitt) / Σ Anteile der Teile mit Note */
+    cats.filter(x => res[x.id] !== null && x.w === 0).forEach(x => L.push({ k: "note", a: t("calcTotalZero").replace("{k}", catName(x)) }));
+    cats.filter(x => res[x.id] === null && x.w > 0).forEach(x => L.push({ k: "note", a: t("calcCatEmpty").replace("{k}", catName(x)).replace("{w}", String(x.w)) }));
+    const used = cats.filter(x => res[x.id] !== null && x.w > 0), sw = used.reduce((a, x) => a + x.w, 0);
+    if(av.total === null) L.push({ k: "note", a: t("calcNone") });
+    else L.push({ k: "sum", a: t("calcTotalCats").replace("{f}", used.map(x => x.w + " % × " + f(res[x.id])).join(" + ")).replace("{w}", String(sw)).replace("{t}", fx(av.total)) });
+  }
+  else if(av.total === null){
     if(wr !== null && W === 0) L.push({ k: "note", a: t("calcTotalZero").replace("{k}", t("gWritten")) });
     if(ot !== null && W === 100) L.push({ k: "note", a: t("calcTotalZero").replace("{k}", t("gOther")) });
     L.push({ k: "note", a: t("calcNone") });
@@ -11976,13 +12309,14 @@ function csvValue(tok){ return tok === "x" ? t("gMissing") : SMILEY[tok] ? smile
 function exportGradesCsv(c, s, term){
   try{
     const list = courseAssess(c, s.id, term), sc = courseScale(list), dg = sc === "points" ? 1 : 2;
-    const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + ")"))
-      .concat(["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposal"), t("absMissedShort")]);
+    const cats = catsOf(c, s.id), cs = a => catShort(cats.find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" });
+    const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + cs(a) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + (a.scale === "pct" ? ", %" : "") + ")"))
+      .concat(cats.map(cat => "Ø " + catName(cat)), [t("gTotal"), t("gProposal"), t("absMissedShort")]);
     const lines = [head.map(csvCell).join(";")];
     c.students.forEach(st => {
       const av = studentAverages(c, s.id, st.id, term);
       const cells = [st.name].concat(list.map(a => csvValue(a.marks[st.id])))
-        .concat([av.written, av.other, av.total].map(v => v === null ? "" : fmtNum(v, dg)))
+        .concat(av.parts.map(p => p.avg).concat([av.total]).map(v => v === null ? "" : fmtNum(v, dg)))
         .concat([proposeGrade(c, s.id, av) || "", String(missedLessons(c, st.id, term).bySubject[s.id] || 0)]);
       lines.push(cells.map(csvCell).join(";"));
     });
@@ -12054,7 +12388,7 @@ function talkSheetPages(c, st){
     need(70);
     cur.push("0.93 0.95 0.97 rg " + M + " " + (y - 6).toFixed(1) + " " + (W - 2 * M) + " 22 re f");
     cur.push(pdfText(M + 6, y, 13, s.name));
-    const sumTxt = "Ø " + t("gW") + " " + fmtNum(av.written, dg) + "   Ø " + t("gO") + " " + fmtNum(av.other, dg) + "   " + t("gTotal") + " " + fmtNum(av.total, dg) + (pv ? "   " + t("gProposal") + " " + pv : "");
+    const sumTxt = av.parts.map(p => "Ø " + p.short + " " + fmtNum(p.avg, dg)).join("   ") + "   " + t("gTotal") + " " + fmtNum(av.total, dg) + (pv ? "   " + t("gProposal") + " " + pv : "");
     cur.push(pdfText(W - M - 6 - pdfTextW(sumTxt, 9.5), y + 1, 9.5, sumTxt, grey));
     y -= 26;
     /* Verlauf als kleine Linie (bessere Werte oben) */
@@ -12077,8 +12411,8 @@ function talkSheetPages(c, st){
       cur.push(pdfText(M + 10, y, 10, fmtDate(a.date)));
       let ti = a.title; while(ti.length > 3 && pdfTextW(ti, 10) > 240) ti = ti.slice(0, -2) + "…";
       cur.push(pdfText(M + 60, y, 10, ti));
-      cur.push(pdfText(M + 310, y, 9, a.kind === "written" ? t("gWritten") : t("gOther"), grey));
-      cur.push(pdfText(M + 430, y, 10.5, tokLabel(a.marks[st.id], true)));
+      cur.push(pdfText(M + 310, y, 9, catName(catsOf(c, a.subjectId).find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" }).slice(0, 22), grey));
+      cur.push(pdfText(M + 430, y, 10.5, markLabel(a, a.marks[st.id], true)));
       y -= 14;
     });
     const selfs = selfAssess(c, s.id).filter(a => a.marks[st.id]);
@@ -12450,7 +12784,7 @@ const KEY_PRESETS = {
 };
 const DAY_RX = /^\d{4}-\d{2}-\d{2}$/;
 const half = v => Math.round(v * 2) / 2;
-const hasTasks = a => !!a && a.scale !== "smiley" && Array.isArray(a.tasks) && a.tasks.length > 0;
+const hasTasks = a => !!a && (a.scale === "grade" || a.scale === "points") && Array.isArray(a.tasks) && a.tasks.length > 0;
 const taskMax = a => a.tasks.reduce((s, x) => s + x.max, 0);
 function defaultKey(scale){ return { th: KEY_PRESETS[scale][0][1].slice(), tend: false }; }
 function keyOf(a){ return a.key && Array.isArray(a.key.th) && KEY_PRESETS[a.scale] && a.key.th.length === KEY_PRESETS[a.scale][0][1].length ? a.key : defaultKey(a.scale); }
@@ -12480,7 +12814,10 @@ function applyTaskMarks(a){
   Object.keys(a.pts || {}).forEach(sid => { const s = studentPoints(a, sid); if(s === null) delete a.pts[sid]; else a.marks[sid] = keyGrade(a, s); });
 }
 function sanTasks(out, a, ids){
-  if(out.scale === "smiley" || !Array.isArray(a.tasks)) return;
+  /* Prozent: eigener Schlüssel (Mindest-% je Note 1–5) */
+  if(out.scale === "pct" && a.key && Array.isArray(a.key.th) && a.key.th.length === 5 && a.key.th.every((v, i, l) => typeof v === "number" && v >= 0 && v <= 100 && (!i || v <= l[i - 1])))
+    out.key = { th: a.key.th.map(v => Math.round(v * 10) / 10), tend: false };
+  if((out.scale !== "grade" && out.scale !== "points") || !Array.isArray(a.tasks)) return;
   const seen = new Set();
   const src = new Map();                              // gekürzte ID -> ID in der Datei (für die Punkte)
   const tasks = a.tasks.filter(x => x && typeof x.id === "string" && x.id && isFinite(+x.max) && +x.max > 0 && !seen.has(x.id.slice(0, 20)) && seen.add(x.id.slice(0, 20)))
@@ -12739,11 +13076,11 @@ function taskChart(c, a){
 }
 /* Niedersachsen, Erlass „Schriftliche Arbeiten“ Nr. 8: mehr als 30 % mangelhaft/ungenügend */
 function failShare(c, a){
-  if(a.kind !== "written" || a.scale !== "grade") return null;
+  if(a.kind !== "written" || ["grade", "third", "pct"].indexOf(a.scale) < 0) return null;
   /* Arbeiten zieldifferent unterrichteter Schülerinnen und Schüler zählen nicht mit (Erlass Nr. 8) */
   const v = c.students.filter(st => !isZd(c, a.subjectId, st.id)).map(st => a.marks[st.id]).filter(x => x && x !== "x");
   if(v.length < 3) return null;
-  const bad = v.filter(x => x.charAt(0) === "5" || x.charAt(0) === "6").length;
+  const bad = v.filter(x => a.scale === "pct" ? markNum(a, x) !== null && pctGrade(a, markNum(a, x)) >= 5 : x.charAt(0) === "5" || x.charAt(0) === "6").length;
   return { bad, n: v.length, share: bad / v.length };
 }
 function exportTaskXlsx(c, a){
@@ -13003,7 +13340,7 @@ function openTallyList(kArg, back){
    Änderung der anderen (samt allem, was daran hängt) gelöscht wurde, bleibt gelöscht.
    Gerätebezogenes (Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse) wird nie übernommen. */
 const SYNC_MAX_STAMPS = 200000, SYNC_MAX_DEL = 20000, SYNC_DEL_DAYS = 400, SYNC_FUTURE = 86400;
-const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|zn|tg|tp)(\||$)/;
+const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|zn|tg|tp|us|gc|ac)(\||$)/;
 const SYNC_HASH = /^[0-9a-z]{6,14}$/;
 const syncNow = () => Math.floor(Date.now() / 1000);
 const jsonOf = v => JSON.stringify(v === undefined ? null : v);
@@ -13019,6 +13356,7 @@ function hk(k){
 function syncTop(db, add){
   (db.rooms || []).forEach(x => add("room|" + idk(x.id), x));
   (db.subjects || []).forEach(x => add("subj|" + idk(x.id), x));
+  (db.scales || []).forEach(x => add("us|" + idk(x.id), x));
   (db.lessons || []).forEach(L => add("les|" + idk(L.id), L, "", ["subj|" + idk(L.subjectId)]));
   (db.cancelled || []).forEach(k => add("cx|" + idk(k), 1));
   if(db.tt) add("tt", db.tt);
@@ -13029,6 +13367,8 @@ function syncClass(c, add){
   const cid = idk(c.id), ck = "c|" + cid, sk = sid => "s|" + cid + "|" + idk(sid);
   add(ck, { name: c.name, archived: !!c.archived, levelMode: c.levelMode || "off", subNote: c.subNote || "", color: c.color || "",
     gradeW: c.gradeW || {}, gradeRound: c.gradeRound || {}, gradeSubjects: c.gradeSubjects || [] });
+  /* Kategorien je Fach als eigene Einträge – ältere App-Stände kennen sie nicht und lassen sie stehen */
+  Object.keys(c.gcat || {}).forEach(subj => add("gc|" + cid + "|" + idk(subj), c.gcat[subj], ck, ["subj|" + idk(subj)]));
   (c.students || []).forEach(x => add(sk(x.id), x, ck));
   (c.rules || []).forEach(x => add("r|" + cid + "|" + idk(x.id), x, ck, [sk(x.a), sk(x.b)]));
   (c.groups || []).forEach(x => add("g|" + cid + "|" + idk(x.id), x, ck));
@@ -13049,9 +13389,11 @@ function syncClass(c, add){
   (c.assess || []).forEach(a => {
     const ak = "a|" + cid + "|" + idk(a.id);
     /* Aufgaben/Schlüssel und Punkte als eigene Einträge – ältere Stände kennen sie nicht und lassen sie stehen */
-    const meta = Object.assign({}, a); delete meta.marks; delete meta.pts; delete meta.tasks; delete meta.key;
-    add(ak, meta, ck, ["subj|" + idk(a.subjectId)]);
-    if(a.tasks && a.tasks.length) add("tk|" + cid + "|" + idk(a.id), { tasks: a.tasks, key: a.key || null }, ak);
+    const meta = Object.assign({}, a); delete meta.marks; delete meta.pts; delete meta.tasks; delete meta.key; delete meta.cat;
+    add(ak, meta, ck, ["subj|" + idk(a.subjectId)].concat(typeof a.scale === "string" && a.scale.slice(0, 2) === "u:" ? ["us|" + idk(a.scale.slice(2))] : []));
+    /* Aufgaben/Schlüssel (auch der Prozent-Schlüssel) und die Kategorie als eigene Einträge */
+    if((a.tasks && a.tasks.length) || (a.scale === "pct" && a.key)) add("tk|" + cid + "|" + idk(a.id), a.tasks && a.tasks.length ? { tasks: a.tasks, key: a.key || null } : { key: a.key }, ak);
+    if(a.cat) add("ac|" + cid + "|" + idk(a.id), a.cat, ak);
     Object.keys(a.marks || {}).forEach(s => add("m|" + cid + "|" + idk(a.id) + "|" + idk(s), a.marks[s], ak, [sk(s)]));
     /* Punkte je Aufgabe: je Schüler ein Eintrag */
     Object.keys(a.pts || {}).forEach(s => add("pt|" + cid + "|" + idk(a.id) + "|" + idk(s), a.pts[s], ak, [sk(s)]));
@@ -13237,6 +13579,7 @@ function mergeDB(L0, R){
   const out = clone(L);
   out.rooms = mergeList(L.rooms, R.rooms, x => "room|" + idk(x.id));
   out.subjects = mergeList(L.subjects, R.subjects, x => "subj|" + idk(x.id));
+  out.scales = mergeList(L.scales, R.scales, x => "us|" + idk(x.id));
   out.lessons = mergeList(L.lessons, R.lessons, x => "les|" + idk(x.id));
   out.cancelled = mergeList(L.cancelled, R.cancelled, k => "cx|" + idk(k));
   if(pick("tt") === "R") out.tt = clone(R.tt);
@@ -13246,6 +13589,12 @@ function mergeDB(L0, R){
     if(!cl) return clone(cr);
     const c = clone(cl), cid = idk(cl.id);
     if(w === "R") ["name", "archived", "levelMode", "subNote", "color", "gradeW", "gradeRound", "gradeSubjects"].forEach(f => { c[f] = clone(cr[f]); });
+    /* Kategorien je Fach einzeln entscheiden */
+    c.gcat = {};
+    new Set(Object.keys(cl.gcat || {}).concat(Object.keys(cr.gcat || {}))).forEach(subj => {
+      const wg = pick("gc|" + cid + "|" + idk(subj)), src = wg === "L" ? cl.gcat : wg === "R" ? cr.gcat : null;
+      if(src && src[subj]) c.gcat[subj] = clone(src[subj]);
+    });
     const sub = (pre, f, idOf, both) => { c[f] = mergeList(cl[f], cr[f], x => pre + "|" + cid + "|" + idk(idOf(x)), both); };
     sub("s", "students", x => x.id);
     sub("r", "rules", x => x.id);
@@ -13266,10 +13615,13 @@ function mergeDB(L0, R){
         const w2 = markWin[s] = pick("m|" + cid + "|" + idk(a1.id) + "|" + idk(s));
         if(w2 === "L") a.marks[s] = a1.marks[s]; else if(w2 === "R") a.marks[s] = a2.marks[s];
       });
-      /* Aufgaben und Schlüssel nach eigenem Eintrag */
-      delete a.tasks; delete a.key;
+      /* Aufgaben und Schlüssel (auch Prozent-Schlüssel) nach eigenem Eintrag, ebenso die Kategorie */
+      delete a.tasks; delete a.key; delete a.cat;
       const wt = pick("tk|" + cid + "|" + idk(a1.id)), srcT = wt === "L" ? a1 : wt === "R" ? a2 : null;
-      if(srcT && srcT.tasks){ a.tasks = clone(srcT.tasks); a.key = clone(srcT.key); }
+      if(srcT && srcT.tasks && srcT.tasks.length){ a.tasks = clone(srcT.tasks); a.key = clone(srcT.key); }
+      else if(srcT && srcT.key && a.scale === "pct") a.key = clone(srcT.key);
+      const wc = pick("ac|" + cid + "|" + idk(a1.id)), srcC = wc === "L" ? a1 : wc === "R" ? a2 : null;
+      if(srcC && srcC.cat) a.cat = srcC.cat;
       /* Punkte je Schüler einzeln; die Note wird danach aus Punkten und Schlüssel neu berechnet */
       delete a.pts;
       if(a1.pts || a2.pts){
@@ -13340,16 +13692,27 @@ function mergeDB(L0, R){
     return c;
   };
   /* Leere Klasse als Gegenstück, wenn nur eine Seite die Klasse hat */
-  classMerge.shell = x => ({ id: x.id, name: x.name, archived: false, levelMode: "off", subNote: "", color: "", gradeW: {}, gradeRound: {}, gradeSubjects: [],
+  classMerge.shell = x => ({ id: x.id, name: x.name, archived: false, levelMode: "off", subNote: "", color: "", gradeW: {}, gradeRound: {}, gradeSubjects: [], gcat: {},
     students: [], rules: [], groups: [], plans: [], obs: [], history: [], attendance: [], absLog: [], assess: [], checks: [], journal: [], exc: [], late: [], zd: [], zn: [], targets: [],
     lesson: { date: "", absent: [], picked: [], notes: {} }, lastSubject: "", lastGradePlan: "" });
   out.classes = mergeList(L.classes, R.classes, c => "c|" + idk(c.id), classMerge);
+  /* Eigene Skalen, die eine gebliebene Bewertung noch benutzt, bleiben – auch wenn ein Gerät sie gelöscht hat */
+  { const have = new Set((out.scales || []).map(x => x.id));
+    out.classes.forEach(c => (c.assess || []).forEach(a => {
+      const id = typeof a.scale === "string" && a.scale.slice(0, 2) === "u:" ? a.scale.slice(2) : null;
+      if(!id || have.has(id)) return;
+      const back = (L.scales || []).find(x => x.id === id) || (R.scales || []).find(x => x.id === id);
+      if(back){ out.scales = (out.scales || []).concat([clone(back)]); have.add(id); }
+    })); }
   /* Papierkorb: was durch den Abgleich wieder da ist, gehört nicht mehr hinein */
   const live = new Set(out.classes.map(c => c.id).concat(out.rooms.map(r => r.id), ...out.classes.map(c => c.plans.map(p => p.id))));
   out.trash = (L.trash || []).filter(e => !(e.payload && live.has(e.payload.id)));
   /* Zeitstempel und Löschliste des Ergebnisses */
   const eM = syncEntities(out), st = {}, del = {}, liveH = new Set();
-  eM.forEach((e, k) => { liveH.add(hk(k)); const t0 = Math.max(sL[k] || 0, sR[k] || 0); if(t0) st[k] = t0; });
+  eM.forEach((e, k) => { liveH.add(hk(k)); let t0 = Math.max(sL[k] || 0, sR[k] || 0);
+    /* wieder aufgenommene Skala: jünger als ihre Löschung, damit sie beim nächsten Abgleich nicht erneut verschwindet */
+    if(k.slice(0, 3) === "us|"){ const dd = Math.max(dL[hk(k)] || 0, dR[hk(k)] || 0); if(dd >= t0) t0 = Math.min(dd + 1, now); }
+    if(t0) st[k] = t0; });
   [dL, dR].forEach(d => Object.keys(d).forEach(h => { if(!liveH.has(h) && (del[h] || 0) < d[h]) del[h] = d[h]; }));
   out.stamps = st; out.del = del; out.mod = Math.min(Math.max(L.mod || 0, R.mod || 0), now);
   const clean = sanitizeDB(out) || out;
@@ -13358,7 +13721,7 @@ function mergeDB(L0, R){
 /* Was sich gegenüber dem Gerät ändert – gezählt nach Art */
 const SYNC_KINDS = { c: "syncClasses", s: "syncStudents", r: "syncRules", g: "syncGroups", a: "syncAssess", m: "syncMarks", o: "syncObs",
   al: "syncAbs", alx: "syncAbs", at: "syncAbs", atx: "syncAbs", ls: "syncLesson", lsx: "syncLesson", p: "syncPlans", h: "syncHistory",
-  k: "syncChecks", kd: "syncChecks", kt: "syncChecks", kty: "syncChecks", tk: "syncAssess", pt: "syncMarks", j: "syncJournal", ex: "syncAbs", lt: "syncAbs", zd: "syncStudents", room: "syncRooms", subj: "syncTT", les: "syncTT", tt: "syncTT", cx: "syncTT", set: "syncSettings" };
+  k: "syncChecks", kd: "syncChecks", kt: "syncChecks", kty: "syncChecks", tk: "syncAssess", ac: "syncAssess", gc: "syncAssess", us: "syncAssess", zn: "syncMarks", pt: "syncMarks", j: "syncJournal", ex: "syncAbs", lt: "syncAbs", zd: "syncStudents", room: "syncRooms", subj: "syncTT", les: "syncTT", tt: "syncTT", cx: "syncTT", set: "syncSettings" };
 function syncReport(before, after, conflicts){
   const r = { add: 0, upd: 0, rem: 0, conflicts, kinds: {} };
   const bump = (k, f) => { const kd = SYNC_KINDS[k.split("|")[0]] || "syncOther"; r.kinds[kd] = r.kinds[kd] || { add: 0, upd: 0, rem: 0 }; r.kinds[kd][f]++; };
@@ -13910,20 +14273,22 @@ function gradesXlsxSheets(c, term){
   courseSubjects(c).forEach(s => {
     const list = courseAssess(c, s.id, term); if(!list.length) return;
     const sc = courseScale(list), fmt = sc === "points" ? 2 : 1;
-    const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + (a.kind === "written" ? t("gW") : t("gO")) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + ")"))
-      .concat(["Ø " + t("gW"), "Ø " + t("gO"), t("gTotal"), t("gProposal"), t("absMissedShort")]);
+    const cats = catsOf(c, s.id), cs = a => catShort(cats.find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" });
+    const head = [t("csvName")].concat(list.map(a => fmtDate(a.date) + " " + a.title + " (" + cs(a) + (a.weight !== 1 ? " ×" + fmtNum(a.weight, a.weight % 1 ? 1 : 0) : "") + (a.scale === "pct" ? ", %" : "") + ")"))
+      .concat(cats.map(cat => "Ø " + catName(cat)), [t("gTotal"), t("gProposal"), t("absMissedShort")]);
     const rows = [head];
     c.students.forEach(st => {
       const av = studentAverages(c, s.id, st.id, term);
       /* Punkte und ganze Noten als Zahl (damit Excel rechnen kann), „2+“, Smileys und „fehlt“ als Text */
-      const marks = list.map(a => { const v = a.marks[st.id]; const n = v && (a.scale === "points" || /^[1-6]$/.test(v)) ? tokNum(v, a.scale) : null; return n !== null ? n : csvValue(v); });
+      const marks = list.map(a => { const v = a.marks[st.id]; const n = v && (a.scale === "points" || a.scale === "pct" || /^[1-6]$/.test(v)) ? markNum(a, v) : null; return n !== null ? n : csvValue(v); });
       const prop = proposeGrade(c, s.id, av);
-      rows.push([st.name].concat(marks, [av.written, av.other, av.total].map(v => v === null ? "" : Math.round(v * 100) / 100),
+      rows.push([st.name].concat(marks, av.parts.map(p => p.avg).concat([av.total]).map(v => v === null ? "" : Math.round(v * 100) / 100),
         [prop ? (/^\d+$/.test(prop) ? +prop : prop) : "", missedLessons(c, st.id, term).bySubject[s.id] || 0]));
     });
-    const k = list.length;
-    sheets.push({ name: s.name, rows, widths: [24].concat(list.map(() => 14), [10, 10, 10, 11, 10]),
-      num: { [k + 1]: fmt, [k + 2]: fmt, [k + 3]: fmt, [k + 5]: 3 } });
+    const k = list.length, nc = cats.length, num = {};
+    for(let i = 1; i <= nc + 1; i++) num[k + i] = fmt;                 // Durchschnitte je Kategorie und gesamt
+    num[k + nc + 3] = 3;                                               // Fehlstunden
+    sheets.push({ name: s.name, rows, widths: [24].concat(list.map(() => 14), cats.map(() => 10), [10, 11, 10]), num });
   });
   /* Zeugnisnoten aller Fächer – wie die Notenliste (hinter den Fächern, vor den Fehlzeiten) */
   { const T = finalsTable(c, term);

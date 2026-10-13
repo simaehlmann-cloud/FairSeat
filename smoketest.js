@@ -3899,6 +3899,205 @@ test('Zeugnisnoten: festlegen, Vorschläge übernehmen, Notenliste, Abgleich', a
   erwarte(!!delBtn && app.E('curClass().zn.every(x => x.s !== "ma") && curClass().zn.some(x => x.s === "de")'), 'Zeugnisnoten eines gelöschten Fachs bleiben (oder andere verschwinden)');
 });
 
+test('Kategorien: eigene Anteile, Zuordnung, Rechenweg, Ausgaben, Abgleich', async app => {
+  bewertungsKlasse(app);
+  app.E('gradeSubject = "ma"; gradeTab = "list"; goGrades("ma")');
+  // Gewichtung: Kategorie hinzufügen
+  app.klick('#g-weight'); app.klick('#g-cat-add');
+  let rows = app.$$('#g-cats .catrow');
+  erwarte(rows.length === 3 && !app.$('#g-weight-range') && /Zusammen: 100 %/.test(app.$('#g-cat-sum').textContent), 'Kategorien-Liste fehlt');
+  const setRow = (i, name, w) => { const r = app.$$('#g-cats .catrow')[i]; const f = r.querySelectorAll('input');
+    if(name !== null){ f[0].value = name; f[0].dispatchEvent(new app.w.Event('input')); } f[1].value = String(w); f[1].dispatchEvent(new app.w.Event('input')); };
+  setRow(0, 'Klassenarbeiten', 50); setRow(1, null, 30);
+  app.sheetOk();
+  erwarte(/Kategorie benennen/.test(app.$('#toast').textContent) || /100 %/.test(app.$('#toast').textContent), 'Unvollständige Kategorien gespeichert');
+  setRow(2, 'Tests', 20);
+  erwarte(/Zusammen: 100 %/.test(app.$('#g-cat-sum').textContent), 'Summe nicht aktualisiert');
+  app.sheetOk();
+  erwarte(app.E('JSON.stringify(curClass().gcat.ma.map(x => [x.n, x.w]))') === '[["Klassenarbeiten",50],["",30],["Tests",20]]' && app.E('curClass().gradeW.ma') === 50, 'Kategorien nicht gespeichert');
+  erwarte(/Klassenarbeiten 50 %/.test(app.$('#g-weight').textContent) && /Tests 20 %/.test(app.$('#g-weight').textContent), 'Zusammenfassung zeigt die Kategorien nicht');
+  // Bewertung in eigener Kategorie
+  app.klick('#g-new');
+  erwarte(app.$$('#a-kind button').length === 3 && app.$$('#a-kind button')[2].textContent === 'Tests', 'Kategorie-Auswahl fehlt');
+  app.klick(app.$$('#a-kind button')[2]); app.sheetOk();
+  const tid = app.E('curAssess().id');
+  erwarte(app.E('curAssess().cat') !== undefined && app.E('curAssess().kind') === 'other' && /Tests/.test(app.$('#assess-head').textContent), 'Kategorie nicht zugeordnet');
+  app.klick('#btn-assess-back');
+  const [anna, ben] = [sid(app, 'Anna'), sid(app, 'Ben')];
+  app.E(`(() => { const c = curClass(); c.assess.find(a => a.id === "${tid}").marks = { "${anna}": "1" };
+    c.assess.push({ id: "k1", subjectId: "ma", title: "KA", date: "2026-09-10", kind: "written", scale: "grade", weight: 1, marks: { "${anna}": "2", "${ben}": "3" } },
+                  { id: "m1", subjectId: "ma", title: "MA", date: "2026-09-11", kind: "other", scale: "grade", weight: 1, marks: { "${anna}": "4" } }); })(); save()`);
+  const av = app.E(`studentAverages(curClass(), "ma", "${anna}", "year")`);
+  erwarte(Math.abs(av.total - (0.5 * 2 + 0.3 * 4 + 0.2 * 1)) < 1e-9 && av.parts.length === 3, 'Gesamt mit Kategorien falsch: ' + av.total);
+  erwarte(app.E(`studentAverages(curClass(), "ma", "${ben}", "year").total`) === 3, 'Leere Kategorien zählen mit');
+  // Übersicht, Rechenweg, Ausgaben
+  app.E('gradeTab = "overview"; gradeTerm = "year"; renderGrades()');
+  const ths = app.$$('#g-table tr')[0].querySelectorAll('th');
+  erwarte(Array.from(ths).map(x => x.childNodes[0].textContent).filter(x => /^Ø/.test(x)).join('|') === 'Ø Klassena.|Ø münd.|Ø Tests', 'Spalten je Kategorie fehlen: ' + Array.from(ths).map(x => x.textContent).join('|'));
+  const calc = app.E(`JSON.stringify(gradeCalc(curClass(), subjectById("ma"), "${anna}", "year").lines)`);
+  erwarte(/Tests – Gewichtung 20 %/.test(calc) && /\(50 % × 2,00 \+ 30 % × 4,00 \+ 20 % × 1,00\) ÷ 100 % = 2,40/.test(calc), 'Rechenweg mit Kategorien falsch: ' + calc);
+  const calcB = app.E(`JSON.stringify(gradeCalc(curClass(), subjectById("ma"), "${ben}", "year").lines)`);
+  erwarte(/Tests \(20 %\) hat noch keine Note/.test(calcB), 'Rechenweg nennt leere Kategorie nicht');
+  const box = downloadAbfangen(app); app.klick('#g-csv');
+  const csv = await blobText(app, box.blob);
+  erwarte(/Ø Klassenarbeiten;Ø mündlich & sonstige;Ø Tests;Gesamt/.test(csv) && /\(Tests\)/.test(csv), 'CSV ohne Kategorien: ' + csv.split('\n')[0]);
+  const sh = JSON.parse(app.E('JSON.stringify(gradesXlsxSheets(curClass(), "year")[0])'));
+  erwarte(sh.rows[0].slice(-6).join('|') === 'Ø Klassenarbeiten|Ø mündlich & sonstige|Ø Tests|Gesamt|Vorschlag|Fehlst.' && sh.num['4'] && sh.num['7'] && sh.num['9'] === 3, 'Excel ohne Kategorien: ' + sh.rows[0].join('|') + ' ' + JSON.stringify(sh.num));
+  // Laden prüft
+  erwarte(app.E('JSON.stringify(sanCats({ ma: [{ id: "written", n: "", w: 50 }, { id: "other", n: "", w: 40 }], de: [{ id: "written", n: "", w: 50 }, { id: "x1", n: "", w: 50 }], en: [{ id: "written", n: "", w: 60 }, { id: "other", n: "", w: 20 }, { id: "t1", n: "Tests", w: 20 }] }))')
+    === '{"en":[{"id":"written","n":"","w":60},{"id":"other","n":"","w":20},{"id":"t1","n":"Tests","w":20}]}', 'Laden prüft Kategorien falsch');
+  // Abgleich
+  uhr(app, 1000); app.E('flushSave()');
+  const B = neueApp();
+  try{
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    erwarte(B.E('DB.classes[0].gcat.ma.length') === 3 && B.E(`DB.classes[0].assess.find(a => a.id === "${tid}").cat`) === app.E(`curClass().assess.find(a => a.id === "${tid}").cat`), 'Kategorien nicht übertragen');
+    uhr(B, 2000); B.E('DB.classes[0].gcat.ma[2].w = 10; DB.classes[0].gcat.ma[1].w = 40; flushSave()');
+    uhr(app, 2100); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curClass().gcat.ma[2].w') === 10, 'Geänderte Anteile nicht abgeglichen');
+  } finally { B.ende(); }
+  // Kategorie entfernen: Bewertungen zählen wieder zu ihrer Grundart
+  app.E('renderGrades()'); app.klick('#g-weight');
+  app.klick(app.$$('#g-cats .catrow')[2].querySelector('button'));
+  erwarte(app.$$('#g-cats .catrow').length === 2, 'Kategorie lässt sich nicht entfernen');
+  app.sheetOk();
+  erwarte(/100 %/.test(app.$('#toast').textContent) && app.E('curClass().gcat.ma.length') === 3, 'Summe ≠ 100 gespeichert');
+  setRow(1, null, 50); app.sheetOk();
+  erwarte(!!app.E('curClass().gcat.ma') && app.E(`curClass().assess.find(a => a.id === "${tid}").cat`) === undefined, 'Zuordnung bleibt nach dem Entfernen');
+  // Namen der festen Kategorien zurücksetzen → wieder einfache Gewichtung
+  app.klick('#g-weight');
+  const f0 = app.$$('#g-cats .catrow')[0].querySelector('input'); f0.value = ''; f0.dispatchEvent(new app.w.Event('input'));
+  app.sheetOk();
+  erwarte(app.E('curClass().gcat.ma') === undefined && app.E('curClass().gradeW.ma') === 50 && (app.klick('#g-weight'), !!app.$('#g-weight-range')), 'Einfache Gewichtung nicht wieder erreichbar');
+  app.E('closeModal()');
+});
+
+test('Notenskalen: Drittelnoten, Prozent, eigene Skala', async app => {
+  bewertungsKlasse(app);
+  const [anna, ben, cem] = [sid(app, 'Anna'), sid(app, 'Ben'), sid(app, 'Cem')];
+  erwarte(Math.abs(app.E('tokNum("2-", "third")') - 7 / 3) < 1e-9 && Math.abs(app.E('tokNum("2+", "third")') - 5 / 3) < 1e-9 && app.E('tokNum("2", "third")') === 2, 'Drittelnoten falsch');
+  app.E('gradeSubject = "ma"; gradeTab = "list"; goGrades("ma")');
+  // Drittelnoten über die Oberfläche
+  app.klick('#g-new');
+  erwarte(app.$$('#a-scale button').map(b => b.textContent).join('|') === 'Noten 1–6|Punkte 0–15|Smileys|Drittelnoten|Prozent', 'Skalen-Auswahl falsch: ' + app.$$('#a-scale button').map(b => b.textContent).join('|'));
+  app.klick(app.$$('#a-scale button')[3]); app.sheetOk();
+  erwarte(app.E('curAssess().scale') === 'third' && app.$$('#assess-pad button').length === 16 + 2 && !app.$('#a-tasks'), 'Tastenfeld Drittelnoten falsch');
+  app.klick('#assess-pad button[data-tok="2-"]');
+  erwarte(app.E(`curAssess().marks["${anna}"]`) === '2-' && Math.abs(app.E(`valIn(curAssess(), "2-", "grade")`) - 7 / 3) < 1e-9, 'Drittelnote nicht gespeichert');
+  app.E(`curClass().gradeRound = { ma: { fav: true, tend: true } }`);
+  erwarte(app.E(`proposeGrade(curClass(), "ma", studentAverages(curClass(), "ma", "${anna}"))`) === '2-', 'Vorschlag mit Drittelnoten falsch');
+  erwarte(app.E(`proposeGrade(curClass(), "ma", { total: 13 / 6, scale: "grade", third: true })`) === '2' && app.E(`proposeGrade(curClass(), "ma", { total: 13 / 6, scale: "grade", third: false })`) === '2-', 'Tendenz-Vorschlag rechnet nicht in Dritteln');
+  app.klick('#btn-assess-back');
+  // Prozent mit Schlüssel 40 %
+  app.klick('#g-new'); app.klick(app.$$('#a-scale button')[4]);
+  erwarte(app.$$('#a-pctkey button').length === 2 && app.$('#a-pctkey button.on').dataset.v === 'ihk', 'Schlüssel für Prozent fehlt');
+  app.klick(app.$$('#a-pctkey button')[1]); app.$('#a-kind button').click(); app.sheetOk();
+  erwarte(app.E('curAssess().scale') === 'pct' && app.E('curAssess().key.th.join()') === '85,70,55,40,20' && !!app.$('#pct-in'), 'Prozent-Bewertung falsch angelegt');
+  app.E(`assessSel = "${anna}"; renderAssess()`);
+  app.$('#pct-in').value = '120'; app.klick('#pct-ok');
+  erwarte(!app.E(`curAssess().marks["${anna}"]`) && /0 bis 100/.test(app.$('#toast').textContent), 'Ungültige Prozentzahl angenommen');
+  app.$('#pct-in').value = '55'; app.klick('#pct-ok');
+  erwarte(app.E(`curAssess().marks["${anna}"]`) === '55' && app.E('assessSel') === ben, 'Prozent nicht gespeichert oder nicht weiter');
+  app.$('#pct-in').value = '30'; app.klick('#pct-ok');
+  app.$('#pct-in').value = '19'; app.klick('#pct-ok');
+  erwarte(app.E(`valIn(curAssess(), "55", "grade")`) === 3 && app.E(`valIn(curAssess(), "19", "grade")`) === 6 && /Ø 35 %/.test(app.$('#assess-stats').textContent), 'Prozent → Note falsch: ' + app.$('#assess-stats').textContent);
+  erwarte(app.E('JSON.stringify(failShare(curClass(), curAssess()))') === '{"bad":2,"n":3,"share":0.6666666666666666}', 'Klassenarbeit in Prozent: 30-%-Regel falsch');
+  app.klick('#btn-assess-back');
+  // eigene Skala
+  app.E('show("settings"); renderSettings()'); app.klick('#set-scales'); app.klick('#us-new');
+  app.$('#us-name').value = 'Kompetenz';
+  erwarte(app.$$('#us-steps .usrow').length === 4, 'Vorlage mit vier Stufen fehlt');
+  app.sheetOk(); await pause(90);
+  const us = app.E('DB.scales[0] && DB.scales[0].id');
+  erwarte(!!us && app.E('DB.scales[0].steps.map(x => x.l + "=" + x.v).join()') === 'sehr sicher=1,sicher=2.5,teilweise=4,noch nicht=5.5' && !!app.$('#us-list .grpcard'), 'Eigene Skala nicht gespeichert');
+  app.E('closeModal(); goGrades("ma")'); app.klick('#g-new');
+  erwarte(app.$$('#a-scale button').some(b => b.textContent === 'Kompetenz'), 'Eigene Skala nicht wählbar');
+  app.klick(app.$$('#a-scale button').find(b => b.textContent === 'Kompetenz')); app.sheetOk();
+  erwarte(app.E('curAssess().scale') === 'u:' + us && app.$$('#assess-pad button').map(b => b.textContent).slice(0, 4).join('|') === 'sehr sicher|sicher|teilweise|noch nicht' && app.$('#assess-pad').classList.contains('k-user'), 'Tastenfeld eigene Skala falsch');
+  app.E(`assessSel = "${anna}"; renderAssess()`); app.klick('#assess-pad button[data-tok="sicher"]');
+  erwarte(app.E(`curAssess().marks["${anna}"]`) === 'sicher' && app.E(`valIn(curAssess(), "sicher", "grade")`) === 2.5 && /sicher/.test(app.$('#assess-list').textContent), 'Eintrag eigene Skala falsch');
+  const uaid = app.E('curAssess().id');
+  app.klick('#btn-assess-back');
+  // umbenennen zieht Einträge mit; benutzte Stufe nicht löschbar; benutzte Skala nicht löschbar
+  app.E('openScales()'); app.klick('#us-list .grpcard');
+  const r1 = app.$$('#us-steps .usrow')[1].querySelector('input'); r1.value = 'gut'; r1.dispatchEvent(new app.w.Event('input'));
+  app.sheetOk(); await pause(90);
+  erwarte(app.E(`curClass().assess.find(a => a.id === "${uaid}").marks["${anna}"]`) === 'gut', 'Umbenennen zieht die Einträge nicht mit');
+  app.E('closeModal(); openScales()'); app.klick('#us-list .grpcard');
+  app.klick(app.$$('#us-steps .usrow')[1].querySelector('button')); app.sheetOk();
+  erwarte(/noch eingetragen/.test(app.$('#toast').textContent) && app.E('DB.scales[0].steps.length') === 4, 'Benutzte Stufe gelöscht');
+  app.E('closeModal(); openScales()'); app.klick('#us-list .grpcard'); app.klick('#us-delete');
+  erwarte(/nicht löschbar/.test(app.$('#toast').textContent) && app.E('DB.scales.length') === 1, 'Benutzte Skala gelöscht');
+  app.E('closeModal()');
+  // Laden prüft
+  erwarte(app.E('JSON.stringify(sanScales([{ id: "a1", name: "S", steps: [{ l: "x", v: 1 }, { l: "a", v: 1 }, { l: "a", v: 2 }, { l: "b", v: 7 }, { l: "c", v: 3 }] }, { id: "a2", name: "", steps: [] }]).map(u => u.steps.map(x => x.l)))') === '[["a","c"]]', 'Laden prüft eigene Skalen falsch');
+  erwarte(app.E('JSON.stringify(sanitizeDB({ v: 2, classes: [{ id: "c", name: "K", students: [{ id: "s1", name: "A" }], assess: [{ id: "p", subjectId: "ma", scale: "pct", marks: { s1: "101" }, key: { th: [90, 80, 70, 60, 50] } }, { id: "q", subjectId: "ma", scale: "pct", marks: { s1: "77" } }, { id: "u", subjectId: "ma", scale: "u:zz", marks: { s1: "gut" } }, { id: "v", subjectId: "ma", scale: "quatsch", marks: {} }] }] }).classes[0].assess.map(a => [a.id, a.marks.s1 || "", a.key ? a.key.th.join() : ""]))')
+    === '[["p","","90,80,70,60,50"],["q","77",""],["u","gut",""]]', 'Laden prüft Prozent/eigene Skalen falsch');
+  // Übersicht und Excel: Durchschnitt mit allen Skalen
+  app.E('gradeTab = "overview"; gradeTerm = "year"; renderGrades()');
+  const tot = app.E(`studentAverages(curClass(), "ma", "${anna}", "year").total`);
+  erwarte(Math.abs(tot - (7 / 3 + 3 + 2.5) / 3) < 1e-9, 'Durchschnitt über mehrere Skalen falsch: ' + tot);
+  const sh = JSON.parse(app.E('JSON.stringify(gradesXlsxSheets(curClass(), "year")[0])'));
+  erwarte(sh.rows[1].slice(1, 4).join('|') === '2-|55|gut', 'Excel-Werte der Skalen falsch: ' + sh.rows[1].join('|'));
+  // Abgleich: Skala reist mit
+  uhr(app, 1000); app.E('flushSave()');
+  const B = neueApp();
+  try{
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    erwarte(B.E('DB.scales.length') === 1 && B.E(`DB.classes[0].assess.find(a => a.id === "${uaid}").marks["${anna}"]`) === 'gut', 'Eigene Skala nicht übertragen');
+  } finally { B.ende(); }
+  // Zusammenführen auf einem Gerät mit eigenen Daten: die Skala kommt über den Abgleich
+  const C = neueApp();
+  try{
+    uhr(C, 1200); grundstand(C); uhr(C, 1300); await laden(C, datei(app), 'merge');
+    erwarte(C.E('DB.scales.length') === 1 && C.E('DB.scales[0].name') === 'Kompetenz', 'Eigene Skala beim Zusammenführen verloren');
+  } finally { C.ende(); }
+});
+
+test('Kategorien und Skalen im Abgleich: ältere App, Prozent-Schlüssel, gelöschte Skala, Skalenwechsel', async app => {
+  uhr(app, 1000); grundstand(app);
+  const [anna, ben] = [sid(app, 'Anna'), sid(app, 'Ben')];
+  app.E(`(() => { const c = curClass(); c.gcat = { ma: [{ id: "written", n: "", w: 50 }, { id: "other", n: "", w: 30 }, { id: "t1", n: "Tests", w: 20 }] }; c.gradeW = Object.assign({}, c.gradeW, { ma: 50 });
+    c.assess.push({ id: "t9", subjectId: "ma", title: "Test", date: "2026-09-20", kind: "other", cat: "t1", scale: "grade", weight: 1, marks: { "${anna}": "1" } },
+                  { id: "p9", subjectId: "ma", title: "Prozent", date: "2026-09-21", kind: "written", scale: "pct", weight: 1, key: { th: [85, 70, 55, 40, 20] }, marks: { "${anna}": "80" } });
+    DB.scales = [{ id: "ks", name: "Kompetenz", steps: [{ k: "a", l: "gut", v: 2 }, { k: "b", l: "schwach", v: 5 }] }];
+    c.assess.push({ id: "u9", subjectId: "ma", title: "Kompetenz", date: "2026-09-22", kind: "other", scale: "u:ks", weight: 1, marks: { "${anna}": "gut" } }); })(); flushSave()`);
+  // Älteres Gerät: kennt Kategorien, Prozent und eigene Skalen nicht, ändert eine Note und gibt die Datei zurück
+  uhr(app, 2000);
+  const alt = app.E(`(() => { const d = backupData(); d.stamps = unpackStamps(d.stamps); d.del = unpackStamps(d.del);
+    Object.keys(d.stamps).forEach(k => { if(/^(gc|ac|us|zn)\\|/.test(k)) delete d.stamps[k]; });
+    d.classes.forEach(c => { delete c.gcat; delete c.zn; c.assess = c.assess.filter(a => ["grade", "points", "smiley"].indexOf(a.scale) >= 0); c.assess.forEach(a => { delete a.cat; }); });
+    delete d.scales;
+    const c = d.classes[0], w1 = c.assess.find(a => a.id === "w1"); w1.marks["${ben}"] = "1";
+    d.stamps["m|" + idk(c.id) + "|" + idk("w1") + "|" + idk("${ben}")] = 2000; d.mod = 2000;
+    d.stamps = packStamps(d.stamps); d.del = packStamps(d.del);
+    return JSON.stringify({ app: "fairseat", v: 2, data: d }); })()`);
+  uhr(app, 2100); await laden(app, alt, 'merge');
+  erwarte(app.E('curClass().gcat.ma && curClass().gcat.ma.length') === 3 && app.E('curClass().assess.find(a => a.id === "t9").cat') === 't1', 'Ältere App löscht Kategorien oder Zuordnung');
+  erwarte(app.E('curClass().assess.some(a => a.id === "p9") && curClass().assess.some(a => a.id === "u9") && DB.scales.length === 1', ''), 'Ältere App löscht Prozent- oder Skalenbewertungen');
+  erwarte(app.E(`curClass().assess.find(a => a.id === "w1").marks["${ben}"]`) === '1', 'Änderung des älteren Geräts fehlt');
+  // Prozent-Schlüssel zwischen zwei neuen Geräten
+  const B = neueApp();
+  try{
+    uhr(B, 2200); await laden(B, datei(app), 'replace');
+    uhr(B, 3000); B.E(`DB.classes[0].assess.find(a => a.id === "p9").marks["${ben}"] = "50"; flushSave()`);
+    uhr(app, 3100); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curClass().assess.find(a => a.id === "p9").key && curClass().assess.find(a => a.id === "p9").key.th.join()') === '85,70,55,40,20', 'Prozent-Schlüssel geht beim Abgleich verloren');
+    uhr(B, 3200); B.E('DB.classes[0].assess.find(a => a.id === "p9").key = { th: [92, 81, 67, 50, 30], tend: false }; flushSave()');
+    uhr(app, 3300); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curClass().assess.find(a => a.id === "p9").key.th.join()') === '92,81,67,50,30', 'Geänderter Prozent-Schlüssel kommt nicht an');
+    // Skala auf B gelöscht (dort unbenutzt), auf A danach noch benutzt: bleibt
+    uhr(B, 3400); B.E('DB.classes[0].assess = DB.classes[0].assess.filter(a => a.id !== "u9"); DB.scales = []; flushSave()');
+    uhr(app, 3500); app.E(`curClass().assess.find(a => a.id === "u9").marks["${ben}"] = "schwach"; flushSave()`);
+    uhr(app, 3600); await laden(app, datei(B), 'merge');
+    erwarte(app.E('DB.scales.length') === 1 && app.E('curClass().assess.some(a => a.id === "u9")'), 'Benutzte Skala durch den Abgleich gelöscht');
+  } finally { B.ende(); }
+  // Skalenwechsel einer leeren Bewertung auf Prozent: neue Kennung
+  app.E(`curClass().assess.push({ id: "e9", subjectId: "ma", title: "Leer", date: "2026-09-25", kind: "written", scale: "grade", weight: 1, marks: {} }); flushSave(); openAssess("e9"); editAssessMeta()`);
+  app.klick(app.$$('#a-scale button')[4]); app.sheetOk();
+  erwarte(app.E('curAssess().scale') === 'pct' && app.E('curAssess().id') !== 'e9' && !app.E('curClass().assess.some(a => a.id === "e9")'), 'Skalenwechsel behält die alte Kennung');
+});
+
 /* WebDAV-Server zum Testen: hält Dateien im Speicher, prüft Anmeldung, ETag (If-Match / If-None-Match) und Ordner */
 function davServer(){
   const S = { files: new Map(), log: [], user: 'simon.m', pw: 'iserv-geheim', dir: 'https://kgs-test.de/webdav/Files/', n: 0, vorPut: null, aus: false,
