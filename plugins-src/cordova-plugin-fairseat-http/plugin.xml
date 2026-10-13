@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Eigenes, kleines Plugin für den WebDAV-Abgleich (statt cordova-plugin-advanced-http,
+     dessen mitgeliefertes AFNetworking unter Xcode 26 nicht mehr übersetzt).
+     Kann genau das, was der Abgleich braucht: eine HTTPS-Anfrage mit Kopfzeilen und
+     Text-Inhalt. Keine Cookies, kein Zwischenspeicher, Weiterleitungen werden nicht verfolgt. -->
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="cordova-plugin-fairseat-http" version="1.0.0">
+  <name>FairSeat HTTP</name>
+  <description>HTTPS-Anfragen für den WebDAV-Abgleich</description>
+
+  <js-module src="www/fairseat-http.js" name="FairSeatHttp">
+    <clobbers target="FairSeatHttp" />
+  </js-module>
+
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="FairSeatHttp">
+        <param name="ios-package" value="FairSeatHttp" />
+      </feature>
+    </config-file>
+    <header-file src="src/ios/FairSeatHttp-Bridging-Header.h" type="BridgingHeader" />
+    <source-file src="src/ios/FairSeatHttp.swift" />
+  </platform>
+
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="FairSeatHttp">
+        <param name="android-package" value="de.fairseat.http.FairSeatHttp" />
+      </feature>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-permission android:name="android.permission.INTERNET" />
+    </config-file>
+    <source-file src="src/android/FairSeatHttp.java" target-dir="src/de/fairseat/http" />
+  </platform>
+</plugin>

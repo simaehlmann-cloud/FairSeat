@@ -1,0 +1,14 @@
+{
+  "name": "cordova-plugin-fairseat-http",
+  "version": "1.0.0",
+  "description": "Kleine HTTPS-Anfragen für den WebDAV-Abgleich von FairSeat – ohne Cookies, ohne Zwischenspeicher, ohne Weiterleitungen.",
+  "license": "UNLICENSED",
+  "private": true,
+  "cordova": {
+    "id": "cordova-plugin-fairseat-http",
+    "platforms": ["ios", "android"]
+  },
+  "engines": {
+    "cordovaDependencies": { "1.0.0": { "cordova-ios": ">=7.0.0", "cordova-android": ">=12.0.0" } }
+  }
+}
