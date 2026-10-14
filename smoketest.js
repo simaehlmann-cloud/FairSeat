@@ -4235,6 +4235,325 @@ test('Kriterienraster: Prüfbericht – Direktnote, ältere App, Stufenzahl, Auf
   } finally { B.ende(); }
 });
 
+/* ---------- Termine, Ferien und Unterrichtsplanung ---------- */
+function planStand(app){
+  klasseMitNamen(app, '7b', ['Anna', 'Ben', 'Cem']);
+  app.E(`(() => { DB.subjects.push({ id: "ma", name: "Mathe", short: "Ma", color: "#2E86DE" }, { id: "de", name: "Deutsch", short: "De", color: "#E0533D" });
+    const c = curClass();
+    DB.lessons.push({ id: "L1", day: 0, period: 0, span: 2, week: "", subjectId: "ma", classId: c.id, roomId: "", planId: "" },
+      { id: "L3", day: 2, period: 4, span: 1, week: "", subjectId: "ma", classId: c.id, roomId: "", planId: "" },
+      { id: "L4", day: 3, period: 1, span: 1, week: "", subjectId: "ma", classId: c.id, roomId: "", planId: "" },
+      { id: "L5", day: 4, period: 3, span: 1, week: "", subjectId: "de", classId: c.id, roomId: "", planId: "" });
+    save(); })()`);
+}
+/* Woche mit diesem Montag anzeigen */
+const zeigeWoche = (app, montag) => app.E(`ttWeekOff = Math.round((new Date("${montag}T00:00:00") - ttRefMonday()) / 6048e5); show("timetable"); renderTimetable()`);
+
+test('Termine: Feiertage und Ferien', app => {
+  planStand(app);
+  erwarte(app.E('easter(2026)') === '2026-04-05' && app.E('easter(2027)') === '2027-03-28' && app.E('easter(2028)') === '2028-04-16', 'Osterdatum falsch');
+  const ph = (y, st) => JSON.parse(app.E(`JSON.stringify(Array.from(pubHolidays(${y}, "${st}").keys()).sort())`));
+  const ni = ph(2026, 'NI');
+  erwarte(ni.length === 10 && ni.indexOf('2026-10-31') >= 0 && ni.indexOf('2026-11-01') < 0 && ni.indexOf('2026-05-14') >= 0 && ni.indexOf('2026-05-25') >= 0, 'Feiertage Niedersachsen falsch: ' + ni);
+  const by = ph(2026, 'BY'), sn = ph(2026, 'SN'), be = ph(2026, 'BE'), mv22 = ph(2022, 'MV');
+  erwarte(by.indexOf('2026-06-04') >= 0 && by.indexOf('2026-11-01') >= 0 && by.indexOf('2026-01-06') >= 0 && by.indexOf('2026-10-31') < 0, 'Feiertage Bayern falsch');
+  erwarte(sn.indexOf('2026-11-18') >= 0 && ph(2027, 'SN').indexOf('2027-11-17') >= 0, 'Buß- und Bettag falsch');
+  erwarte(be.indexOf('2026-03-08') >= 0 && mv22.indexOf('2022-03-08') < 0 && ph(2017, 'NI').indexOf('2017-10-31') < 0, 'Frauentag/Reformationstag nach Jahr falsch');
+  erwarte(ph(2026, '').length === 0, 'Ohne Bundesland Feiertage');
+  // Ferien und Feiertage: keine Stunden, keine laufende Stunde
+  app.E('DB.hst = "NI"; DB.holidays = [{ id: "h1", a: "2026-11-09", b: "2026-11-10", n: "Brückentage" }]; save()');
+  erwarte(app.E('freeInfo("2026-11-10")') === 'Brückentage' && app.E('freeInfo("2026-10-31")') === 'Reformationstag' && app.E('freeInfo("2026-11-11")') === '', 'freeInfo falsch');
+  erwarte(app.E('lessonsOnDate(new Date("2026-11-09T12:00:00")).length') === 0 && app.E('lessonsOnDate(new Date("2026-11-16T12:00:00")).length') === 1, 'Stunden in den Ferien');
+  erwarte(app.E('nowLessons(new Date("2026-11-09T08:10:00")).now') === null && !!app.E('nowLessons(new Date("2026-11-16T08:10:00")).now'), 'Laufende Stunde in den Ferien');
+  erwarte(app.E('currentLessonFor(curClass(), new Date("2026-11-09T08:10:00"))') === null, 'Fehlzeiten zählen in den Ferien');
+  // Oberfläche: Bundesland, Vorlage Niedersachsen, eigener Zeitraum, löschen
+  app.E('DB.hst = ""; DB.holidays = []; save(); openHolidays()');
+  erwarte(/Ohne Bundesland/.test(app.$('#hol-pub').textContent) && /Noch keine Ferien/.test(app.$('#hol-list').textContent), 'Leerer Ferienstand falsch angezeigt');
+  app.klick('#hol-tpl');
+  const n0 = app.E('DB.holidays.length');
+  erwarte(n0 >= 1 && app.E('DB.hst') === 'NI' && app.E('DB.holidays.every(h => h.b >= isoDay(new Date()))') && app.E('DB.holidays.some(h => h.a === "2027-05-18")') === (app.E('isoDay(new Date())') <= '2027-05-18'), 'Ferienvorlage nicht übernommen');
+  app.klick('#hol-tpl');
+  erwarte(app.E('DB.holidays.length') === n0 && /Schon alles/.test(app.$('#toast').textContent), 'Vorlage doppelt übernommen');
+  erwarte(/Nächster Feiertag/.test(app.$('#hol-pub').textContent), 'Nächster Feiertag fehlt');
+  app.$('#hol-n').value = 'Projekttag'; app.$('#hol-a').value = '2030-02-05'; app.$('#hol-b').value = '2030-02-01'; app.klick('#hol-add');
+  erwarte(/vor dem Beginn/.test(app.$('#toast').textContent), 'Falscher Zeitraum angenommen');
+  app.$('#hol-b').value = ''; app.klick('#hol-add');
+  erwarte(app.E('DB.holidays.some(h => h.n === "Projekttag" && h.a === "2030-02-05" && h.b === "2030-02-05")'), 'Eigener freier Tag fehlt');
+  const rows = app.$$('#hol-list .holrow').length;
+  app.klick(app.$$('#hol-list .holrow').find(r => /Projekttag/.test(r.textContent)).querySelector('.minibtn'));
+  erwarte(app.$$('#hol-list .holrow').length === rows - 1 && !app.E('DB.holidays.some(h => h.n === "Projekttag")'), 'Freier Tag nicht gelöscht');
+  app.$('#hol-state').value = 'BY'; app.$('#hol-state').dispatchEvent(new app.w.Event('change'));
+  erwarte(app.E('DB.hst') === 'BY', 'Bundesland nicht gespeichert');
+});
+
+test('Termine: Wochenansicht, Klassenarbeiten, Warnungen, Bewertung', async app => {
+  planStand(app);
+  const cid = app.E('curClass().id');
+  app.E('goTimetable()');
+  erwarte(!!app.$('#tt-hol-setup') && /KW \d+/.test(app.$('#tt-week').textContent) && app.$('#tt-week').disabled, 'Wochenkopf oder Ferienhinweis fehlt');
+  const d0 = app.E('ttDateFor(DB.lessons[0])');
+  app.klick('#tt-next');
+  erwarte(app.E('ttDateFor(DB.lessons[0])') === app.E(`isoAdd("${d0}", 7)`) && !app.$('#tt-week').disabled && /zurück zu heute/.test(app.$('#tt-week').textContent), 'Blättern verschiebt das Datum nicht');
+  app.klick('#tt-week');
+  erwarte(app.E('ttWeekOff') === 0 && app.E('ttDateFor(DB.lessons[0])') === d0, 'Zurück zu heute geht nicht');
+  // Woche vom 2.11.2026: Klassenarbeit eintragen über das Stundenblatt
+  zeigeWoche(app, '2026-11-02');
+  erwarte(app.$$('#tt-grid .tt-day small')[0].textContent === '02.11.', 'Datum im Tageskopf fehlt');
+  app.klick(app.$$('#tt-grid .tt-cell').find(x => /Do 05\.11\./.test(x.getAttribute('aria-label'))));
+  erwarte(!!app.$('#tt-dayinfo') && /Do, 05\.11\./.test(app.$('#tt-dayinfo').textContent) && !!app.$('#tt-ka-add') && !!app.$('#tt-cancel'), 'Tageskasten im Stundenblatt fehlt');
+  app.klick('#tt-ka-add');
+  erwarte(app.$('#ev-kind button.on').dataset.k === 'ka' && app.$('#ev-date').value === '2026-11-05' && app.$('#ev-class').value === cid && app.$('#ev-subj').value === 'ma' && app.$('#ev-per').value === '1', 'Klassenarbeit nicht vorbelegt');
+  app.$('#ev-title').value = 'Brüche'; app.sheetOk();
+  erwarte(app.E('DB.events.length') === 1 && app.E('DB.events[0].p') === 1 && app.E('DB.events[0].t') === 'Brüche' && !!app.$('#tt-dayinfo'), 'Klassenarbeit nicht gespeichert oder Stundenblatt nicht zurück');
+  app.E('closeModal(); renderTimetable()');
+  const cell = app.$$('#tt-grid .tt-cell').find(x => /Do 05\.11\./.test(x.getAttribute('aria-label')));
+  erwarte(cell.querySelector('.ttka') && /Klassenarbeit: Brüche/.test(cell.getAttribute('aria-label')) && /Brüche/.test(app.$('#tt-wlist').textContent) && app.$$('#tt-grid .ttdot.ex').length === 1, 'Klassenarbeit nicht in der Woche sichtbar');
+  app.E(`DB.events.push({ id: "p4", k: "test", d: "2026-11-12", p: 4, t: "Kopf", c: "${cid}", s: "ma" }); save(); ttWeekOff++; renderTimetable()`);
+  erwarte(!app.$$('#tt-grid .tt-cell').find(x => /Do 12\.11\./.test(x.getAttribute('aria-label'))).querySelector('.ttka'), 'Test in anderer Stunde an der falschen Stunde gezeigt');
+  app.E('DB.events = DB.events.filter(e => e.id !== "p4"); save(); ttWeekOff--; renderTimetable()');
+  // zweite Arbeit am selben Tag: Warnung; vierte in der Woche: Warnung
+  app.klick('#tt-ev-add'); app.klick('#ev-kind button[data-k="ka"]');
+  app.$('#ev-date').value = '2026-11-05'; app.$('#ev-class').value = cid; app.$('#ev-subj').value = 'ma'; app.$('#ev-subj').dispatchEvent(new app.w.Event('change'));
+  erwarte(app.$('#ev-per').value === '1', 'Stunde nicht aus dem Stundenplan vorgeschlagen');
+  app.$('#ev-subj').value = 'de'; app.$('#ev-class').dispatchEvent(new app.w.Event('change'));
+  erwarte(/schon eine Klassenarbeit/.test(app.$('#ev-warn').textContent) && app.$('#ev-per').value === '', 'Warnung zweite Arbeit fehlt oder Stunde erfunden');
+  app.sheetOk();
+  app.E(`DB.events.push({ id: "x3", k: "ka", d: "2026-11-03", t: "", c: "${cid}", s: "de" }); save()`);
+  app.klick('#tt-ev-add'); app.klick('#ev-kind button[data-k="ka"]');
+  app.$('#ev-date').value = '2026-11-06'; app.$('#ev-class').value = cid; app.$('#ev-date').dispatchEvent(new app.w.Event('change'));
+  erwarte(/4\. Klassenarbeit/.test(app.$('#ev-warn').textContent) && !/schon eine/.test(app.$('#ev-warn').textContent), 'Warnung Woche fehlt: ' + app.$('#ev-warn').textContent);
+  app.klick('#ev-kind button[data-k="test"]');
+  erwarte(!/Klassenarbeit/.test(app.$('#ev-warn').textContent), 'Tests zählen als Klassenarbeiten');
+  app.E('closeModal()');
+  // Termin ohne Titel nicht speichern; mehrtägig; Ferien-Warnung
+  app.klick('#tt-ev-add'); app.$('#ev-date').value = '2026-11-04'; app.sheetOk();
+  erwarte(/Titel/.test(app.$('#toast').textContent) && app.E('DB.events.length') === 3, 'Termin ohne Titel gespeichert');
+  app.$('#ev-title').value = 'Klassenfahrt'; app.$('#ev-end').value = '2026-11-06'; app.$('#ev-time').value = '07:30'; app.sheetOk();
+  const kf = JSON.parse(app.E('JSON.stringify(DB.events.find(e => e.t === "Klassenfahrt"))'));
+  erwarte(kf.e === '2026-11-06' && kf.tm === '07:30' && !kf.c && app.$$('#tt-grid .ttdot').length === 4, 'Mehrtägiger Termin falsch: ' + JSON.stringify(kf));
+  app.E('DB.holidays = [{ id: "h", a: "2026-11-05", b: "2026-11-05", n: "Studientag" }]; save()');
+  erwarte(JSON.stringify(app.E('examWarn(DB.events.find(e => e.t === "Brüche"))')).indexOf('Studientag') >= 0, 'Warnung Ferien fehlt');
+  app.E('renderTimetable()');
+  const fc = app.$$('#tt-grid .tt-cell').find(x => /Do 05\.11\./.test(x.getAttribute('aria-label')));
+  erwarte(fc.classList.contains('free') && !fc.querySelector('.ttka') && /Studientag/.test(fc.getAttribute('aria-label')) && app.$$('#tt-grid .tt-day.free').length === 1 && /Studientag/.test(app.$('#tt-wlist').textContent), 'Freier Tag nicht markiert');
+  app.klick(fc);
+  erwarte(/Frei: Studientag/.test(app.$('#tt-freeinfo').textContent) && !app.$('#tt-ka-add'), 'Stundenblatt am freien Tag falsch');
+  app.E('closeModal(); DB.holidays = []; save()');
+  // Als Bewertung anlegen, danach öffnen statt doppeln
+  app.E('DB.gradesAck = true; editEvent(DB.events.find(e => e.t === "Brüche"))');
+  erwarte(app.$('#ev-assess').textContent === 'Als Bewertung anlegen', 'Knopf Bewertung fehlt');
+  app.klick('#ev-assess');
+  const a = JSON.parse(app.E('JSON.stringify(curClass().assess[0])'));
+  erwarte(a && a.title === 'Brüche' && a.date === '2026-11-05' && a.kind === 'written' && a.subjectId === 'ma' && app.E('DB.events.find(e => e.t === "Brüche").aid') === a.id && app.E('curAssessId') === a.id, 'Bewertung nicht angelegt oder verknüpft');
+  app.E('editEvent(DB.events.find(e => e.t === "Brüche"))');
+  erwarte(app.$('#ev-assess').textContent === 'Bewertung öffnen', 'Verknüpfte Bewertung nicht erkannt');
+  app.klick('#ev-assess');
+  erwarte(app.E('curClass().assess.length') === 1, 'Bewertung doppelt angelegt');
+  // Termin löschen, Terminliste, vergangene
+  app.E('openEvents()');
+  erwarte(app.$$('#ev-list .evrow').length === app.E(`DB.events.filter(e => evEnd(e) >= isoDay(new Date())).length`), 'Terminliste unvollständig');
+  app.E(`DB.events.push({ id: "alt", k: "due", d: "2020-01-10", t: "Alte Frist" }); save(); openEvents()`);
+  erwarte(!/Alte Frist/.test(app.$('#ev-list').textContent), 'Vergangene Frist unter „anstehend“');
+  app.klick('#ev-past');
+  erwarte(/Alte Frist/.test(app.$('#ev-list').textContent), 'Vergangene Termine fehlen');
+  app.klick(app.$$('#ev-list .evrow')[0]); app.klick('#ev-del');
+  erwarte(!app.E('DB.events.some(e => e.id === "alt")') && !!app.$('#ev-list'), 'Termin nicht gelöscht oder Liste nicht zurück');
+});
+
+test('Termine: Kalender-Export (.ics)', async app => {
+  planStand(app);
+  const cid = app.E('curClass().id');
+  app.E(`DB.events = [{ id: "a1", k: "ev", d: "2026-11-04", e: "2026-11-06", t: "Fahrt; Harz, mit Übernachtung", c: "${cid}", n: "Zeile 1\\nZeile 2" },
+    { id: "a2", k: "ka", d: "2026-11-05", p: 1, t: "Brüche", c: "${cid}", s: "ma", rem: 1440 },
+    { id: "a3", k: "due", d: "2026-11-09", tm: "23:30", t: "Ä".repeat(60) }]; save()`);
+  const ics = app.E('icsText(DB.events)');
+  const lines = ics.split('\r\n');
+  erwarte(ics.indexOf('\n') === ics.indexOf('\r\n') + 1 && /^BEGIN:VCALENDAR\r\nVERSION:2.0/.test(ics) && /END:VCALENDAR\r\n$/.test(ics), 'Rahmen oder Zeilenenden falsch');
+  erwarte(lines.every(l => Buffer.byteLength(l, 'utf8') <= 75), 'Zeile länger als 75 Byte');
+  const un = ics.replace(/\r\n /g, '');
+  erwarte(un.indexOf('DTSTART;VALUE=DATE:20261104\r\nDTEND;VALUE=DATE:20261107') >= 0, 'Mehrtägiger Termin falsch');
+  erwarte(un.indexOf('SUMMARY:Fahrt\\; Harz\\, mit Übernachtung · 7b') >= 0 && un.indexOf('DESCRIPTION:Zeile 1\\nZeile 2') >= 0, 'Sonderzeichen nicht maskiert');
+  const st = app.E('fmtHM(periodTimes()[1].start)').replace(':', ''), en = app.E('fmtHM(periodTimes()[1].end)').replace(':', '');
+  erwarte(un.indexOf('DTSTART:20261105T' + st + '00\r\nDTEND:20261105T' + en + '00') >= 0 && un.indexOf('TRIGGER:-PT1440M') >= 0 && un.indexOf('SUMMARY:Klassenarbeit: Brüche · Ma 7b') >= 0, 'Klassenarbeit mit Stunde/Erinnerung falsch');
+  erwarte(un.indexOf('DTSTART:20261109T233000\r\nDTEND:20261109T235900') >= 0 && un.indexOf('Frist: ' + 'Ä'.repeat(60)) >= 0, 'Spätes Ende oder Umlaut-Umbruch falsch');
+  erwarte((un.match(/BEGIN:VEVENT/g) || []).length === 3 && (un.match(/BEGIN:VALARM/g) || []).length === 1 && un.indexOf('UID:a1@fairseat') >= 0, 'Einträge fehlen');
+  const box = downloadAbfangen(app);
+  app.E('openEvents()'); app.klick('#ev-ics');
+  erwarte(box.name === 'FairSeat-Termine.ics' && /BEGIN:VEVENT/.test(await blobText(app, box.blob)), 'Export über die Terminliste fehlt: ' + box.name);
+  app.E('editEvent(DB.events[1])'); app.klick('#ev-ics1');
+  const one = await blobText(app, box.blob);
+  erwarte((one.match(/BEGIN:VEVENT/g) || []).length === 1 && /Brüche/.test(box.name), 'Einzelexport falsch');
+});
+
+test('Unterrichtsplanung: Reihen verteilen, Ausfall, Ferien, Auslassen, Kursheft', async app => {
+  planStand(app);
+  const c = 'curClass()';
+  app.E(`curClass().units = [{ id: "u1", s: "ma", t: "Brüche", a: "2026-11-02", items: [
+    { id: "A", t: "Darstellen", hw: "S. 4", n: 1 }, { id: "B", t: "Erweitern", hw: "S. 8", n: 2 }, { id: "C", t: "Vergleichen", hw: "", n: 1 }, { id: "D", t: "Übung", hw: "", n: 1 }] }]; save()`);
+  const plan = () => app.E(`Array.from(unitPlan(${c}, "ma").slots).map(([k, v]) => k.slice(5, 10) + ":" + v.it.id + (v.n > 1 ? v.k : "")).join(" ")`);
+  erwarte(plan() === '11-02:A 11-04:B0 11-05:B1 11-09:C 11-11:D', 'Verteilung falsch: ' + plan());
+  app.E('setCancelled(DB.lessons.find(L => L.id === "L3"), "2026-11-04", true); save()');
+  erwarte(plan() === '11-02:A 11-05:B0 11-09:B1 11-11:C 11-12:D', 'Ausfall verschiebt nicht: ' + plan());
+  app.E('DB.holidays = [{ id: "h", a: "2026-11-09", b: "2026-11-09", n: "frei" }]; save()');
+  erwarte(plan() === '11-02:A 11-05:B0 11-11:B1 11-12:C 11-16:D', 'Ferien verschieben nicht: ' + plan());
+  app.E(`curClass().uskip = ["2026-11-05|L4"]; save()`);
+  erwarte(plan() === '11-02:A 11-11:B0 11-12:B1 11-16:C 11-18:D', 'Auslassen verschiebt nicht: ' + plan());
+  // zweite Reihe beginnt (früher eingetragen) erst nach der ersten
+  app.E(`curClass().units.push({ id: "u2", s: "ma", t: "Dezimalzahlen", a: "2026-11-01", items: [{ id: "E", t: "Einführung", hw: "", n: 1 }] }); save()`);
+  erwarte(/11-02:E/.test(plan()) && !/11-02:A/.test(plan()), 'Reihen nach Beginn sortiert: zweite zuerst erwartet');
+  app.E(`curClass().units.find(u => u.id === "u2").a = "2026-11-17"; save()`);
+  erwarte(plan() === '11-02:A 11-11:B0 11-12:B1 11-16:C 11-18:D 11-19:E', 'Folgereihe nicht angehängt: ' + plan());
+  const info = JSON.parse(app.E(`JSON.stringify(Array.from(unitPlan(${c}, "ma").info))`));
+  erwarte(info[0][1].from === '2026-11-02' && info[0][1].to === '2026-11-18' && info[0][1].total === 5 && info[0][1].done === 5, 'Reihenbereich falsch: ' + JSON.stringify(info));
+  app.E(`DB.lessons.push({ id: "L6", day: 0, period: 5, span: 1, week: "", subjectId: "ma", classId: curClass().id, roomId: "", planId: "" });
+    curClass().units.push({ id: "x1", s: "ma", t: "X", a: "2026-12-07", items: [{ id: "X", t: "x", hw: "", n: 1 }] }, { id: "y1", s: "ma", t: "Y", a: "2026-12-14", items: [{ id: "Y", t: "y", hw: "", n: 1 }] }); save()`);
+  const xy = app.E(`Array.from(unitPlan(${c}, "ma").slots).filter(([k, v]) => v.u.id === "x1" || v.u.id === "y1").map(([k, v]) => k.slice(5) + ":" + v.it.id).join(" ")`);
+  erwarte(xy === '12-07|L1:X 12-14|L1:Y', 'Folgereihe beginnt vor ihrem Beginn: ' + xy);
+  app.E(`DB.lessons = DB.lessons.filter(L => L.id !== "L6"); curClass().units = curClass().units.filter(u => u.id !== "x1" && u.id !== "y1"); save()`);
+  erwarte(app.E(`unitNextStart(${c}, "ma")`) === (app.E('isoDay(new Date())') <= '2026-11-19' ? '2026-11-20' : app.E('isoDay(new Date())')), 'Beginn der nächsten Reihe falsch');
+  // Wochenansicht zeigt geplante und gehaltene Themen
+  zeigeWoche(app, '2026-11-09');
+  const zelle = d => app.$$('#tt-grid .tt-cell').find(x => x.getAttribute('aria-label').indexOf(d) >= 0);
+  erwarte(zelle('Mi 11.11.').querySelector('.tt-topic.plan').textContent === 'Erweitern' && zelle('Mo 09.11.').classList.contains('free'), 'Geplantes Thema fehlt in der Woche');
+  app.E(`curClass().journal = [{ id: "j1", d: "2026-11-12", p: 1, s: "ma", topic: "Erweitern geübt", hw: "" }]; save(); renderTimetable()`);
+  erwarte(zelle('Do 12.11.').querySelector('.tt-topic').textContent === 'Erweitern geübt' && !zelle('Do 12.11.').querySelector('.tt-topic.plan'), 'Gehaltenes Thema nicht bevorzugt');
+  app.E('curClass().journal = []; save()');
+  // Stundenblatt: +1 Stunde, Auslassen zurücknehmen, Reihe öffnen
+  app.klick(zelle('Mi 11.11.'));
+  erwarte(/Thema 2 von 4: Erweitern \(1\/2\)/.test(app.$('#tt-plan').textContent), 'Planung im Stundenblatt fehlt: ' + (app.$('#tt-plan') || {}).textContent);
+  app.klick('#tt-u-more');
+  erwarte(app.E('curClass().units[0].items[1].n') === 3 && /\(1\/3\)/.test(app.$('#tt-plan').textContent), '+1 Stunde wirkt nicht');
+  app.klick('#tt-u-skip');
+  erwarte(app.E('curClass().uskip.indexOf("2026-11-11|L3") >= 0') && !app.$('#tt-plan') && /wieder einplanen/.test(app.$('#tt-u-skip').textContent), 'Auslassen über das Stundenblatt geht nicht');
+  app.klick('#tt-u-skip');
+  erwarte(app.E('curClass().uskip.indexOf("2026-11-11|L3") < 0') && !!app.$('#tt-plan'), 'Auslassen nicht zurücknehmbar');
+  app.E('curClass().units[0].items[1].n = 6; save(); closeModal()'); app.klick(zelle('Mi 11.11.'));
+  erwarte(!app.$('#tt-u-more') && /\(1\/6\)/.test(app.$('#tt-plan').textContent), '+1 über 6 Stunden möglich');
+  app.E('curClass().units[0].items[1].n = 3; save(); closeModal()'); app.klick(zelle('Mi 11.11.'));
+  // Kursheft: Vorschlag aus der Planung, Hausaufgabe erst in der letzten Stunde des Themas
+  app.klick('#tt-journal');
+  erwarte(app.$('#j-topic').value === 'Erweitern' && app.$('#j-hw').value === '' && !!app.$('#j-planned') && app.$('#j-date').value === '2026-11-11', 'Kursheft ohne Vorschlag: ' + app.$('#j-topic').value);
+  app.sheetOk();
+  erwarte(app.E('curClass().journal.length') === 1 && app.E('curClass().journal[0].p') === 4 && app.E('curClass().journal[0].d') === '2026-11-11', 'Kursheft-Eintrag falsch: ' + app.E('JSON.stringify(curClass().journal)'));
+  app.E(`openJournal(curClass(), null, "ma", { d: "2026-11-16", L: DB.lessons.find(L => L.id === "L1") })`);
+  erwarte(app.$('#j-topic').value === 'Erweitern' && app.$('#j-hw').value === 'S. 8', 'Hausaufgabe in der letzten Stunde fehlt: ' + app.$('#j-hw').value);
+  app.E('closeModal()');
+  app.E(`openJournal(curClass(), null, "ma", { d: "2026-11-11", L: DB.lessons.find(L => L.id === "L3") })`);
+  erwarte(app.$('#j-topic').value === 'Erweitern' && !app.$('#j-planned'), 'Vorhandener Eintrag durch Planung überschrieben');
+  app.E('closeModal()');
+});
+
+test('Unterrichtsplanung: Reihe anlegen, Liste einfügen, kopieren, löschen', async app => {
+  planStand(app);
+  klasseMitNamen(app, '7c', ['Dora']);
+  app.E('setCurClass(DB.classes.find(c => c.name === "7b").id); goTimetable()');
+  app.klick('#tt-units');
+  erwarte(/Noch keine Reihen/.test(app.$('#un-overview').textContent), 'Leere Übersicht falsch');
+  app.klick('#un-new');
+  erwarte(app.$('#un-class').value === app.E('curClass().id') && app.$('#un-subj').value === 'ma' && app.$('#un-start').value === app.E('isoDay(new Date())'), 'Neue Reihe nicht vorbelegt');
+  app.$('#un-subj').value = 'de'; app.$('#un-subj').dispatchEvent(new app.w.Event('change'));
+  app.sheetOk();
+  erwarte(/Titel/.test(app.$('#toast').textContent), 'Reihe ohne Titel gespeichert');
+  app.$('#un-title').value = 'Balladen';
+  app.klick('#un-paste');
+  app.$('#un-paste-t').value = '1. Der Erlkönig | Strophe 1 lesen\n- John Maynard\n\n• Balladenmerkmale\tTabelle';
+  app.klick('#un-paste-ok');
+  erwarte(app.$$('#un-list .unitem').length === 3 && app.$('#un-t-0').value === 'Der Erlkönig' && app.$('#un-h-0').value === 'Strophe 1 lesen' && app.$('#un-h-2').value === 'Tabelle' && app.$('#un-t-1').value === 'John Maynard', 'Liste falsch übernommen');
+  erwarte(/3 Stunden/.test(app.$('#un-sum').textContent) && app.$('#un-d-0').textContent.length > 0, 'Vorschau fehlt: ' + app.$('#un-sum').textContent);
+  app.klick(app.$$('#un-n-1 button')[1]);
+  erwarte(/4 Stunden/.test(app.$('#un-sum').textContent) && app.$('#un-d-1').textContent.split(',').length === 2, 'Stundenzahl ändert die Vorschau nicht');
+  app.klick(app.$$('#un-list .unitem')[2].querySelectorAll('.unctl .minibtn')[0]);   // nach oben
+  erwarte(app.$('#un-t-1').value === 'Balladenmerkmale', 'Verschieben geht nicht');
+  app.klick('#un-add'); app.sheetOk();
+  const u = JSON.parse(app.E('JSON.stringify(curClass().units[0])'));
+  erwarte(u.t === 'Balladen' && u.s === 'de' && u.items.length === 3 && u.items[2].n === 2, 'Reihe falsch gespeichert: ' + JSON.stringify(u));
+  erwarte(/Balladen/.test(app.$('#un-overview').textContent) && /4 Std\./.test(app.$('#un-overview').textContent), 'Übersicht zeigt die Reihe nicht');
+  // Fach ohne Stunden: Hinweis
+  app.klick(app.$('#un-overview .unrow'));
+  app.$('#un-subj').value = 'ma'; app.$('#un-subj').dispatchEvent(new app.w.Event('change'));
+  app.$('#un-subj').value = 'de'; app.$('#un-subj').dispatchEvent(new app.w.Event('change'));
+  // kopieren in 7c (dort keine Stunden)
+  app.klick('#un-copy'); app.klick('#un-copy-ok');
+  const c7 = JSON.parse(app.E('JSON.stringify(DB.classes.find(c => c.name === "7c").units)'));
+  erwarte(c7.length === 1 && c7[0].items.length === 3 && c7[0].id !== u.id && c7[0].items[0].id !== u.items[0].id && /nach 7c kopiert/.test(app.$('#toast').textContent), 'Kopieren falsch');
+  app.E(`editUnit(DB.classes.find(c => c.name === "7c"), DB.classes.find(c => c.name === "7c").units[0])`);
+  erwarte(/noch keine Stunde für 7c in Deutsch/.test(app.$('#un-sum').textContent), 'Hinweis ohne Stunden fehlt: ' + app.$('#un-sum').textContent);
+  app.klick('#un-del'); app.sheetOk();
+  erwarte(app.E('DB.classes.find(c => c.name === "7c").units.length') === 0, 'Reihe nicht gelöscht');
+  // Stundenblatt ohne Reihe: Reihe planen mit Fach und Datum
+  zeigeWoche(app, '2026-11-02');
+  app.klick(app.$$('#tt-grid .tt-cell').find(x => /Do 05\.11\./.test(x.getAttribute('aria-label'))));
+  app.klick('#tt-u-new');
+  erwarte(app.$('#un-subj').value === 'ma' && app.$('#un-start').value === '2026-11-05' && !app.$('#un-class'), 'Reihe planen aus der Stunde nicht vorbelegt');
+  app.E('closeModal()');
+});
+
+test('Termine und Planung: Laden prüft, Abgleich, ältere App, Startseite, Schuljahr', async app => {
+  uhr(app, 1000); planStand(app);
+  const cid = app.E('curClass().id');
+  const S = JSON.parse(app.E(`JSON.stringify(sanitizeDB({ v: 2, hst: "XX", classes: [{ id: "c", name: "K", students: [],
+    units: [{ id: "u", s: "ma", t: "R", a: "2026-02-30", items: [{ id: "i", t: "x" }] }, { id: "u2", s: "ma", t: " R2 ", a: "2026-03-02", items: [{ id: "i", t: "a", n: 9 }, { id: "i", t: "b" }, { id: "j", t: "" }] },
+      { id: "constructor", s: "ma", t: "P", a: "2026-03-02", items: [{ id: "i", t: "a" }] }],
+    uskip: ["2026-03-02|L1", "2026-03-02|L1", "kaputt"] }],
+    events: [{ id: "e1", k: "ka", d: "2026-11-05", p: 1, tm: "08:00", e: "2026-11-09", c: "c", s: "ma", rem: 5 }, { id: "e2", k: "ev", d: "2026-11-05", e: "2027-11-05", t: "", tm: "25:00" },
+      { id: "e3", k: "ev", d: "2026-11-05", e: "2026-11-07", t: "  Fahrt ", tm: "07:30", p: 3, s: "ma", rem: 60 }, { id: "e3", k: "due", d: "2026-11-06", t: "doppelt" }, { id: "e4", k: "zz", d: "2026-11-05", t: "x" }],
+    holidays: [{ id: "h1", a: "2026-11-02", b: "2026-11-01" }, { id: "h2", a: "2026-11-02", b: "2026-11-03", n: "Ok" }, { id: "h3", a: "2026-01-01", b: "2026-12-31" }] }))`));
+  const c0 = S.classes[0];
+  erwarte(S.hst === '' && c0.units.length === 1 && c0.units[0].t === 'R2' && c0.units[0].items.length === 1 && c0.units[0].items[0].n === 1 && JSON.stringify(c0.uskip) === '[]', 'Reihen falsch geprüft: ' + JSON.stringify(c0));
+  const evOf = id => JSON.stringify(S.events.find(e => e.id === id));
+  erwarte(S.events.length === 2 && evOf('e1') === '{"id":"e1","k":"ka","d":"2026-11-05","t":"","p":1,"c":"c","s":"ma"}'
+    && evOf('e3') === '{"id":"e3","k":"ev","d":"2026-11-05","t":"Fahrt","e":"2026-11-07","tm":"07:30","rem":60}', 'Termine falsch geprüft: ' + JSON.stringify(S.events));
+  erwarte(S.holidays.length === 1 && S.holidays[0].n === 'Ok', 'Ferien falsch geprüft');
+  // Verweise mit älteren ID-Formaten bleiben; ausgelassene Stunden nur zu vorhandenen Stunden
+  const S2 = JSON.parse(app.E(`JSON.stringify(sanitizeDB({ v: 2, subjects: [{ id: "fach.alt mit leer", name: "Alt" }],
+    lessons: [{ id: "Lx", day: 0, period: 0, subjectId: "fach.alt mit leer", classId: "klasse.7b" }],
+    classes: [{ id: "klasse.7b", name: "7b", students: [], units: [{ id: "u", s: "fach.alt mit leer", t: "R", a: "2026-03-02", items: [{ id: "i", t: "a" }] }],
+      uskip: ["2026-03-02|Lx", "2026-03-09|weg"] }],
+    events: [{ id: "e", k: "ka", d: "2026-03-02", c: "klasse.7b", s: "fach.alt mit leer", aid: "a.1" }] }))`));
+  erwarte(S2.classes[0].units.length === 1 && S2.events[0].c === 'klasse.7b' && S2.events[0].s === 'fach.alt mit leer' && S2.events[0].aid === 'a.1'
+    && JSON.stringify(S2.classes[0].uskip) === '["2026-03-02|Lx"]', 'Ältere ID-Formate verworfen oder verwaiste Auslassungen behalten: ' + JSON.stringify(S2.classes[0]));
+  // Abgleich zwischen zwei Geräten
+  app.E(`DB.events = [{ id: "e1", k: "ka", d: "2026-11-05", p: 1, t: "Brüche", c: "${cid}", s: "ma" }]; DB.holidays = [{ id: "h1", a: "2026-11-09", b: "2026-11-09", n: "frei" }]; DB.hst = "NI";
+    curClass().units = [{ id: "u1", s: "ma", t: "Brüche", a: "2026-11-02", items: [{ id: "A", t: "Darstellen", hw: "", n: 1 }] }]; curClass().uskip = ["2026-11-02|L1"]; flushSave()`);
+  const B = neueApp();
+  try{
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    erwarte(B.E('DB.events.length') === 1 && B.E('DB.hst') === 'NI' && B.E('DB.classes[0].units.length') === 1 && B.E('DB.classes[0].uskip.length') === 1, 'Ersetzen verliert Termine/Planung');
+    uhr(B, 2000); B.E(`DB.events.push({ id: "e2", k: "ev", d: "2026-11-10", t: "Konferenz" }); DB.classes[0].units[0].items.push({ id: "B", t: "Kürzen", hw: "", n: 1 }); DB.hst = "HB"; DB.classes[0].uskip = []; flushSave()`);
+    uhr(app, 2100); app.E('DB.events[0].t = "Bruchrechnung"; DB.holidays.push({ id: "h2", a: "2026-12-21", b: "2026-12-22", n: "Brücke" }); flushSave()');
+    uhr(app, 2200); await laden(app, datei(B), 'merge');
+    erwarte(app.E('DB.events.length') === 2 && app.E('DB.events.find(e => e.id === "e1").t') === 'Bruchrechnung' && app.E('DB.holidays.length') === 2 && app.E('DB.hst') === 'HB'
+      && app.E('curClass().units[0].items.length') === 2 && app.E('curClass().uskip.length') === 0, 'Abgleich führt Termine/Planung nicht zusammen');
+    uhr(B, 2300); B.E('DB.events = DB.events.filter(e => e.id !== "e2"); DB.holidays = []; flushSave()');
+    uhr(app, 2400); await laden(app, datei(B), 'merge');
+    erwarte(app.E('DB.events.length') === 1 && app.E('DB.holidays.length') === 1 && app.E('DB.holidays[0].id') === 'h2', 'Löschen kommt nicht an oder löscht Neueres: ' + app.E('JSON.stringify(DB.holidays)'));
+  } finally { B.ende(); }
+  // ältere App kennt Termine/Ferien/Reihen nicht: nichts geht verloren
+  uhr(app, 3000);
+  const alt = app.E(`(() => { const d = backupData(); d.stamps = unpackStamps(d.stamps); d.del = unpackStamps(d.del);
+    Object.keys(d.stamps).forEach(k => { if(/^(ev|hol|hst|un|uk)(\\||$)/.test(k)) delete d.stamps[k]; });
+    delete d.events; delete d.holidays; delete d.hst; d.classes.forEach(c => { delete c.units; delete c.uskip; });
+    d.classes[0].name = "7b neu"; d.stamps["c|" + idk(d.classes[0].id)] = 3000; d.mod = 3000;
+    d.stamps = packStamps(d.stamps); d.del = packStamps(d.del);
+    return JSON.stringify({ app: "fairseat", v: 2, data: d }); })()`);
+  uhr(app, 3100); await laden(app, alt, 'merge');
+  erwarte(app.E('curClass().name') === '7b neu' && app.E('DB.events.length') === 1 && app.E('DB.holidays.length') === 1 && app.E('DB.hst') === 'HB' && app.E('curClass().units.length') === 1, 'Ältere App löscht Termine oder Planung');
+  // Startseite: Demnächst
+  app.E(`DB.events.push({ id: "s1", k: "ka", d: isoAdd(isoDay(new Date()), 2), t: "Bald", c: "${cid}", s: "ma" }, { id: "s2", k: "ev", d: isoAdd(isoDay(new Date()), 30), t: "Später" });
+    DB.holidays.push({ id: "s3", a: isoAdd(isoDay(new Date()), 5), b: isoAdd(isoDay(new Date()), 6), n: "Brückentage" }); save(); goHome()`);
+  const soon = app.$('#day-soon') ? app.$('#day-soon').textContent : '';
+  erwarte(/Klassenarbeit: Bald/.test(soon) && /Brückentage ab/.test(soon) && !/Später/.test(soon) && !!app.$('#day-soon .daytask.ex'), 'Demnächst unvollständig: ' + soon);
+  app.klick(app.$$('#day-soon .daytask').find(b => /Bald/.test(b.textContent)));
+  erwarte(app.$('#ev-title').value === 'Bald', 'Tipp öffnet den Termin nicht');
+  app.E('closeModal()');
+  app.E(`DB.holidays.push({ id: "s4", a: isoDay(new Date()), b: isoDay(new Date()), n: "Heute zu" }); save(); renderNowCard()`);
+  erwarte(/Heute frei: Heute zu/.test(app.$('#day-soon').textContent), 'Heute frei fehlt');
+  // Schuljahreswechsel: vergangene Termine weg, Reihen mit dem Stundenplan
+  app.E(`DB.events.push({ id: "old", k: "due", d: "2020-01-01", t: "alt" }); save(); openNewYear()`);
+  app.sheetOk(); app.sheetOk();
+  erwarte(!app.E('DB.events.some(e => e.id === "old")') && app.E('DB.events.some(e => e.id === "s1")') && app.E('DB.classes.every(c => !(c.units || []).length && !(c.uskip || []).length)'), 'Schuljahreswechsel räumt Termine/Reihen nicht auf');
+});
+
 /* WebDAV-Server zum Testen: hält Dateien im Speicher, prüft Anmeldung, ETag (If-Match / If-None-Match) und Ordner */
 function davServer(){
   const S = { files: new Map(), log: [], user: 'simon.m', pw: 'iserv-geheim', dir: 'https://kgs-test.de/webdav/Files/', n: 0, vorPut: null, aus: false,

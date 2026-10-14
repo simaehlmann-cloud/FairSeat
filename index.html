@@ -335,6 +335,48 @@ select.field{-webkit-appearance:none;appearance:none;
 .ttgrid{display:grid;gap:3px;margin-top:10px;align-items:stretch}
 .tt-day{text-align:center;font-size:12.5px;font-weight:750;color:var(--ink-soft);padding:4px 0}
 .tt-day.today{color:var(--accent)}
+.tt-day{display:flex;flex-direction:column;align-items:center;line-height:1.15;position:relative}
+.tt-day small{font-size:10.5px;font-weight:600}
+.tt-day.free{background:var(--line);border-radius:8px}
+.ttdot{position:absolute;top:0;right:2px;min-width:15px;height:15px;border-radius:8px;background:var(--accent);color:#fff;font-style:normal;font-size:9.5px;font-weight:800;line-height:15px;text-align:center}
+.ttdot.ex{background:var(--warn)}
+.ttnav{display:flex;align-items:center;gap:6px;margin-top:4px}
+.ttweek{flex:1;display:flex;flex-direction:column;align-items:center;border:0;background:transparent;color:var(--ink);font:inherit;padding:4px}
+.ttweek b{font-size:15px}.ttweek span{font-size:12px;color:var(--ink-soft)}
+.ttweek:disabled{opacity:1}
+.tt-cell.free{opacity:.45;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 6px,transparent 6px 12px)!important}
+.tt-free.freeday{opacity:.25}
+.tt-cell .ttka{position:absolute;top:2px;left:3px;font-size:9.5px;font-weight:800;background:var(--warn);color:#fff;border-radius:5px;padding:0 4px;text-shadow:none}
+.tt-cell .tt-topic{font-size:10px;line-height:1.15;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-top:2px;opacity:.95}
+.tt-cell .tt-topic.plan{font-style:italic}
+@media (max-width:560px){.tt-cell .tt-topic{display:none}}
+.ttacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px}
+.evrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;width:100%;text-align:left;border:1.5px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;background:var(--surface);color:var(--ink);padding:8px 11px;margin-top:6px;font:inherit;font-size:13.5px}
+.evrow.k-ka,.evrow.k-test{border-left-color:var(--warn)}
+.evrow.k-due{border-left-color:#E08A00}
+.evrow.hol{border-left-color:var(--ink-soft);color:var(--ink-soft)}
+.evrow .evw{font-size:12px;color:var(--ink-soft);font-weight:650}
+.evrow .evx{margin-left:auto;color:var(--warn)}
+.evwarn{color:var(--warn);font-size:13.5px;font-weight:650;margin-top:8px}
+.holrow .holl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.holrow.past{opacity:.5}
+.ttdaybox{border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:6px;background:var(--surface)}
+.ttdaybox .ttplan{margin-top:4px;font-weight:650}
+.ttdaybox .ttfree{margin-top:4px;color:var(--ink-soft);font-weight:650}
+.ttdayacts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ttdayacts .minibtn{width:auto;padding:0 12px;min-height:40px;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);font-weight:650}
+.ttdayacts .ttka{border-color:var(--warn);color:var(--warn)}
+.tt-cell.hasex{padding-top:15px}
+@media (max-width:560px){.tt-cell.planned::after{content:"";position:absolute;bottom:4px;right:4px;width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8}}
+.unitem{border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:8px}
+.unitem .unno{flex:0 0 auto;font-weight:750;min-width:22px}
+.unitem .unhw{margin-top:6px}
+.unctl{display:flex;align-items:center;gap:6px;margin-top:6px}
+.unctl .unn{flex:0 0 auto}
+.unctl .unnl{flex:1;font-size:12px;color:var(--ink-soft)}
+.undates{font-size:12px;color:var(--ink-soft);margin-top:4px}
+.unsum{font-size:13.5px;font-weight:650;margin-top:10px}
+.daytask.ex svg.i{color:var(--warn)}
 .tt-time{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--ink-soft);line-height:1.2}
 .tt-time b{font-size:14px;color:var(--ink)}
 .tt-break{font-size:10.5px;color:var(--ink-soft);text-align:center;border-top:1px dashed var(--line);padding-top:1px;line-height:1.1}
@@ -1209,9 +1251,11 @@ body.presenting #exitPresent{display:flex}
     <button class="iconbtn" id="btn-tt-times" data-al="ttTimes"><svg class="i"><use href="#i-clock"></use></svg></button>
   </div>
   <div class="scroll"><div class="wrapc">
+    <div class="ttnav" id="tt-nav"></div>
     <div class="segmented" id="tt-ab" style="display:none"></div>
     <div class="hint" id="tt-empty" data-i="ttEmptyHint"></div>
     <div class="ttgrid" id="tt-grid"></div>
+    <div id="tt-wlist"></div>
     <div class="hint" data-i="ttHint"></div>
   </div></div>
 </section>
@@ -2936,6 +2980,46 @@ Object.assign(I18N.de, {
   crTendSub:"2+, 2, 2− je nach Lage im Bereich der Note", crKeyHint:"Mindest-Erfüllungsgrad je Note wie beim Notenschlüssel einer Klassenarbeit.",
   crNeedLv:"Bitte jede Stufe benennen", crNeedItem:"Bitte mindestens ein Kriterium benennen (leere entfernen)",
   crSaveTpl:"Als Vorlage speichern", crTplLimit:"Höchstens 30 eigene Vorlagen", crTplSaved:"Vorlage „{n}“ gespeichert", crTplUpdated:"Vorlage „{n}“ aktualisiert", crTplManage:"Eigene Vorlagen verwalten", crTplDeleted:"Vorlage „{n}“ gelöscht", crTplNone:"Keine eigenen Vorlagen", crCont:"Fortsetzung",
+  /* Termine, Ferien, Unterrichtsplanung */
+  ttKW:"KW {n}", ttPrevWeek:"Vorige Woche", ttNextWeek:"Nächste Woche", ttBackToday:"zurück zu heute", ttThisWeekList:"Diese Woche",
+  ttFreeShort:"frei", ttFreeDay:"Frei: {f}", ttHolSetup:"Ferien und Feiertage eintragen – dann fallen dort keine Stunden an",
+  ttLessonEdit:"Stunde im Stundenplan", ttPlanned:"Reihe „{u}“, Thema {i} von {n}", ttPlannedShort:"geplant",
+  ttMore:"+1 Stunde für dieses Thema", ttMoreDone:"„{t}“ bekommt eine Stunde mehr – der Rest rutscht nach",
+  ttSkip:"Stunde für die Planung auslassen", ttUnskip:"Stunde wieder einplanen", ttOpenUnit:"Reihe öffnen", ttPlanUnit:"Reihe planen", ttAddExam:"Klassenarbeit/Test",
+  evTitle:"Termine", evNew:"Neuer Termin", evEdit:"Termin bearbeiten", evTitleL:"Titel", evDate:"Datum", evEnd:"bis (optional)",
+  evEndHint:"Mehrtägig (z. B. Klassenfahrt): letzten Tag eintragen.", evPeriod:"Stunde", evNoPeriod:"ohne feste Stunde", evTime:"Uhrzeit (optional)",
+  evNote:"Notiz (optional)", evRem:"Erinnerung", evRemHint:"Die Erinnerung übernimmt dein Gerätekalender, wenn du den Termin exportierst.",
+  evK_ka:"Klassenarbeit", evK_test:"Test", evK_ev:"Termin", evK_due:"Frist", evK_ka_s:"KA", evK_test_s:"Test", evK_ev_s:"T", evK_due_s:"Frist",
+  evTitlePh_ka:"Thema, z. B. Bruchrechnung", evTitlePh_test:"Thema, z. B. Vokabeltest", evTitlePh_ev:"z. B. Elternabend, Konferenz", evTitlePh_due:"z. B. Noten abgeben",
+  evRem_0:"keine", evRem_60:"1 Stunde vorher", evRem_1440:"1 Tag vorher", evRem_2880:"2 Tage vorher", evRem_10080:"1 Woche vorher",
+  evWarnDay:"An diesem Tag schreibt die Klasse schon eine Klassenarbeit.", evWarnWeek:"Das wäre die {n}. Klassenarbeit der Klasse in dieser Woche.",
+  evWarnFree:"An diesem Tag ist frei ({f}).", evHasWarn:"mit Hinweis", evNeedDate:"Bitte ein gültiges Datum wählen", evNeedTitle:"Bitte einen Titel eingeben",
+  evLimit:"Höchstens 500 Termine", evSaved:"Termin gespeichert", evDelete:"Termin löschen", evDeleted:"Termin gelöscht",
+  evAssessNew:"Als Bewertung anlegen", evAssessOpen:"Bewertung öffnen", evAssessNeed:"Dafür Klasse und Fach wählen",
+  evNone:"Keine anstehenden Termine", evNonePast:"Keine vergangenen Termine", evShowPast:"Vergangene Termine zeigen", evShowNext:"Anstehende Termine zeigen",
+  evIcs:"In den Kalender übernehmen (.ics)", evIcsOne:"Diesen Termin in den Kalender (.ics)", evIcsFile:"FairSeat-Termine",
+  evIcsOk:"{n} Termine exportiert", evIcsHint:"Die Datei öffnest du mit dem Kalender deines Geräts. Sie enthält nur Termine, keine Namen von Schülerinnen und Schülern – außer du hast sie selbst eingetragen.",
+  holTitle:"Ferien und freie Tage", holHint:"An Ferientagen und Feiertagen gibt es keine Stunden: Die Unterrichtsplanung überspringt sie, das Kursheft mahnt sie nicht an.",
+  holState:"Gesetzliche Feiertage (Bundesland)", holNoState:"keine", holPubOff:"Ohne Bundesland werden keine Feiertage berücksichtigt.", holPubNext:"Nächster Feiertag: {n}, {d}",
+  holList:"Ferien und freie Tage", holNone:"Noch keine Ferien eingetragen", holFree:"Frei", holTplNI:"Ferien Niedersachsen 2026/27 und 2027/28 übernehmen",
+  holTplDone:"{n} Einträge übernommen", holTplNone:"Schon alles eingetragen", holAdd:"Eigener freier Tag oder Zeitraum", holNamePh:"z. B. Beweglicher Ferientag",
+  holFrom:"Erster freier Tag", holTo:"Letzter freier Tag (optional)", holAddBtn:"Hinzufügen", holBadRange:"Das Ende liegt vor dem Beginn oder mehr als 120 Tage danach",
+  holLimit:"Höchstens 80 Einträge",
+  pub_new:"Neujahr", pub_epi:"Heilige Drei Könige", pub_women:"Frauentag", pub_gf:"Karfreitag", pub_em:"Ostermontag", pub_may:"Tag der Arbeit",
+  pub_asc:"Christi Himmelfahrt", pub_wm:"Pfingstmontag", pub_cc:"Fronleichnam", pub_ass:"Mariä Himmelfahrt", pub_child:"Weltkindertag",
+  pub_unity:"Tag der Deutschen Einheit", pub_ref:"Reformationstag", pub_all:"Allerheiligen", pub_pen:"Buß- und Bettag", pub_xmas1:"1. Weihnachtstag", pub_xmas2:"2. Weihnachtstag",
+  unTitle:"Unterrichtsplanung", unHint:"Lege eine Reihe mit ihren Themen an. Die App verteilt sie auf die kommenden Stunden der Klasse in diesem Fach – fällt eine Stunde aus oder sind Ferien, rutscht der Rest nach.",
+  unNew:"Neue Reihe", unEdit:"Reihe bearbeiten", unTitleL:"Titel der Reihe", unTitlePh:"z. B. Bruchrechnung", unStart:"Beginn", unItems:"Themen (der Reihe nach)",
+  unTopic:"Thema", unTopicPh:"Thema der Stunde", unHwPh:"Hausaufgabe (optional)", unCount:"Stunden für Thema", unCountShort:"Stunden (Doppelstunde = 1)",
+  unUp:"Nach oben", unDown:"Nach unten", unAddItem:"Thema hinzufügen", unItemLimit:"Höchstens 60 Themen je Reihe",
+  unPaste:"Themen als Liste einfügen", unPastePh:"Ein Thema pro Zeile, optional „Thema | Hausaufgabe“", unPasteOk:"Übernehmen", unPasteNone:"Keine Themen erkannt", unPasted:"{n} Themen übernommen",
+  unSum:"{n} Stunden · {a} bis {b}", unOpen:"{n} ohne Termin", unEmpty:"Noch keine Themen", unNoLessons:"Im Stundenplan gibt es noch keine Stunde für {c} in {s}.",
+  unNoDate:"noch kein Termin", unNoSlots:"noch keine Stunden im Plan", unLessons:"{n} Std.",
+  unNone:"Noch keine Reihen geplant.", unNoTT:"Trage zuerst deine Stunden in den Stundenplan ein.", unNoClass:"Bitte zuerst eine Klasse anlegen",
+  unLimit:"Höchstens 40 Reihen je Klasse", unNeedTitle:"Bitte der Reihe einen Titel geben", unNeedItem:"Bitte mindestens ein Thema eintragen", unSaved:"Reihe gespeichert",
+  unCopy:"In eine andere Klasse kopieren", unCopyOk:"Kopieren", unCopyNone:"Keine weitere Klasse vorhanden", unCopied:"Reihe nach {c} kopiert",
+  unDelete:"Reihe löschen", unDeleteQ:"Reihe löschen?",
+  jFromPlan:"Aus der Planung (Reihe „{u}“) – vor dem Speichern anpassen", daySoon:"Demnächst", dayToday:"Heute", dayFreeToday:"Heute frei: {f}", daySoonHol:"{n} ab {d}",
   crOff:"Raster entfernen", crOffQ:"Raster entfernen?", crOffT:"Raster, Stufen und Kommentare dieser Bewertung werden gelöscht. Die Noten bleiben stehen.", crOffBtn:"Entfernen",
   crRes:"Erfüllt: {p} % · Note {g}", crPartial:"{d} von {n} Kriterien bewertet", crComment:"Kommentar", crCommentPh:"Rückmeldung für den Bogen (optional)",
   crPdfOne:"Rückmeldebogen (PDF)", crPdfAll:"Rückmeldebögen aller (PDF)", crPdfFile:"Rückmeldung", crStats:"Erfüllung je Kriterium (Klasse)", crNothing:"Noch keine Bewertungen",
@@ -2955,6 +3039,46 @@ Object.assign(I18N.en, {
   crTendSub:"2+, 2, 2− depending on position within the grade band", crKeyHint:"Minimum achievement per grade, like the grading key of a test.",
   crNeedLv:"Please name every level", crNeedItem:"Please name at least one criterion (remove empty ones)",
   crSaveTpl:"Save as template", crTplLimit:"At most 30 own templates", crTplSaved:"Template “{n}” saved", crTplUpdated:"Template “{n}” updated", crTplManage:"Manage own templates", crTplDeleted:"Template “{n}” deleted", crTplNone:"No own templates", crCont:"continued",
+  /* Dates, holidays, lesson planning */
+  ttKW:"Week {n}", ttPrevWeek:"Previous week", ttNextWeek:"Next week", ttBackToday:"back to today", ttThisWeekList:"This week",
+  ttFreeShort:"off", ttFreeDay:"No school: {f}", ttHolSetup:"Add holidays and public holidays – no lessons are counted on those days",
+  ttLessonEdit:"Lesson in the timetable", ttPlanned:"Unit “{u}”, topic {i} of {n}", ttPlannedShort:"planned",
+  ttMore:"+1 lesson for this topic", ttMoreDone:"“{t}” gets one more lesson – the rest moves back",
+  ttSkip:"Skip this lesson in the plan", ttUnskip:"Use this lesson again", ttOpenUnit:"Open unit", ttPlanUnit:"Plan a unit", ttAddExam:"Exam/test",
+  evTitle:"Dates", evNew:"New date", evEdit:"Edit date", evTitleL:"Title", evDate:"Date", evEnd:"until (optional)",
+  evEndHint:"Several days (e.g. class trip): enter the last day.", evPeriod:"Period", evNoPeriod:"no fixed period", evTime:"Time (optional)",
+  evNote:"Note (optional)", evRem:"Reminder", evRemHint:"Your device calendar handles the reminder once you export the date.",
+  evK_ka:"Exam", evK_test:"Test", evK_ev:"Event", evK_due:"Deadline", evK_ka_s:"Exam", evK_test_s:"Test", evK_ev_s:"E", evK_due_s:"Due",
+  evTitlePh_ka:"Topic, e.g. fractions", evTitlePh_test:"Topic, e.g. vocabulary", evTitlePh_ev:"e.g. parents’ evening, staff meeting", evTitlePh_due:"e.g. submit grades",
+  evRem_0:"none", evRem_60:"1 hour before", evRem_1440:"1 day before", evRem_2880:"2 days before", evRem_10080:"1 week before",
+  evWarnDay:"The class already writes an exam on this day.", evWarnWeek:"This would be the class’s exam no. {n} this week.",
+  evWarnFree:"There is no school on this day ({f}).", evHasWarn:"with warning", evNeedDate:"Please pick a valid date", evNeedTitle:"Please enter a title",
+  evLimit:"At most 500 dates", evSaved:"Date saved", evDelete:"Delete date", evDeleted:"Date deleted",
+  evAssessNew:"Create as assessment", evAssessOpen:"Open assessment", evAssessNeed:"Pick class and subject first",
+  evNone:"No upcoming dates", evNonePast:"No past dates", evShowPast:"Show past dates", evShowNext:"Show upcoming dates",
+  evIcs:"Add to calendar (.ics)", evIcsOne:"Add this date to the calendar (.ics)", evIcsFile:"FairSeat-dates",
+  evIcsOk:"{n} dates exported", evIcsHint:"Open the file with your device calendar. It only contains dates, no student names – unless you typed them yourself.",
+  holTitle:"Holidays and days off", holHint:"There are no lessons on holidays and public holidays: lesson planning skips them and the class log does not ask for them.",
+  holState:"Public holidays (German state)", holNoState:"none", holPubOff:"Without a state, no public holidays are taken into account.", holPubNext:"Next public holiday: {n}, {d}",
+  holList:"Holidays and days off", holNone:"No holidays yet", holFree:"Day off", holTplNI:"Add Lower Saxony holidays 2026/27 and 2027/28",
+  holTplDone:"{n} entries added", holTplNone:"Already added", holAdd:"Own day or period off", holNamePh:"e.g. school day off",
+  holFrom:"First day off", holTo:"Last day off (optional)", holAddBtn:"Add", holBadRange:"The end is before the start or more than 120 days later",
+  holLimit:"At most 80 entries",
+  pub_new:"New Year’s Day", pub_epi:"Epiphany", pub_women:"Women’s Day", pub_gf:"Good Friday", pub_em:"Easter Monday", pub_may:"Labour Day",
+  pub_asc:"Ascension Day", pub_wm:"Whit Monday", pub_cc:"Corpus Christi", pub_ass:"Assumption Day", pub_child:"Children’s Day",
+  pub_unity:"German Unity Day", pub_ref:"Reformation Day", pub_all:"All Saints’ Day", pub_pen:"Day of Repentance", pub_xmas1:"Christmas Day", pub_xmas2:"Boxing Day",
+  unTitle:"Lesson planning", unHint:"Create a unit with its topics. The app spreads them over the class’s coming lessons in this subject – if a lesson is cancelled or there are holidays, the rest moves back.",
+  unNew:"New unit", unEdit:"Edit unit", unTitleL:"Unit title", unTitlePh:"e.g. fractions", unStart:"Start", unItems:"Topics (in order)",
+  unTopic:"Topic", unTopicPh:"Topic of the lesson", unHwPh:"Homework (optional)", unCount:"Lessons for topic", unCountShort:"lessons (double lesson = 1)",
+  unUp:"Move up", unDown:"Move down", unAddItem:"Add topic", unItemLimit:"At most 60 topics per unit",
+  unPaste:"Paste topics as a list", unPastePh:"One topic per line, optionally “topic | homework”", unPasteOk:"Add", unPasteNone:"No topics found", unPasted:"{n} topics added",
+  unSum:"{n} lessons · {a} to {b}", unOpen:"{n} without a date", unEmpty:"No topics yet", unNoLessons:"The timetable has no lesson for {c} in {s} yet.",
+  unNoDate:"no date yet", unNoSlots:"no lessons in the timetable yet", unLessons:"{n} lessons",
+  unNone:"No units planned yet.", unNoTT:"Add your lessons to the timetable first.", unNoClass:"Please create a class first",
+  unLimit:"At most 40 units per class", unNeedTitle:"Please give the unit a title", unNeedItem:"Please enter at least one topic", unSaved:"Unit saved",
+  unCopy:"Copy to another class", unCopyOk:"Copy", unCopyNone:"No other class", unCopied:"Unit copied to {c}",
+  unDelete:"Delete unit", unDeleteQ:"Delete unit?",
+  jFromPlan:"From the plan (unit “{u}”) – adjust before saving", daySoon:"Coming up", dayToday:"Today", dayFreeToday:"No school today: {f}", daySoonHol:"{n} from {d}",
   crOff:"Remove grid", crOffQ:"Remove grid?", crOffT:"Grid, levels and comments of this assessment are deleted. The grades stay.", crOffBtn:"Remove",
   crRes:"Achieved: {p} % · grade {g}", crPartial:"{d} of {n} criteria rated", crComment:"Comment", crCommentPh:"Feedback for the sheet (optional)",
   crPdfOne:"Feedback sheet (PDF)", crPdfAll:"Feedback sheets for all (PDF)", crPdfFile:"Feedback", crStats:"Achievement per criterion (class)", crNothing:"No ratings yet",
@@ -2966,6 +3090,14 @@ I18N.de.info.push({ h:"Kriterienraster und Rückmeldebogen",
 I18N.en.info.push({ h:"Criteria grid and feedback sheet",
   p:["An assessment with grades or points can be rated “by criteria” instead of tasks: criteria with expectation and weight, 3 to 5 levels, templates for presentations and group work or your own. Per pupil you tap one level per criterion and can add a comment.",
      "The weighted degree of achievement gives the grade via the key. The feedback sheet (PDF) shows criteria, expectations, achieved level, result and comment – for one pupil or all."] });
+I18N.de.info.push({ h:"Termine, Ferien und Unterrichtsplanung",
+  p:["Der Stundenplan zeigt eine Woche mit Datum – mit ‹ und › blätterst du. Klassenarbeiten, Tests, Termine und Fristen trägst du über „Neuer Termin“ oder direkt in einer Stunde ein. Schreibt die Klasse am selben Tag schon eine Klassenarbeit oder wäre es die vierte in der Woche, weist die App darauf hin. „In den Kalender übernehmen“ erzeugt eine .ics-Datei für den Gerätekalender, der auch erinnert.",
+     "Unter „Ferien und freie Tage“ wählst du dein Bundesland für die Feiertage und übernimmst die Ferien (Niedersachsen als Vorlage) oder trägst eigene freie Tage ein. Dort gibt es keine Stunden.",
+     "In der Unterrichtsplanung legst du Reihen mit Themen an. Die App verteilt sie auf die kommenden Stunden der Klasse; fällt eine Stunde aus, sind Ferien oder lässt du eine Stunde aus, rutscht der Rest nach. Im Kursheft steht das geplante Thema dann schon als Vorschlag."] });
+I18N.en.info.push({ h:"Dates, holidays and lesson planning",
+  p:["The timetable shows a dated week – use ‹ and › to browse. Add exams, tests, events and deadlines via “New date” or directly in a lesson. If the class already writes an exam that day or it would be the fourth in the week, the app warns you. “Add to calendar” creates an .ics file for your device calendar, which also handles reminders.",
+     "Under “Holidays and days off” pick your German state for public holidays and add the school holidays (Lower Saxony as a template) or your own days off. There are no lessons on those days.",
+     "In lesson planning you create units with topics. The app spreads them over the class’s coming lessons; if a lesson is cancelled, falls into the holidays or you skip it, the rest moves back. The class log then suggests the planned topic."] });
 /* ============ 2. Helfer ============ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
@@ -3037,7 +3169,8 @@ function defaultSettings(){
 function emptyDB(){
   return { v:2, lang:"de", theme:"light", settings:defaultSettings(),
            rooms:[], classes:[], trash:[], lastBackup:"", lastClass:"", onboarded:false,
-           subjects:[], lessons:[], cancelled:[], tt:defaultTT(), gradesAck:false, scales:[], critTpl:[] };
+           subjects:[], lessons:[], cancelled:[], tt:defaultTT(), gradesAck:false, scales:[], critTpl:[],
+           events:[], holidays:[], hst:"" };
 }
 const TRASH_DAYS = 30;
 let DB = emptyDB();
@@ -3071,6 +3204,42 @@ function sanitizeItem(raw){
 function sizePx(v, fb){
   const n = (typeof v === "number" && isFinite(v)) ? v : fb;
   return Math.round(clamp(n, ROOM_MIN_M * PX_PER_M, ROOM_MAX_PX));
+}
+const sId = v => typeof v === "string" && /^[A-Za-z0-9_-]{1,40}$/.test(v) && !(v in Object.prototype) ? v : "";
+/* Verweise auf Klassen, Fächer, Bewertungen: deren IDs dürfen (aus älteren Ständen/Importen) bis 60 beliebige Zeichen haben */
+const sRef = v => typeof v === "string" && v.length >= 1 && v.length <= 60 && !(v in Object.prototype) ? v : "";
+function sanEvents(arr){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(e => e && typeof e === "object" && EV_KINDS.indexOf(e.k) >= 0 && isoOk(e.d) && sId(e.id) && !seen.has(e.id) && seen.add(e.id)).map(e => {
+    const o = { id: e.id, k: e.k, d: e.d, t: typeof e.t === "string" ? e.t.trim().slice(0, 80) : "" };
+    if(e.k === "ev" && isoOk(e.e) && e.e > e.d && isoDiff(e.d, e.e) <= 60) o.e = e.e;
+    if(!isExam(o) && typeof e.tm === "string" && TM_RX.test(e.tm)) o.tm = e.tm;
+    if(isExam(o) && Number.isInteger(e.p) && e.p >= 0 && e.p <= 11) o.p = e.p;
+    if(sRef(e.c)) o.c = e.c;
+    if(isExam(o) && sRef(e.s)) o.s = e.s;
+    if(isExam(o) && sRef(e.aid)) o.aid = e.aid;
+    if(typeof e.n === "string" && e.n.trim()) o.n = e.n.trim().slice(0, 300);
+    if(EV_REM.indexOf(e.rem) > 0) o.rem = e.rem;
+    return o;
+  }).filter(e => e.t || isExam(e)).sort(evSort).slice(-MAX_EVENTS);
+}
+function sanHolidays(arr){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(h => h && sId(h.id) && !seen.has(h.id) && seen.add(h.id) && isoOk(h.a) && isoOk(h.b) && h.b >= h.a && isoDiff(h.a, h.b) <= 120)
+    .map(h => ({ id: h.id, a: h.a, b: h.b, n: typeof h.n === "string" ? h.n.trim().slice(0, 40) : "" }))
+    .sort((x, y) => x.a.localeCompare(y.a)).slice(-MAX_HOL);
+}
+function sanUnits(arr){
+  if(!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.filter(u => u && sId(u.id) && !seen.has(u.id) && seen.add(u.id) && sRef(u.s) && isoOk(u.a) && typeof u.t === "string" && u.t.trim() && Array.isArray(u.items)).map(u => {
+    const iseen = new Set();
+    return { id: u.id, s: u.s, t: u.t.trim().slice(0, 80), a: u.a,
+      items: u.items.filter(x => x && sId(x.id) && !iseen.has(x.id) && iseen.add(x.id) && typeof x.t === "string" && x.t.trim())
+        .map(x => ({ id: x.id, t: x.t.trim().slice(0, 120), hw: typeof x.hw === "string" ? x.hw.trim().slice(0, 200) : "", n: [1, 2, 3, 4, 5, 6].indexOf(x.n) >= 0 ? x.n : 1 })).slice(0, MAX_UNIT_ITEMS) };
+  }).filter(u => u.items.length).slice(0, MAX_UNITS);
 }
 function sanitizeDB(raw){
   if(!raw || typeof raw !== "object") return null;
@@ -3136,6 +3305,10 @@ function sanitizeDB(raw){
   const lessonIds = new Set(out.lessons.map(L => L.id));
   out.cancelled = Array.isArray(raw.cancelled) ? raw.cancelled.filter((x, i, a) => typeof x === "string" && /^\d{4}-\d{2}-\d{2}\|/.test(x)
     && lessonIds.has(x.slice(11)) && a.indexOf(x) === i).slice(-500) : [];
+  /* Termine, Ferien, Bundesland für Feiertage */
+  out.events = sanEvents(raw.events);
+  out.holidays = sanHolidays(raw.holidays);
+  out.hst = typeof raw.hst === "string" && own(STATE_NAMES, raw.hst) ? raw.hst : "";
   out.gradesAck = raw.gradesAck === true;
   out.panelsMin = raw.panelsMin === true;
   const tl = raw.targetLock;
@@ -3226,6 +3399,9 @@ function sanitizeDB(raw){
       })).slice(0, MAX_CHECKS) : [],
       /* Kursheft, entschuldigte Tage und Verspätungen */
       journal: sanJournal(c?.journal),
+      /* Unterrichtsreihen und ausgelassene Stunden */
+      units: sanUnits(c?.units),
+      uskip: Array.isArray(c?.uskip) ? c.uskip.filter((x, i, a) => typeof x === "string" && /^\d{4}-\d{2}-\d{2}\|.{1,40}$/.test(x) && lessonIds.has(x.slice(11)) && a.indexOf(x) === i).slice(-MAX_USKIP) : [],
       targets: sanTargets(c?.targets),
       exc: sanDayIds(c?.exc, ids, 5000),
       /* zieldifferent unterrichtet: "Fach|Schüler-ID" – nur das Merkmal, keine Begründung */
@@ -9985,7 +10161,7 @@ function lessonLabel(L){
 function nowLessons(date){
   date = date || new Date();
   const day = (date.getDay() + 6) % 7;
-  if(day >= DB.tt.days) return { now: null, next: null };
+  if(day >= DB.tt.days || isFree(isoDay(date))) return { now: null, next: null };
   const wk = abWeek(date), times = periodTimes(), m = date.getHours() * 60 + date.getMinutes();
   const today = DB.lessons.filter(L => L.day === day && (!L.week || !wk || L.week === wk) && times[L.period])
     .map(L => ({ L, start: times[L.period].start, end: times[Math.min(times.length - 1, L.period + L.span - 1)].end }))
@@ -10011,7 +10187,7 @@ function openLessonPlan(L){
 /* Stunden eines Tages aus dem Stundenplan (A/B-Woche beachtet), nach Beginn sortiert */
 function lessonsOnDate(date){
   const day = (date.getDay() + 6) % 7;
-  if(day >= DB.tt.days) return [];
+  if(day >= DB.tt.days || isFree(isoDay(date))) return [];
   const wk = abWeek(date), times = periodTimes();
   return DB.lessons.filter(L => L.day === day && (!L.week || !wk || L.week === wk) && times[L.period])
     .map(L => ({ L, start: times[L.period].start, end: times[Math.min(times.length - 1, L.period + L.span - 1)].end }))
@@ -10066,8 +10242,9 @@ function renderNowCard(){
   const nl = show ? nowLessons() : { now: null, next: null };
   const items = [["ttNow", nl.now], ["ttNext", nl.next]].filter(x => x[1]);
   const tasks = dayTasks();
+  const soon = ttOn() ? upcomingItems() : [];
   const later = show ? lessonsOnDate(new Date()).filter(x => x.start > (new Date().getHours() * 60 + new Date().getMinutes()) && (!nl.next || x.L !== nl.next.L)) : [];
-  box.style.display = items.length || tasks.length || later.length ? "" : "none";
+  box.style.display = items.length || tasks.length || later.length || soon.length ? "" : "none";
   items.forEach(([k, x]) => {
     const L = x.L, s = subjectById(L.subjectId);
     const row = document.createElement("div"); row.className = "nowrow";
@@ -10112,6 +10289,16 @@ function renderNowCard(){
       b.onclick = () => openLessonPlan(L); wrap.appendChild(b); });
     box.appendChild(wrap);
   }
+  if(soon.length){
+    const h = document.createElement("div"); h.className = "eyebrow"; h.style.marginTop = "10px"; h.textContent = t("daySoon"); box.appendChild(h);
+    const list = document.createElement("div"); list.id = "day-soon";
+    soon.slice(0, 5).forEach(x => { const b = document.createElement("button"); b.className = "daytask" + (x.ex ? " ex" : ""); b.dataset.id = x.id;
+      b.appendChild(icon("calendar")); const sp = document.createElement("span"); sp.textContent = x.text; b.appendChild(sp);
+      b.onclick = x.go; list.appendChild(b); });
+    if(soon.length > 5){ const mo = document.createElement("button"); mo.className = "ghost"; mo.id = "day-soon-more"; mo.style.width = "100%"; mo.textContent = t("dayMore").replace("{n}", String(soon.length - 5));
+      mo.onclick = () => openEvents(() => renderNowCard()); list.appendChild(mo); }
+    box.appendChild(list);
+  }
   if(tasks.length){
     const h = document.createElement("div"); h.className = "eyebrow"; h.style.marginTop = "10px"; h.textContent = t("dayTasks"); box.appendChild(h);
     const list = document.createElement("div"); list.id = "day-tasks";
@@ -10122,23 +10309,651 @@ function renderNowCard(){
     box.appendChild(list);
   }
 }
-function goTimetable(){ show("timetable"); renderTimetable(); }
-let ttWeekView = "";
+/* ============ 23b. Termine, Ferien und Unterrichtsplanung ============
+   DB.events   = [{ id, k: "ka" | "test" | "ev" | "due", d, e?: letzter Tag, tm?: "HH:MM", p?: Stunde, t: Titel,
+                    c?: Klasse, s?: Fach, n?: Notiz, rem?: Erinnerung (Minuten vorher, nur im Kalender-Export), aid?: Bewertung }]
+   DB.holidays = [{ id, a, b, n }] – Ferien und freie Tage (erster bis letzter freier Tag)
+   DB.hst      = Bundesland für die gesetzlichen Feiertage ("" = keine)
+   c.units     = [{ id, s: Fach, t: Titel, a: Beginn, items: [{ id, t: Thema, hw: Hausaufgabe, n: Stunden }] }]
+   c.uskip     = ["JJJJ-MM-TT|StundenID"] – Stunden, die die Planung auslässt
+   Welche Stunde welches Thema hat, wird nie gespeichert, sondern immer aus Stundenplan, Ausfall, Ferien und
+   Feiertagen berechnet: fällt eine Stunde aus, rutscht der Rest der Reihe von selbst nach. */
+const MAX_EVENTS = 500, MAX_HOL = 80, MAX_UNITS = 40, MAX_UNIT_ITEMS = 60, MAX_USKIP = 500;
+const EV_KINDS = ["ka", "test", "ev", "due"], EV_REM = [0, 60, 1440, 2880, 10080];
+const TM_RX = /^([01]\d|2[0-3]):[0-5]\d$/;
+const STATE_NAMES = { BW: "Baden-Württemberg", BY: "Bayern", BE: "Berlin", BB: "Brandenburg", HB: "Bremen", HH: "Hamburg", HE: "Hessen",
+  MV: "Mecklenburg-Vorpommern", NI: "Niedersachsen", NW: "Nordrhein-Westfalen", RP: "Rheinland-Pfalz", SL: "Saarland", SN: "Sachsen",
+  ST: "Sachsen-Anhalt", SH: "Schleswig-Holstein", TH: "Thüringen" };
+/* Ferien in Niedersachsen laut Ferienerlass des Kultusministeriums (erster und letzter Ferientag) */
+const HOL_NI = [
+  ["Herbstferien", "2026-10-12", "2026-10-24"], ["Weihnachtsferien", "2026-12-23", "2027-01-09"], ["Halbjahresferien", "2027-02-01", "2027-02-02"],
+  ["Osterferien", "2027-03-22", "2027-04-03"], ["Tag nach Himmelfahrt", "2027-05-07", "2027-05-07"], ["Pfingsten", "2027-05-18", "2027-05-18"],
+  ["Sommerferien", "2027-07-08", "2027-08-18"], ["Herbstferien", "2027-10-16", "2027-10-30"], ["Weihnachtsferien", "2027-12-23", "2028-01-08"],
+  ["Halbjahresferien", "2028-01-31", "2028-02-01"], ["Osterferien", "2028-04-10", "2028-04-22"], ["Tag nach Himmelfahrt", "2028-05-26", "2028-05-26"],
+  ["Pfingsten", "2028-06-06", "2028-06-06"]
+];
+const isoAdd = (iso, n) => { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return isoDay(d); };
+const isoDiff = (a, b) => Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 864e5);
+const isoOk = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(new Date(v + "T12:00:00")) && isoDay(new Date(v + "T12:00:00")) === v;
+function isoWeekNo(date){
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 3 - ((date.getDay() + 6) % 7));
+  const w1 = new Date(d.getFullYear(), 0, 4);
+  return 1 + Math.round(((d - w1) / 864e5 - 3 + ((w1.getDay() + 6) % 7)) / 7);
+}
+const fmtDay = iso => { const d = new Date(iso + "T12:00:00"); return t("weekdays7")[d.getDay()] + " " + fmtDate(iso); };
+
+/* ---- Gesetzliche Feiertage je Bundesland (bewegliche über das Osterdatum) ---- */
+function easter(y){
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3),
+    h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+    mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1;
+  return isoDay(new Date(y, mo - 1, da));
+}
+const pubCache = new Map();
+function pubHolidays(y, st){
+  const key = y + "|" + st; if(pubCache.has(key)) return pubCache.get(key);
+  const m = new Map();
+  if(STATE_NAMES[st]){
+    const E = easter(y), fix = (md, k, on) => { if(on !== false) m.set(y + "-" + md, k); }, rel = (n, k, on) => { if(on !== false) m.set(isoAdd(E, n), k); };
+    const has = list => list.indexOf(st) >= 0;
+    fix("01-01", "new"); fix("01-06", "epi", has(["BW", "BY", "ST"]));
+    fix("03-08", "women", (st === "BE" && y >= 2019) || (st === "MV" && y >= 2023));
+    rel(-2, "gf"); rel(1, "em"); fix("05-01", "may"); rel(39, "asc"); rel(50, "wm");
+    rel(60, "cc", has(["BW", "BY", "HE", "NW", "RP", "SL"]));
+    fix("08-15", "ass", st === "SL"); fix("09-20", "child", st === "TH" && y >= 2019);
+    fix("10-03", "unity");
+    fix("10-31", "ref", has(["BB", "MV", "SN", "ST", "TH"]) || (has(["HB", "HH", "NI", "SH"]) && y >= 2018));
+    fix("11-01", "all", has(["BW", "BY", "NW", "RP", "SL"]));
+    if(st === "SN"){ const d = new Date(y, 10, 22); d.setDate(d.getDate() - ((d.getDay() - 3 + 7) % 7)); m.set(isoDay(d), "pen"); }
+    fix("12-25", "xmas1"); fix("12-26", "xmas2");
+  }
+  pubCache.set(key, m);
+  return m;
+}
+/* Warum ist an diesem Tag frei? "" = Schultag */
+function freeInfo(iso){
+  if(!isoOk(iso)) return "";
+  for(const h of DB.holidays || []) if(h.a <= iso && iso <= h.b) return h.n || t("holFree");
+  const k = pubHolidays(+iso.slice(0, 4), DB.hst || "").get(iso);
+  return k ? t("pub_" + k) : "";
+}
+const isFree = iso => freeInfo(iso) !== "";
+
+/* ---- Termine ---- */
+const evEnd = e => e.e && e.e > e.d ? e.e : e.d;
+function evTime(e){ if(e.tm) return e.tm; if(Number.isInteger(e.p)){ const tm = periodTimes()[e.p]; if(tm) return fmtHM(tm.start); } return ""; }
+const evSort = (x, y) => x.d.localeCompare(y.d) || (evTime(x) || "99").localeCompare(evTime(y) || "99") || x.t.localeCompare(y.t) || x.id.localeCompare(y.id);
+const isExam = e => e.k === "ka" || e.k === "test";
+function evLabel(e, noClass){
+  const c = e.c ? classById(e.c) : null, s = e.s ? subjectById(e.s) : null;
+  const head = e.k === "ev" ? "" : t("evK_" + e.k) + (e.t ? ": " : "");
+  const tail = [isExam(e) && s ? (s.short || s.name) : "", c && !noClass ? c.name : ""].filter(Boolean).join(" ");
+  return (head + e.t + (tail ? " · " + tail : "")).trim() || t("evK_" + e.k);
+}
+function evWhen(e){
+  const end = evEnd(e), tm = evTime(e);
+  return fmtDay(e.d) + (end !== e.d ? "–" + fmtDay(end) : "") + (tm ? " · " + tm : "");
+}
+function eventsBetween(a, b){ return (DB.events || []).filter(e => e.d <= b && evEnd(e) >= a).sort(evSort); }
+/* Klassenarbeiten/Tests einer Stunde: gleiche Klasse und Tag, gleiche Stunde – oder ohne Stunde im selben Fach */
+function examsAt(L, iso){
+  return (DB.events || []).filter(e => isExam(e) && e.c && e.c === L.classId && e.d === iso && (e.p === L.period || (!Number.isInteger(e.p) && e.s === L.subjectId)));
+}
+/* Hinweise beim Eintragen: zweite Klassenarbeit am Tag, mehr als drei in der Woche, Termin in den Ferien */
+function examWarn(ev){
+  const out = [];
+  if(!isExam(ev) || !isoOk(ev.d)) return out;
+  const f = freeInfo(ev.d); if(f) out.push(t("evWarnFree").replace("{f}", f));
+  if(ev.k !== "ka" || !ev.c) return out;
+  const others = (DB.events || []).filter(x => x.id !== ev.id && x.k === "ka" && x.c === ev.c);
+  if(others.some(x => x.d === ev.d)) out.push(t("evWarnDay"));
+  const mon = isoDay(mondayOf(new Date(ev.d + "T12:00:00"))), sun = isoAdd(mon, 6);
+  const wk = others.filter(x => x.d >= mon && x.d <= sun).length;
+  if(wk >= 3) out.push(t("evWarnWeek").replace("{n}", String(wk + 1)));
+  return out;
+}
+/* Stunde der Klasse in diesem Fach an diesem Tag (für den Vorschlag beim Eintragen) */
+function guessPeriod(cid, sid, iso){
+  if(!cid || !sid || !isoOk(iso)) return null;
+  const x = lessonsOnDate(new Date(iso + "T12:00:00")).find(y => y.L.classId === cid && y.L.subjectId === sid);
+  return x ? x.L.period : null;
+}
+function editEvent(ev, preset, after){
+  const isNew = !ev;
+  if(isNew && (DB.events || []).length >= MAX_EVENTS){ toast(t("evLimit")); return; }
+  const cur = ev ? clone(ev) : Object.assign({ id: uid(), k: "ev", d: isoDay(new Date()), t: "" }, preset || {});
+  let pTouched = !isNew || Number.isInteger(cur.p);
+  const done = () => { closeModal(); if(after) after(); else if($("#screen-timetable").classList.contains("active")) renderTimetable(); else renderNowCard(); };
+  const sheet = sheetBase(isNew ? t("evNew") : t("evEdit"));
+  const kind = document.createElement("div"); kind.className = "segmented"; kind.id = "ev-kind";
+  EV_KINDS.forEach(k => { const b = document.createElement("button"); b.textContent = t("evK_" + k); b.dataset.k = k;
+    b.onclick = () => { cur.k = k; paint(); }; kind.appendChild(b); });
+  sheet.appendChild(kind);
+  sheetLabel(sheet, t("evTitleL"));
+  const ti = document.createElement("input"); ti.className = "field"; ti.id = "ev-title"; ti.maxLength = 80; ti.value = cur.t || ""; sheet.appendChild(ti);
+  sheetLabel(sheet, t("evDate"));
+  const dr = document.createElement("div"); dr.className = "obsform";
+  const di = document.createElement("input"); di.type = "date"; di.className = "field"; di.id = "ev-date"; di.value = cur.d; di.setAttribute("aria-label", t("evDate"));
+  const de = document.createElement("input"); de.type = "date"; de.className = "field"; de.id = "ev-end"; de.value = cur.e || ""; de.setAttribute("aria-label", t("evEnd"));
+  dr.appendChild(di); dr.appendChild(de); sheet.appendChild(dr);
+  const endHint = document.createElement("div"); endHint.className = "hint"; endHint.textContent = t("evEndHint"); sheet.appendChild(endHint);
+  sheetLabel(sheet, t("ttClass"));
+  const classes = DB.classes.filter(c => !c.archived || c.id === cur.c);
+  const cs = selectField(sheet, [["", "–"]].concat(classes.map(c => [c.id, c.name])), cur.c || ""); cs.id = "ev-class";
+  const subjLab = sheetLabel(sheet, t("ttSubject"));
+  const ss = selectField(sheet, [["", "–"]].concat(DB.subjects.map(s => [s.id, s.name])), cur.s || ""); ss.id = "ev-subj";
+  const perLab = sheetLabel(sheet, t("evPeriod"));
+  const times = periodTimes();
+  const ps = selectField(sheet, [["", t("evNoPeriod")]].concat(times.map((tm, i) => [String(i), (i + 1) + ". " + t("ttPeriod") + " (" + fmtHM(tm.start) + ")"])), Number.isInteger(cur.p) ? String(cur.p) : ""); ps.id = "ev-per";
+  ps.onchange = () => { pTouched = true; warn(); };
+  const tmLab = sheetLabel(sheet, t("evTime"));
+  const tmi = document.createElement("input"); tmi.type = "time"; tmi.className = "field"; tmi.id = "ev-time"; tmi.value = cur.tm || ""; sheet.appendChild(tmi);
+  sheetLabel(sheet, t("evNote"));
+  const no = document.createElement("textarea"); no.className = "field"; no.id = "ev-note"; no.maxLength = 300; no.rows = 2; no.value = cur.n || ""; sheet.appendChild(no);
+  sheetLabel(sheet, t("evRem"));
+  const rs = selectField(sheet, EV_REM.map(v => [String(v), t("evRem_" + v)]), String(cur.rem || 0)); rs.id = "ev-rem";
+  const rh = document.createElement("div"); rh.className = "hint"; rh.textContent = t("evRemHint"); sheet.appendChild(rh);
+  const wbox = document.createElement("div"); wbox.className = "evwarn"; wbox.id = "ev-warn"; wbox.setAttribute("role", "status"); sheet.appendChild(wbox);
+  const read = () => {
+    cur.t = ti.value.trim().slice(0, 80); cur.d = di.value; cur.c = cs.value || undefined; cur.n = no.value.trim().slice(0, 300) || undefined;
+    const rem = +rs.value; cur.rem = EV_REM.indexOf(rem) > 0 ? rem : undefined;
+    if(isExam(cur)){ cur.s = ss.value || undefined; cur.p = ps.value === "" ? undefined : +ps.value; delete cur.tm; delete cur.e; }
+    else { delete cur.s; delete cur.p; delete cur.aid; cur.tm = TM_RX.test(tmi.value) ? tmi.value : undefined;
+      cur.e = cur.k === "ev" && isoOk(de.value) && de.value > cur.d ? de.value : undefined; }
+    Object.keys(cur).forEach(k => { if(cur[k] === undefined) delete cur[k]; });
+  };
+  const warn = () => { read(); wbox.textContent = ""; examWarn(cur).forEach(w => { const p = document.createElement("div"); p.textContent = "⚠︎ " + w; wbox.appendChild(p); }); };
+  /* Stunde vorschlagen, solange sie nicht von Hand gewählt wurde */
+  const propose = () => { if(pTouched || !isExam(cur)) return; const p = guessPeriod(cs.value, ss.value, di.value); ps.value = p === null ? "" : String(p); };
+  [di, cs, ss].forEach(f => { f.addEventListener("change", () => { propose(); warn(); }); });
+  const abtn = document.createElement("button"); abtn.className = "cbtn outline"; abtn.id = "ev-assess"; abtn.style.width = "100%"; abtn.style.marginTop = "10px";
+  abtn.onclick = () => {
+    read();
+    const c = classById(cur.c), s = subjectById(cur.s);
+    if(!c || !s){ toast(t("evAssessNeed")); return; }
+    if(!isoOk(cur.d)){ toast(t("evNeedDate")); return; }
+    let a = cur.aid ? (c.assess || []).find(x => x.id === cur.aid) : null;
+    if(!a){
+      if((c.assess || []).length >= MAX_ASSESS){ toast(t("gLimit")); return; }
+      const last = courseAssess(c, s.id).slice(-1)[0];
+      a = { id: uid(), subjectId: s.id, title: cur.t || t("evK_" + cur.k), date: cur.d, kind: cur.k === "ka" ? "written" : "other",
+        scale: last && ["grade", "points"].indexOf(last.scale) >= 0 ? last.scale : "grade", weight: 1, marks: {} };
+      c.assess = (c.assess || []).concat([a]); cur.aid = a.id;
+    }
+    store(); closeModal(); setCurClass(c.id); goGrades(s.id);
+    if($("#screen-grades").classList.contains("active")) openAssess(a.id);
+  };
+  sheet.appendChild(abtn);
+  const ics1 = document.createElement("button"); ics1.className = "ghost"; ics1.id = "ev-ics1"; ics1.style.width = "100%"; ics1.style.marginTop = "8px";
+  ics1.textContent = t("evIcsOne"); ics1.onclick = () => { read(); if(!valid()) return; exportIcs([clone(cur)], (cur.t || t("evK_" + cur.k))); };
+  sheet.appendChild(ics1);
+  if(!isNew){
+    const del = document.createElement("button"); del.className = "ghost"; del.id = "ev-del"; del.style.width = "100%"; del.style.marginTop = "8px"; del.style.color = "var(--warn)";
+    del.textContent = t("evDelete");
+    del.onclick = () => { DB.events = (DB.events || []).filter(x => x.id !== cur.id); save(); toast(t("evDeleted")); done(); };
+    sheet.appendChild(del);
+  }
+  const valid = () => {
+    if(!isoOk(cur.d)){ toast(t("evNeedDate")); return false; }
+    if(!isExam(cur) && !cur.t){ toast(t("evNeedTitle")); return false; }
+    return true;
+  };
+  const store = () => {
+    DB.events = (DB.events || []).filter(x => x.id !== cur.id).concat([clone(cur)]).sort(evSort);
+    save();
+  };
+  const paint = () => {
+    Array.from(kind.children).forEach(b => { const on = b.dataset.k === cur.k; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    const ex = isExam(cur);
+    ti.placeholder = t("evTitlePh_" + cur.k);
+    [subjLab, ss, perLab, ps].forEach(x => { x.style.display = ex ? "" : "none"; });
+    [tmLab, tmi].forEach(x => { x.style.display = ex ? "none" : ""; });
+    de.style.display = endHint.style.display = cur.k === "ev" ? "" : "none";
+    abtn.style.display = ex && gradesOn() ? "" : "none";
+    const c = classById(cs.value), linked = cur.aid && c && (c.assess || []).some(x => x.id === cur.aid);
+    abtn.textContent = linked ? t("evAssessOpen") : t("evAssessNew");
+    propose(); warn();
+  };
+  sheetButtons(sheet, t("save"), () => {
+    read(); if(!valid()) return;
+    store(); toast(t("evSaved")); done();
+  });
+  paint();
+  if(isNew) setTimeout(() => ti.focus(), 80);
+}
+function openEvents(after){
+  const sheet = sheetBase(t("evTitle"));
+  const today = isoDay(new Date());
+  let past = false;
+  const nb = document.createElement("button"); nb.className = "cbtn green"; nb.id = "ev-new"; nb.style.width = "100%";
+  nb.appendChild(icon("plus")); const ns = document.createElement("span"); ns.textContent = t("evNew"); nb.appendChild(ns);
+  nb.onclick = () => editEvent(null, { d: today }, () => openEvents(after));
+  sheet.appendChild(nb);
+  const list = document.createElement("div"); list.id = "ev-list"; sheet.appendChild(list);
+  const pb = document.createElement("button"); pb.className = "ghost"; pb.id = "ev-past"; pb.style.width = "100%"; pb.style.marginTop = "6px";
+  const paint = () => {
+    list.textContent = "";
+    const all = (DB.events || []).slice().sort(evSort);
+    const shown = past ? all.filter(e => evEnd(e) < today).reverse() : all.filter(e => evEnd(e) >= today);
+    if(!shown.length){ const h = document.createElement("div"); h.className = "hint"; h.textContent = past ? t("evNonePast") : t("evNone"); list.appendChild(h); }
+    shown.slice(0, 200).forEach(e => list.appendChild(evRow(e, () => editEvent(e, null, () => openEvents(after)))));
+    pb.textContent = past ? t("evShowNext") : t("evShowPast");
+  };
+  pb.onclick = () => { past = !past; paint(); };
+  sheet.appendChild(pb);
+  const hb = document.createElement("button"); hb.className = "cbtn outline"; hb.id = "ev-hol"; hb.style.width = "100%"; hb.style.marginTop = "10px";
+  hb.appendChild(icon("calendar")); const hs = document.createElement("span"); hs.textContent = t("holTitle"); hb.appendChild(hs);
+  hb.onclick = () => openHolidays(() => openEvents(after));
+  sheet.appendChild(hb);
+  const ib = document.createElement("button"); ib.className = "cbtn outline"; ib.id = "ev-ics"; ib.style.width = "100%"; ib.style.marginTop = "8px";
+  ib.appendChild(icon("share")); const is = document.createElement("span"); is.textContent = t("evIcs"); ib.appendChild(is);
+  ib.onclick = () => { const l = (DB.events || []).filter(e => evEnd(e) >= isoAdd(today, -7)); if(!l.length){ toast(t("evNone")); return; } exportIcs(l, t("evIcsFile")); };
+  sheet.appendChild(ib);
+  const ih = document.createElement("div"); ih.className = "hint"; ih.textContent = t("evIcsHint"); sheet.appendChild(ih);
+  const cl = document.createElement("button"); cl.className = "primary"; cl.style.width = "100%"; cl.style.marginTop = "12px"; cl.textContent = t("close");
+  cl.onclick = () => { closeModal(); if(after) after(); };
+  sheet.appendChild(cl);
+  paint();
+}
+function evRow(e, go){
+  const b = document.createElement("button"); b.className = "evrow k-" + e.k; b.dataset.id = e.id;
+  const w = document.createElement("span"); w.className = "evw"; w.textContent = evWhen(e); b.appendChild(w);
+  const l = document.createElement("b"); l.textContent = evLabel(e); b.appendChild(l);
+  const warns = examWarn(e).length; if(warns){ const x = document.createElement("span"); x.className = "evx"; x.textContent = "⚠︎"; x.setAttribute("aria-label", t("evHasWarn")); b.appendChild(x); }
+  b.onclick = go;
+  return b;
+}
+
+/* ---- Ferien und freie Tage ---- */
+function openHolidays(after){
+  const sheet = sheetBase(t("holTitle"));
+  const today = isoDay(new Date());
+  const h0 = document.createElement("div"); h0.className = "hint"; h0.textContent = t("holHint"); sheet.appendChild(h0);
+  sheetLabel(sheet, t("holState"));
+  const st = selectField(sheet, [["", t("holNoState")]].concat(Object.keys(STATE_NAMES).map(k => [k, STATE_NAMES[k]])), DB.hst || ""); st.id = "hol-state";
+  const pub = document.createElement("div"); pub.className = "hint"; pub.id = "hol-pub"; sheet.appendChild(pub);
+  st.onchange = () => { DB.hst = st.value; save(); paint(); };
+  sheetLabel(sheet, t("holList"));
+  const list = document.createElement("div"); list.id = "hol-list"; sheet.appendChild(list);
+  const tpl = document.createElement("button"); tpl.className = "cbtn outline"; tpl.id = "hol-tpl"; tpl.style.width = "100%"; tpl.style.marginTop = "8px";
+  tpl.textContent = t("holTplNI");
+  tpl.onclick = () => {
+    let n = 0;
+    DB.holidays = DB.holidays || [];
+    HOL_NI.forEach(([name, a, b]) => {
+      if(b < today || DB.holidays.length >= MAX_HOL || DB.holidays.some(h => h.a === a && h.b === b)) return;
+      DB.holidays.push({ id: uid(), a, b, n: name }); n++;
+    });
+    DB.holidays.sort((x, y) => x.a.localeCompare(y.a));
+    if(!DB.hst) DB.hst = "NI";
+    save(); toast(n ? t("holTplDone").replace("{n}", String(n)) : t("holTplNone")); st.value = DB.hst; paint();
+  };
+  sheet.appendChild(tpl);
+  sheetLabel(sheet, t("holAdd"));
+  const ni = document.createElement("input"); ni.className = "field"; ni.id = "hol-n"; ni.maxLength = 40; ni.placeholder = t("holNamePh"); sheet.appendChild(ni);
+  const row = document.createElement("div"); row.className = "obsform";
+  const ai = document.createElement("input"); ai.type = "date"; ai.className = "field"; ai.id = "hol-a"; ai.setAttribute("aria-label", t("holFrom"));
+  const bi = document.createElement("input"); bi.type = "date"; bi.className = "field"; bi.id = "hol-b"; bi.setAttribute("aria-label", t("holTo"));
+  row.appendChild(ai); row.appendChild(bi); sheet.appendChild(row);
+  const ab = document.createElement("button"); ab.className = "cbtn green"; ab.id = "hol-add"; ab.style.width = "100%"; ab.style.marginTop = "6px";
+  ab.appendChild(icon("plus")); const as = document.createElement("span"); as.textContent = t("holAddBtn"); ab.appendChild(as);
+  ab.onclick = () => {
+    const a = ai.value, b = isoOk(bi.value) ? bi.value : a;
+    if(!isoOk(a)){ toast(t("evNeedDate")); return; }
+    if(b < a || isoDiff(a, b) > 120){ toast(t("holBadRange")); return; }
+    if((DB.holidays || []).length >= MAX_HOL){ toast(t("holLimit")); return; }
+    DB.holidays = (DB.holidays || []).concat([{ id: uid(), a, b, n: ni.value.trim().slice(0, 40) }]).sort((x, y) => x.a.localeCompare(y.a));
+    save(); ni.value = ""; ai.value = ""; bi.value = ""; paint();
+  };
+  sheet.appendChild(ab);
+  const cl = document.createElement("button"); cl.className = "primary"; cl.style.width = "100%"; cl.style.marginTop = "12px"; cl.textContent = t("close");
+  cl.onclick = () => { closeModal(); if(after) after(); else if($("#screen-timetable").classList.contains("active")) renderTimetable(); };
+  sheet.appendChild(cl);
+  const paint = () => {
+    const y = +today.slice(0, 4), next = [];
+    [y, y + 1].forEach(yy => pubHolidays(yy, DB.hst || "").forEach((k, iso) => { if(iso >= today) next.push([iso, k]); }));
+    next.sort((x, z) => x[0].localeCompare(z[0]));
+    pub.textContent = !DB.hst ? t("holPubOff") : next.length ? t("holPubNext").replace("{d}", fmtDay(next[0][0])).replace("{n}", t("pub_" + next[0][1])) : "";
+    list.textContent = "";
+    const hs = (DB.holidays || []).slice().sort((x, z) => x.a.localeCompare(z.a));
+    if(!hs.length){ const h = document.createElement("div"); h.className = "hint"; h.textContent = t("holNone"); list.appendChild(h); }
+    hs.forEach(h => {
+      const r = document.createElement("div"); r.className = "usrow holrow"; if(h.b < today) r.classList.add("past");
+      const l = document.createElement("span"); l.className = "holl";
+      l.textContent = (h.n || t("holFree")) + " · " + (h.b !== h.a ? fmtDate(h.a) + "–" + fmtDateY(h.b) : fmtDateY(h.a));
+      const d = document.createElement("button"); d.className = "minibtn"; d.textContent = "✕"; d.setAttribute("aria-label", t("delete") + " " + (h.n || t("holFree")));
+      d.onclick = () => { DB.holidays = DB.holidays.filter(x => x !== h); save(); paint(); };
+      r.appendChild(l); r.appendChild(d); list.appendChild(r);
+    });
+  };
+  paint();
+}
+
+/* ---- Kalender-Export (.ics): Erinnerungen übernimmt der Gerätekalender ---- */
+function icsText(list){
+  const enc = new TextEncoder();
+  const esc = s => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  /* Zeilen höchstens 75 Byte (RFC 5545), Fortsetzung mit Leerzeichen; Zeichen werden nie zerteilt */
+  const fold = line => { const parts = []; let cur = "", n = 0, lim = 75;
+    for(const ch of line){ const b = enc.encode(ch).length; if(n + b > lim){ parts.push(cur); cur = ""; n = 0; lim = 74; } cur += ch; n += b; }
+    parts.push(cur); return parts.join("\r\n "); };
+  const dt = iso => iso.replace(/-/g, ""), tm = m => String(Math.floor(m / 60)).padStart(2, "0") + String(m % 60).padStart(2, "0") + "00";
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  const times = periodTimes(), out = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FairSeat//Termine//DE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
+  list.slice().sort(evSort).forEach(e => {
+    let a = null, z = null;
+    const multi = evEnd(e) !== e.d;
+    if(!multi && e.tm){ a = hm(e.tm); z = Math.min(a + 60, 23 * 60 + 59); }
+    else if(!multi && Number.isInteger(e.p) && times[e.p]){ a = times[e.p].start; z = Math.min(times[e.p].end, 23 * 60 + 59); }
+    const summary = evLabel(e);
+    out.push("BEGIN:VEVENT", "UID:" + e.id.replace(/[^A-Za-z0-9-]/g, "") + "@fairseat", "DTSTAMP:" + stamp);
+    if(a !== null) out.push("DTSTART:" + dt(e.d) + "T" + tm(a), "DTEND:" + dt(e.d) + "T" + tm(z));
+    else out.push("DTSTART;VALUE=DATE:" + dt(e.d), "DTEND;VALUE=DATE:" + dt(isoAdd(evEnd(e), 1)));
+    out.push("SUMMARY:" + esc(summary));
+    if(e.n) out.push("DESCRIPTION:" + esc(e.n));
+    if(e.rem) out.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + esc(summary), "TRIGGER:-PT" + e.rem + "M", "END:VALARM");
+    out.push("END:VEVENT");
+  });
+  out.push("END:VCALENDAR");
+  return out.map(fold).join("\r\n") + "\r\n";
+}
+function exportIcs(list, name){
+  try{
+    const blob = new Blob([icsText(list)], { type: "text/calendar" });
+    if(download(blob, safeName(name || t("evIcsFile")) + ".ics", "text/calendar")) toast(t("evIcsOk").replace("{n}", String(list.length)));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
+
+/* ---- Unterrichtsreihen: Themen der Reihe nach auf die kommenden Stunden verteilen ---- */
+/* Ergebnis: slots "JJJJ-MM-TT|StundenID" -> { u, it, i, k, n } und je Reihe { from, to, done, total, past } */
+function unitPlan(c, s){
+  const res = { slots: new Map(), info: new Map() };
+  const units = (c.units || []).filter(u => u.s === s && u.items.length).slice().sort((x, y) => x.a.localeCompare(y.a) || x.id.localeCompare(y.id));
+  (c.units || []).filter(u => u.s === s).forEach(u => res.info.set(u.id, { from: "", to: "", done: 0, past: 0, total: u.items.reduce((n, x) => n + x.n, 0) }));
+  if(!units.length) return res;
+  const mine = new Set(DB.lessons.filter(L => L.classId === c.id && L.subjectId === s).map(L => L.id));
+  if(!mine.size) return res;
+  const skip = new Set(c.uskip || []), today = isoDay(new Date());
+  let ui = 0, ii = 0, k = 0;
+  const d = new Date(units[0].a + "T12:00:00");
+  for(let n = 0; n < 800 && ui < units.length; n++, d.setDate(d.getDate() + 1)){
+    const iso = isoDay(d);
+    if(iso < units[ui].a) continue;
+    for(const x of lessonsOnDate(d)){
+      if(ui >= units.length || iso < units[ui].a) break;
+      if(!mine.has(x.L.id) || isCancelled(x.L, iso) || skip.has(iso + "|" + x.L.id)) continue;
+      const u = units[ui], it = u.items[ii], inf = res.info.get(u.id);
+      res.slots.set(iso + "|" + x.L.id, { u, it, i: ii, k, n: it.n });
+      if(!inf.from) inf.from = iso;
+      inf.to = iso; inf.done++; if(iso < today) inf.past++;
+      if(++k >= it.n){ k = 0; if(++ii >= u.items.length){ ii = 0; ui++; } }
+    }
+  }
+  return res;
+}
+const unitSlot = (c, L, iso, memo) => {
+  if(!c || !L.subjectId) return null;
+  let p = memo ? memo.get(c.id + "|" + L.subjectId) : null;
+  if(!p){ p = unitPlan(c, L.subjectId); if(memo) memo.set(c.id + "|" + L.subjectId, p); }
+  return p.slots.get(iso + "|" + L.id) || null;
+};
+/* Beginn einer neuen Reihe: Tag nach dem Ende der letzten Reihe dieses Fachs, sonst heute */
+function unitNextStart(c, s){
+  const today = isoDay(new Date()), plan = unitPlan(c, s);
+  let end = "";
+  plan.info.forEach(v => { if(v.to > end) end = v.to; });
+  return end && end >= today ? isoAdd(end, 1) : today;
+}
+const classSubjects = c => {
+  const ids = []; DB.lessons.forEach(L => { if(L.classId === c.id && ids.indexOf(L.subjectId) < 0) ids.push(L.subjectId); });
+  return ids.map(subjectById).filter(Boolean).concat(DB.subjects.filter(s => ids.indexOf(s.id) < 0));
+};
+function unitRangeText(c, u, memo){
+  const key = c.id + "|" + u.s;
+  let p = memo ? memo.get(key) : null; if(!p){ p = unitPlan(c, u.s); if(memo) memo.set(key, p); }
+  const inf = p.info.get(u.id);
+  if(!inf || !inf.done) return t("unNoSlots");
+  const rest = inf.total - inf.done;
+  return fmtDate(inf.from) + "–" + fmtDateY(inf.to) + " · " + t("unLessons").replace("{n}", String(inf.total)) + (rest > 0 ? " · " + t("unOpen").replace("{n}", String(rest)) : "");
+}
+function openUnits(after){
+  const sheet = sheetBase(t("unTitle"));
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("unHint"); sheet.appendChild(h);
+  const nb = document.createElement("button"); nb.className = "cbtn green"; nb.id = "un-new"; nb.style.width = "100%"; nb.style.marginTop = "8px";
+  nb.appendChild(icon("plus")); const ns = document.createElement("span"); ns.textContent = t("unNew"); nb.appendChild(ns);
+  nb.onclick = () => editUnit(null, null, null, () => openUnits(after));
+  sheet.appendChild(nb);
+  const box = document.createElement("div"); box.id = "un-overview"; sheet.appendChild(box);
+  let any = false;
+  const memo = new Map();
+  DB.classes.filter(c => !c.archived && (c.units || []).length).forEach(c => {
+    any = true;
+    const hh = document.createElement("div"); hh.className = "eyebrow"; hh.style.marginTop = "12px"; hh.textContent = c.name; box.appendChild(hh);
+    c.units.slice().sort((x, y) => x.s.localeCompare(y.s) || x.a.localeCompare(y.a)).forEach(u => {
+      const b = document.createElement("button"); b.className = "grpcard unrow"; b.dataset.id = u.id;
+      const s = subjectById(u.s), tt = document.createElement("b"); tt.textContent = (s ? (s.short || s.name) + " · " : "") + u.t; b.appendChild(tt);
+      const d = document.createElement("div"); d.className = "hint"; d.textContent = unitRangeText(c, u, memo); b.appendChild(d);
+      b.onclick = () => editUnit(c, u, null, () => openUnits(after));
+      box.appendChild(b);
+    });
+  });
+  if(!any){ const e = document.createElement("div"); e.className = "hint"; e.style.marginTop = "10px"; e.textContent = DB.lessons.length ? t("unNone") : t("unNoTT"); box.appendChild(e); }
+  const cl = document.createElement("button"); cl.className = "primary"; cl.style.width = "100%"; cl.style.marginTop = "12px"; cl.textContent = t("close");
+  cl.onclick = () => { closeModal(); if(after) after(); };
+  sheet.appendChild(cl);
+}
+/* Zeilen einer eingefügten Liste: "Thema" oder "Thema | Hausaufgabe" (auch Tab); Nummern und Spiegelstriche fallen weg */
+function parseUnitLines(txt){
+  return String(txt || "").split(/\r?\n/).map(l => l.replace(/^\s*(?:[-–•*]|\d{1,3}[.)])\s*/, "").trim()).filter(Boolean).map(l => {
+    const m = l.split(/\t| \| /);
+    return { id: uid(), t: m[0].trim().slice(0, 120), hw: (m[1] || "").trim().slice(0, 200), n: 1 };
+  }).filter(x => x.t);
+}
+function editUnit(c0, u, preset, after){
+  const isNew = !u;
+  let c = c0 || (curClass() && !curClass().archived ? curClass() : null) || DB.classes.find(x => !x.archived);
+  if(!c){ toast(t("unNoClass")); return; }
+  if(isNew && (c.units || []).length >= MAX_UNITS){ toast(t("unLimit")); return; }
+  const pre = preset || {};
+  const firstS = () => { const l = classSubjects(c); return l.length ? l[0].id : ""; };
+  const work = u ? clone(u) : { id: uid(), s: pre.s || firstS(), t: "", a: "", items: [] };
+  if(!work.a) work.a = pre.a || (work.s ? unitNextStart(c, work.s) : isoDay(new Date()));
+  const done = () => { closeModal(); if(after) after(); else if($("#screen-timetable").classList.contains("active")) renderTimetable(); };
+  const sheet = sheetBase(isNew ? t("unNew") : t("unEdit"));
+  let cs = null;
+  if(isNew && !c0){
+    sheetLabel(sheet, t("ttClass"));
+    cs = selectField(sheet, DB.classes.filter(x => !x.archived).map(x => [x.id, x.name]), c.id); cs.id = "un-class";
+  }
+  sheetLabel(sheet, t("ttSubject"));
+  const sw = document.createElement("div"); sheet.appendChild(sw);
+  let ss = null;
+  const fillS = () => { sw.textContent = ""; ss = selectField(sw, classSubjects(c).map(s => [s.id, s.name]), work.s); ss.id = "un-subj"; work.s = ss.value;
+    ss.onchange = () => { work.s = ss.value; if(isNew){ work.a = unitNextStart(c, work.s); st.value = work.a; } paint(); }; };
+  sheetLabel(sheet, t("unTitleL"));
+  const ti = document.createElement("input"); ti.className = "field"; ti.id = "un-title"; ti.maxLength = 80; ti.value = work.t; ti.placeholder = t("unTitlePh"); sheet.appendChild(ti);
+  sheetLabel(sheet, t("unStart"));
+  const st = document.createElement("input"); st.type = "date"; st.className = "field"; st.id = "un-start"; st.value = work.a; sheet.appendChild(st);
+  st.onchange = () => { if(isoOk(st.value)){ work.a = st.value; paint(); } };
+  fillS();
+  if(cs) cs.onchange = () => { c = classById(cs.value) || c; work.s = firstS(); fillS(); work.a = work.s ? unitNextStart(c, work.s) : work.a; st.value = work.a; paint(); };
+  const sum = document.createElement("div"); sum.className = "unsum"; sum.id = "un-sum"; sheet.appendChild(sum);
+  sheetLabel(sheet, t("unItems"));
+  const list = document.createElement("div"); list.id = "un-list"; sheet.appendChild(list);
+  const add = document.createElement("button"); add.className = "cbtn outline"; add.id = "un-add"; add.style.width = "100%"; add.style.marginTop = "6px";
+  add.textContent = "+ " + t("unAddItem");
+  add.onclick = () => { if(work.items.length >= MAX_UNIT_ITEMS){ toast(t("unItemLimit")); return; }
+    work.items.push({ id: uid(), t: "", hw: "", n: 1 }); paint(); const f = document.getElementById("un-t-" + (work.items.length - 1)); if(f) f.focus(); };
+  sheet.appendChild(add);
+  /* Liste einfügen (z. B. aus dem Stoffverteilungsplan) */
+  const pb = document.createElement("button"); pb.className = "ghost"; pb.id = "un-paste"; pb.style.width = "100%"; pb.style.marginTop = "6px"; pb.textContent = t("unPaste");
+  const pbox = document.createElement("div"); pbox.hidden = true;
+  const pt = document.createElement("textarea"); pt.className = "field"; pt.id = "un-paste-t"; pt.rows = 5; pt.placeholder = t("unPastePh"); pt.setAttribute("aria-label", t("unPaste"));
+  const pok = document.createElement("button"); pok.className = "cbtn green"; pok.id = "un-paste-ok"; pok.style.width = "100%"; pok.style.marginTop = "6px"; pok.textContent = t("unPasteOk");
+  pok.onclick = () => { const l = parseUnitLines(pt.value); if(!l.length){ toast(t("unPasteNone")); return; }
+    work.items = work.items.filter(x => x.t.trim()).concat(l).slice(0, MAX_UNIT_ITEMS); pt.value = ""; pbox.hidden = true; paint(); toast(t("unPasted").replace("{n}", String(l.length))); };
+  pbox.appendChild(pt); pbox.appendChild(pok);
+  pb.onclick = () => { pbox.hidden = !pbox.hidden; if(!pbox.hidden) pt.focus(); };
+  sheet.appendChild(pb); sheet.appendChild(pbox);
+  const paint = () => {
+    work.t = ti.value;
+    /* Vorschau mit dem aktuellen Stand dieser Reihe */
+    const probe = Object.assign({}, c, { units: (c.units || []).filter(x => x.id !== work.id).concat([{ id: work.id, s: work.s, t: work.t, a: work.a, items: work.items.filter(x => x.t.trim()) }]) });
+    const plan = unitPlan(probe, work.s), inf = plan.info.get(work.id), byItem = new Map();
+    plan.slots.forEach((v, key) => { if(v.u.id === work.id){ const l = byItem.get(v.it.id) || []; l.push(key.slice(0, 10)); byItem.set(v.it.id, l); } });
+    const hasLessons = DB.lessons.some(L => L.classId === c.id && L.subjectId === work.s);
+    sum.textContent = !hasLessons ? t("unNoLessons").replace("{c}", c.name).replace("{s}", (subjectById(work.s) || {}).name || "–")
+      : !inf || !inf.total ? t("unEmpty")
+      : t("unSum").replace("{n}", String(inf.total)).replace("{a}", inf.from ? fmtDay(inf.from) : "–").replace("{b}", inf.to ? fmtDay(inf.to) : "–")
+        + (inf.total > inf.done ? " · " + t("unOpen").replace("{n}", String(inf.total - inf.done)) : "");
+    list.textContent = "";
+    work.items.forEach((x, i) => {
+      const box = document.createElement("div"); box.className = "unitem";
+      const top = document.createElement("div"); top.className = "usrow";
+      const no = document.createElement("span"); no.className = "unno"; no.textContent = (i + 1) + "."; top.appendChild(no);
+      const f = document.createElement("input"); f.className = "field"; f.id = "un-t-" + i; f.maxLength = 120; f.value = x.t; f.placeholder = t("unTopicPh");
+      f.setAttribute("aria-label", t("unTopic") + " " + (i + 1)); f.oninput = () => { x.t = f.value; }; f.onchange = paint; top.appendChild(f);
+      const del = document.createElement("button"); del.className = "minibtn"; del.textContent = "✕"; del.setAttribute("aria-label", t("delete") + " " + (x.t || i + 1));
+      del.onclick = () => { work.items.splice(i, 1); paint(); }; top.appendChild(del);
+      box.appendChild(top);
+      const hw = document.createElement("input"); hw.className = "field unhw"; hw.id = "un-h-" + i; hw.maxLength = 200; hw.value = x.hw || ""; hw.placeholder = t("unHwPh");
+      hw.setAttribute("aria-label", t("jHw") + " " + (i + 1)); hw.oninput = () => { x.hw = hw.value; }; box.appendChild(hw);
+      const ctl = document.createElement("div"); ctl.className = "unctl";
+      const seg = document.createElement("div"); seg.className = "segmented unn"; seg.id = "un-n-" + i; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", t("unCount") + " " + (i + 1));
+      [1, 2, 3, 4].forEach(v => { const b = document.createElement("button"); b.textContent = String(v); b.classList.toggle("on", x.n === v); b.setAttribute("aria-pressed", String(x.n === v));
+        b.onclick = () => { x.n = v; paint(); }; seg.appendChild(b); });
+      const sl = document.createElement("span"); sl.className = "unnl"; sl.textContent = t("unCountShort"); ctl.appendChild(seg); ctl.appendChild(sl);
+      const up = document.createElement("button"); up.className = "minibtn"; up.textContent = "↑"; up.disabled = i === 0; up.setAttribute("aria-label", t("unUp"));
+      up.onclick = () => { work.items.splice(i - 1, 0, work.items.splice(i, 1)[0]); paint(); };
+      const dn = document.createElement("button"); dn.className = "minibtn"; dn.textContent = "↓"; dn.disabled = i === work.items.length - 1; dn.setAttribute("aria-label", t("unDown"));
+      dn.onclick = () => { work.items.splice(i + 1, 0, work.items.splice(i, 1)[0]); paint(); };
+      ctl.appendChild(up); ctl.appendChild(dn); box.appendChild(ctl);
+      const ds = document.createElement("div"); ds.className = "undates"; ds.id = "un-d-" + i;
+      const dl = byItem.get(x.id) || [];
+      ds.textContent = !x.t.trim() ? "" : dl.length ? dl.map(fmtDay).join(", ") : hasLessons ? t("unNoDate") : "";
+      box.appendChild(ds);
+      list.appendChild(box);
+    });
+  };
+  if(!isNew){
+    const cp = document.createElement("button"); cp.className = "ghost"; cp.id = "un-copy"; cp.style.width = "100%"; cp.style.marginTop = "10px"; cp.textContent = t("unCopy");
+    const cpb = document.createElement("div"); cpb.hidden = true;
+    const others = DB.classes.filter(x => !x.archived && x.id !== c.id);
+    cp.onclick = () => { if(!others.length){ toast(t("unCopyNone")); return; } cpb.hidden = !cpb.hidden; };
+    const ts = selectField(cpb, others.map(x => [x.id, x.name]), others.length ? others[0].id : ""); ts.id = "un-copy-to";
+    const cok = document.createElement("button"); cok.className = "cbtn green"; cok.id = "un-copy-ok"; cok.style.width = "100%"; cok.style.marginTop = "6px"; cok.textContent = t("unCopyOk");
+    cok.onclick = () => {
+      const tc = classById(ts.value); if(!tc) return;
+      if((tc.units || []).length >= MAX_UNITS){ toast(t("unLimit")); return; }
+      const items = work.items.filter(x => x.t.trim()).map(x => ({ id: uid(), t: x.t.trim().slice(0, 120), hw: (x.hw || "").trim().slice(0, 200), n: x.n }));
+      tc.units = (tc.units || []).concat([{ id: uid(), s: work.s, t: (ti.value.trim() || u.t).slice(0, 80), a: unitNextStart(tc, work.s), items }]);
+      save(); toast(t("unCopied").replace("{c}", tc.name)); cpb.hidden = true;
+    };
+    cpb.appendChild(cok);
+    sheet.appendChild(cp); sheet.appendChild(cpb);
+    const del = document.createElement("button"); del.className = "ghost"; del.id = "un-del"; del.style.width = "100%"; del.style.marginTop = "8px"; del.style.color = "var(--warn)";
+    del.textContent = t("unDelete");
+    del.onclick = () => { closeModal(); askConfirm(t("unDeleteQ"), u.t, t("delete"), () => { c.units = (c.units || []).filter(x => x.id !== u.id); save(); done(); }, () => editUnit(c0, u, preset, after)); };
+    sheet.appendChild(del);
+  }
+  sheetButtons(sheet, t("save"), () => {
+    work.t = ti.value.trim().slice(0, 80);
+    work.items = work.items.filter(x => x.t.trim()).map(x => ({ id: x.id, t: x.t.trim().slice(0, 120), hw: (x.hw || "").trim().slice(0, 200), n: [1, 2, 3, 4, 5, 6].indexOf(x.n) >= 0 ? x.n : 1 }));
+    if(!work.s || !subjectById(work.s)){ toast(t("subjNeed")); return; }
+    if(!work.t){ toast(t("unNeedTitle")); ti.focus(); return; }
+    if(!work.items.length){ toast(t("unNeedItem")); return; }
+    if(!isoOk(work.a)){ toast(t("evNeedDate")); return; }
+    const target = cs ? classById(cs.value) || c : c;
+    if(isNew && (target.units || []).length >= MAX_UNITS){ toast(t("unLimit")); return; }
+    target.units = (target.units || []).filter(x => x.id !== work.id).concat([work]);
+    save(); toast(t("unSaved")); done();
+  });
+  paint();
+  if(isNew) setTimeout(() => ti.focus(), 80);
+}
+/* Im Stundenblatt: Datum, Ferien, geplantes Thema, Klassenarbeit, Kursheft */
+function lessonDayBox(sheet, L, iso){
+  const c = classById(L.classId);
+  const box = document.createElement("div"); box.className = "ttdaybox"; box.id = "tt-dayinfo";
+  const h = document.createElement("b"); h.textContent = fmtDateLong(iso) + (DB.tt.ab && abWeek(new Date(iso + "T12:00:00")) ? " · " + t("ttWeek").replace("{w}", abWeek(new Date(iso + "T12:00:00"))) : ""); box.appendChild(h);
+  const back = () => editLesson(L);
+  const free = freeInfo(iso);
+  if(free){ const f = document.createElement("div"); f.className = "ttfree"; f.id = "tt-freeinfo"; f.textContent = t("ttFreeDay").replace("{f}", free); box.appendChild(f); }
+  const mk = (id, txt, fn, cls) => { const b = document.createElement("button"); b.className = cls || "minibtn"; b.id = id; b.textContent = txt; b.onclick = fn; return b; };
+  if(c && !free){
+    const units = (c.units || []).filter(u => u.s === L.subjectId);
+    const sl = unitSlot(c, L, iso), key = iso + "|" + L.id, skipped = (c.uskip || []).indexOf(key) >= 0;
+    if(sl){
+      const p = document.createElement("div"); p.className = "ttplan"; p.id = "tt-plan";
+      p.textContent = t("ttPlanned").replace("{u}", sl.u.t).replace("{i}", String(sl.i + 1)).replace("{n}", String(sl.u.items.length)) + ": " + sl.it.t + (sl.n > 1 ? " (" + (sl.k + 1) + "/" + sl.n + ")" : "");
+      box.appendChild(p);
+      if(sl.it.hw && sl.k === sl.n - 1){ const hw = document.createElement("div"); hw.className = "hint"; hw.textContent = t("jHw") + ": " + sl.it.hw; box.appendChild(hw); }
+    }
+    const row = document.createElement("div"); row.className = "ttdayacts";
+    if(sl && sl.it.n < 6) row.appendChild(mk("tt-u-more", t("ttMore"), () => { const it = sl.it; it.n = Math.min(6, it.n + 1); save(); toast(t("ttMoreDone").replace("{t}", it.t)); back(); }));
+    if(units.length) row.appendChild(mk("tt-u-skip", skipped ? t("ttUnskip") : t("ttSkip"), () => {
+      c.uskip = (c.uskip || []).filter(x => x !== key); if(!skipped){ c.uskip.push(key); while(c.uskip.length > MAX_USKIP) c.uskip.shift(); }
+      save(); back(); }));
+    if(sl) row.appendChild(mk("tt-u-open", t("ttOpenUnit"), () => editUnit(c, sl.u, null, back)));
+    else if(!units.length) row.appendChild(mk("tt-u-new", t("ttPlanUnit"), () => editUnit(c, null, { s: L.subjectId, a: iso }, back)));
+    const ex = examsAt(L, iso);
+    ex.forEach(e => row.appendChild(mk("tt-ka-" + e.id.slice(-6), evLabel(e, true), () => editEvent(e, null, back), "minibtn ttka")));
+    if(!ex.length) row.appendChild(mk("tt-ka-add", "+ " + t("ttAddExam"), () => editEvent(null, { k: "ka", d: iso, c: c.id, s: L.subjectId, p: L.period }, back)));
+    row.appendChild(mk("tt-journal", t("jTitle"), () => { closeModal(); setCurClass(c.id); openJournal(c, null, L.subjectId, { d: iso, L }); }));
+    box.appendChild(row);
+  }
+  sheet.appendChild(box);
+}
+/* Startseite: Termine und Ferien der nächsten 14 Tage */
+function upcomingItems(now){
+  now = now || new Date();
+  const today = isoDay(now), until = isoAdd(today, 14), out = [];
+  const free = freeInfo(today);
+  if(free) out.push({ id: "free", d: today, text: t("dayFreeToday").replace("{f}", free), go: () => openHolidays(() => renderNowCard()) });
+  (DB.holidays || []).filter(h => h.a > today && h.a <= until).forEach(h => out.push({ id: "h-" + h.id, d: h.a,
+    text: t("daySoonHol").replace("{n}", h.n || t("holFree")).replace("{d}", fmtDay(h.a)), go: () => openHolidays(() => renderNowCard()) }));
+  eventsBetween(today, until).forEach(e => out.push({ id: "e-" + e.id, d: e.d < today ? today : e.d, ex: isExam(e),
+    text: (e.d <= today && evEnd(e) >= today ? t("dayToday") : fmtDay(e.d)) + (evTime(e) ? " " + evTime(e) : "") + " · " + evLabel(e),
+    go: () => editEvent(e, null, () => renderNowCard()) }));
+  return out.sort((x, y) => x.d.localeCompare(y.d));
+}
+
+function goTimetable(){ ttWeekOff = 0; show("timetable"); renderTimetable(); }
+let ttWeekView = "", ttWeekOff = 0;
+/* Montag der angezeigten Woche (am Wochenende ohne Samstagsunterricht: die kommende Woche) */
+function ttMonday(){ const d = ttRefMonday(); d.setDate(d.getDate() + 7 * ttWeekOff); return d; }
 function renderTimetable(){
   const grid = $("#tt-grid"); if(!grid) return;
-  const T = DB.tt, times = periodTimes();
+  const T = DB.tt, times = periodTimes(), mon = ttMonday();
+  const isoOf = k => { const x = new Date(mon); x.setDate(x.getDate() + k); return isoDay(x); };
+  const today = isoDay(new Date()), first = isoOf(0), last = isoOf(T.days - 1);
+  const letter = T.ab && T.abRef ? abWeek(mon) : "";
+  /* Woche blättern */
+  const nav = $("#tt-nav"); nav.textContent = "";
+  const nb = (id, ic, al, fn) => { const b = document.createElement("button"); b.className = "iconbtn"; b.id = id; b.appendChild(icon(ic)); b.setAttribute("aria-label", t(al)); b.onclick = fn; return b; };
+  nav.appendChild(nb("tt-prev", "back", "ttPrevWeek", () => { ttWeekOff = Math.max(-104, ttWeekOff - 1); renderTimetable(); }));
+  const wl = document.createElement("button"); wl.className = "ttweek"; wl.id = "tt-week"; wl.setAttribute("aria-live", "polite");
+  const w1 = document.createElement("b"); w1.textContent = t("ttKW").replace("{n}", String(isoWeekNo(mon))) + (letter ? " · " + t("ttWeek").replace("{w}", letter) : "");
+  const w2 = document.createElement("span"); w2.textContent = fmtDate(first) + "–" + fmtDateY(last) + (ttWeekOff ? " · " + t("ttBackToday") : "");
+  wl.appendChild(w1); wl.appendChild(w2); wl.disabled = !ttWeekOff;
+  wl.onclick = () => { ttWeekOff = 0; renderTimetable(); };
+  nav.appendChild(wl);
+  const nx = nb("tt-next", "go", "ttNextWeek", () => { ttWeekOff = Math.min(104, ttWeekOff + 1); renderTimetable(); });
+  nav.appendChild(nx);
   const abBar = $("#tt-ab");
-  abBar.style.display = T.ab ? "" : "none";
-  if(T.ab){
-    if(!ttWeekView) ttWeekView = abWeek(ttRefMonday()) || "A";
+  abBar.style.display = T.ab && !T.abRef ? "" : "none";
+  if(T.ab && T.abRef) ttWeekView = letter || "A";
+  else if(T.ab){
+    if(!ttWeekView) ttWeekView = "A";
     abBar.textContent = "";
     ["A", "B"].forEach(w => {
-      const b = document.createElement("button"); b.textContent = t("ttWeek").replace("{w}", w) + (abWeek(ttRefMonday()) === w ? " · " + t("ttThisWeek") : "");
+      const b = document.createElement("button"); b.textContent = t("ttWeek").replace("{w}", w);
       b.classList.toggle("on", ttWeekView === w);
       b.onclick = () => { ttWeekView = w; renderTimetable(); };
       abBar.appendChild(b);
     });
-  }
+  } else ttWeekView = "";
   grid.textContent = "";
   grid.style.gridTemplateColumns = "46px repeat(" + T.days + ", minmax(0,1fr))";
   /* Zeilen: Kopf, dann je Stunde eine Zeile, Pausen als schmale Zeilen dazwischen */
@@ -10146,10 +10961,19 @@ function renderTimetable(){
   for(let i = 0; i < T.count; i++){ rowOf.push(r); r += (i < T.count - 1 && T.breaks[i] > 0) ? 2 : 1; }
   const put = (el, row, col, span) => { el.style.gridRow = row + (span > 1 ? " / span " + span : ""); el.style.gridColumn = String(col); grid.appendChild(el); };
   const days = I18N[LANG].ttDays;
-  const todayIdx = (new Date().getDay() + 6) % 7;
+  const weekEvents = eventsBetween(first, last);
   put(document.createElement("div"), 1, 1, 1);
+  const freeOf = [];
   for(let d = 0; d < T.days; d++){
-    const h = document.createElement("div"); h.className = "tt-day" + (d === todayIdx ? " today" : ""); h.textContent = days[d];
+    const iso = isoOf(d), free = freeInfo(iso), evs = weekEvents.filter(e => e.d <= iso && evEnd(e) >= iso);
+    freeOf.push(free);
+    const h = document.createElement("div"); h.className = "tt-day" + (iso === today ? " today" : "") + (free ? " free" : "");
+    const a = document.createElement("span"); a.textContent = days[d];
+    const b = document.createElement("small"); b.textContent = fmtDate(iso);
+    h.appendChild(a); h.appendChild(b);
+    if(evs.length){ const m = document.createElement("i"); m.className = "ttdot" + (evs.some(isExam) ? " ex" : ""); m.textContent = String(evs.length); h.appendChild(m); }
+    h.title = [free].concat(evs.map(e => evLabel(e))).filter(Boolean).join(" · ");
+    h.setAttribute("aria-label", fmtDateLong(iso) + (h.title ? ": " + h.title : ""));
     put(h, 1, d + 2, 1);
   }
   times.forEach((tm, i) => {
@@ -10165,13 +10989,15 @@ function renderTimetable(){
     }
   });
   const wk = T.ab ? ttWeekView : "";
-  const taken = new Set();
+  const taken = new Set(), memo = new Map();
   DB.lessons.filter(L => L.day < T.days && L.period < T.count && (!wk || !L.week || L.week === wk)).forEach(L => {
     const span = Math.min(L.span, T.count - L.period);
     const s = subjectById(L.subjectId), c = classById(L.classId), rm = roomById(L.roomId);
+    const iso = isoOf(L.day), free = freeOf[L.day];
     const cell = document.createElement("button"); cell.className = "tt-cell";
-    const off = isCancelled(L, ttDateFor(L));
+    const off = !free && isCancelled(L, iso);
     if(off) cell.classList.add("cancelled");
+    if(free) cell.classList.add("free");
     if(c && c.color){ cell.classList.add("hascls"); cell.style.setProperty("--cc", c.color); }
     if(s){ cell.style.background = s.color; cell.style.borderColor = s.color; cell.style.color = inkOn(s.color);
       cell.style.textShadow = inkOn(s.color) === "#fff" ? "" : "none"; }
@@ -10182,8 +11008,20 @@ function renderTimetable(){
     const d = document.createElement("span"); d.textContent = rm ? rm.name : "";
     cell.appendChild(a); cell.appendChild(b); cell.appendChild(d);
     if(L.week){ const w = document.createElement("i"); w.textContent = L.week; cell.appendChild(w); }
+    const extra = [];
     if(off){ const x = document.createElement("span"); x.className = "ttoff"; x.textContent = t("ttOffShort"); cell.appendChild(x); }
-    cell.setAttribute("aria-label", days[L.day] + " " + (L.period + 1) + ": " + lessonLabel(L) + (off ? " – " + t("ttCancelled") : ""));
+    if(free){ const x = document.createElement("span"); x.className = "ttoff"; x.textContent = t("ttFreeShort"); cell.appendChild(x); extra.push(free); }
+    /* Klassenarbeit, gehaltenes (Kursheft) oder geplantes Thema */
+    const ex = c && !free ? examsAt(L, iso) : [];
+    if(ex.length){ cell.classList.add("hasex"); const k = document.createElement("span"); k.className = "ttka"; k.textContent = t("evK_" + ex[0].k + "_s"); cell.appendChild(k); extra.push(ex.map(e => evLabel(e, true)).join(", ")); }
+    if(c && !free && !off){
+      const j = (c.journal || []).find(e => e.d === iso && (e.p === L.period || (e.p < 0 && e.s === L.subjectId)) && e.topic);
+      const sl = j ? null : unitSlot(c, L, iso, memo);
+      const topic = j ? j.topic : sl ? sl.it.t : "";
+      if(topic){ cell.classList.add("planned"); const tp = document.createElement("span"); tp.className = "tt-topic" + (j ? "" : " plan"); tp.textContent = topic; cell.appendChild(tp);
+        extra.push((j ? t("jTopic") : t("ttPlannedShort")) + ": " + topic); }
+    }
+    cell.setAttribute("aria-label", days[L.day] + " " + fmtDate(iso) + ", " + (L.period + 1) + ": " + lessonLabel(L) + (off ? " – " + t("ttCancelled") : "") + (extra.length ? " – " + extra.join(" – ") : ""));
     cell.onclick = () => editLesson(L);
     const endRow = rowOf[L.period + span - 1];
     put(cell, rowOf[L.period], L.day + 2, endRow - rowOf[L.period] + 1);
@@ -10192,11 +11030,32 @@ function renderTimetable(){
   for(let d = 0; d < T.days; d++) for(let i = 0; i < T.count; i++){
     if(taken.has(d + ":" + i)) continue;
     const e = document.createElement("button"); e.className = "tt-free"; e.setAttribute("aria-label", days[d] + " " + (i + 1) + ": " + t("ttAdd"));
+    if(freeOf[d]) e.classList.add("freeday");
     e.textContent = "+";
     e.onclick = () => editLesson(null, d, i);
     put(e, rowOf[i], d + 2, 1);
   }
   $("#tt-empty").style.display = DB.lessons.length ? "none" : "";
+  /* Diese Woche: Ferien und Termine, darunter Termine/Planung/Ferien */
+  const wlist = $("#tt-wlist"); wlist.textContent = "";
+  const hols = (DB.holidays || []).filter(h => h.a <= last && h.b >= first);
+  if(hols.length || weekEvents.length){
+    const hh = document.createElement("div"); hh.className = "eyebrow"; hh.style.marginTop = "12px"; hh.textContent = t("ttThisWeekList"); wlist.appendChild(hh);
+    hols.forEach(h => { const x = document.createElement("div"); x.className = "evrow hol"; x.textContent = (h.n || t("holFree")) + " · " + fmtDate(h.a) + (h.b !== h.a ? "–" + fmtDate(h.b) : ""); wlist.appendChild(x); });
+    weekEvents.forEach(e => wlist.appendChild(evRow(e, () => editEvent(e, null, renderTimetable))));
+  }
+  const acts = document.createElement("div"); acts.className = "ttacts";
+  const ab = (id, ic, key, fn) => { const b = document.createElement("button"); b.className = "cbtn outline"; b.id = id; b.appendChild(icon(ic));
+    const sp = document.createElement("span"); sp.textContent = t(key); b.appendChild(sp); b.onclick = fn; acts.appendChild(b); };
+  ab("tt-ev-add", "plus", "evNew", () => editEvent(null, { d: first > today ? first : today }, renderTimetable));
+  ab("tt-events", "calendar", "evTitle", () => openEvents(renderTimetable));
+  ab("tt-units", "teach", "unTitle", () => openUnits(renderTimetable));
+  wlist.appendChild(acts);
+  if(!DB.hst && !(DB.holidays || []).length){
+    const hb = document.createElement("button"); hb.className = "daytask"; hb.id = "tt-hol-setup"; hb.appendChild(icon("calendar"));
+    const sp = document.createElement("span"); sp.textContent = t("ttHolSetup"); hb.appendChild(sp);
+    hb.onclick = () => openHolidays(renderTimetable); wlist.appendChild(hb);
+  }
 }
 function selectField(sheet, items, value){
   const sel = document.createElement("select"); sel.className = "field";
@@ -10212,6 +11071,7 @@ function editLesson(L, day, period, draft){
     subjectId: (DB.subjects[0] || {}).id || "", classId: curClassId || "", roomId: "", planId: "" };
   const times = periodTimes();
   const sheet = sheetBase(I18N[LANG].ttDays[cur.day] + ", " + (cur.period + 1) + ". " + t("ttPeriod") + " (" + fmtHM(times[cur.period].start) + ")");
+  if(!isNew && !draft && DB.lessons.indexOf(L) >= 0){ lessonDayBox(sheet, L, ttDateFor(L)); sheetLabel(sheet, t("ttLessonEdit")); }
   sheetLabel(sheet, t("ttSubject"));
   const subjItems = () => DB.subjects.map(s => [s.id, s.name]).concat([["__new", t("subjNew")]]);
   const subjSel = selectField(sheet, subjItems(), cur.subjectId);
@@ -10260,7 +11120,8 @@ function editLesson(L, day, period, draft){
     const del = document.createElement("button");
     del.className = "ghost"; del.style.width = "100%"; del.style.marginTop = "12px"; del.style.color = "var(--warn)";
     del.textContent = t("ttDelete");
-    del.onclick = () => { DB.lessons = DB.lessons.filter(x => x.id !== L.id); DB.cancelled = (DB.cancelled || []).filter(x => x.slice(11) !== L.id); closeModal(); save(); renderTimetable(); };
+    del.onclick = () => { DB.lessons = DB.lessons.filter(x => x.id !== L.id); DB.cancelled = (DB.cancelled || []).filter(x => x.slice(11) !== L.id);
+      DB.classes.forEach(c => { if(c.uskip) c.uskip = c.uskip.filter(x => x.slice(11) !== L.id); }); closeModal(); save(); renderTimetable(); };
     sheet.appendChild(del);
   }
   sheetButtons(sheet, t("save"), () => {
@@ -12422,7 +13283,7 @@ function exportGradesCsv(c, s, term){
 function currentLessonFor(c, date){
   date = date || new Date();
   const day = (date.getDay() + 6) % 7;
-  if(!c || day >= DB.tt.days) return null;
+  if(!c || day >= DB.tt.days || isFree(isoDay(date))) return null;
   const wk = abWeek(date), times = periodTimes(), m = date.getHours() * 60 + date.getMinutes();
   /* Direkt nach der Klasse filtern: Überschneidungen (A/B ohne Bezugswoche) liefern sonst die falsche Stunde */
   const dk = isoDay(date);
@@ -12620,6 +13481,7 @@ function openNewYear(){
         if(x.action === "archive"){ c.archived = true; return; }     // Archiv bleibt als Nachweis vollständig
         if(opt.grades){ c.assess = []; c.gradeSubjects = []; c.lastSubject = ""; }
         c.zn = [];                                              // Zeugnisnoten gehören zum alten Schuljahr – auch wenn Bewertungen bleiben
+        if(opt.timetable){ c.units = []; c.uskip = []; }       // Reihen hängen am alten Stundenplan
         if(opt.absence){ c.attendance = []; c.absLog = []; c.exc = []; c.late = []; c.journal = []; c.lesson = { date: "", absent: [], picked: [], notes: {} }; c.subNote = ""; }
         if(opt.history) c.history = [];
         if(opt.obs){ c.obs = []; c.checks = []; }
@@ -12627,6 +13489,8 @@ function openNewYear(){
         if(x.name.trim()) c.name = x.name.trim().slice(0, 60);
       });
       if(opt.timetable){ DB.lessons = []; DB.cancelled = []; DB.tt.ab = false; DB.tt.abRef = ""; }
+      const today = isoDay(new Date());
+      DB.events = (DB.events || []).filter(e => evEnd(e) >= today);   // vergangene Termine gehören zum alten Schuljahr
       delete DB.settings.termSplit; gradeTerm = null;   // neues Schuljahr: Stichtag wieder automatisch
       curClassId = null; ensureCurClass(); undoStack = []; redoStack = []; updateUndoButtons();
       save(); renderStart(); renderSettings(); toast(t("nyDone"));
@@ -12660,9 +13524,8 @@ function ttRefMonday(){
   return d;
 }
 function ttDateFor(L){
-  const d = ttRefMonday();
+  const d = ttMonday();
   let add = L.day;
-  if(DB.tt.ab && ttWeekView){ const wk = abWeek(d); if(wk && wk !== ttWeekView) add += 7; }
   d.setDate(d.getDate() + add);
   return isoDay(d);
 }
@@ -13532,9 +14395,10 @@ function exportTaskXlsx(c, a){
 
 /* ---- Kursheft: Thema und Hausaufgabe je Stunde ---- */
 function journalFor(c, subj){ return (c.journal || []).filter(e => !subj || e.s === subj).sort((x, y) => y.d.localeCompare(x.d) || y.p - x.p); }
-function openJournal(c, entry, subj){
+function openJournal(c, entry, subj, at){
   c.journal = Array.isArray(c.journal) ? c.journal : [];
-  const L = currentLessonFor(c), today = isoDay(new Date());
+  /* at = { d, L }: aus dem Stundenplan für eine bestimmte Stunde geöffnet */
+  const L = at ? at.L : currentLessonFor(c), today = at ? at.d : isoDay(new Date());
   subj = subj || (entry ? entry.s : lessonSubjectNow(c));
   let e = entry || c.journal.find(x => x.d === today && x.s === subj && x.p === (L ? L.period : -1)) || null;
   const sheet = sheetBase(t("jTitle") + " – " + c.name);
@@ -13558,6 +14422,12 @@ function openJournal(c, entry, subj){
   sheetLabel(sheet, t("jHw"));
   const hw = document.createElement("textarea"); hw.className = "field"; hw.id = "j-hw"; hw.maxLength = 300; hw.placeholder = t("jHwPh"); hw.value = e ? e.hw : ""; hw.style.minHeight = "56px";
   sheet.appendChild(hw);
+  /* Noch nichts eingetragen: Thema und Hausaufgabe aus der Unterrichtsplanung vorschlagen */
+  const sl = !e && L && L.classId === c.id && subj === L.subjectId ? unitSlot(c, L, today) : null;
+  if(sl){
+    tp.value = sl.it.t.slice(0, 300); if(sl.k === sl.n - 1 && sl.it.hw) hw.value = sl.it.hw.slice(0, 300);
+    const ph = document.createElement("div"); ph.className = "hint"; ph.id = "j-planned"; ph.textContent = t("jFromPlan").replace("{u}", sl.u.t); tp.parentNode.insertBefore(ph, tp);
+  }
   const all = document.createElement("button"); all.className = "cbtn outline"; all.id = "j-all"; all.style.width = "100%"; all.style.marginTop = "10px";
   all.appendChild(icon("note")); const as = document.createElement("span"); as.textContent = t("jAll").replace("{n}", String(journalFor(c, subj).length)); all.appendChild(as);
   all.onclick = () => openJournalList(c, subjSel.value);
@@ -13760,7 +14630,7 @@ function openTallyList(kArg, back){
    Änderung der anderen (samt allem, was daran hängt) gelöscht wurde, bleibt gelöscht.
    Gerätebezogenes (Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse) wird nie übernommen. */
 const SYNC_MAX_STAMPS = 200000, SYNC_MAX_DEL = 20000, SYNC_DEL_DAYS = 400, SYNC_FUTURE = 86400;
-const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|zn|tg|tp|us|gc|ac|cr|cp|ct)(\||$)/;
+const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|zn|tg|tp|us|gc|ac|cr|cp|ct|ev|hol|hst|un|uk)(\||$)/;
 const SYNC_HASH = /^[0-9a-z]{6,14}$/;
 const syncNow = () => Math.floor(Date.now() / 1000);
 const jsonOf = v => JSON.stringify(v === undefined ? null : v);
@@ -13778,6 +14648,10 @@ function syncTop(db, add){
   (db.subjects || []).forEach(x => add("subj|" + idk(x.id), x));
   (db.scales || []).forEach(x => add("us|" + idk(x.id), x));
   (db.critTpl || []).forEach(x => add("ct|" + idk(x.id), x));
+  /* Termine und Ferien als eigene Einträge – ältere App-Stände kennen sie nicht und lassen sie stehen */
+  (db.events || []).forEach(x => add("ev|" + idk(x.id), x));
+  (db.holidays || []).forEach(x => add("hol|" + idk(x.id), x));
+  if(db.hst) add("hst", db.hst);
   (db.lessons || []).forEach(L => add("les|" + idk(L.id), L, "", ["subj|" + idk(L.subjectId)]));
   (db.cancelled || []).forEach(k => add("cx|" + idk(k), 1));
   if(db.tt) add("tt", db.tt);
@@ -13830,6 +14704,9 @@ function syncClass(c, add){
     (x.ticks || []).forEach(v => add("kt|" + cid + "|" + idk(x.id) + "|" + idk(v), 1, kk, [sk(v.slice(11))]));
   });
   (c.journal || []).forEach(x => add("j|" + cid + "|" + idk(x.id), x, ck, x.s ? ["subj|" + idk(x.s)] : null));
+  /* Unterrichtsreihen (je Reihe ein Eintrag) und ausgelassene Stunden */
+  (c.units || []).forEach(x => add("un|" + cid + "|" + idk(x.id), x, ck, ["subj|" + idk(x.s)]));
+  (c.uskip || []).forEach(v => add("uk|" + cid + "|" + idk(v), 1, ck));
   /* Zielscheiben: Kopf und jeder Punkt einzeln – zwei Geräte sammeln, ohne sich zu überschreiben */
   (c.targets || []).forEach(x => { const tk = "tg|" + cid + "|" + idk(x.id);
     add(tk, { title: x.title, date: x.date, areas: x.areas }, ck);
@@ -14005,6 +14882,9 @@ function mergeDB(L0, R){
   out.subjects = mergeList(L.subjects, R.subjects, x => "subj|" + idk(x.id));
   out.scales = mergeList(L.scales, R.scales, x => "us|" + idk(x.id));
   out.critTpl = mergeList(L.critTpl, R.critTpl, x => "ct|" + idk(x.id));
+  out.events = mergeList(L.events, R.events, x => "ev|" + idk(x.id)).sort(evSort);
+  out.holidays = mergeList(L.holidays, R.holidays, x => "hol|" + idk(x.id)).sort((x, y) => x.a.localeCompare(y.a));
+  { const wh = pick("hst"); out.hst = wh === "R" ? R.hst || "" : wh === "L" ? L.hst || "" : ""; }
   out.lessons = mergeList(L.lessons, R.lessons, x => "les|" + idk(x.id));
   out.cancelled = mergeList(L.cancelled, R.cancelled, k => "cx|" + idk(k));
   if(pick("tt") === "R") out.tt = clone(R.tt);
@@ -14091,6 +14971,8 @@ function mergeDB(L0, R){
       return k;
     });
     sub("j", "journal", x => x.id);
+    sub("un", "units", x => x.id);
+    c.uskip = mergeList(cl.uskip, cr.uskip, v => "uk|" + cid + "|" + idk(v)).sort();
     sub("tg", "targets", x => x.id, (t1, t2, w) => {
       const x = clone(w === "R" || !t1 ? t2 : t1);
       if(t1) x.pts = mergeList(t1.pts, t2.pts, q => "tp|" + cid + "|" + idk(t1.id) + "|" + idk(q.id));

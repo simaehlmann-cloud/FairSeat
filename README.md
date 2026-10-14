@@ -203,6 +203,20 @@ Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfun
   mehrseitig mit Fortsetzungskopf), Klassenüberblick je Kriterium. Eine direkt gesetzte Note (auch „fehlt“) ersetzt die Raster-Bewertung.
   Abgleich: `cr|` (Raster + Schlüssel), `cp|` (je Schüler), `ct|` (Vorlagen); Bewertungen unter anderer Stufenzahl gelten nicht; eine jüngere
   Direktnote eines Geräts ohne Raster-Eintrag gewinnt; treffen Aufgaben und Raster zusammen, gilt der jüngere Eintrag.
+- Termine (`DB.events`: `{ id, k: "ka"|"test"|"ev"|"due", d, e?, tm?, p?, t, c?, s?, n?, rem?, aid? }`): Wochenansicht im Stundenplan
+  (`ttWeekOff`, `ttMonday`, Datum je Tag, Marke „KA“ an der Stunde über `examsAt`, Liste „Diese Woche“), Terminliste (`openEvents`),
+  Hinweise (`examWarn`: zweite Klassenarbeit am Tag, mehr als drei in der Woche, Termin an einem freien Tag), Stunde aus dem
+  Stundenplan vorgeschlagen (`guessPeriod`), „Als Bewertung anlegen“ (verknüpft über `aid`). Kalender-Export als .ics (`icsText`,
+  RFC 5545: CRLF, Zeilen ≤ 75 Byte, ganztägig mit DTEND am Folgetag, Erinnerung als VALARM). Startseite „Demnächst“ (14 Tage, `upcomingItems`).
+- Ferien und Feiertage: `DB.holidays` (`{ id, a, b, n }`), `DB.hst` (Bundesland); `pubHolidays` berechnet die gesetzlichen Feiertage
+  je Land (Ostern nach Gauß). Vorlage Niedersachsen 2026/27 und 2027/28 laut Ferienerlass (`HOL_NI`). An freien Tagen (`freeInfo`) gibt es
+  keine Stunden (`lessonsOnDate`, `nowLessons`, `currentLessonFor`), also auch keine Kursheft-Mahnung und keine Fehlstunden.
+- Unterrichtsplanung: Reihen je Klasse und Fach (`c.units`: `{ id, s, t, a, items: [{ id, t, hw, n }] }`), ausgelassene Stunden `c.uskip`
+  („Datum|StundenID“). `unitPlan` verteilt die Themen bei jedem Aufruf neu auf die Stunden ab Beginn (Doppelstunde = 1, Ausfall, Ferien
+  und Auslassungen rücken nach; eine Folgereihe beginnt frühestens nach der vorigen). Im Stundenblatt: Thema, „+1 Stunde“, Auslassen,
+  Klassenarbeit, Kursheft (mit Vorschlag aus der Planung, Hausaufgabe in der letzten Stunde des Themas). Liste einfügen
+  (`parseUnitLines`), in andere Klasse kopieren. Schuljahreswechsel: Reihen mit dem Stundenplan, vergangene Termine entfallen.
+  Abgleich: `ev|`, `hol|`, `hst`, `un|`, `uk|` als eigene Einträge – ältere App-Stände lassen sie stehen.
 - Rechenweg: „Wie berechnet?“ unter einem Namen (Bewertungen) zeigt jede Bewertung mit Wert und Gewicht, die Teildurchschnitte,
   die Gewichtung, die Rundungsregel und die Fehlstunden des Fachs (`gradeCalc` nutzt dieselben Schritte wie `studentAverages`,
   `proposeGrade` und `missedLessons`). Als PDF und auf Wunsch (`settings.talkCalc`) im Gesprächsblatt.
