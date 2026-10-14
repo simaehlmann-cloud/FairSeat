@@ -243,6 +243,16 @@ select.field{-webkit-appearance:none;appearance:none;
 .gdot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:0 0 auto}
 .segmented.wrap{flex-wrap:wrap}
 .usrow{display:flex;gap:6px;align-items:center;margin-top:6px}
+.critem{border:1px solid var(--line);border-radius:12px;padding:8px;margin-top:8px;background:var(--surface)}
+.critem .crexp{margin-top:6px;min-height:52px;resize:vertical;font-size:14px}
+.critem .crw{align-items:center;margin-top:6px}
+.critem .crw .crwl{font-size:13px;color:var(--ink-soft);margin-right:4px}
+.crlvrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.crlvrow .field{flex:1 1 120px;margin:0}
+.critrate{margin-top:12px}
+.critrate b{display:block;font-size:15px}
+.critrate .hint{margin:2px 0 0}
+.critrate .crlv button{font-size:13px;padding:6px 4px;line-height:1.2}
 .usrow .field{margin:0}
 .usrow .usv{flex:0 0 84px}
 .catrow .usv{flex:0 0 72px}
@@ -2912,6 +2922,50 @@ I18N.de.info.push({ h:"Kategorien und eigene Notenskalen",
 I18N.en.info.push({ h:"Categories and own grading scales",
   p:["Under a subject's “Weighting” you can add own categories with a share, e.g. tests 50 %, participation 30 %, quizzes 20 %. When creating an assessment you choose its category. Without own categories it stays written : oral.",
      "Besides grades, points and smileys there are thirds (2+ = 1.67, 2− = 2.33), percent (converted via a grading key) and own scales (Settings → Own grading scales) with named levels and a grade value."] });
+Object.assign(I18N.de, {
+  crTitle:"Kriterienraster", crSetup:"Nach Kriterien bewerten", crSetupSub:"Raster mit Erwartungshorizont – z. B. für Präsentationen, Projekte, Portfolios",
+  crInfo:"{n} Kriterien · {l} Stufen", crHint:"Je Kriterium eine Stufe wählen. Der Erfüllungsgrad (gewichtet) ergibt über den Schlüssel die Note – erst wenn alle Kriterien bewertet sind.",
+  crTpl:"Vorlage", crTplPres:"Präsentation", crTplGroup:"Gruppenarbeit",
+  crTplPresItems:"Inhalt~Fachlich richtig, vollständig und auf das Thema bezogen|Aufbau~Klare Gliederung mit Einstieg, Hauptteil und Schluss|Vortrag~Frei, verständlich, Blickkontakt, angemessenes Tempo|Medien~Folien oder Plakat unterstützen den Vortrag sinnvoll|Fragen~Rückfragen werden sicher und sachlich beantwortet",
+  crTplGroupItems:"Zusammenarbeit~Alle bringen sich ein, Absprachen werden eingehalten|Arbeitsergebnis~Aufgabe vollständig und fachlich richtig gelöst|Präsentation des Ergebnisses~Ergebnis wird verständlich vorgestellt|Zeitmanagement~Arbeitszeit sinnvoll genutzt, rechtzeitig fertig",
+  crLevels:"nicht erfüllt|teilweise erfüllt|überwiegend erfüllt|vollständig erfüllt", crLevels3:"nicht erfüllt|teilweise erfüllt|erfüllt",
+  crLevels4:"nicht erfüllt|teilweise erfüllt|überwiegend erfüllt|vollständig erfüllt", crLevels5:"nicht erfüllt|ansatzweise|teilweise|überwiegend|vollständig",
+  crLevelsLabel:"Stufen (schwächste zuerst)", crLevel:"Stufe", crLevelsHint:"Die schwächste Stufe zählt 0 %, die stärkste 100 %, dazwischen gleichmäßig.",
+  crItems:"Kriterien und Erwartungen", crItem:"Kriterium", crItemPh:"Kriterium, z. B. Aufbau", crExp:"Erwartung", crExpPh:"Erwartung (erscheint im Rückmeldebogen)",
+  crWeight:"Gewicht", crAdd:"Kriterium", crLimit:"Höchstens 20 Kriterien", crKey:"Erfüllungsgrad → Note",
+  crTendSub:"2+, 2, 2− je nach Lage im Bereich der Note", crKeyHint:"Mindest-Erfüllungsgrad je Note wie beim Notenschlüssel einer Klassenarbeit.",
+  crNeedLv:"Bitte jede Stufe benennen", crNeedItem:"Bitte mindestens ein Kriterium benennen (leere entfernen)",
+  crSaveTpl:"Als Vorlage speichern", crTplLimit:"Höchstens 30 eigene Vorlagen", crTplSaved:"Vorlage „{n}“ gespeichert", crTplUpdated:"Vorlage „{n}“ aktualisiert", crTplManage:"Eigene Vorlagen verwalten", crTplDeleted:"Vorlage „{n}“ gelöscht", crTplNone:"Keine eigenen Vorlagen", crCont:"Fortsetzung",
+  crOff:"Raster entfernen", crOffQ:"Raster entfernen?", crOffT:"Raster, Stufen und Kommentare dieser Bewertung werden gelöscht. Die Noten bleiben stehen.", crOffBtn:"Entfernen",
+  crRes:"Erfüllt: {p} % · Note {g}", crPartial:"{d} von {n} Kriterien bewertet", crComment:"Kommentar", crCommentPh:"Rückmeldung für den Bogen (optional)",
+  crPdfOne:"Rückmeldebogen (PDF)", crPdfAll:"Rückmeldebögen aller (PDF)", crPdfFile:"Rückmeldung", crStats:"Erfüllung je Kriterium (Klasse)", crNothing:"Noch keine Bewertungen",
+  crRate:"Raster für {n}"
+});
+Object.assign(I18N.en, {
+  crTitle:"Criteria grid", crSetup:"Assess by criteria", crSetupSub:"Grid with expectations – e.g. for presentations, projects, portfolios",
+  crInfo:"{n} criteria · {l} levels", crHint:"Pick one level per criterion. The (weighted) degree of achievement gives the grade via the key – once every criterion is rated.",
+  crTpl:"Template", crTplPres:"Presentation", crTplGroup:"Group work",
+  crTplPresItems:"Content~Correct, complete and on topic|Structure~Clear outline with introduction, main part and conclusion|Delivery~Free, clear speech, eye contact, suitable pace|Media~Slides or poster support the talk|Questions~Questions are answered confidently and objectively",
+  crTplGroupItems:"Cooperation~Everyone contributes, agreements are kept|Result~Task solved completely and correctly|Presenting the result~Result is presented clearly|Time management~Working time used well, finished on time",
+  crLevels:"not met|partly met|mostly met|fully met", crLevels3:"not met|partly met|met",
+  crLevels4:"not met|partly met|mostly met|fully met", crLevels5:"not met|beginning|partly|mostly|fully",
+  crLevelsLabel:"Levels (weakest first)", crLevel:"Level", crLevelsHint:"The weakest level counts 0 %, the strongest 100 %, evenly in between.",
+  crItems:"Criteria and expectations", crItem:"Criterion", crItemPh:"Criterion, e.g. structure", crExp:"Expectation", crExpPh:"Expectation (shown on the feedback sheet)",
+  crWeight:"Weight", crAdd:"Criterion", crLimit:"At most 20 criteria", crKey:"Achievement → grade",
+  crTendSub:"2+, 2, 2− depending on position within the grade band", crKeyHint:"Minimum achievement per grade, like the grading key of a test.",
+  crNeedLv:"Please name every level", crNeedItem:"Please name at least one criterion (remove empty ones)",
+  crSaveTpl:"Save as template", crTplLimit:"At most 30 own templates", crTplSaved:"Template “{n}” saved", crTplUpdated:"Template “{n}” updated", crTplManage:"Manage own templates", crTplDeleted:"Template “{n}” deleted", crTplNone:"No own templates", crCont:"continued",
+  crOff:"Remove grid", crOffQ:"Remove grid?", crOffT:"Grid, levels and comments of this assessment are deleted. The grades stay.", crOffBtn:"Remove",
+  crRes:"Achieved: {p} % · grade {g}", crPartial:"{d} of {n} criteria rated", crComment:"Comment", crCommentPh:"Feedback for the sheet (optional)",
+  crPdfOne:"Feedback sheet (PDF)", crPdfAll:"Feedback sheets for all (PDF)", crPdfFile:"Feedback", crStats:"Achievement per criterion (class)", crNothing:"No ratings yet",
+  crRate:"Grid for {n}"
+});
+I18N.de.info.push({ h:"Kriterienraster und Rückmeldebogen",
+  p:["Eine Bewertung mit Noten oder Punkten lässt sich statt mit Aufgaben auch „nach Kriterien“ bewerten: Kriterien mit Erwartung und Gewicht, 3 bis 5 Stufen, Vorlagen für Präsentation und Gruppenarbeit oder eigene. Je Schüler tippst du eine Stufe pro Kriterium an und kannst einen Kommentar schreiben.",
+     "Der gewichtete Erfüllungsgrad ergibt über den Schlüssel die Note. Der Rückmeldebogen (PDF) zeigt Kriterien, Erwartungen, erreichte Stufe, Ergebnis und Kommentar – einzeln oder für alle."] });
+I18N.en.info.push({ h:"Criteria grid and feedback sheet",
+  p:["An assessment with grades or points can be rated “by criteria” instead of tasks: criteria with expectation and weight, 3 to 5 levels, templates for presentations and group work or your own. Per pupil you tap one level per criterion and can add a comment.",
+     "The weighted degree of achievement gives the grade via the key. The feedback sheet (PDF) shows criteria, expectations, achieved level, result and comment – for one pupil or all."] });
 /* ============ 2. Helfer ============ */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
@@ -2983,7 +3037,7 @@ function defaultSettings(){
 function emptyDB(){
   return { v:2, lang:"de", theme:"light", settings:defaultSettings(),
            rooms:[], classes:[], trash:[], lastBackup:"", lastClass:"", onboarded:false,
-           subjects:[], lessons:[], cancelled:[], tt:defaultTT(), gradesAck:false, scales:[] };
+           subjects:[], lessons:[], cancelled:[], tt:defaultTT(), gradesAck:false, scales:[], critTpl:[] };
 }
 const TRASH_DAYS = 30;
 let DB = emptyDB();
@@ -3069,6 +3123,7 @@ function sanitizeDB(raw){
     ab: tt0.ab === true, abRef: typeof tt0.abRef === "string" && /^\d{4}-\d{2}-\d{2}$/.test(tt0.abRef) ? tt0.abRef : ""
   };
   out.scales = sanScales(raw.scales);
+  out.critTpl = sanCritTpl(raw.critTpl);
   const subjIds = new Set(out.subjects.map(x => x.id));
   out.lessons = Array.isArray(raw.lessons) ? raw.lessons.filter(L => L && subjIds.has(L.subjectId)).map(L => ({
     id: typeof L.id === "string" && L.id ? L.id.slice(0, 40) : uid(),
@@ -3139,6 +3194,7 @@ function sanitizeDB(raw){
           kind: a.kind === "written" ? "written" : a.kind === "self" && a.scale === "smiley" ? "self" : "other", scale: a.scale, weight: [0.5, 1, 2, 3].indexOf(a.weight) >= 0 ? a.weight : 1,
           marks, ...(a.auto === true ? { auto: true } : {}), ...(typeof a.cat === "string" && /^[a-z0-9]{1,16}$/.test(a.cat) ? { cat: a.cat } : {}) };
         sanTasks(out, a, ids);                        // Aufgabenpunkte und Notenschlüssel (nur wenn vorhanden)
+        sanCrit(out, a, ids);                         // Kriterienraster (nur ohne Aufgaben)
         return out;
       }).slice(0, MAX_ASSESS) : [],
       gradeW: (c?.gradeW && typeof c.gradeW === "object") ? Object.keys(c.gradeW).reduce((o, k) => {
@@ -10785,8 +10841,8 @@ function renderAssess(){
   const m = document.createElement("div"); m.className = "hint"; m.style.marginTop = "0";
   m.textContent = (s ? s.name + " · " : "") + fmtDate(a.date) + " · " + catName(catsOf(c, a.subjectId).find(x => x.id === catOfAssess(c, a)) || { id: a.kind, n: "" }) + " · " + scaleName(a.scale);
   head.appendChild(m);
-  const tasked = hasTasks(a);
-  if((a.scale === "grade" || a.scale === "points") && !a.auto){   // Klassenarbeit mit Punkten je Aufgabe (nicht bei „Mitarbeit heute“)
+  const tasked = hasTasks(a), crit = hasCrit(a);
+  if((a.scale === "grade" || a.scale === "points") && !a.auto && !crit){   // Klassenarbeit mit Punkten je Aufgabe (nicht bei „Mitarbeit heute“)
     const tb = document.createElement("button"); tb.className = "setrow"; tb.id = "a-tasks"; tb.style.marginTop = "6px";
     const tt = document.createElement("div"); tt.style.flex = "1";
     const t1 = document.createElement("div"); t1.className = "st"; t1.textContent = t(tasked ? "tkTitle" : "tkSetup");
@@ -10795,6 +10851,17 @@ function renderAssess(){
     tt.appendChild(t1); tt.appendChild(t2); tb.appendChild(tt); tb.appendChild(icon(tasked ? "edit" : "plus"));
     tb.onclick = () => openTaskSetup(c, a);
     head.appendChild(tb);
+  }
+  /* Kriterienraster (statt Aufgaben) – z. B. für Präsentationen, Projekte, Portfolios */
+  if((a.scale === "grade" || a.scale === "points") && !a.auto && !tasked){
+    const cb = document.createElement("button"); cb.className = "setrow"; cb.id = "a-crit"; cb.style.marginTop = "6px";
+    const ct = document.createElement("div"); ct.style.flex = "1";
+    const c1 = document.createElement("div"); c1.className = "st"; c1.textContent = t(crit ? "crTitle" : "crSetup");
+    const c2 = document.createElement("div"); c2.className = "ss";
+    c2.textContent = crit ? t("crInfo").replace("{n}", String(a.crit.items.length)).replace("{l}", String(a.crit.lv.length)) : t("crSetupSub");
+    ct.appendChild(c1); ct.appendChild(c2); cb.appendChild(ct); cb.appendChild(icon(crit ? "edit" : "plus"));
+    cb.onclick = () => openCritSetup(c, a);
+    head.appendChild(cb);
   }
   const list = $("#assess-list"); list.textContent = "";
   c.students.forEach((st, i) => {
@@ -10807,8 +10874,10 @@ function renderAssess(){
     row.appendChild(n); row.appendChild(nm);
     if(tasked){ const sp = studentPoints(a, st.id); const pe = document.createElement("span"); pe.className = "apts";
       pe.textContent = sp === null ? "" : fmtNum(sp, sp % 1 ? 1 : 0) + " " + t("tkP"); row.appendChild(pe); }
+    if(crit){ const R = critResult(a, st.id); const pe = document.createElement("span"); pe.className = "apts";
+      pe.textContent = R.pct !== null ? fmtPct(R.pct) + " %" : R.done ? R.done + "/" + R.n : ""; row.appendChild(pe); }
     row.appendChild(v);
-    row.onclick = () => { assessSel = st.id; renderAssess(); if(tasked) openPointsSheet(c, a, st.id, nextWithoutPoints(c, a)); };
+    row.onclick = () => { assessSel = st.id; renderAssess(); if(tasked) openPointsSheet(c, a, st.id, nextWithoutPoints(c, a)); else if(crit) openCritSheet(c, a, st.id, nextWithoutPoints(c, a)); };
     list.appendChild(row);
   });
   /* Notenspiegel und Durchschnitt */
@@ -10822,6 +10891,13 @@ function renderAssess(){
   if(fs && fs.share > 0.3){ const w = document.createElement("div"); w.className = "syncwarn"; w.id = "a-fail";
     w.textContent = t("gFail").replace("{p}", fmtNum(fs.share * 100, 0)).replace("{b}", String(fs.bad)).replace("{n}", String(fs.n)); stats.appendChild(w); }
   if(done) stats.appendChild(distChart(a));
+  if(crit && Object.keys(a.cr || {}).length){
+    stats.appendChild(critChart(c, a));
+    const xb = document.createElement("button"); xb.className = "cbtn outline"; xb.id = "a-crit-pdf"; xb.style.width = "100%"; xb.style.marginTop = "8px";
+    xb.appendChild(icon("pdf")); const xs = document.createElement("span"); xs.textContent = t("crPdfAll"); xb.appendChild(xs);
+    xb.onclick = () => exportCritPdf(c, a, c.students.filter(st => (a.cr && a.cr[st.id]) || a.marks[st.id]).map(st => st.id));
+    stats.appendChild(xb);
+  }
   if(tasked && Object.keys(a.pts || {}).length){
     stats.appendChild(taskChart(c, a));
     const xb = document.createElement("button"); xb.className = "cbtn outline"; xb.id = "a-xlsx"; xb.style.width = "100%"; xb.style.marginTop = "8px";
@@ -10831,8 +10907,14 @@ function renderAssess(){
   }
   /* Tastenfeld */
   const pad = $("#assess-pad"); pad.textContent = "";
-  pad.className = "keypad k-" + (tasked ? "tasks" : padKind(a.scale));
-  if(tasked){
+  pad.className = "keypad k-" + (tasked || crit ? "tasks" : padKind(a.scale));
+  if(crit){
+    const st0 = assessSel ? studentById(c, assessSel) : null;
+    const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "a-crit-rate";
+    pb.textContent = st0 ? t("crRate").replace("{n}", st0.name) : t("gTapSeat");
+    pb.onclick = () => { if(assessSel) openCritSheet(c, a, assessSel, nextWithoutPoints(c, a)); };
+    pad.appendChild(pb);
+  } else if(tasked){
     const st0 = assessSel ? studentById(c, assessSel) : null;
     const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "a-pts";
     pb.textContent = st0 ? t("ptEnter").replace("{n}", st0.name) : t("gTapSeat");
@@ -10951,6 +11033,7 @@ function scalePad(pad, a, cur, pick, hasSel){
 function setMark(tok){
   const c = curClass(), a = curAssess(); if(!c || !a || !assessSel) return;
   if(a.pts) delete a.pts[assessSel];                  // „fehlt“ oder Löschen nimmt auch die Punkte weg
+  if(a.cr) delete a.cr[assessSel];                    // … und die Bewertung nach Raster (sonst käme deren Note beim Laden zurück)
   if(tok) a.marks[assessSel] = tok; else delete a.marks[assessSel];
   save(); haptic(8);
   if(tok){                                            // weiter zum nächsten Namen
@@ -10975,6 +11058,7 @@ function editAssessMeta(){
     if(copy.scale !== a.scale && ["third", "pct"].concat((DB.scales || []).map(u => "u:" + u.id)).indexOf(copy.scale) >= 0 && !Object.keys(a.marks).length){
       a.id = uid(); curAssessId = a.id;
     }
+    if(copy.scale !== a.scale && copy.scale !== "grade" && copy.scale !== "points"){ delete a.crit; delete a.cr; }
     Object.assign(a, { title: copy.title, date: copy.date, kind: copy.kind, scale: copy.scale, weight: copy.weight });
     if(copy.cat) a.cat = copy.cat; else delete a.cat;
     if(a.scale === "pct" && copy.key) a.key = copy.key; else if(a.scale !== "grade" && a.scale !== "points") delete a.key;
@@ -11385,6 +11469,7 @@ function pickGradeSeat(sid){
   gradeSel = sid; renderGradeBar(); renderStage(false); haptic(6);
   const a = gradeAssess(), c = curClass();               // Klassenarbeit mit Aufgaben: gleich die Punkte
   if(a && c && hasTasks(a)) openPointsSheet(c, a, sid, seatNextWithoutMark(a));
+  else if(a && c && hasCrit(a)) openCritSheet(c, a, sid, seatNextWithoutMark(a));
 }
 function renderGradeBar(){
   const a = gradeAssess(), c = curClass(); if(!a || !c) return;
@@ -11396,8 +11481,13 @@ function renderGradeBar(){
   const st = gradeSel ? studentById(c, gradeSel) : null;
   $("#gb-who").textContent = st ? st.name + (a.marks[st.id] ? " · " + markLabel(a, a.marks[st.id]) : "") : t("gTapSeat");
   const pad = $("#gb-pad"); pad.textContent = "";
-  pad.className = "keypad k-" + (hasTasks(a) ? "tasks" : padKind(a.scale));
-  if(hasTasks(a)){
+  pad.className = "keypad k-" + (hasTasks(a) || hasCrit(a) ? "tasks" : padKind(a.scale));
+  if(hasCrit(a)){
+    const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "gb-crit";
+    pb.textContent = st ? t("crRate").replace("{n}", st.name) : t("gTapSeat");
+    pb.onclick = () => { if(gradeSel) openCritSheet(c, a, gradeSel, seatNextWithoutMark(a)); else toast(t("gTapSeat")); };
+    pad.appendChild(pb);
+  } else if(hasTasks(a)){
     const pb = document.createElement("button"); pb.className = "kpts"; pb.id = "gb-pts";
     pb.textContent = st ? t("ptEnter").replace("{n}", st.name) : t("gTapSeat");
     pb.onclick = () => { if(gradeSel) openPointsSheet(c, a, gradeSel, seatNextWithoutMark(a)); else toast(t("gTapSeat")); };
@@ -11409,6 +11499,7 @@ function renderGradeBar(){
 function setGradeOnPlan(tok){
   const a = gradeAssess(), p = curPlan(); if(!a || !p || !gradeSel) { toast(t("gTapSeat")); return; }
   if(a.pts) delete a.pts[gradeSel];
+  if(a.cr) delete a.cr[gradeSel];
   if(tok) a.marks[gradeSel] = tok; else delete a.marks[gradeSel];
   save(); haptic(8);
   if(tok){                                     // weiter zum nächsten freien Platz von vorne nach hinten
@@ -13057,6 +13148,335 @@ function taskStats(c, a){
     return { x, n: v.length, avg, pct: avg === null ? null : avg / x.max * 100 };
   });
 }
+/* ============ Kriterienraster und Erwartungshorizont ============
+   a.crit = { lv: [Stufen, schwächste zuerst, 3–5], items: [{ id, n: Kriterium, e: Erwartung, w: Gewicht 1–3 }] }
+   a.cr[Schüler] = { v: { Kriterium-ID: Stufe 0…lv-1 }, c: Kommentar }
+   Erfüllungsgrad = Σ Gewicht × Stufe/(Stufen−1) ÷ Σ Gewicht; daraus die Note über den Schlüssel (a.key) –
+   wie bei Klassenarbeiten mit Aufgaben. Erst wenn jedes Kriterium bewertet ist, gibt es eine Note. */
+const MAX_CRIT = 20, MAX_CRIT_TPL = 30;
+const hasCrit = a => !!a && (a.scale === "grade" || a.scale === "points") && !!a.crit && Array.isArray(a.crit.items) && a.crit.items.length > 0;
+const CRIT_LV = () => t("crLevels").split("|");
+/* Erfüllungsgrad so, wie er in die Note eingeht (auf 0,1 gerundet) – 49,96 % erscheint nicht als „50 %“ mit Note unter der Grenze */
+const fmtPct = p => { const r = Math.round(p * 10) / 10; return fmtNum(r, r % 1 ? 1 : 0); };
+function critResult(a, sid){
+  const r = a.cr && a.cr[sid]; if(!r || !r.v) return { done: 0, n: a.crit.items.length, pct: null };
+  const L = a.crit.lv.length - 1;
+  let s = 0, w = 0, done = 0;
+  a.crit.items.forEach(x => { const v = r.v[x.id]; if(Number.isInteger(v) && v >= 0 && v <= L){ s += x.w * v / L; w += x.w; done++; } });
+  const all = done === a.crit.items.length;
+  return { done, n: a.crit.items.length, pct: all && w ? s / w * 100 : null, part: w ? s / w * 100 : null };
+}
+/* Note aus dem Erfüllungsgrad (Prozent); mit Tendenz wird jede Stufe in Drittel geteilt */
+function critTok(a, pct){
+  const th = keyOf(a).th, p = Math.round(pct * 10) / 10;
+  if(a.scale === "points"){ for(let i = 0; i < th.length; i++) if(p >= th[i]) return String(15 - i); return "0"; }
+  const g = th.findIndex(n => p >= n);
+  if(g < 0) return "6";
+  if(!keyOf(a).tend) return String(g + 1);
+  const lo = th[g], hi = g === 0 ? 100 : th[g - 1];
+  if(hi - lo <= 0) return String(g + 1);
+  const f = (p - lo) / (hi - lo);
+  return String(g + 1) + (f >= 2 / 3 ? "+" : f < 1 / 3 ? "-" : "");
+}
+/* Noten aller vollständig Bewerteten neu berechnen; unvollständige haben (noch) keine Note */
+function applyCritMarks(a){
+  if(!hasCrit(a)) return;
+  Object.keys(a.cr || {}).forEach(sid => {
+    const R = critResult(a, sid);
+    if(R.pct !== null) a.marks[sid] = critTok(a, R.pct);
+    else if(a.marks[sid] !== "x") delete a.marks[sid];
+  });
+}
+function sanCrit(out, a, ids){
+  if(out.scale !== "grade" && out.scale !== "points" || out.tasks || out.auto || !a.crit || typeof a.crit !== "object" || !Array.isArray(a.crit.items)) return;
+  const lv = Array.isArray(a.crit.lv) ? a.crit.lv.filter(x => typeof x === "string").map(x => x.trim().slice(0, 24)).filter(Boolean).slice(0, 5) : [];
+  const seen = new Set();
+  const items = a.crit.items.filter(x => x && typeof x.id === "string" && /^[A-Za-z0-9_-]{1,16}$/.test(x.id) && !(x.id in Object.prototype) && !seen.has(x.id) && seen.add(x.id) && typeof x.n === "string" && x.n.trim())
+    .map(x => ({ id: x.id, n: x.n.trim().slice(0, 60), e: typeof x.e === "string" ? x.e.slice(0, 300) : "", w: [1, 2, 3].indexOf(x.w) >= 0 ? x.w : 1 })).slice(0, MAX_CRIT);
+  if(lv.length < 3 || !items.length) return;
+  out.crit = { lv, items };
+  const n = KEY_PRESETS[out.scale][0][1].length, k = a.key && typeof a.key === "object" ? a.key : {};
+  const th = Array.isArray(k.th) && k.th.length === n && k.th.every((v, i, l) => typeof v === "number" && v >= 0 && v <= 100 && (!i || v <= l[i - 1])) ? k.th.map(v => Math.round(v * 10) / 10) : KEY_PRESETS[out.scale][0][1].slice();
+  out.key = { th, tend: out.scale === "grade" && k.tend === true };
+  const cr = {};
+  if(a.cr && typeof a.cr === "object") Object.keys(a.cr).forEach(sid => {
+    const r = a.cr[sid]; if(!ids.has(sid) || !own(a.cr, sid) || !r || typeof r !== "object") return;
+    const v = {};
+    /* Stufenzahl, unter der bewertet wurde: passt sie nicht mehr zum Raster (anderes Gerät), gelten die Stufen nicht */
+    const sameLv = r.n === undefined || r.n === lv.length;
+    if(sameLv && r.v && typeof r.v === "object") items.forEach(x => { if(!own(r.v, x.id)) return; const z = r.v[x.id]; if(Number.isInteger(z) && z >= 0 && z < lv.length) v[x.id] = z; });
+    const c = typeof r.c === "string" ? r.c.slice(0, 400) : "";
+    if(Object.keys(v).length || c){ cr[sid] = c ? { v, c } : { v }; cr[sid].n = lv.length; }
+  });
+  out.cr = cr;
+  applyCritMarks(out);
+}
+/* Vorlagen: zwei mitgelieferte und eigene (DB.critTpl, werden abgeglichen) */
+function critBuiltins(){
+  const mk = (n, e, w) => ({ n, e, w: w || 1 });
+  return [
+    { id: "b-pres", name: t("crTplPres"), lv: CRIT_LV(), items: t("crTplPresItems").split("|").map(s => { const [n, e] = s.split("~"); return mk(n, e); }) },
+    { id: "b-group", name: t("crTplGroup"), lv: CRIT_LV(), items: t("crTplGroupItems").split("|").map(s => { const [n, e] = s.split("~"); return mk(n, e); }) }
+  ];
+}
+function sanCritTpl(arr){
+  if(!Array.isArray(arr)) return [];
+  const ids = new Set();
+  return arr.filter(x => x && typeof x.id === "string" && /^[a-z0-9]{1,16}$/.test(x.id) && !ids.has(x.id) && ids.add(x.id) && typeof x.name === "string" && x.name.trim() && Array.isArray(x.items) && Array.isArray(x.lv))
+    .map(x => ({ id: x.id, name: x.name.trim().slice(0, 40),
+      lv: x.lv.filter(s => typeof s === "string" && s.trim()).map(s => s.trim().slice(0, 24)).slice(0, 5),
+      items: x.items.filter(i => i && typeof i.n === "string" && i.n.trim()).map(i => ({ n: i.n.trim().slice(0, 60), e: typeof i.e === "string" ? i.e.slice(0, 300) : "", w: [1, 2, 3].indexOf(i.w) >= 0 ? i.w : 1 })).slice(0, MAX_CRIT) }))
+    .filter(x => x.lv.length >= 3 && x.items.length).slice(0, MAX_CRIT_TPL);
+}
+function openCritSetup(c, a){
+  const cid = () => uid().replace(/[^A-Za-z0-9]/g, "").slice(-12);
+  const work = hasCrit(a) ? { lv: a.crit.lv.slice(), items: clone(a.crit.items), key: clone(keyOf(a)) }
+    : { lv: CRIT_LV(), items: [], key: clone(keyOf(a)) };
+  const sheet = sheetBase(t("crTitle")); sheet.dataset.sens = "1";
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t("crHint"); sheet.appendChild(h);
+  /* Vorlage wählen (nur solange noch nichts bewertet ist) */
+  const rated = Object.keys(a.cr || {}).some(s => a.cr[s] && a.cr[s].v && Object.keys(a.cr[s].v).length);   // nur Kommentare sperren nichts
+  if(!rated){
+    sheetLabel(sheet, t("crTpl"));
+    const tp = document.createElement("div"); tp.className = "segmented wrap"; tp.id = "cr-tpl";
+    critBuiltins().concat(DB.critTpl || []).forEach(x => { const b = document.createElement("button"); b.textContent = x.name; b.dataset.id = x.id;
+      b.onclick = () => { work.lv = x.lv.slice(); work.items = x.items.map(i => ({ id: cid(), n: i.n, e: i.e || "", w: i.w || 1 })); paint(); }; tp.appendChild(b); });
+    sheet.appendChild(tp);
+  }
+  sheetLabel(sheet, t("crLevelsLabel"));
+  const lvBox = document.createElement("div"); lvBox.id = "cr-lv"; sheet.appendChild(lvBox);
+  sheetLabel(sheet, t("crItems"));
+  const list = document.createElement("div"); list.id = "cr-list"; sheet.appendChild(list);
+  const paint = () => {
+    lvBox.textContent = "";
+    const cnt = document.createElement("div"); cnt.className = "segmented"; cnt.id = "cr-lvn";
+    [3, 4, 5].forEach(n => { const b = document.createElement("button"); b.textContent = String(n); b.classList.toggle("on", work.lv.length === n); b.disabled = rated && work.lv.length !== n;
+      b.onclick = () => { const def = t("crLevels" + n).split("|"); work.lv = def; paint(); }; cnt.appendChild(b); });
+    lvBox.appendChild(cnt);
+    const lr = document.createElement("div"); lr.className = "crlvrow";
+    work.lv.forEach((s, i) => { const f = document.createElement("input"); f.className = "field"; f.maxLength = 24; f.value = s; f.setAttribute("aria-label", t("crLevel") + " " + (i + 1));
+      f.oninput = () => { work.lv[i] = f.value; }; lr.appendChild(f); });
+    lvBox.appendChild(lr);
+    const lh = document.createElement("div"); lh.className = "hint"; lh.textContent = t("crLevelsHint"); lvBox.appendChild(lh);
+    list.textContent = "";
+    work.items.forEach((x, i) => {
+      const box = document.createElement("div"); box.className = "critem";
+      const top = document.createElement("div"); top.className = "usrow";
+      const n = document.createElement("input"); n.className = "field"; n.maxLength = 60; n.value = x.n; n.placeholder = t("crItemPh"); n.id = "cr-n-" + i;
+      n.setAttribute("aria-label", t("crItem") + " " + (i + 1)); n.oninput = () => { x.n = n.value; };
+      const del = document.createElement("button"); del.className = "minibtn"; del.textContent = "✕"; del.setAttribute("aria-label", t("delete") + " " + (x.n || i + 1));
+      del.onclick = () => { work.items.splice(i, 1); paint(); };
+      top.appendChild(n); top.appendChild(del); box.appendChild(top);
+      const e = document.createElement("textarea"); e.className = "field crexp"; e.maxLength = 300; e.rows = 2; e.value = x.e; e.placeholder = t("crExpPh"); e.id = "cr-e-" + i;
+      e.setAttribute("aria-label", t("crExp") + " " + (i + 1)); e.oninput = () => { x.e = e.value; }; box.appendChild(e);
+      const ws = document.createElement("div"); ws.className = "segmented crw"; ws.setAttribute("role", "group"); ws.setAttribute("aria-label", t("crWeight") + " " + (i + 1));
+      const wl = document.createElement("span"); wl.className = "crwl"; wl.textContent = t("crWeight"); ws.appendChild(wl);
+      [1, 2, 3].forEach(v => { const b = document.createElement("button"); b.textContent = "×" + v; b.classList.toggle("on", x.w === v); b.setAttribute("aria-pressed", String(x.w === v));
+        b.onclick = () => { x.w = v; Array.from(ws.querySelectorAll("button")).forEach(y => { y.classList.toggle("on", y === b); y.setAttribute("aria-pressed", String(y === b)); }); }; ws.appendChild(b); });
+      box.appendChild(ws); list.appendChild(box);
+    });
+  };
+  const add = document.createElement("button"); add.className = "cbtn outline"; add.id = "cr-add"; add.style.width = "100%"; add.style.marginTop = "6px";
+  add.textContent = "+ " + t("crAdd");
+  add.onclick = () => { if(work.items.length >= MAX_CRIT){ toast(t("crLimit")); return; } work.items.push({ id: cid(), n: "", e: "", w: 1 }); paint(); const f = document.getElementById("cr-n-" + (work.items.length - 1)); if(f) f.focus(); };
+  sheet.appendChild(add);
+  /* Schlüssel: Erfüllungsgrad → Note */
+  sheetLabel(sheet, t("crKey"));
+  const pre = document.createElement("div"); pre.className = "segmented"; pre.id = "cr-preset";
+  KEY_PRESETS[a.scale].forEach(([id, th]) => { const b = document.createElement("button"); b.textContent = t("tkPre_" + a.scale + "_" + id); b.dataset.th = th.join(",");
+    b.classList.toggle("on", work.key.th.join(",") === th.join(","));
+    b.onclick = () => { work.key.th = th.slice(); Array.from(pre.children).forEach(y => y.classList.toggle("on", y === b)); }; pre.appendChild(b); });
+  sheet.appendChild(pre);
+  if(a.scale === "grade"){ const tr = switchRow(t("tkTend"), t("crTendSub"), () => work.key.tend, () => { work.key.tend = !work.key.tend; }); tr.id = "cr-tend"; sheet.appendChild(tr); }
+  const kh = document.createElement("div"); kh.className = "hint"; kh.textContent = t("crKeyHint"); sheet.appendChild(kh);
+  const read = () => {
+    work.lv = work.lv.map(s => String(s || "").trim().slice(0, 24));
+    work.items.forEach(x => { x.n = String(x.n || "").trim().slice(0, 60); x.e = String(x.e || "").trim().slice(0, 300); });
+    if(work.lv.some(s => !s)){ toast(t("crNeedLv")); return false; }
+    if(!work.items.length || work.items.some(x => !x.n)){ toast(t("crNeedItem")); return false; }
+    return true;
+  };
+  const tplb = document.createElement("button"); tplb.className = "ghost"; tplb.id = "cr-savetpl"; tplb.style.width = "100%"; tplb.style.marginTop = "8px";
+  tplb.textContent = t("crSaveTpl");
+  tplb.onclick = () => {
+    if(!read()) return;
+    const name = (a.title || t("crTitle")).trim().slice(0, 40), body = { lv: work.lv.slice(), items: work.items.map(x => ({ n: x.n, e: x.e, w: x.w })) };
+    const same = (DB.critTpl || []).find(x => x.name.toLowerCase() === name.toLowerCase());
+    if(same){ Object.assign(same, body); save(); toast(t("crTplUpdated").replace("{n}", name)); }   // gleicher Name: Vorlage aktualisieren statt doppeln
+    else {
+      if((DB.critTpl || []).length >= MAX_CRIT_TPL){ toast(t("crTplLimit")); return; }
+      DB.critTpl = (DB.critTpl || []).concat([Object.assign({ id: uid().replace(/[^a-z0-9]/g, "").slice(-16), name }, body)]);
+      save(); toast(t("crTplSaved").replace("{n}", name));
+    }
+    mg.hidden = false;
+  };
+  sheet.appendChild(tplb);
+  const mg = document.createElement("button"); mg.className = "ghost"; mg.id = "cr-tpl-manage"; mg.style.width = "100%"; mg.style.marginTop = "8px";
+  mg.textContent = t("crTplManage"); mg.hidden = !(DB.critTpl || []).length;
+  mg.onclick = () => openCritTplManage(() => openCritSetup(c, a));
+  sheet.appendChild(mg);
+  if(hasCrit(a)){
+    const off = document.createElement("button"); off.className = "ghost"; off.id = "cr-off"; off.style.width = "100%"; off.style.marginTop = "8px"; off.style.color = "var(--warn)";
+    off.textContent = t("crOff");
+    off.onclick = () => { closeModal(); askConfirm(t("crOffQ"), t("crOffT"), t("crOffBtn"), () => {
+      delete a.crit; delete a.cr; delete a.key; save(); renderAssessAny(); }, () => openCritSetup(c, a)); $("#sheet").dataset.sens = "1"; };
+    sheet.appendChild(off);
+  }
+  sheetButtons(sheet, t("save"), () => {
+    if(!read()) return;
+    const keep = new Set(work.items.map(x => x.id)), nL = work.lv.length;
+    a.crit = { lv: work.lv.slice(), items: work.items.map(x => ({ id: x.id, n: x.n, e: x.e, w: x.w })) };
+    a.key = { th: work.key.th.slice(), tend: a.scale === "grade" && !!work.key.tend };
+    a.cr = a.cr || {};
+    Object.keys(a.cr).forEach(sid => { const r = a.cr[sid]; Object.keys(r.v || {}).forEach(id => { if(!keep.has(id) || r.v[id] >= nL) delete r.v[id]; }); r.n = nL; });
+    applyCritMarks(a);
+    save(); closeModal(); renderAssessAny();
+  });
+  paint();
+}
+/* Eigene Vorlagen verwalten (löschen); back öffnet das Raster wieder */
+function openCritTplManage(back){
+  const sheet = sheetBase(t("crTplManage"));
+  const list = document.createElement("div"); list.id = "cr-tpl-list"; sheet.appendChild(list);
+  const paint = () => {
+    list.textContent = "";
+    const tpl = DB.critTpl || [];
+    if(!tpl.length){ const h = document.createElement("div"); h.className = "hint"; h.textContent = t("crTplNone"); list.appendChild(h); return; }
+    tpl.forEach(x => {
+      const r = document.createElement("div"); r.className = "usrow";
+      const l = document.createElement("span"); l.style.flex = "1"; l.style.minWidth = "0"; l.style.overflow = "hidden"; l.style.textOverflow = "ellipsis"; l.style.whiteSpace = "nowrap"; l.textContent = x.name + " · " + t("crInfo").replace("{n}", String(x.items.length)).replace("{l}", String(x.lv.length)); r.appendChild(l);
+      const d = document.createElement("button"); d.className = "minibtn"; d.textContent = "✕"; d.setAttribute("aria-label", t("delete") + " " + x.name);
+      d.onclick = () => { DB.critTpl = (DB.critTpl || []).filter(y => y !== x); save(); toast(t("crTplDeleted").replace("{n}", x.name)); paint(); };
+      r.appendChild(d); list.appendChild(r);
+    });
+  };
+  paint();
+  const ok = document.createElement("button"); ok.className = "primary"; ok.style.width = "100%"; ok.style.marginTop = "12px"; ok.textContent = t("close");
+  ok.onclick = () => { closeModal(); if(back) back(); }; sheet.appendChild(ok);
+}
+/* Bewerten nach Raster: je Kriterium eine Stufe antippen, Kommentar, weiter zum Nächsten */
+function openCritSheet(c, a, sid, nextOf){
+  const st = studentById(c, sid); if(!st || !hasCrit(a)) return;
+  const sheet = sheetBase(st.name + " – " + a.title); sheet.dataset.sens = "1";
+  const cur = { v: Object.assign({}, ((a.cr || {})[sid] || {}).v || {}), c: ((a.cr || {})[sid] || {}).c || "" };
+  const res = document.createElement("div"); res.className = "ptsres"; res.id = "cr-res";
+  const tmp = () => Object.assign({}, a, { cr: { [sid]: cur } });
+  const paint = () => {
+    const R = critResult(tmp(), sid);
+    res.textContent = R.pct !== null ? t("crRes").replace("{p}", fmtPct(R.pct)).replace("{g}", tokLabel(critTok(a, R.pct)))
+      : t("crPartial").replace("{d}", String(R.done)).replace("{n}", String(R.n));
+  };
+  a.crit.items.forEach((x, i) => {
+    const box = document.createElement("div"); box.className = "critrate";
+    const h = document.createElement("b"); h.textContent = x.n + (x.w > 1 ? " (×" + x.w + ")" : ""); box.appendChild(h);
+    if(x.e){ const e = document.createElement("div"); e.className = "hint"; e.textContent = x.e; box.appendChild(e); }
+    const seg = document.createElement("div"); seg.className = "segmented crlv" + (a.crit.lv.length > 4 ? " wrap" : ""); seg.id = "cr-r-" + i; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", x.n);
+    a.crit.lv.forEach((l, k) => { const b = document.createElement("button"); b.textContent = l; b.dataset.k = String(k);
+      const on = () => cur.v[x.id] === k; b.classList.toggle("on", on()); b.setAttribute("aria-pressed", String(on()));
+      b.onclick = () => { if(cur.v[x.id] === k) delete cur.v[x.id]; else cur.v[x.id] = k;
+        Array.from(seg.children).forEach(y => { const o = cur.v[x.id] === +y.dataset.k; y.classList.toggle("on", o); y.setAttribute("aria-pressed", String(o)); }); paint(); };
+      seg.appendChild(b); });
+    box.appendChild(seg); sheet.appendChild(box);
+  });
+  sheetLabel(sheet, t("crComment"));
+  const cm = document.createElement("textarea"); cm.className = "field"; cm.id = "cr-comment"; cm.rows = 3; cm.maxLength = 400; cm.value = cur.c; cm.placeholder = t("crCommentPh"); cm.setAttribute("aria-label", t("crComment"));
+  cm.oninput = () => { cur.c = cm.value; }; sheet.appendChild(cm);
+  sheet.appendChild(res); paint();
+  const commit = goNext => {
+    a.cr = a.cr || {};
+    const c0 = cur.c.trim().slice(0, 400);
+    if(Object.keys(cur.v).length || c0){ a.cr[sid] = c0 ? { v: cur.v, c: c0 } : { v: cur.v }; a.cr[sid].n = a.crit.lv.length; }
+    else delete a.cr[sid];
+    const R = critResult(a, sid);
+    if(R.pct !== null) a.marks[sid] = critTok(a, R.pct); else if(a.marks[sid] !== "x" || Object.keys(cur.v).length) delete a.marks[sid];
+    save(); haptic(8);
+    const nx = goNext && nextOf ? nextOf(sid) : null;
+    if(nx){ openCritSheet(c, a, nx, nextOf); renderAssessAny(); } else { closeModal(); renderAssessAny(); }
+  };
+  const row = document.createElement("div"); row.className = "row";
+  const miss = document.createElement("button"); miss.className = "ghost"; miss.id = "cr-miss"; miss.textContent = t("gMissing");
+  miss.onclick = () => { if(a.cr) delete a.cr[sid]; a.marks[sid] = "x"; save(); const nx = nextOf ? nextOf(sid) : null; if(nx) openCritSheet(c, a, nx, nextOf); else closeModal(); renderAssessAny(); };
+  const ok = document.createElement("button"); ok.className = "ghost"; ok.id = "cr-save"; ok.textContent = t("save"); ok.onclick = () => commit(false);
+  const nxt = document.createElement("button"); nxt.className = "primary"; nxt.id = "cr-next"; nxt.textContent = t("ptNext"); nxt.onclick = () => commit(true);
+  row.appendChild(miss); row.appendChild(ok); row.appendChild(nxt); sheet.appendChild(row);
+  const pdfb = document.createElement("button"); pdfb.className = "ghost"; pdfb.id = "cr-pdf1"; pdfb.style.width = "100%"; pdfb.style.marginTop = "8px";
+  pdfb.textContent = t("crPdfOne"); pdfb.onclick = () => { commit(false); exportCritPdf(c, a, [sid]); };
+  sheet.appendChild(pdfb);
+  const cancel = document.createElement("button"); cancel.className = "ghost"; cancel.style.width = "100%"; cancel.style.marginTop = "8px";
+  cancel.textContent = t("cancel"); cancel.onclick = () => { closeModal(); renderAssessAny(); }; sheet.appendChild(cancel);
+}
+/* Klassenüberblick: mittlerer Erfüllungsgrad je Kriterium */
+function critChart(c, a){
+  const L = a.crit.lv.length - 1;
+  const wrap = document.createElement("div"); wrap.className = "gfig"; wrap.id = "cr-stats";
+  const cap = document.createElement("div"); cap.className = "gcap"; cap.textContent = t("crStats"); wrap.appendChild(cap);
+  a.crit.items.forEach(x => {
+    const v = c.students.map(st => a.cr && a.cr[st.id] && a.cr[st.id].v ? a.cr[st.id].v[x.id] : undefined).filter(z => Number.isInteger(z));
+    const pct = v.length ? v.reduce((s, z) => s + z / L, 0) / v.length * 100 : null;
+    const r = document.createElement("div"); r.className = "tkbar";
+    const l = document.createElement("span"); l.className = "tkbl"; l.textContent = x.n;
+    const tr = document.createElement("span"); tr.className = "tkbt";
+    const fill = document.createElement("i"); fill.style.width = (pct === null ? 0 : pct) + "%"; fill.classList.toggle("low", pct !== null && pct < 50); tr.appendChild(fill);
+    const vv = document.createElement("span"); vv.className = "tkbv"; vv.textContent = pct === null ? "–" : fmtNum(pct, 0) + " % · " + v.length;
+    r.appendChild(l); r.appendChild(tr); r.appendChild(vv); wrap.appendChild(r);
+  });
+  return wrap;
+}
+/* Rückmeldebogen: je Schüler eine A4-Seite mit Kriterien, Erwartungen, erreichter Stufe, Ergebnis und Kommentar */
+function critPdfPages(c, a, sids){
+  const W = A4P_W, H = A4P_H, M = 44, grey = "0.353 0.420 0.459", pages = [];
+  const s = subjectById(a.subjectId), lv = a.crit.lv, n = lv.length;
+  /* Zeilenumbruch; überlange Wörter werden hart getrennt */
+  const wrap = (txt, size, maxW) => { const out = []; let line = "";
+    String(txt).split(/\s+/).filter(Boolean).forEach(w => {
+      while(pdfTextW(w, size) > maxW && w.length > 1){ let k = w.length - 1; while(k > 1 && pdfTextW(w.slice(0, k), size) > maxW) k--;
+        if(line){ out.push(line); line = ""; } out.push(w.slice(0, k)); w = w.slice(k); }
+      const nx = line ? line + " " + w : w; if(pdfTextW(nx, size) > maxW && line){ out.push(line); line = w; } else line = nx; });
+    if(line) out.push(line); return out; };
+  const fit = (txt, size, w) => { txt = String(txt); if(pdfTextW(txt, size) <= w) return txt; while(txt.length > 1 && pdfTextW(txt + "…", size) > w) txt = txt.slice(0, -1); return txt + "…"; };
+  sids.forEach(sid => {
+    const st = studentById(c, sid); if(!st) return;
+    let cur = [], y = H - M - 10;
+    const newPage = () => { pages.push({ content: cur.join("\n"), w: W, h: H }); cur = []; y = H - M - 10;
+      cur.push(pdfText(M, y, 10, fit(st.name + " · " + a.title + " – " + t("crCont"), 10, W - 2 * M), grey)); y -= 22; };
+    cur.push(pdfText(M, y, 17, fit(st.name, 17, W - 2 * M))); y -= 20;
+    cur.push(pdfText(M, y, 10, fit(c.name + (s ? " · " + s.name : "") + " · " + a.title + (a.date ? " · " + fmtDateY(a.date) : ""), 10, W - 2 * M), grey)); y -= 26;
+    const textW = 230, colW = (W - 2 * M - textW) / n, x0 = M + textW;
+    const head = () => { lv.forEach((l, k) => { const ls = wrap(l, 8, colW - 4); if(ls.length > 2) ls[1] = fit(ls.slice(1).join(" "), 8, colW - 4);
+      ls.slice(0, 2).forEach((ln, j) => cur.push(pdfText(x0 + k * colW + (colW - pdfTextW(ln, 8)) / 2, y - j * 9, 8, ln, grey))); }); y -= 22; };
+    head();
+    const R = critResult(a, sid), rv = (a.cr && a.cr[sid] && a.cr[sid].v) || {};
+    a.crit.items.forEach((x, i) => {
+      const lines = [x.n + (x.w > 1 ? " (×" + x.w + ")" : "")].concat(x.e ? wrap(x.e, 8.5, textW - 8) : []);
+      const hgt = 12 + (lines.length - 1) * 10 + 8;
+      if(y - hgt < M + 80){ newPage(); head(); }
+      if(i % 2) cur.push("0.95 0.96 0.97 rg " + M + " " + (y - hgt + 10).toFixed(1) + " " + (W - 2 * M) + " " + hgt.toFixed(1) + " re f");
+      cur.push(pdfText(M + 4, y, 10, fit(lines[0], 10, textW - 8)));
+      lines.slice(1).forEach((ln, j) => cur.push(pdfText(M + 4, y - 10 * (j + 1), 8.5, ln, grey)));
+      lv.forEach((l, k) => { const cx = x0 + k * colW + colW / 2, cy = y + 3;
+        cur.push((rv[x.id] === k ? "0.169 0.420 0.733 rg " + pdfEllipse(cx, cy, 5, 5) + " f" : "0.6 0.65 0.7 RG 0.8 w " + pdfEllipse(cx, cy, 4.5, 4.5) + " S")); });
+      y -= hgt;
+    });
+    y -= 8;
+    if(y < M + 70){ newPage(); }
+    const g = a.marks[sid];
+    cur.push(pdfText(M, y, 12, R.pct !== null ? t("crRes").replace("{p}", fmtPct(R.pct)).replace("{g}", tokLabel(critTok(a, R.pct), true))
+      : g === "x" ? t("gMissing") : t("crPartial").replace("{d}", String(R.done)).replace("{n}", String(R.n)))); y -= 22;
+    const com = a.cr && a.cr[sid] && a.cr[sid].c;
+    if(com){ cur.push(pdfText(M, y, 10, t("crComment"), grey)); y -= 14; wrap(com, 10, W - 2 * M).forEach(ln => { if(y < M){ newPage(); } cur.push(pdfText(M, y, 10, ln)); y -= 13; }); }
+    pages.push({ content: cur.join("\n"), w: W, h: H });
+  });
+  return pages;
+}
+function exportCritPdf(c, a, sids){
+  try{
+    const pages = critPdfPages(c, a, sids);
+    if(!pages.length){ toast(t("crNothing")); return; }
+    const one = sids.length === 1 ? studentById(c, sids[0]) : null;
+    if(download(buildPDF(pages), safeName(a.title + " " + (one ? one.name + " " : "") + t("crPdfFile")) + ".pdf", "application/pdf")) toast(t("exportedPdf"));
+    else toast(t("exportFail"));
+  }catch(e){ toast(t("exportFail")); }
+}
 function taskChart(c, a){
   const st = taskStats(c, a);
   const wrap = document.createElement("div"); wrap.className = "gfig"; wrap.id = "tk-stats";
@@ -13340,7 +13760,7 @@ function openTallyList(kArg, back){
    Änderung der anderen (samt allem, was daran hängt) gelöscht wurde, bleibt gelöscht.
    Gerätebezogenes (Sprache, Design, Papierkorb, Sperre, zuletzt geöffnete Klasse) wird nie übernommen. */
 const SYNC_MAX_STAMPS = 200000, SYNC_MAX_DEL = 20000, SYNC_DEL_DAYS = 400, SYNC_FUTURE = 86400;
-const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|zn|tg|tp|us|gc|ac)(\||$)/;
+const SYNC_PREFIX = /^(room|subj|les|cx|tt|set|c|s|r|g|p|at|atx|al|alx|o|h|ls|lsx|a|m|tk|pt|k|kd|kty|kt|j|ex|lt|zd|zn|tg|tp|us|gc|ac|cr|cp|ct)(\||$)/;
 const SYNC_HASH = /^[0-9a-z]{6,14}$/;
 const syncNow = () => Math.floor(Date.now() / 1000);
 const jsonOf = v => JSON.stringify(v === undefined ? null : v);
@@ -13357,6 +13777,7 @@ function syncTop(db, add){
   (db.rooms || []).forEach(x => add("room|" + idk(x.id), x));
   (db.subjects || []).forEach(x => add("subj|" + idk(x.id), x));
   (db.scales || []).forEach(x => add("us|" + idk(x.id), x));
+  (db.critTpl || []).forEach(x => add("ct|" + idk(x.id), x));
   (db.lessons || []).forEach(L => add("les|" + idk(L.id), L, "", ["subj|" + idk(L.subjectId)]));
   (db.cancelled || []).forEach(k => add("cx|" + idk(k), 1));
   if(db.tt) add("tt", db.tt);
@@ -13389,11 +13810,14 @@ function syncClass(c, add){
   (c.assess || []).forEach(a => {
     const ak = "a|" + cid + "|" + idk(a.id);
     /* Aufgaben/Schlüssel und Punkte als eigene Einträge – ältere Stände kennen sie nicht und lassen sie stehen */
-    const meta = Object.assign({}, a); delete meta.marks; delete meta.pts; delete meta.tasks; delete meta.key; delete meta.cat;
+    const meta = Object.assign({}, a); delete meta.marks; delete meta.pts; delete meta.tasks; delete meta.key; delete meta.cat; delete meta.crit; delete meta.cr;
     add(ak, meta, ck, ["subj|" + idk(a.subjectId)].concat(typeof a.scale === "string" && a.scale.slice(0, 2) === "u:" ? ["us|" + idk(a.scale.slice(2))] : []));
     /* Aufgaben/Schlüssel (auch der Prozent-Schlüssel) und die Kategorie als eigene Einträge */
     if((a.tasks && a.tasks.length) || (a.scale === "pct" && a.key)) add("tk|" + cid + "|" + idk(a.id), a.tasks && a.tasks.length ? { tasks: a.tasks, key: a.key || null } : { key: a.key }, ak);
     if(a.cat) add("ac|" + cid + "|" + idk(a.id), a.cat, ak);
+    /* Kriterienraster: Raster samt Schlüssel und je Schüler die Bewertung als eigene Einträge */
+    if(a.crit){ add("cr|" + cid + "|" + idk(a.id), { crit: a.crit, key: a.key || null }, ak);
+      Object.keys(a.cr || {}).forEach(s => add("cp|" + cid + "|" + idk(a.id) + "|" + idk(s), a.cr[s], ak, [sk(s)])); }
     Object.keys(a.marks || {}).forEach(s => add("m|" + cid + "|" + idk(a.id) + "|" + idk(s), a.marks[s], ak, [sk(s)]));
     /* Punkte je Aufgabe: je Schüler ein Eintrag */
     Object.keys(a.pts || {}).forEach(s => add("pt|" + cid + "|" + idk(a.id) + "|" + idk(s), a.pts[s], ak, [sk(s)]));
@@ -13580,6 +14004,7 @@ function mergeDB(L0, R){
   out.rooms = mergeList(L.rooms, R.rooms, x => "room|" + idk(x.id));
   out.subjects = mergeList(L.subjects, R.subjects, x => "subj|" + idk(x.id));
   out.scales = mergeList(L.scales, R.scales, x => "us|" + idk(x.id));
+  out.critTpl = mergeList(L.critTpl, R.critTpl, x => "ct|" + idk(x.id));
   out.lessons = mergeList(L.lessons, R.lessons, x => "les|" + idk(x.id));
   out.cancelled = mergeList(L.cancelled, R.cancelled, k => "cx|" + idk(k));
   if(pick("tt") === "R") out.tt = clone(R.tt);
@@ -13622,6 +14047,25 @@ function mergeDB(L0, R){
       else if(srcT && srcT.key && a.scale === "pct") a.key = clone(srcT.key);
       const wc = pick("ac|" + cid + "|" + idk(a1.id)), srcC = wc === "L" ? a1 : wc === "R" ? a2 : null;
       if(srcC && srcC.cat) a.cat = srcC.cat;
+      /* Kriterienraster: Raster nach eigenem Eintrag, Bewertungen je Schüler einzeln; Noten folgen daraus (beim Laden) */
+      delete a.crit; delete a.cr;
+      const wr = pick("cr|" + cid + "|" + idk(a1.id)), srcR = wr === "L" ? a1 : wr === "R" ? a2 : null;
+      if(srcR && srcR.crit){
+        a.crit = clone(srcR.crit); a.key = clone(srcR.key); a.cr = {};
+        new Set(Object.keys(a1.cr || {}).concat(Object.keys(a2.cr || {}))).forEach(s => {
+          const cpk = "cp|" + cid + "|" + idk(a1.id) + "|" + idk(s), w2 = pick(cpk);
+          if(w2 === "L" && a1.cr && a1.cr[s]) a.cr[s] = clone(a1.cr[s]); else if(w2 === "R" && a2.cr && a2.cr[s]) a.cr[s] = clone(a2.cr[s]);
+          /* Direkt gesetzte Note (auch von einem Gerät ohne Raster), jünger als die Bewertung: sie gilt */
+          const wm = markWin[s], mk = "m|" + cid + "|" + idk(a1.id) + "|" + idk(s);
+          if(a.cr[s] && wm && !(wm === "L" ? eL : eR).has(cpk) && ((wm === "L" ? sL : sR)[mk] || 0) > Math.max(sL[cpk] || 0, sR[cpk] || 0)) delete a.cr[s];
+        });
+      }
+      /* Aufgaben und Raster schließen sich aus: der jüngere Eintrag gilt */
+      if(a.tasks && a.crit){
+        const tkk = "tk|" + cid + "|" + idk(a1.id), crk = "cr|" + cid + "|" + idk(a1.id);
+        if(Math.max(sL[crk] || 0, sR[crk] || 0) > Math.max(sL[tkk] || 0, sR[tkk] || 0)) delete a.tasks;
+        else { delete a.crit; delete a.cr; a.key = clone(srcT.key); }
+      }
       /* Punkte je Schüler einzeln; die Note wird danach aus Punkten und Schlüssel neu berechnet */
       delete a.pts;
       if(a1.pts || a2.pts){
@@ -13721,7 +14165,7 @@ function mergeDB(L0, R){
 /* Was sich gegenüber dem Gerät ändert – gezählt nach Art */
 const SYNC_KINDS = { c: "syncClasses", s: "syncStudents", r: "syncRules", g: "syncGroups", a: "syncAssess", m: "syncMarks", o: "syncObs",
   al: "syncAbs", alx: "syncAbs", at: "syncAbs", atx: "syncAbs", ls: "syncLesson", lsx: "syncLesson", p: "syncPlans", h: "syncHistory",
-  k: "syncChecks", kd: "syncChecks", kt: "syncChecks", kty: "syncChecks", tk: "syncAssess", ac: "syncAssess", gc: "syncAssess", us: "syncAssess", zn: "syncMarks", pt: "syncMarks", j: "syncJournal", ex: "syncAbs", lt: "syncAbs", zd: "syncStudents", room: "syncRooms", subj: "syncTT", les: "syncTT", tt: "syncTT", cx: "syncTT", set: "syncSettings" };
+  k: "syncChecks", kd: "syncChecks", kt: "syncChecks", kty: "syncChecks", tk: "syncAssess", ac: "syncAssess", gc: "syncAssess", us: "syncAssess", zn: "syncMarks", cr: "syncAssess", cp: "syncMarks", ct: "syncAssess", pt: "syncMarks", j: "syncJournal", ex: "syncAbs", lt: "syncAbs", zd: "syncStudents", room: "syncRooms", subj: "syncTT", les: "syncTT", tt: "syncTT", cx: "syncTT", set: "syncSettings" };
 function syncReport(before, after, conflicts){
   const r = { add: 0, upd: 0, rem: 0, conflicts, kinds: {} };
   const bump = (k, f) => { const kd = SYNC_KINDS[k.split("|")[0]] || "syncOther"; r.kinds[kd] = r.kinds[kd] || { add: 0, upd: 0, rem: 0 }; r.kinds[kd][f]++; };

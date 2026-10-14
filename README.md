@@ -195,6 +195,14 @@ Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfun
   der Stufenname, Umbenennen zieht Einträge mit, benutzte Stufen/Skalen (auch im Papierkorb) lassen sich nicht löschen; Abgleich `us|`, eine noch benutzte Skala bleibt nach
   dem Zusammenführen erhalten). Wechsel einer leeren Bewertung auf eine neue Skala vergibt eine neue Kennung.
   `markNum` = Wert in der Skala der Bewertung, `valIn` = Wert im Maßstab des Kurses. Aufgaben/Notenschlüssel nur bei Noten und Punkten.
+- Kriterienraster und Erwartungshorizont (nur Noten/Punkte, nicht bei Aufgaben oder „Mitarbeit heute“): `a.crit = { lv: [3–5 Stufen],
+  items: [{ id, n: Kriterium, e: Erwartung, w: Gewicht 1–3 }] }`, Bewertung je Schüler `a.cr[sid] = { v: { Kriterium: Stufe }, c: Kommentar, n: Stufenzahl }`.
+  Erfüllungsgrad = Σ w·Stufe/(Stufen−1) ÷ Σ w, über den Schlüssel `a.key` (wie bei Aufgaben, mit Tendenz) zur Note – erst wenn alle Kriterien
+  bewertet sind (`critResult`, `critTok`, `applyCritMarks` beim Laden). Anzeige auf 0,1 % wie in der Note (`fmtPct`). Vorlagen: zwei
+  mitgelieferte, eigene in `DB.critTpl` (gleicher Name aktualisiert; verwalten/löschen). Rückmeldebogen je Schüler als PDF (`critPdfPages`,
+  mehrseitig mit Fortsetzungskopf), Klassenüberblick je Kriterium. Eine direkt gesetzte Note (auch „fehlt“) ersetzt die Raster-Bewertung.
+  Abgleich: `cr|` (Raster + Schlüssel), `cp|` (je Schüler), `ct|` (Vorlagen); Bewertungen unter anderer Stufenzahl gelten nicht; eine jüngere
+  Direktnote eines Geräts ohne Raster-Eintrag gewinnt; treffen Aufgaben und Raster zusammen, gilt der jüngere Eintrag.
 - Rechenweg: „Wie berechnet?“ unter einem Namen (Bewertungen) zeigt jede Bewertung mit Wert und Gewicht, die Teildurchschnitte,
   die Gewichtung, die Rundungsregel und die Fehlstunden des Fachs (`gradeCalc` nutzt dieselben Schritte wie `studentAverages`,
   `proposeGrade` und `missedLessons`). Als PDF und auf Wunsch (`settings.talkCalc`) im Gesprächsblatt.

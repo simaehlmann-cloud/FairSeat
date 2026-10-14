@@ -4098,6 +4098,143 @@ test('Kategorien und Skalen im Abgleich: ältere App, Prozent-Schlüssel, gelös
   erwarte(app.E('curAssess().scale') === 'pct' && app.E('curAssess().id') !== 'e9' && !app.E('curClass().assess.some(a => a.id === "e9")'), 'Skalenwechsel behält die alte Kennung');
 });
 
+test('Kriterienraster: Vorlage, Bewerten, Note, Rückmeldebogen, Abgleich', async app => {
+  bewertungsKlasse(app);
+  const [anna, ben] = [sid(app, 'Anna'), sid(app, 'Ben')];
+  app.E('gradeSubject = "ma"; gradeTab = "list"; goGrades("ma")');
+  app.klick('#g-new'); app.$('#a-title').value = 'Referat'; app.klick(app.$$('#a-kind button')[1]); app.sheetOk();
+  erwarte(!!app.$('#a-crit') && !!app.$('#a-tasks'), 'Knöpfe für Raster und Aufgaben fehlen');
+  app.klick('#a-crit');
+  erwarte(app.$$('#cr-tpl button').length === 2 && app.$$('#cr-lv .crlvrow input').length === 4, 'Vorlagen oder Stufen fehlen');
+  app.sheetOk();
+  erwarte(/mindestens ein Kriterium/.test(app.$('#toast').textContent), 'Leeres Raster gespeichert');
+  app.klick('#cr-tpl button[data-id="b-pres"]');
+  erwarte(app.$$('#cr-list .critem').length === 5 && /Gliederung/.test(app.$('#cr-e-1').value), 'Vorlage Präsentation nicht übernommen');
+  app.klick(app.$$('#cr-list .critem')[0].querySelectorAll('.crw button')[1]);   // Inhalt ×2
+  app.klick('#cr-savetpl');
+  erwarte(app.E('DB.critTpl.length') === 1 && app.E('DB.critTpl[0].name') === 'Referat' && app.E('DB.critTpl[0].items[0].w') === 2, 'Eigene Vorlage nicht gespeichert');
+  app.sheetOk();
+  erwarte(app.E('hasCrit(curAssess())') && app.E('curAssess().crit.items.length') === 5 && app.E('curAssess().crit.items[0].w') === 2 && !app.$('#a-tasks') && /5 Kriterien · 4 Stufen/.test(app.$('#a-crit').textContent), 'Raster nicht gespeichert');
+  // Anna bewerten
+  app.klick(app.$$('#assess-list .arow')[0]);
+  erwarte(!!app.$('#cr-r-0') && app.$$('#cr-r-0 button').length === 4, 'Bewertungsblatt fehlt');
+  const stufe = (i, k) => app.klick(app.$$('#cr-r-' + i + ' button')[k]);
+  stufe(0, 3); stufe(1, 2); stufe(2, 1);
+  erwarte(/3 von 5 Kriterien/.test(app.$('#cr-res').textContent), 'Teilergebnis fehlt');
+  stufe(3, 3); stufe(4, 3);
+  erwarte(/83,3 % · Note 2/.test(app.$('#cr-res').textContent), 'Ergebnis falsch: ' + app.$('#cr-res').textContent);
+  app.$('#cr-comment').value = 'Sehr klarer Vortrag.'; app.$('#cr-comment').dispatchEvent(new app.w.Event('input'));
+  app.klick('#cr-next');
+  erwarte(app.E(`curAssess().marks["${anna}"]`) === '2' && app.E(`curAssess().cr["${anna}"].c`) === 'Sehr klarer Vortrag.' && /Ben/.test(app.$('#sheet h3').textContent), 'Bewertung nicht gespeichert oder nicht weiter');
+  stufe(0, 1); app.klick('#cr-save');
+  erwarte(!app.E(`curAssess().marks["${ben}"]`) && /1\/5/.test(app.$$('#assess-list .arow')[1].textContent) && /83,3 %/.test(app.$$('#assess-list .arow')[0].textContent), 'Teilbewertung falsch angezeigt');
+  erwarte(app.$$('#cr-stats .tkbar').length === 5 && /100 %/.test(app.$$('#cr-stats .tkbar')[3].textContent), 'Klassenüberblick je Kriterium fehlt');
+  // Tendenz im Schlüssel
+  app.klick('#a-crit'); app.klick('#cr-tend'); app.sheetOk();
+  erwarte(app.E(`curAssess().marks["${anna}"]`) === '2-', 'Tendenz nicht übernommen: ' + app.E(`curAssess().marks["${anna}"]`));
+  // Rückmeldebögen
+  const box = downloadAbfangen(app); app.klick('#a-crit-pdf');
+  const pdf = await blobText(app, box.blob);
+  erwarte(/Referat/.test(box.name) && /\(Anna\)/.test(pdf) && /Sehr klarer Vortrag/.test(pdf) && /Klare Gliederung/.test(pdf) && (pdf.match(/\/Type \/Page /g) || []).length === 2, 'Rückmeldebögen unvollständig: ' + box.name);
+  // Kriterium entfernen: Note neu
+  app.klick('#a-crit'); app.klick(app.$$('#cr-list .critem')[2].querySelector('.minibtn')); app.sheetOk();
+  erwarte(app.E('curAssess().crit.items.length') === 4 && app.E(`curAssess().marks["${anna}"]`) === '1-', 'Note nach Entfernen eines Kriteriums falsch: ' + app.E(`curAssess().marks["${anna}"]`));
+  // Laden prüft und rechnet
+  const san = app.E(`JSON.stringify(sanitizeDB({ v: 2, classes: [{ id: "c", name: "K", students: [{ id: "s1", name: "A" }, { id: "s2", name: "B" }], assess: [{ id: "a", subjectId: "ma", scale: "grade", kind: "other",
+    crit: { lv: ["a", "b", "c"], items: [{ id: "i1", n: "X", w: 9 }, { id: "i1", n: "Y" }, { id: "i2", n: "" }, { id: "i3", n: "Z", e: 5 }] }, key: { th: [90, 80, 70, 60, 50] },
+    cr: { s1: { v: { i1: 2, i3: 2 }, c: "ok" }, s2: { v: { i1: 7 } }, zz: { v: { i1: 0 } } }, marks: { s1: "6", s2: "1" } }] }] }).classes[0].assess[0])`);
+  const S = JSON.parse(san);
+  erwarte(S.crit.items.length === 2 && S.crit.items[0].w === 1 && S.crit.items[1].e === '' && S.marks.s1 === '1' && S.marks.s2 === '1' && !S.cr.zz && !S.cr.s2 && S.cr.s1.c === 'ok', 'Laden prüft Raster falsch: ' + san);
+  // Abgleich: zwei Geräte bewerten verschiedene Schüler
+  uhr(app, 1000); app.E('flushSave()');
+  const B = neueApp();
+  try{
+    uhr(B, 1100); await laden(B, datei(app), 'replace');
+    const aid = app.E('curAssess().id');
+    uhr(B, 2000); B.E(`(() => { const a = DB.classes[0].assess.find(x => x.id === "${aid}"); a.cr["${ben}"] = { v: Object.fromEntries(a.crit.items.map(x => [x.id, 3])) }; applyCritMarks(a); })(); flushSave()`);
+    uhr(app, 2100); app.E(`(() => { const a = curAssess(); a.cr["${anna}"].c = "geändert"; })(); flushSave()`);
+    uhr(app, 2200); await laden(app, datei(B), 'merge');
+    erwarte(app.E(`curAssess().marks["${ben}"]`) === '1+' && app.E(`curAssess().cr["${anna}"].c`) === 'geändert' && app.E('DB.critTpl.length') === 1, 'Raster-Bewertungen nicht zusammengeführt');
+    uhr(B, 2300); B.E(`(() => { const a = DB.classes[0].assess.find(x => x.id === "${aid}"); a.key = { th: [95, 90, 85, 80, 75], tend: false }; applyCritMarks(a); })(); flushSave()`);
+    uhr(app, 2400); await laden(app, datei(B), 'merge');
+    erwarte(app.E('curAssess().key.th[0]') === 95 && app.E(`curAssess().marks["${anna}"]`) === '2', 'Geänderter Schlüssel nicht abgeglichen: ' + app.E(`curAssess().marks["${anna}"]`));
+  } finally { B.ende(); }
+  // eigene Vorlage beim nächsten Mal wählbar; Aufgaben-Knopf weg, wenn Raster da
+  app.klick('#btn-assess-back'); app.klick('#g-new'); app.sheetOk(); app.klick('#a-crit');
+  erwarte(app.$$('#cr-tpl button').length === 3 && app.$$('#cr-tpl button')[2].textContent === 'Referat', 'Eigene Vorlage nicht wählbar');
+  app.E('closeModal()');
+  app.klick('#a-tasks'); app.E('closeModal()');
+});
+
+test('Kriterienraster: Prüfbericht – Direktnote, ältere App, Stufenzahl, Aufgaben gegen Raster, Vorlagen, PDF', async app => {
+  uhr(app, 1000); grundstand(app);
+  const [anna, ben, cem] = [sid(app, 'Anna'), sid(app, 'Ben'), sid(app, 'Cem')];
+  app.E(`(() => { const c = curClass(); c.assess.push({ id: "r1", subjectId: "ma", title: "Referat", date: "2026-09-20", kind: "other", scale: "grade", weight: 1, marks: {},
+    crit: { lv: ["a", "b", "c", "d"], items: [{ id: "i1", n: "Inhalt", e: "", w: 1 }, { id: "i2", n: "Vortrag", e: "", w: 1 }] }, key: { th: [95, 80, 65, 50, 25], tend: false },
+    cr: { "${anna}": { v: { i1: 3, i2: 3 }, n: 4 }, "${ben}": { v: { i1: 0, i2: 0 }, n: 4 } } }); applyCritMarks(c.assess[1]); })(); flushSave()`);
+  const r1 = x => app.E(`(() => { const a = curClass().assess.find(a => a.id === "r1"); return ${x}; })()`);
+  erwarte(r1(`a.marks["${anna}"]`) === '1' && r1(`a.marks["${ben}"]`) === '6' && r1(`a.cr["${anna}"].n`) === 4, 'Ausgangsstand falsch');
+  // Prozentanzeige wie in der Note gerundet
+  erwarte(app.E('fmtPct(49.96)') === '50' && app.E('fmtPct(83.333)') === '83,3' && app.E('fmtPct(100)') === '100', 'fmtPct falsch: ' + app.E('fmtPct(83.333)'));
+  // Direkt gesetzte Note („fehlt“) ersetzt die Raster-Bewertung – auch nach dem Laden
+  app.E(`openAssess("r1"); assessSel = "${anna}"; setMark("x")`);
+  erwarte(r1(`a.marks["${anna}"]`) === 'x' && r1(`a.cr["${anna}"] === undefined`), 'Direktnote lässt Raster-Bewertung stehen');
+  erwarte(app.E(`sanitizeDB(clone(DB)).classes[0].assess.find(a => a.id === "r1").marks["${anna}"]`) === 'x', 'Raster-Note kommt beim Laden zurück');
+  // Älteres Gerät ohne Raster setzt Ben später direkt eine Note: sie gilt, das Raster bleibt
+  uhr(app, 2000);
+  const alt = app.E(`(() => { const d = backupData(); d.stamps = unpackStamps(d.stamps); d.del = unpackStamps(d.del);
+    Object.keys(d.stamps).forEach(k => { if(/^(cr|cp|ct)\\|/.test(k)) delete d.stamps[k]; });
+    d.classes.forEach(c => c.assess.forEach(a => { delete a.crit; delete a.cr; delete a.key; }));
+    const c = d.classes[0], a = c.assess.find(a => a.id === "r1"); a.marks["${ben}"] = "3";
+    d.stamps["m|" + idk(c.id) + "|" + idk("r1") + "|" + idk("${ben}")] = 2000; d.mod = 2000;
+    d.stamps = packStamps(d.stamps); d.del = packStamps(d.del);
+    return JSON.stringify({ app: "fairseat", v: 2, data: d }); })()`);
+  uhr(app, 2100); await laden(app, alt, 'merge');
+  erwarte(r1(`a.marks["${ben}"]`) === '3' && r1(`a.cr["${ben}"] === undefined`) && r1('a.crit.items.length') === 2, 'Direktnote des älteren Geräts verloren oder Raster gelöscht: ' + r1(`a.marks["${ben}"]`));
+  // Bewertung unter anderer Stufenzahl (anderes Gerät) gilt nicht; Kommentar bleibt
+  const S = JSON.parse(app.E(`JSON.stringify(sanitizeDB({ v: 2, classes: [{ id: "c", name: "K", students: [{ id: "s1", name: "A" }, { id: "constructor", name: "B" }], assess: [
+    { id: "a", subjectId: "ma", scale: "grade", kind: "other", crit: { lv: ["a", "b", "c", "d"], items: [{ id: "i1", n: "X" }, { id: "constructor", n: "Y" }, { id: "hasOwnProperty", n: "Z" }] },
+      cr: { s1: { v: { i1: 2 }, c: "ok", n: 3 }, constructor: { v: { i1: 3 }, n: 4 } }, marks: {} },
+    { id: "b", subjectId: "ma", scale: "grade", kind: "other", auto: true, crit: { lv: ["a", "b", "c"], items: [{ id: "i1", n: "X" }] }, marks: {} }] }] }).classes[0].assess)`));
+  erwarte(S[0].crit.items.length === 1 && JSON.stringify(S[0].cr.s1) === '{"v":{},"c":"ok","n":4}' && !S[0].marks.s1, 'Stufenzahl oder Prototyp-Kennungen falsch geprüft: ' + JSON.stringify(S[0]));
+  erwarte(!S[1].crit, '„Mitarbeit heute“ bekommt ein Raster');
+  // Nur kommentiert: Vorlagen bleiben wählbar; Vorlage gleichen Namens wird aktualisiert, verwalten und löschen
+  app.E(`(() => { const c = curClass(); c.assess.push({ id: "r2", subjectId: "ma", title: "Plakat", date: "2026-09-21", kind: "other", scale: "grade", weight: 1, marks: {},
+    crit: { lv: ["a", "b", "c"], items: [{ id: "i1", n: "Gestaltung", e: "", w: 1 }] }, key: { th: [95, 80, 65, 50, 25], tend: false }, cr: { "${cem}": { v: {}, c: "Notiz", n: 3 } } }); })(); flushSave(); openAssess("r2")`);
+  app.klick('#a-crit');
+  erwarte(!!app.$('#cr-tpl') && app.$('#cr-tpl-manage').hidden, 'Nur Kommentar sperrt Vorlagen oder Verwalten sichtbar ohne Vorlagen');
+  app.klick('#cr-savetpl'); app.klick('#cr-savetpl');
+  erwarte(app.E('DB.critTpl.length') === 1 && /aktualisiert/.test(app.$('#toast').textContent) && !app.$('#cr-tpl-manage').hidden, 'Vorlage gleichen Namens doppelt');
+  app.klick('#cr-tpl-manage');
+  erwarte(app.$$('#cr-tpl-list .usrow').length === 1, 'Vorlagenliste fehlt');
+  app.klick(app.$('#cr-tpl-list .minibtn'));
+  erwarte(app.E('DB.critTpl.length') === 0 && /gelöscht/.test(app.$('#toast').textContent) && /Keine eigenen/.test(app.$('#cr-tpl-list').textContent), 'Vorlage nicht gelöscht');
+  app.klick(app.$('#sheet button.primary'));
+  erwarte(!!app.$('#cr-list') && app.$$('#cr-tpl button').length === 2, 'Zurück zum Raster fehlt');
+  app.E('closeModal()');
+  // Rückmeldebogen über mehrere Seiten: Fortsetzungskopf, lange Wörter umbrochen
+  const pdf = app.E(`(() => { const c = curClass(), a = c.assess.find(a => a.id === "r2");
+    a.crit.items = Array.from({ length: 20 }, (_, i) => ({ id: "k" + i, n: "Kriterium " + i, e: "Erwartung mit etwas mehr Text, damit es umbricht und Platz braucht. " + "Donaudampfschifffahrtsgesellschaftskapitän".repeat(i === 3 ? 4 : 1), w: 1 }));
+    return critPdfPages(c, a, ["${cem}"]).map(p => p.content); })()`);
+  erwarte(pdf.length >= 2 && /Fortsetzung/.test(pdf[1]) && !/Fortsetzung/.test(pdf[0]), 'Fortsetzungskopf fehlt: ' + pdf.length);
+  // Aufgaben und Raster auf zwei Geräten für dieselbe (zuvor leere) Bewertung: der jüngere Eintrag gilt, mit seinem Schlüssel
+  uhr(app, 2500); app.E(`(() => { const c = curClass(); ["r3", "r4"].forEach((id, i) => c.assess.push({ id, subjectId: "ma", title: "T" + i, date: "2026-09-22", kind: "written", scale: "grade", weight: 1, marks: {} })); })(); flushSave()`);
+  const B = neueApp();
+  try{
+    uhr(B, 2600); await laden(B, datei(app), 'replace');
+    const raster = id => `(() => { const a = curClass().assess.find(a => a.id === "${id}"); a.crit = { lv: ["a", "b", "c"], items: [{ id: "i1", n: "X", e: "", w: 1 }] };
+      a.key = { th: [95, 80, 65, 50, 25], tend: false }; a.cr = { "${cem}": { v: { i1: 2 }, n: 3 } }; applyCritMarks(a); })(); flushSave()`;
+    const aufgaben = id => `(() => { const a = DB.classes[0].assess.find(a => a.id === "${id}"); a.tasks = [{ id: "t1", name: "1", max: 10 }]; a.key = { th: [90, 75, 60, 45, 20], tend: false }; a.pts = {}; })(); flushSave()`;
+    uhr(app, 3000); app.E(raster('r3')); uhr(B, 3100); B.E(aufgaben('r3'));     // r3: Aufgaben jünger
+    uhr(B, 3200); B.E(aufgaben('r4')); uhr(app, 3300); app.E(raster('r4'));     // r4: Raster jünger
+    uhr(app, 3400); await laden(app, datei(B), 'merge');
+    const a = id => JSON.parse(app.E(`JSON.stringify(curClass().assess.find(a => a.id === "${id}"))`));
+    const r3 = a('r3'), r4 = a('r4');
+    erwarte(r3.tasks && r3.tasks.length === 1 && !r3.crit && !r3.cr && r3.key.th[0] === 90, 'Jüngere Aufgaben verlieren gegen das Raster: ' + JSON.stringify(r3));
+    erwarte(r4.crit && !r4.tasks && r4.key.th[0] === 95 && r4.marks[cem] === '1', 'Jüngeres Raster verliert gegen Aufgaben: ' + JSON.stringify(r4));
+  } finally { B.ende(); }
+});
+
 /* WebDAV-Server zum Testen: hält Dateien im Speicher, prüft Anmeldung, ETag (If-Match / If-None-Match) und Ordner */
 function davServer(){
   const S = { files: new Map(), log: [], user: 'simon.m', pw: 'iserv-geheim', dir: 'https://kgs-test.de/webdav/Files/', n: 0, vorPut: null, aus: false,
