@@ -184,6 +184,7 @@ select.field{-webkit-appearance:none;appearance:none;
 .ghost{border:1px solid var(--line);background:var(--surface);border-radius:9px;
   padding:11px 14px;font-weight:600;font-size:14px;text-align:center}
 .hint{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:8px}
+.pro-list{margin:12px 0 4px;padding-left:20px;font-size:14.5px;line-height:1.7;color:var(--ink)}
 .rulerow{background:var(--surface);border:1px solid var(--line);border-radius:9px;
   padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;font-size:13.5px}
 .rulerow .rt{flex:1}
@@ -1792,6 +1793,10 @@ const I18N = {
         p:["Die App verteilt die Namen so, dass deine Regeln und Sitzwünsche möglichst erfüllt werden. Wenn sich nicht alles erfüllen lässt, sagt sie dir, wie viele Regeln offen blieben — statt still eine schlechte Lösung zu liefern."] },
       { h:"Aula, Mensa und Konferenz",
         p:["Für Prüfungen in der Aula, Elternabende oder Konferenzen gibt es eigene Raumvorlagen. „Runde Tische“ und „Lange Tafeln“ stellen Tische mit 4 bis 12 Plätzen auf und weichen dabei Bühne und Säulen aus. „Nie zusammen“ heißt dort: nicht am selben Tisch."] },
+      { h:"Kostenlos und Vollversion",
+        p:["Auf iPhone und iPad ist FairSeat kostenlos und enthält alle Funktionen für eine Klasse. Die Vollversion ist ein einmaliger Kauf in der App (kein Abo, keine Werbung) und erlaubt beliebig viele Klassen. Du findest sie unter „Einstellungen → Vollversion“.",
+           "Deine Daten bleiben in jedem Fall erhalten: Klassen, die schon da sind (etwa aus einer Sicherung), kannst du weiter öffnen, bearbeiten und sichern. Gesperrt ist nur das Anlegen weiterer Klassen.",
+           "Der Kauf gilt für deine Apple-ID. Auf einem neuen Gerät tippst du auf „Kauf wiederherstellen“. Bezahlt wird über Apple; die App erfährt nur, ob die Vollversion gekauft ist."] },
       { h:"Datenschutz",
         p:["Alle Namen bleiben auf diesem Gerät, solange du sie nicht selbst teilst (Sicherung, Übertragung, Export). Es gibt keine Anmeldung, kein Nutzerkonto und keine Übertragung an einen Server. Die App braucht kein Internet.",
            "Weil nichts in einer Cloud liegt, sind deine Sitzpläne bei einer Deinstallation verloren. Erstelle deshalb ab und zu eine Sicherung über die Startseite. Für ein zweites oder neues Gerät gibt es dort „Auf anderes Gerät übertragen“.",
@@ -1984,6 +1989,10 @@ const I18N = {
         p:["The app hands out names so that your rules and seating needs are met as far as possible. If something cannot be satisfied, it tells you how many rules were left open instead of quietly delivering a poor result."] },
       { h:"Assembly hall, canteen and meetings",
         p:["There are room templates for exams in the assembly hall, parents' evenings or staff meetings. “Round tables” and “Long tables” set up tables with 4 to 12 seats and keep clear of the stage and pillars. There, “never together” means: not at the same table."] },
+      { h:"Free and full version",
+        p:["On iPhone and iPad, FairSeat is free and includes every feature for one class. The full version is a one-time in-app purchase (no subscription, no ads) and allows any number of classes. You find it under “Settings → Full version”.",
+           "Your data is always kept: classes you already have (from a backup, for example) can still be opened, edited and backed up. Only adding further classes is locked.",
+           "The purchase belongs to your Apple ID. On a new device, tap “Restore purchase”. Payment is handled by Apple; the app only learns whether the full version has been bought."] },
       { h:"Privacy",
         p:["Every name stays on this device unless you share it yourself (backup, transfer, export). There is no account, no login and nothing sent to a server. The app needs no internet connection.",
            "Because nothing lives in a cloud, your plans are gone if you uninstall the app. Save a backup now and then from the start screen. For a second or new device, use “Transfer to another device” there.",
@@ -2395,6 +2404,34 @@ Object.assign(I18N.en, {
   gOverviewHint:"Smileys do not count towards averages. When a subject mixes points and grades, points are converted as in German upper school: 15 = 1+, 14 = 1 … 1 = 5−, 0 = 6. Tap a name to see the trend.",
   gTrend:"Trend", gTrendTop:"{v} at top", gQuick:"Mark participation", gQuickSaved:"{a}: {v} saved",
   gQuickHint:"Saved in today's “Participation” assessment (oral & other)."
+});
+Object.assign(I18N.de, {
+  proTitle:"Vollversion", proIntro:"Die kostenlose Ausgabe enthält alle Funktionen für eine Klasse. Mit der Vollversion legst du beliebig viele Klassen an.",
+  proP1:"Beliebig viele Klassen – alles andere bleibt, wie es ist", proP2:"Einmaliger Kauf, kein Abo, keine Werbung",
+  proP3:"Gilt auf allen Geräten mit deiner Apple-ID",
+  proData:"Deine Daten bleiben in jedem Fall erhalten und lassen sich jederzeit sichern.",
+  proBuy:"Freischalten für {p}", proLoading:"Verbinde mit dem App Store …", proRetry:"App Store nicht erreichbar – erneut versuchen", proRestore:"Kauf wiederherstellen", proBusy:"Einen Moment …",
+  proThanks:"Danke! Die Vollversion ist freigeschaltet.",
+  proPending:"Der Kauf wartet noch auf Zustimmung. Sobald er bestätigt ist, wird die Vollversion freigeschaltet.",
+  proFail:"Der App Store ist gerade nicht erreichbar. Bitte versuche es später noch einmal.",
+  proRestored:"Kauf wiederhergestellt – die Vollversion ist aktiv.", proNotFound:"Für diese Apple-ID wurde kein Kauf gefunden.",
+  proDemoHint:"Die Beispielklasse belegt gerade den freien Platz. Du kannst sie löschen (sie kommt in den Papierkorb) und eine eigene Klasse anlegen.",
+  proDemoDel:"Beispielklasse löschen", proSetActive:"Vollversion aktiv – danke für deine Unterstützung!",
+  proSetFree:"Kostenlose Ausgabe: alle Funktionen für eine Klasse", proSetShow:"Vollversion ansehen …"
+});
+Object.assign(I18N.en, {
+  proTitle:"Full version", proIntro:"The free edition includes every feature for one class. With the full version you can add as many classes as you like.",
+  proP1:"Any number of classes – everything else stays the same", proP2:"One-time purchase, no subscription, no ads",
+  proP3:"Valid on every device with your Apple ID",
+  proData:"Your data is always kept and can be backed up at any time.",
+  proBuy:"Unlock for {p}", proLoading:"Connecting to the App Store …", proRetry:"App Store unavailable – try again", proRestore:"Restore purchase", proBusy:"One moment …",
+  proThanks:"Thank you! The full version is unlocked.",
+  proPending:"The purchase is waiting for approval. The full version unlocks as soon as it is confirmed.",
+  proFail:"The App Store can't be reached right now. Please try again later.",
+  proRestored:"Purchase restored – the full version is active.", proNotFound:"No purchase was found for this Apple ID.",
+  proDemoHint:"The sample class is taking the free slot. You can delete it (it goes to the bin) and add your own class.",
+  proDemoDel:"Delete sample class", proSetActive:"Full version active – thank you for your support!",
+  proSetFree:"Free edition: every feature for one class", proSetShow:"See the full version …"
 });
 Object.assign(I18N.de, {
   gList:"Liste", gOnPlan:"Im Sitzplan", gRate:"Bewerten", gTapSeat:"Tippe auf einen Platz",
@@ -3350,6 +3387,7 @@ function sanitizeDB(raw){
       id: typeof c?.id === "string" && c.id ? c.id : uid(),
       name: typeof c?.name === "string" ? c.name.slice(0,60) : "Klasse",
       archived: c?.archived === true,
+      ...(c?.demo === true ? { demo: true } : {}),      // Beispielklasse (Vollversion-Blatt bietet Löschen an)
       students,
       levelMode: (c?.levelMode === "hetero" || c?.levelMode === "homo") ? c.levelMode : "off",
       subNote: typeof c?.subNote === "string" ? c.subNote.slice(0, 1200) : "",
@@ -3566,6 +3604,7 @@ function trashRestore(entryId){
   const i = DB.trash.findIndex(e => e.id === entryId);
   if(i < 0) return;
   const e = DB.trash[i];
+  if(e.kind === "class" && needPro(() => trashRestore(entryId))) return;
   if(e.kind === "class"){
     const c = sanitizeDB({ v:2, classes:[e.payload] }).classes[0];
     if(c && DB.classes.some(x => x.id === c.id)) c.id = uid();      // z. B. durch einen Abgleich schon wieder da
@@ -4208,6 +4247,7 @@ function loadDemo(){
   students[9].tags = ["quiet"];
   students[15].tags = ["door"];
   const cls = newClassObj(t("demoClass"));
+  cls.demo = true;
   cls.students = students;
   cls.levelMode = "hetero";
   cls.rules = [
@@ -4229,7 +4269,139 @@ function loadDemo(){
 $("#btn-demo").onclick = loadDemo;
 
 
+/* ============ 10b. Vollversion (In-App-Kauf) ============ */
+/* Kostenlos: alle Funktionen für eine Klasse. Die Vollversion (einmaliger Kauf im App Store)
+   hebt nur die Klassengrenze auf. Nichts wird gelöscht oder ausgeblendet: wer schon mehr
+   Klassen hat (Sicherung, Abgleich), behält sie und kann sie weiter bearbeiten; gesperrt ist
+   nur das Anlegen weiterer. Archivierte Klassen zählen mit, sonst ließe sich die Grenze durch
+   Archivieren umgehen; Klassen im Papierkorb zählen nicht.
+   Ohne Kauf-Plugin (Browser, Tests, Android) gilt keine Grenze.
+   Der Kaufstatus liegt bewusst NICHT in DB: Sicherung, Übertragung und Abgleich sollen ihn
+   nicht auf ein Gerät mit fremder Apple-ID tragen. */
+const PRO_ID = "de.fairseat.app.vollversion", PRO_KEY = "fairseat.pro", FREE_CLASSES = 1;
+const Pro = { owned: Store.get(PRO_KEY) === "1", price: "", priceErr: false, busy: false, paint: null };
+function proStore(){
+  const s = window.FairSeatStore;
+  return s && typeof s.buy === "function" && typeof s.status === "function" ? s : null;
+}
+function isPro(){ return !proStore() || Pro.owned; }
+function setProOwned(v){
+  v = v === true;
+  if(Pro.owned === v) return;
+  Pro.owned = v; Store.set(PRO_KEY, v ? "1" : "0");
+  if($("#screen-settings").classList.contains("active")) renderSettings();
+}
+function proRefresh(){
+  const S = proStore();
+  if(!S) return;
+  S.status(PRO_ID, r => {
+    const was = Pro.owned;
+    setProOwned(r.owned === true);
+    if(!was && Pro.owned) toast(t("proThanks"));          // z. B. „Kaufen anfragen“ wurde genehmigt
+  }, () => {});                                          // Fehler: letzten bekannten Stand behalten
+  if(!Pro.price) S.product(PRO_ID, r => {
+    if(r && typeof r.price === "string" && r.price.trim()){ Pro.price = r.price.trim().slice(0, 24); Pro.priceErr = false; }
+    else Pro.priceErr = true;
+    if(Pro.paint) Pro.paint();
+  }, () => { Pro.priceErr = true; if(Pro.paint) Pro.paint(); });
+}
+document.addEventListener("deviceready", () => {
+  const S = proStore();
+  if(!S) return;
+  if(typeof S.watch === "function") S.watch(() => proRefresh());
+  proRefresh();
+}, false);
+document.addEventListener("resume", proRefresh, false);
+/* Würden `adding` neue Klassen die Grenze überschreiten? */
+function classLimitReached(adding){
+  const n = adding === undefined ? 1 : adding;
+  return n > 0 && !isPro() && DB.classes.length + n > FREE_CLASSES;
+}
+/* Wie needUnlock: true = gestoppt, das Vollversion-Blatt ist offen; retry läuft nach dem Kauf */
+function needPro(retry, adding){
+  if(!classLimitReached(adding)) return false;
+  openPro(retry, adding === undefined ? 1 : adding);
+  return true;
+}
+/* Beispielklasse: beim Laden markiert UND noch unter ihrem Namen – umbenannt gilt sie als eigene Klasse */
+function isDemoClass(c){ return !!c && c.demo === true && (c.name === I18N.de.demoClass || c.name === I18N.en.demoClass); }
+function openPro(retry, adding){
+  const S = proStore();
+  const sheet = sheetBase(t("proTitle"));
+  const intro = document.createElement("div"); intro.className = "hint"; intro.style.fontSize = "15px"; intro.id = "pro-intro";
+  intro.textContent = Pro.owned ? t("proSetActive") : t("proIntro");
+  sheet.appendChild(intro);
+  const ul = document.createElement("ul"); ul.className = "pro-list";
+  ["proP1", "proP2", "proP3"].forEach(k => { const li = document.createElement("li"); li.textContent = t(k); ul.appendChild(li); });
+  sheet.appendChild(ul);
+  const data = document.createElement("div"); data.className = "hint"; data.textContent = t("proData");
+  sheet.appendChild(data);
+  /* Beispielklasse belegt den freien Platz: anbieten, sie loszuwerden, statt gleich zu verkaufen */
+  if(retry && adding === 1 && !isPro() && DB.classes.length === 1 && isDemoClass(DB.classes[0])){
+    const dh = document.createElement("div"); dh.className = "hint"; dh.style.marginTop = "12px"; dh.textContent = t("proDemoHint");
+    sheet.appendChild(dh);
+    const dd = document.createElement("button"); dd.className = "ghost"; dd.id = "pro-demo-del"; dd.style.width = "100%"; dd.style.marginTop = "8px";
+    dd.textContent = t("proDemoDel");
+    dd.onclick = () => {
+      const c = DB.classes[0];
+      if(!isDemoClass(c)) return;
+      trashPush("class", c.name, c);
+      DB.classes = DB.classes.filter(x => x !== c);
+      curClassId = null; ensureCurClass(); save(); closeModal(); renderStart();
+      setTimeout(retry, 120);
+    };
+    sheet.appendChild(dd);
+  }
+  const buy = document.createElement("button"); buy.className = "primary"; buy.id = "pro-buy";
+  buy.style.width = "100%"; buy.style.marginTop = "16px";
+  const rest = document.createElement("button"); rest.className = "ghost"; rest.id = "pro-restore";
+  rest.style.width = "100%"; rest.style.marginTop = "8px"; rest.textContent = t("proRestore");
+  /* Ohne geladenes Produkt kein Kauf: der Knopf wartet auf den Preis bzw. bietet einen neuen Versuch an */
+  const paint = () => {
+    rest.disabled = Pro.busy;
+    buy.disabled = Pro.busy || (!Pro.price && !Pro.priceErr);
+    buy.textContent = Pro.busy ? t("proBusy") : Pro.price ? t("proBuy").replace("{p}", Pro.price)
+                    : Pro.priceErr ? t("proRetry") : t("proLoading");
+  };
+  Pro.paint = paint; paint();
+  const open = () => Pro.paint === paint && buy.isConnected;   // Blatt noch offen? (Hintergrund/Esc leert es sofort)
+  const done = msg => {
+    Pro.busy = false;
+    toast(msg);
+    if(!open()) return;                                 // inzwischen geschlossen: nichts anderes zumachen
+    Pro.paint = null; closeModal();
+    if(retry) setTimeout(retry, 120);
+  };
+  buy.onclick = () => {
+    if(!S || Pro.busy) return;
+    if(!Pro.price){ Pro.priceErr = false; paint(); proRefresh(); return; }
+    Pro.busy = true; paint();
+    S.buy(PRO_ID, r => {
+      if(r.result === "purchased"){ setProOwned(true); done(t("proThanks")); return; }
+      Pro.busy = false;
+      if(r.result === "pending"){ toast(t("proPending")); if(open()){ Pro.paint = null; closeModal(); } return; }
+      paint();                                            // abgebrochen: Blatt bleibt offen
+    }, () => { Pro.busy = false; paint(); toast(t("proFail")); });
+  };
+  rest.onclick = () => {
+    if(!S || Pro.busy) return;
+    Pro.busy = true; paint();
+    S.restore(PRO_ID, r => {
+      if(r.owned === true){ setProOwned(true); done(t("proRestored")); return; }
+      Pro.busy = false; paint();
+      if(r.cancelled !== true) toast(r.error ? t("proFail") : t("proNotFound"));   // Anmeldung abgebrochen: still
+    }, () => { Pro.busy = false; paint(); toast(t("proFail")); });
+  };
+  if(!Pro.owned){ sheet.appendChild(buy); sheet.appendChild(rest); }
+  const close = document.createElement("button"); close.className = "ghost"; close.style.width = "100%"; close.style.marginTop = "8px";
+  close.textContent = t("close"); close.onclick = closeModal;
+  sheet.appendChild(close);
+  modalCloseHook = () => { if(Pro.paint === paint){ Pro.paint = null; Pro.busy = false; } };
+  if(S && !Pro.price){ Pro.priceErr = false; paint(); proRefresh(); }
+}
+
 $("#btn-add-class").onclick = () => {
+  if(needPro(() => $("#btn-add-class").onclick())) return;
   askText(t("className"), t("classPh"), "", t("create"), name => {
     const c = newClassObj(name);
     DB.classes.push(c);
@@ -9121,6 +9293,20 @@ function renderSettings(){
   box.textContent = "";
   const S = DB.settings;
 
+  if(proStore()){                                        // nur in der App mit Kauf-Plugin
+    const pl = document.createElement("div"); pl.className = "eyebrow"; pl.textContent = t("proTitle");
+    box.appendChild(pl);
+    const ps = document.createElement("div"); ps.className = "hint"; ps.id = "set-pro-status"; ps.style.margin = "6px 0 10px";
+    ps.textContent = Pro.owned ? t("proSetActive") : t("proSetFree");
+    box.appendChild(ps);
+    if(!Pro.owned){
+      const pb = document.createElement("button"); pb.className = "ghost"; pb.id = "set-pro"; pb.style.width = "100%"; pb.style.marginBottom = "8px";
+      pb.textContent = t("proSetShow"); pb.onclick = () => openPro(null);
+      box.appendChild(pb);
+    }
+    const sp = document.createElement("div"); sp.style.height = "16px"; box.appendChild(sp);
+  }
+
   const l2 = document.createElement("div");
   l2.className = "eyebrow"; l2.textContent = t("setFeatures");
   box.appendChild(l2);
@@ -10058,8 +10244,7 @@ function openFairMixImport(list){
     paint();
     sheet.appendChild(b);
   });
-  sheetButtons(sheet, t("fmImportGo"), () => {
-    if(!chosen.size){ toast(t("fmImportNone")); return; }
+  const go = () => {
     closeModal();
     let classes = 0, names = 0, groups = 0, last = null;
     Array.from(chosen).sort((a, b) => a - b).forEach(i => {
@@ -10071,6 +10256,17 @@ function openFairMixImport(list){
     save(); goNames();
     toast(t("fmImported").replace("{c}", String(classes)).replace("{n}", String(names)) +
           (groups ? " · " + t("fmImportedGroups").replace("{g}", String(groups)) : ""));
+  };
+  sheetButtons(sheet, t("fmImportGo"), () => {
+    if(!chosen.size){ toast(t("fmImportNone")); return; }
+    /* neue Klassen zählen (gleichnamige werden zusammengeführt) – Grenze der kostenlosen Ausgabe */
+    const countFresh = () => {
+      const fresh = new Set();
+      chosen.forEach(i => { const n = list[i].name.toLowerCase(); if(!DB.classes.some(x => x.name.toLowerCase() === n)) fresh.add(n); });
+      return fresh.size;
+    };
+    const attempt = () => { if(needPro(attempt, countFresh())) return; go(); };   // nach Kauf/Löschen neu zählen
+    attempt();
   });
 }
 $("#btn-fm-import").onclick = () => $("#fmpick").click();

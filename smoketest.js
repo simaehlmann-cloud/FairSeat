@@ -4837,6 +4837,195 @@ test('WebDAV: Prüfbericht – Eingaben während des Abgleichs, Einrichten währ
   } finally { B.ende(); }
 });
 
+/* ---- Vollversion (In-App-Kauf): kostenlos eine Klasse ---- */
+/* Nachgebautes Kauf-Plugin (window.FairSeatStore). Antworten kommen sofort. */
+function kaufPlugin(app, o){
+  const S = Object.assign({ owned: false, next: 'purchased', restoreOwned: false, restoreErr: '', fail: false, kaeufe: 0, cb: null }, o || {});
+  Object.assign(S, {
+    status(id, ok, fail){ if(S.statusFail) return fail({ error: 'offline' }); ok({ owned: S.owned }); },
+    product(id, ok, fail){ S.produkt = id; if(S.ohnePreis) return fail({ error: 'not found' }); ok({ id, price: '3,99 €' }); },
+    buy(id, ok, fail){ S.kaeufe++; S.produkt = id; if(S.fail) return fail({ error: 'x' }); if(S.next === 'purchased') S.owned = true; ok({ result: S.next }); },
+    restore(id, ok){ if(S.restoreOwned) S.owned = true; ok({ owned: S.owned, error: S.restoreErr, cancelled: !!S.restoreAbbruch }); },
+    watch(cb){ S.cb = cb; }
+  });
+  app.w.FairSeatStore = S;
+  return S;
+}
+const proBlatt = app => !!app.$('#pro-buy') && app.$('#modal').classList.contains('on');
+
+test('Vollversion: ohne Kauf-Plugin keine Grenze', app => {
+  klasseMitNamen(app, '7a'); klasseMitNamen(app, '7b'); klasseMitNamen(app, '7c');
+  erwarte(app.E('DB.classes.length') === 3, 'Ohne Plugin begrenzt');
+  erwarte(app.E('isPro()') === true, 'Ohne Plugin nicht frei');
+  app.E('renderSettings(); show("settings")');
+  erwarte(!app.$('#set-pro-status'), 'Vollversion-Abschnitt ohne Plugin sichtbar');
+});
+
+test('Vollversion: zweite Klasse öffnet das Kaufblatt, Kauf schaltet frei', app => {
+  const S = kaufPlugin(app);
+  klasseMitNamen(app, '7a');
+  erwarte(app.E('DB.classes.length') === 1, 'Erste Klasse nicht angelegt');
+  app.klick('#btn-add-class');
+  erwarte(proBlatt(app), 'Kaufblatt fehlt bei der zweiten Klasse');
+  erwarte(app.E('DB.classes.length') === 1, 'Zweite Klasse trotz Grenze angelegt');
+  erwarte(/3,99 €/.test(app.$('#pro-buy').textContent), 'Preis fehlt auf dem Knopf: ' + app.$('#pro-buy').textContent);
+  erwarte(!!app.$('#pro-restore'), 'Wiederherstellen fehlt im Kaufblatt');
+  erwarte(/Daten bleiben/.test(app.$('#sheet').textContent), 'Hinweis zu den Daten fehlt');
+  app.klick('#pro-buy');
+  erwarte(S.kaeufe === 1 && S.produkt === 'de.fairseat.app.vollversion', 'Falsches Produkt oder kein Kauf');
+  erwarte(app.E('Pro.owned') === true && app.w.localStorage.getItem('fairseat.pro') === '1', 'Kauf nicht gemerkt');
+  erwarte(/Danke/.test(app.$('#toast').textContent), 'Dank fehlt');
+  return bis(() => !!app.$('#sheet input')).then(ok => {
+    erwarte(ok, 'Nach dem Kauf geht es nicht mit „Klasse anlegen“ weiter');
+    app.askText('7b');
+    erwarte(app.E('DB.classes.length') === 2, 'Zweite Klasse nach dem Kauf nicht angelegt');
+    app.klick('#btn-add-class'); app.askText('7c');
+    erwarte(app.E('DB.classes.length') === 3, 'Dritte Klasse nach dem Kauf nicht angelegt');
+    app.E('renderSettings(); show("settings")');
+    erwarte(/Vollversion aktiv/.test(app.$('#set-pro-status').textContent) && !app.$('#set-pro'), 'Einstellungen zeigen den Kauf nicht');
+    // Kaufstatus wandert nicht mit der Sicherung (fremde Apple-ID)
+    erwarte(!/fairseat\.pro|"pro"/.test(app.E('JSON.stringify(backupData())')), 'Kaufstatus steckt in der Sicherung');
+  });
+});
+
+test('Vollversion: abbrechen, warten, Fehler, wiederherstellen', app => {
+  const S = kaufPlugin(app, { next: 'cancelled' });
+  app.w.document.dispatchEvent(new app.w.Event('deviceready'));     // meldet watch an und holt Stand und Preis
+  erwarte(typeof S.cb === 'function' && app.E('Pro.price') === '3,99 €', 'Beim Start nicht angemeldet oder kein Preis');
+  klasseMitNamen(app, '7a');
+  app.klick('#btn-add-class');
+  app.klick('#pro-buy');
+  erwarte(proBlatt(app) && !app.$('#pro-buy').disabled && app.E('Pro.owned') === false, 'Abbruch: Blatt zu, Knopf gesperrt oder freigeschaltet');
+  S.next = 'pending'; app.klick('#pro-buy');
+  erwarte(!app.$('#modal').classList.contains('on') && /Zustimmung/.test(app.$('#toast').textContent) && app.E('Pro.owned') === false, 'Wartender Kauf falsch behandelt');
+  // „Kaufen anfragen“ wird später genehmigt: Meldung über watch
+  S.owned = true; S.cb({ productId: 'de.fairseat.app.vollversion' });
+  erwarte(app.E('Pro.owned') === true && /Danke/.test(app.$('#toast').textContent), 'Genehmigter Kauf kommt nicht an');
+  // Erstattung: Status sagt nein → Grenze gilt wieder
+  S.owned = false; app.E('proRefresh()');
+  erwarte(app.E('Pro.owned') === false && app.w.localStorage.getItem('fairseat.pro') === '0', 'Erstattung nicht übernommen');
+  // Status nicht erreichbar: letzter Stand bleibt
+  app.E('Pro.owned = true'); S.statusFail = true; app.E('proRefresh()');
+  erwarte(app.E('Pro.owned') === true, 'Offline wurde die Vollversion entzogen');
+  app.E('Pro.owned = false'); S.statusFail = false;
+  // Fehler beim Kauf
+  S.fail = true; app.klick('#btn-add-class'); app.klick('#pro-buy');
+  erwarte(proBlatt(app) && !app.$('#pro-buy').disabled && /nicht erreichbar/.test(app.$('#toast').textContent), 'Kauffehler falsch behandelt');
+  // Wiederherstellen ohne Kauf
+  S.fail = false; app.klick('#pro-restore');
+  erwarte(/kein Kauf gefunden/.test(app.$('#toast').textContent) && app.E('Pro.owned') === false, 'Wiederherstellen ohne Kauf falsch');
+  S.restoreErr = 'abgebrochen'; app.klick('#pro-restore');
+  erwarte(/nicht erreichbar/.test(app.$('#toast').textContent), 'Abgebrochene Anmeldung als „kein Kauf“ gemeldet');
+  S.restoreErr = ''; S.restoreOwned = true; app.klick('#pro-restore');
+  erwarte(app.E('Pro.owned') === true && /wiederhergestellt/.test(app.$('#toast').textContent), 'Wiederherstellen schaltet nicht frei');
+  return bis(() => !!app.$('#sheet input')).then(ok => {
+    erwarte(ok, 'Nach dem Wiederherstellen geht es nicht weiter');
+    app.askText('7b');
+    erwarte(app.E('DB.classes.length') === 2, 'Klasse nach Wiederherstellen nicht angelegt');
+  });
+});
+
+test('Vollversion: Archiv, Papierkorb, vorhandene Klassen', app => {
+  kaufPlugin(app);
+  klasseMitNamen(app, '7a');
+  app.E('DB.classes[0].archived = true; save()');
+  app.klick('#btn-add-class');
+  erwarte(proBlatt(app) && app.E('DB.classes.length') === 1, 'Archivieren umgeht die Grenze');
+  app.E('closeModal(); DB.classes[0].archived = false; trashPush("class", DB.classes[0].name, DB.classes[0]); DB.classes = []; save()');
+  app.klick('#btn-add-class'); app.askText('8b');
+  erwarte(app.E('DB.classes.length') === 1, 'Nach dem Löschen keine neue Klasse möglich');
+  app.E('trashRestore(DB.trash[0].id)');
+  erwarte(proBlatt(app) && app.E('DB.classes.length') === 1 && app.E('DB.trash.length') === 1, 'Papierkorb umgeht die Grenze');
+  app.E('closeModal()');
+  // Klassen aus Sicherung oder Abgleich bleiben vollständig nutzbar
+  app.E('DB.classes.push(newClassObj("9a"), newClassObj("9b")); save()');
+  erwarte(app.E('DB.classes.length') === 3, 'Vorhandene Klassen verschwunden');
+  app.E(`setCurClass(DB.classes[2].id); goNames()`);
+  app.$('#student-input').value = 'Zoe\nYusuf'; app.klick('#btn-add-students');
+  erwarte(app.E('DB.classes[2].students.length') === 2, 'Vorhandene Klasse lässt sich nicht bearbeiten');
+  app.klick('#btn-add-class');
+  erwarte(proBlatt(app) && app.E('DB.classes.length') === 3, 'Weitere Klasse über der Grenze angelegt');
+});
+
+test('Vollversion: Beispielklasse belegt den freien Platz', app => {
+  kaufPlugin(app);
+  app.klick('#tile-names'); app.klick('#btn-demo');
+  erwarte(app.E('DB.classes.length') === 1, 'Beispielklasse fehlt');
+  app.E('goNames()');
+  app.klick('#btn-add-class');
+  erwarte(proBlatt(app) && !!app.$('#pro-demo-del'), 'Löschen der Beispielklasse nicht angeboten');
+  app.klick('#pro-demo-del');
+  erwarte(app.E('DB.classes.length') === 0 && app.E('DB.trash.some(e => e.kind === "class")'), 'Beispielklasse nicht im Papierkorb');
+  return bis(() => !!app.$('#sheet input')).then(ok => {
+    erwarte(ok, 'Nach dem Löschen geht es nicht mit „Klasse anlegen“ weiter');
+    app.askText('5c');
+    erwarte(app.E('DB.classes.length') === 1 && app.E('DB.classes[0].name') === '5c', 'Eigene Klasse nicht angelegt');
+    // eigene Klasse ist keine Beispielklasse: kein Löschangebot
+    app.klick('#btn-add-class');
+    erwarte(proBlatt(app) && !app.$('#pro-demo-del'), 'Eigene Klasse als Beispielklasse behandelt');
+  });
+});
+
+test('Vollversion: FairMix-Import zählt nur neue Klassen', app => {
+  kaufPlugin(app);
+  klasseMitNamen(app, '7b');                   // heißt wie die aktive FairMix-Klasse → wird zusammengeführt
+  app.w.__FM = FAIRMIX;
+  app.E('openFairMixImport(parseFairMix(window.__FM))');
+  app.sheetOk();
+  erwarte(app.E('DB.classes.length') === 1 && !proBlatt(app), 'Zusammenführen fälschlich gesperrt');
+  app.E('openFairMixImport(parseFairMix(window.__FM))');
+  const zweite = app.$$('#sheet button.choice').find(b => /8a/.test(b.textContent));
+  zweite.click();                              // 8a dazu → wäre neu
+  app.sheetOk();
+  erwarte(proBlatt(app) && app.E('DB.classes.length') === 1, 'Neue Klasse aus FairMix trotz Grenze angelegt');
+  app.klick('#pro-buy');
+  return bis(() => app.E('DB.classes.length') === 2).then(ok => erwarte(ok, 'Import läuft nach dem Kauf nicht weiter'));
+});
+
+test('Vollversion: Grenzfälle aus dem Audit', app => {
+  const S = kaufPlugin(app, { ohnePreis: true });
+  // Beispielklasse löschen hebelt den FairMix-Import mit zwei neuen Klassen nicht aus
+  app.klick('#tile-names'); app.klick('#btn-demo'); app.E('goNames()');
+  app.w.__FM = FAIRMIX;
+  app.E('openFairMixImport(parseFairMix(window.__FM))');
+  app.$$('#sheet button.choice').filter(b => !b.classList.contains('on')).forEach(b => b.click());   // 7b und 8a
+  app.sheetOk();
+  erwarte(proBlatt(app) && !app.$('#pro-demo-del'), 'Bei zwei neuen Klassen Löschen der Beispielklasse angeboten');
+  erwarte(app.E('DB.classes.length') === 1, 'Import trotz Grenze');
+  // ohne Produkt (Preis nicht ladbar): Kauf nicht auslösbar, aber neuer Versuch
+  erwarte(/erneut versuchen/.test(app.$('#pro-buy').textContent) && !app.$('#pro-buy').disabled, 'Kein neuer Versuch ohne Preis: ' + app.$('#pro-buy').textContent);
+  app.klick('#pro-buy');
+  erwarte(S.kaeufe === 0, 'Kauf ohne geladenes Produkt ausgelöst');
+  S.ohnePreis = false; app.klick('#pro-buy');
+  erwarte(/3,99 €/.test(app.$('#pro-buy').textContent) && S.kaeufe === 0, 'Preis nach neuem Versuch nicht da');
+  // Blatt während des Kaufs geschlossen: späte Antwort schließt kein anderes Blatt
+  let spaet = null;
+  S.buy = (id, ok) => { S.kaeufe++; spaet = () => { S.owned = true; ok({ result: 'purchased' }); }; };
+  app.klick('#pro-buy');
+  app.E('closeModal()');
+  app.E('askConfirm("Andere Frage", "x", "OK", () => {})');
+  spaet();
+  erwarte(app.$('#modal').classList.contains('on') && /Andere Frage/.test(app.$('#sheet').textContent), 'Späte Kaufantwort hat ein anderes Blatt geschlossen');
+  erwarte(app.E('Pro.owned') === true && app.E('Pro.busy') === false, 'Späte Kaufantwort nicht übernommen');
+  // abgebrochene Anmeldung beim Wiederherstellen: keine Fehlermeldung
+  app.E('closeModal(); Pro.owned = false'); S.owned = false; S.restoreAbbruch = true;
+  app.E('openPro(null)'); app.$('#toast').textContent = '';
+  app.klick('#pro-restore');
+  erwarte(!/nicht erreichbar|kein Kauf/.test(app.$('#toast').textContent), 'Abgebrochene Anmeldung als Fehler gemeldet');
+  // umbenannte Beispielklasse gilt als eigene
+  app.E('closeModal(); DB.classes[0].name = "6d"');
+  app.klick('#btn-add-class');
+  erwarte(proBlatt(app) && !app.$('#pro-demo-del'), 'Umbenannte Beispielklasse zum Löschen angeboten');
+});
+
+test('Vollversion: englische Texte', app => {
+  kaufPlugin(app);
+  app.E('LANG = "en"; DB.lang = "en"');
+  klasseMitNamen(app, '7a');
+  app.klick('#btn-add-class');
+  erwarte(/Unlock for 3,99 €/.test(app.$('#pro-buy').textContent) && /Restore purchase/.test(app.$('#pro-restore').textContent), 'Englische Texte fehlen');
+});
+
 /* ------------------------------------------------------------------ */
 alleTests().then(() => {
   console.log(bestanden + ' Prüfungen bestanden, ' + fehler + ' Fehler.');

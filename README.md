@@ -37,6 +37,7 @@ store-bilder/iphone-69/        iPhone 6,9 Zoll (1290×2796), auch für Google Pl
 validate.js                    statische Prüfung
 smoketest.js                   Ablauftests gegen jsdom
 test/fairmix-backup.json       echte FairMix-Sicherung als Testdatei
+plugins-src/                   eigene Plugins: WebDAV-Abgleich (http), In-App-Kauf (store)
 .github/workflows/             android.yml (APK/AAB), ios.yml (IPA, Upload)
 ```
 
@@ -125,9 +126,33 @@ liegen in `store-bilder/`; neu erzeugen mit `python3 tools/store-bilder.py`.
 Die Reihe: Start, Namen, neuer Sitzplan, Sitzplan mit Gruppen, Notenübersicht, Unterricht (Anwesenheit und
 Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfundenen Namen aus `test/fairmix-backup.json`.
 
+### In-App-Kauf (Vollversion)
+
+Die App ist kostenlos und enthält alle Funktionen für **eine Klasse**. Die Vollversion
+(einmaliger Kauf, 3,99 €) hebt nur die Klassengrenze auf.
+
+- Produkt in App Store Connect: App → **Monetarisierung → In-App-Käufe** → **+** →
+  Typ **Nicht verbrauchbar**, Produkt-ID **`de.fairseat.app.vollversion`** (muss exakt so heißen),
+  Preis 3,99 €, Anzeigename/Beschreibung DE und EN, Screenshot des Kaufblatts für die Prüfung.
+- Voraussetzung: Vertrag **Kostenpflichtige Apps** aktiv (auch bei kostenloser App mit Kauf).
+- Den ersten In-App-Kauf reicht man **zusammen mit einer App-Version** ein (auf der
+  Versionsseite unter „In-App-Käufe und Abonnements“ auswählen).
+- Testen: in TestFlight wird nichts abgebucht.
+- Gezählt werden alle Klassen einschließlich Archiv (sonst ließe sich die Grenze durch
+  Archivieren umgehen), nicht die im Papierkorb. Gesperrt ist nur das Anlegen:
+  „Klasse anlegen“, Wiederherstellen aus dem Papierkorb und FairMix-Import neuer Klassen.
+  Klassen aus Sicherung oder Abgleich bleiben vollständig nutzbar; die Sicherung geht immer.
+- Der Kaufstatus liegt außerhalb der Daten (`localStorage` `fairseat.pro`), damit er nicht
+  mit einer Sicherung auf ein Gerät mit fremder Apple-ID wandert. Maßgeblich ist StoreKit;
+  ist der App Store nicht erreichbar, gilt der letzte bekannte Stand.
+- Ohne Kauf-Plugin (Browser, Android) gilt keine Grenze. Vor einer Android-Version braucht
+  das Plugin eine Play-Billing-Seite.
+
 ### Angaben in den Stores
 
 - Datenschutz / Data Safety: keine Daten erhoben, keine Weitergabe, kein Tracking
+  (der In-App-Kauf läuft über Apple; die App erhebt dabei nichts)
+- Preis der App: **kostenlos**; Vollversion als In-App-Kauf (siehe oben)
 - Altersfreigabe: für alle; Zielgruppe Lehrkräfte (keine Kinder-App)
 - Kategorie: Bildung
 

@@ -111,6 +111,10 @@
          Eigenes kleines Plugin im Ordner plugins-src (ohne Cookies, Zwischenspeicher und
          Weiterleitungen). Der Pfad gilt vom Build-Ordner aus (build/ liegt im Repository). -->
     <plugin name="cordova-plugin-fairseat-http" spec="../plugins-src/cordova-plugin-fairseat-http" />
+    <!-- In-App-Kauf der Vollversion (StoreKit 2): kostenlos ist eine Klasse mit allen
+         Funktionen, die Vollversion hebt die Klassengrenze auf. Eigenes kleines Plugin
+         im Ordner plugins-src, nur iOS. Produkt-ID: de.fairseat.app.vollversion -->
+    <plugin name="cordova-plugin-fairseat-store" spec="../plugins-src/cordova-plugin-fairseat-store" />
     <!-- Optionale Sperre für Bewertungen und Beobachtungen: Face ID, Fingerabdruck
          oder Geräte-PIN. Die App erfährt nur, ob entsperrt wurde. -->
     <plugin name="cordova-plugin-fingerprint-aio" spec="6.0.1">
