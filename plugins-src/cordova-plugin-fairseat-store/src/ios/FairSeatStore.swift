@@ -107,9 +107,10 @@ import StoreKit
     @objc(watch:)
     func watch(_ command: CDVInvokedUrlCommand) {
         watchId = command.callbackId
-        // Ausdrücklich optional typisiert: so übersetzt es, egal ob der Header nullable ist oder nicht
-        let r: CDVPluginResult? = CDVPluginResult(status: CDVCommandStatus_NO_RESULT)
-        r?.setKeepCallbackAs(true)
+        // cordova-ios 8: CDVPluginResult ist nie nil (NS_ASSUME_NONNULL) und send() verlangt ein
+        // nicht-optionales Ergebnis – daher weder "?" noch optionale Typen.
+        let r = CDVPluginResult(status: .noResult)
+        r.setKeepCallbackAs(true)
         self.commandDelegate.send(r, callbackId: command.callbackId)
     }
 
@@ -136,14 +137,15 @@ import StoreKit
     private func notify(_ productId: String) {
         DispatchQueue.main.async {
             guard let cb = self.watchId else { return }
-            let r: CDVPluginResult? = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: ["productId": productId])
-            r?.setKeepCallbackAs(true)
+            let payload: [AnyHashable: Any] = ["productId": productId]
+            let r = CDVPluginResult(status: .ok, messageAs: payload)
+            r.setKeepCallbackAs(true)
             self.commandDelegate.send(r, callbackId: cb)
         }
     }
 
     private func send(_ command: CDVInvokedUrlCommand, ok: Bool, _ payload: [AnyHashable: Any]) {
-        let result = CDVPluginResult(status: ok ? CDVCommandStatus_OK : CDVCommandStatus_ERROR, messageAs: payload)
+        let result = CDVPluginResult(status: ok ? .ok : .error, messageAs: payload)
         DispatchQueue.main.async {
             self.commandDelegate.send(result, callbackId: command.callbackId)
         }
