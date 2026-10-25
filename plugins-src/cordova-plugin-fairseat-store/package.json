@@ -1,0 +1,14 @@
+{
+  "name": "cordova-plugin-fairseat-store",
+  "version": "1.0.0",
+  "description": "In-App-Kauf der FairSeat-Vollversion über StoreKit 2 – Preis, Kauf, Prüfung, Wiederherstellen.",
+  "license": "UNLICENSED",
+  "private": true,
+  "cordova": {
+    "id": "cordova-plugin-fairseat-store",
+    "platforms": ["ios"]
+  },
+  "engines": {
+    "cordovaDependencies": { "1.0.0": { "cordova-ios": ">=7.0.0" } }
+  }
+}

@@ -1,14 +1,14 @@
 {
-  "name": "cordova-plugin-fairseat-store",
+  "name": "cordova-plugin-fairseat-http",
   "version": "1.0.0",
-  "description": "In-App-Kauf der FairSeat-Vollversion über StoreKit 2 – Preis, Kauf, Prüfung, Wiederherstellen.",
+  "description": "Kleine HTTPS-Anfragen für den WebDAV-Abgleich von FairSeat – ohne Cookies, ohne Zwischenspeicher, ohne Weiterleitungen.",
   "license": "UNLICENSED",
   "private": true,
   "cordova": {
-    "id": "cordova-plugin-fairseat-store",
-    "platforms": ["ios"]
+    "id": "cordova-plugin-fairseat-http",
+    "platforms": ["ios", "android"]
   },
   "engines": {
-    "cordovaDependencies": { "1.0.0": { "cordova-ios": ">=7.0.0" } }
+    "cordovaDependencies": { "1.0.0": { "cordova-ios": ">=7.0.0", "cordova-android": ">=12.0.0" } }
   }
 }

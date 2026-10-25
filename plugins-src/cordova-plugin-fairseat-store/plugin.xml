@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Eigenes, kleines Plugin für den einen In-App-Kauf von FairSeat (Vollversion).
+     StoreKit 2 (ab iOS 15, passt zur Mindestversion der App). Kann genau das, was die
+     App braucht: Preis holen, kaufen, Kauf prüfen, Kauf wiederherstellen.
+     Kein eigener Server, keine Quittungen auf dem Gerät außer der von Apple.
+     Bewusst nur iOS: ohne Plugin (Browser, Android) gilt in der App keine Klassengrenze. -->
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-fairseat-store" version="1.0.0">
+  <name>FairSeat Store</name>
+  <description>In-App-Kauf der Vollversion (StoreKit 2)</description>
+
+  <js-module src="www/fairseat-store.js" name="FairSeatStore">
+    <clobbers target="FairSeatStore" />
+  </js-module>
+
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="FairSeatStore">
+        <param name="ios-package" value="FairSeatStore" />
+        <!-- schon beim Start laden, damit Käufe aus "Ask to Buy" und Erstattungen ankommen -->
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+    <header-file src="src/ios/FairSeatStore-Bridging-Header.h" type="BridgingHeader" />
+    <source-file src="src/ios/FairSeatStore.swift" />
+    <!-- StoreKit wird über "import StoreKit" automatisch gelinkt (Swift-Autolinking) -->
+  </platform>
+</plugin>
