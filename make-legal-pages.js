@@ -8,6 +8,11 @@
  * validate.js führt dieselbe Umformung im Speicher aus und vergleicht –
  * so kann die Datenschutzerklärung im Store nicht von der in der App abweichen.
  *
+ * docs/waagemodell/ wird hier nicht erzeugt: Quelle sind public/datenschutz.html
+ * und public/impressum.html im Repo „Gleichungen“ (Waagemodell). Ändern sich
+ * dort die Texte, die beiden Dateien hierher kopieren und „Zurück zur App“
+ * durch <a href="../">Zur Übersicht</a> ersetzen.
+ *
  * Adresse nach dem Einschalten (Settings → Pages → main, /docs):
  *   https://simaehlmann-cloud.github.io/FairSeat/fairseat/datenschutz.html
  */
@@ -28,7 +33,7 @@ const START = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FairSeat – Rechtliches</title>
+<title>Wisdompeak Apps – Rechtliches</title>
 <meta name="theme-color" content="#003366">
 <style>
   :root { --bg:#bcdcff; --card:#fff; --text:#003366; --border:#0055aa; }
@@ -50,7 +55,7 @@ const START = `<!DOCTYPE html>
 <body>
 <main>
   <h1>Wisdompeak Apps</h1>
-  <p>Rechtliche Angaben zu FairSeat von Simon Mählmann.</p>
+  <p>Rechtliche Angaben zu den Apps von Simon Mählmann.</p>
 
   <h2>FairSeat</h2>
   <ul>
@@ -58,6 +63,12 @@ const START = `<!DOCTYPE html>
     <li><a href="fairseat/impressum.html">Impressum</a></li>
     <li><a href="fairseat/datenschutz-en.html">Privacy Policy (English)</a></li>
     <li><a href="fairseat/impressum-en.html">Legal Notice (English)</a></li>
+  </ul>
+
+  <h2>Waagemodell – Gleichungen</h2>
+  <ul>
+    <li><a href="waagemodell/datenschutz.html">Datenschutzerklärung</a></li>
+    <li><a href="waagemodell/impressum.html">Impressum</a></li>
   </ul>
 
   <p>Kontakt: <a href="mailto:smaehlmann.appdev@gmail.com">smaehlmann.appdev@gmail.com</a></p>
