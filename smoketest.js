@@ -4286,7 +4286,14 @@ test('Termine: Feiertage und Ferien', app => {
   erwarte(app.E('DB.hst') === 'BY', 'Bundesland nicht gespeichert');
 });
 
+/* Feste „heute“-Zeit für Tests mit festen Terminen (sonst werden sie mit dem Kalender zu „vergangen“) */
+function heuteFest(app, iso){
+  const t = new Date(iso + 'T08:00:00').getTime();
+  app.E(`window.__D = window.__D || Date; Date = class extends window.__D { constructor(...a){ if(a.length) super(...a); else super(${t}); } static now(){ return ${t}; } }`);
+}
+
 test('Termine: Wochenansicht, Klassenarbeiten, Warnungen, Bewertung', async app => {
+  heuteFest(app, '2026-11-02');
   planStand(app);
   const cid = app.E('curClass().id');
   app.E('goTimetable()');
@@ -4361,6 +4368,7 @@ test('Termine: Wochenansicht, Klassenarbeiten, Warnungen, Bewertung', async app 
 });
 
 test('Termine: Kalender-Export (.ics)', async app => {
+  heuteFest(app, '2026-11-02');
   planStand(app);
   const cid = app.E('curClass().id');
   app.E(`DB.events = [{ id: "a1", k: "ev", d: "2026-11-04", e: "2026-11-06", t: "Fahrt; Harz, mit Übernachtung", c: "${cid}", n: "Zeile 1\\nZeile 2" },
