@@ -5030,6 +5030,17 @@ test('Vollversion: Grenzfälle aus dem Audit', app => {
   erwarte(proBlatt(app) && !app.$('#pro-demo-del'), 'Umbenannte Beispielklasse zum Löschen angeboten');
 });
 
+test('Vollversion: auf Android ohne Grenze, auch wenn das Plugin-JS da wäre', app => {
+  kaufPlugin(app);
+  app.w.cordova = { platformId: 'android' };
+  erwarte(app.E('isPro()') === true && app.E('proStore()') === null, 'Android würde begrenzt');
+  klasseMitNamen(app, '7a'); klasseMitNamen(app, '7b');
+  erwarte(app.E('DB.classes.length') === 2 && !proBlatt(app), 'Android: zweite Klasse gesperrt');
+  app.w.cordova = { platformId: 'ios' };
+  erwarte(app.E('isPro()') === false, 'iOS nicht begrenzt');
+  delete app.w.cordova;
+});
+
 test('Vollversion: englische Texte', app => {
   kaufPlugin(app);
   app.E('LANG = "en"; DB.lang = "en"');

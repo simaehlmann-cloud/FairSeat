@@ -9,11 +9,12 @@
   <name>FairSeat Store</name>
   <description>In-App-Kauf der Vollversion (StoreKit 2)</description>
 
-  <js-module src="www/fairseat-store.js" name="FairSeatStore">
-    <clobbers target="FairSeatStore" />
-  </js-module>
-
   <platform name="ios">
+    <!-- JS nur unter iOS: Auf Android gäbe es sonst window.FairSeatStore ohne native
+         Gegenstelle – die App würde die Klassengrenze setzen, ohne dass man kaufen kann. -->
+    <js-module src="www/fairseat-store.js" name="FairSeatStore">
+      <clobbers target="FairSeatStore" />
+    </js-module>
     <config-file target="config.xml" parent="/*">
       <feature name="FairSeatStore">
         <param name="ios-package" value="FairSeatStore" />

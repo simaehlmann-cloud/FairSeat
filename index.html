@@ -4327,6 +4327,9 @@ $("#btn-demo").onclick = loadDemo;
 const PRO_ID = "de.fairseat.app.vollversion", PRO_KEY = "fairseat.pro", FREE_CLASSES = 1;
 const Pro = { owned: Store.get(PRO_KEY) === "1", price: "", priceErr: false, busy: false, paint: null };
 function proStore(){
+  /* Das Kauf-Plugin gibt es nur unter iOS. Eine Android-Ausgabe braucht eine eigene
+     Play-Billing-Anbindung, bis dahin gilt dort keine Klassengrenze. */
+  if(window.cordova && window.cordova.platformId && window.cordova.platformId !== "ios") return null;
   const s = window.FairSeatStore;
   return s && typeof s.buy === "function" && typeof s.status === "function" ? s : null;
 }
