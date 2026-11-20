@@ -8,7 +8,7 @@
    APP_VERSION in der index.html: Wer die Version anhebt, ohne diese Zeile
    nachzuziehen, liefert Rueckkehrern sonst weiter die alte Fassung aus
    dem Cache aus. */
-const CACHE = 'fairseat-2.0.0';
+const CACHE = 'fairseat-2.1.0';
 
 const ASSETS = [
   './',

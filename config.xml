@@ -3,9 +3,9 @@
      und der Cache-Name in sw.js. validate.js prüft das.
      versionCode = Haupt*10000 + Neben*100 + Patch (2.0.0 -> 20000). -->
 <widget id="de.fairseat.app"
-        version="2.0.0"
-        android-versionCode="20000"
-        ios-CFBundleVersion="20000"
+        version="2.1.0"
+        android-versionCode="20100"
+        ios-CFBundleVersion="20100"
         xmlns="http://www.w3.org/ns/widgets"
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
 
@@ -20,6 +20,8 @@
          (plugins-src/cordova-plugin-fairseat-http) und braucht keine Freigabe hier. -->
     <allow-intent href="mailto:*" />
     <allow-intent href="https://*/*" />
+    <!-- „FairSeat bewerten“: öffnet direkt die App-Store-App -->
+    <allow-intent href="itms-apps:*" />
 
     <preference name="DisallowOverscroll" value="true" />
     <preference name="Fullscreen" value="false" />

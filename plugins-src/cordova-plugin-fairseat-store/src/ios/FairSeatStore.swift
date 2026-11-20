@@ -1,5 +1,6 @@
 import Foundation
 import StoreKit
+import UIKit
 
 /// In-App-Kauf der FairSeat-Vollversion über StoreKit 2 (ab iOS 15).
 /// Ein einziges Produkt (nicht verbrauchbar). Die App fragt nur „gekauft ja/nein“ ab;
@@ -101,6 +102,26 @@ import StoreKit
             }
             let owned = await self.owns(id)
             self.send(command, ok: true, ["owned": owned, "error": problem, "cancelled": cancelled])
+        }
+    }
+
+    /// Apples eigene Bewertungsabfrage (das kleine Sternchen-Fenster). Ob und wann sie wirklich
+    /// erscheint, entscheidet iOS (höchstens dreimal im Jahr) – die App erfährt das nicht.
+    @objc(review:)
+    func review(_ command: CDVInvokedUrlCommand) {
+        DispatchQueue.main.async {
+            let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            let scene = scenes.first { $0.activationState == .foregroundActive } ?? scenes.first
+            if let scene = scene {
+                if #available(iOS 16.0, *) {
+                    AppStore.requestReview(in: scene)
+                } else {
+                    SKStoreReviewController.requestReview(in: scene)
+                }
+            }
+            let payload: [AnyHashable: Any] = ["asked": scene != nil]
+            let r = CDVPluginResult(status: .ok, messageAs: payload)
+            self.commandDelegate.send(r, callbackId: command.callbackId)
         }
     }
 

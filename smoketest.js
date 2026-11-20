@@ -21,11 +21,12 @@ function erwarte(bed, text){
 }
 let aktuell = '';
 
-function neueApp(erststart){
+function neueApp(erststart, speicher){
   const dom = new JSDOM(HTML, {
     runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://localhost/',
     beforeParse(win){
-      if(!erststart) try{ win.localStorage.setItem('sitzplan.v2', JSON.stringify({ v: 2, onboarded: true, tipsDone: true, classes: [], rooms: [] })); }catch(e){}
+      if(speicher) try{ Object.keys(speicher).forEach(k => win.localStorage.setItem(k, speicher[k])); }catch(e){}
+      else if(!erststart) try{ win.localStorage.setItem('sitzplan.v2', JSON.stringify({ v: 2, onboarded: true, tipsDone: true, classes: [], rooms: [] })); }catch(e){}
       win.matchMedia = () => ({ matches: false, addListener(){}, removeListener(){} });
       win.HTMLCanvasElement.prototype.getContext = () => null;
       win.scrollTo = () => {};
@@ -43,9 +44,12 @@ function neueApp(erststart){
   /* Erststart-Frage beantworten (Schule), sofern sie offen ist */
   const willkommen = () => { const b = w.document.querySelector('#welcome-ok'); if(b) b.click(); };
   const askText = wert => { const i = $('#sheet input'); i.value = wert; sheetOk(); };
-  return { w, $, $$, E, klick, sheetOk, askText, willkommen, ende: () => w.close() };
+  /* Neustart mit demselben Gerätespeicher (z. B. nach einem Update) */
+  const neustart = () => { const sp = {}; for(let i = 0; i < w.localStorage.length; i++){ const k = w.localStorage.key(i); sp[k] = w.localStorage.getItem(k); }
+    const n = neueApp(false, sp); weitere.push(n); return Promise.resolve(n); };
+  return { w, $, $$, E, klick, sheetOk, askText, willkommen, neustart, ende: () => w.close() };
 }
-const warteschlange = [];
+const warteschlange = [], weitere = [];
 function test(name, fn, erststart){ warteschlange.push([name, fn, erststart]); }
 async function alleTests(){
   for(const [name, fn, erststart] of warteschlange){
@@ -53,7 +57,7 @@ async function alleTests(){
     const app = neueApp(erststart);
     try { await fn(app); }
     catch(e){ fehler++; fehlerliste.push(name + ': Ausnahme – ' + (e && e.stack ? e.stack.split('\n').slice(0, 3).join(' | ') : e)); }
-    finally { app.ende(); }
+    finally { app.ende(); while(weitere.length) weitere.pop().ende(); }
   }
 }
 const pause = ms => new Promise(r => setTimeout(r, ms || 30));
@@ -5032,6 +5036,173 @@ test('Vollversion: englische Texte', app => {
   klasseMitNamen(app, '7a');
   app.klick('#btn-add-class');
   erwarte(/Unlock for 3,99 €/.test(app.$('#pro-buy').textContent) && /Restore purchase/.test(app.$('#pro-restore').textContent), 'Englische Texte fehlen');
+});
+
+/* ---- 2.1: Heute vermerken, Empfehlen/Bewerten, Bewertungsabfrage, Neu in dieser Version ---- */
+test('Heute vermerken: Hausaufgaben, Material, eigene Liste, Farben', app => {
+  bewertungsKlasse(app);
+  neuerPlan(app, 0);
+  app.E('DB.settings.lesson = true; setLesson(true)');
+  const anna = sid(app, 'Anna'), ben = sid(app, 'Ben');
+  const seat = app.E(`curPlan().desks.find(d => d.studentId === "${anna}").id`);
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${anna}"))`);
+  const chips = () => app.$$('#lesson-qk .qkchip:not(.add)');
+  erwarte(chips().map(b => b.textContent).join('|') === 'Hausaufgaben vergessen|Material vergessen', 'Standardknöpfe fehlen: ' + chips().map(b => b.textContent).join('|'));
+  erwarte(app.E('curClass().checks.filter(isTally).length') === 0, 'Liste schon beim Öffnen angelegt');
+  const farben = chips().map(b => b.style.getPropertyValue('--qk'));
+  erwarte(farben[0] && farben[1] && farben[0] !== farben[1], 'Knöpfe nicht unterschiedlich gefärbt');
+  chips()[0].click();
+  erwarte(chips()[0].classList.contains('on') && chips()[0].getAttribute('aria-pressed') === 'true', 'Knopf nicht an');
+  // eigene Liste
+  app.klick('#lesson-qk-add');
+  erwarte(app.$('#lesson-qk-new').style.display === '', 'Eingabe für eigene Liste fehlt');
+  app.$('#lesson-qk-new input').value = 'Sportzeug vergessen'; app.klick('#lesson-qk-ok');
+  erwarte(app.E('curClass().checks.some(k => isTally(k) && k.title === "Sportzeug vergessen")') && chips().length === 3 && chips()[2].classList.contains('on'), 'Eigene Liste nicht angelegt oder nicht an');
+  app.sheetOk();
+  const hw = JSON.parse(app.E('JSON.stringify(curClass().checks.find(k => k.title === "Hausaufgaben vergessen"))'));
+  const heute = app.E('isoDay(new Date())');
+  erwarte(hw && hw.type === 'tally' && hw.ticks.indexOf(heute + '|' + anna) >= 0 && TLC(app).indexOf(hw.color) >= 0, 'Hausaufgaben-Strich fehlt: ' + JSON.stringify(hw));
+  erwarte(hw.color === farben[0], 'Farbe beim Anlegen nicht übernommen');
+  erwarte(!app.E('curClass().checks.some(k => k.title === "Material vergessen")'), 'Nicht gewählte Liste angelegt');
+  const sp = JSON.parse(app.E('JSON.stringify(curClass().checks.find(k => k.title === "Sportzeug vergessen"))'));
+  erwarte(sp.ticks.indexOf(heute + '|' + anna) >= 0 && sp.color !== hw.color && sp.color !== farben[1], 'Eigene Liste ohne Strich oder Farbe doppelt: ' + sp.color);
+  // Platz: zwei farbige Punkte, vorgelesen
+  const dots = app.$$(`#stage .item[data-id="${seat}"] .qkdots b`);
+  erwarte(dots.length === 2, 'Punkte am Platz fehlen: ' + dots.length);
+  erwarte(/Hausaufgaben vergessen/.test(app.$(`#stage .item[data-id="${seat}"]`).getAttribute('aria-label')), 'Vorlesen nennt den Vermerk nicht');
+  app.E('setPresenting(true)');
+  erwarte(!app.$(`#stage .item[data-id="${seat}"] .qkdots`), 'Vermerke am Beamer sichtbar');
+  app.E('setPresenting(false)');
+  // erneut öffnen: an; ausschalten nimmt den Strich weg
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${anna}"))`);
+  const hwChip = chips().find(b => b.textContent === 'Hausaufgaben vergessen');
+  erwarte(hwChip && hwChip.classList.contains('on'), 'Gespeicherter Vermerk nicht gezeigt');
+  erwarte(chips().length === 3, 'Material-Knopf fehlt beim zweiten Öffnen');
+  hwChip.click(); app.sheetOk();
+  erwarte(app.E(`curClass().checks.find(k => k.title === "Hausaufgaben vergessen").ticks.length`) === 0, 'Strich nicht entfernt');
+  // Ben: Hausaufgaben – vorhandene Liste wird genutzt, keine zweite
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${ben}"))`);
+  chips().find(b => b.textContent === 'Hausaufgaben vergessen').click(); app.sheetOk();
+  erwarte(app.E('curClass().checks.filter(k => k.title === "Hausaufgaben vergessen").length') === 1 && app.E(`curClass().checks.find(k => k.title === "Hausaufgaben vergessen").ticks.length`) === 1, 'Doppelte Liste oder Strich fehlt');
+  // getippter Name ohne „Anlegen“ geht beim Speichern nicht verloren; gleicher Name in anderer Schreibweise → keine zweite Liste
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${ben}"))`);
+  app.klick('#lesson-qk-add'); app.$('#lesson-qk-new input').value = 'Brille vergessen'; app.sheetOk();
+  erwarte(app.E(`(curClass().checks.find(k => k.title === "Brille vergessen") || { ticks: [] }).ticks.indexOf(isoDay(new Date()) + "|${ben}")`) >= 0, 'Getippte Liste beim Speichern verloren');
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${ben}"))`);
+  app.klick('#lesson-qk-add'); app.$('#lesson-qk-new input').value = 'sportzeug VERGESSEN'; app.klick('#lesson-qk-ok'); app.sheetOk();
+  erwarte(app.E('curClass().checks.filter(k => /^sportzeug vergessen$/i.test(k.title)).length') === 1 && app.E(`curClass().checks.find(k => k.title === "Sportzeug vergessen").ticks.some(x => x.endsWith("|${ben}"))`), 'Liste doppelt angelegt');
+  erwarte(TLC(app).indexOf(app.E('newTally(curClass(), "Test-Farbe").color')) >= 0, 'Neue Strichliste ohne Farbe');
+  app.E('curClass().checks = curClass().checks.filter(k => k.title !== "Test-Farbe")');
+  // jede neue Liste speichert ihre Farbe fest
+  erwarte(app.E('curClass().checks.filter(isTally).every(k => TL_COLORS.indexOf(k.color) >= 0)'), 'Liste ohne gespeicherte Farbe');
+  // viele Listen: Hausaufgaben bleibt als Knopf, auch wenn sie älter ist
+  app.E('for(let i = 0; i < 10; i++) newTally(curClass(), "Liste " + i)');
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${ben}"))`);
+  erwarte(chips().length === 8 && chips()[0].textContent === 'Hausaufgaben vergessen', 'Knöpfe bei vielen Listen falsch: ' + chips().map(b => b.textContent).join('|'));
+  app.E('closeModal()');
+  // Abbrechen speichert nichts
+  app.E(`openLessonSheet(curPlan().desks.find(d => d.studentId === "${ben}"))`);
+  chips().find(b => b.textContent === 'Material vergessen').click(); app.E('closeModal()');
+  erwarte(!app.E('curClass().checks.some(k => k.title === "Material vergessen")'), 'Abbrechen hat gespeichert');
+  // Farbe in der Liste ändern, Sicherung behält sie, Unsinn fliegt raus
+  app.E('openTallyList(curClass().checks.find(k => k.title === "Sportzeug vergessen"))');
+  const sw = app.$$('#tl-colors .tlsw'); erwarte(sw.length === TLC(app).length, 'Farbauswahl fehlt');
+  sw[5].click();
+  erwarte(app.E('curClass().checks.find(k => k.title === "Sportzeug vergessen").color') === TLC(app)[5] && sw[5] !== null, 'Farbe nicht gesetzt');
+  app.E('closeModal()');
+  const san = JSON.parse(app.E(`JSON.stringify(sanitizeDB(Object.assign(JSON.parse(JSON.stringify(DB)), { classes: DB.classes.map(c => Object.assign({}, c, { checks: c.checks.map((k, i) => i === 0 ? Object.assign({}, k, { color: "red;x" }) : k) })) })).classes[0].checks)`));
+  erwarte(!('color' in san[0]) && san.some(k => k.color === TLC(app)[5]), 'Farbe nicht geprüft oder verloren');
+  // Strichlisten-Modus nutzt die Listenfarbe
+  app.E(`startCheckMode(curClass().checks.find(k => k.title === "Sportzeug vergessen").id)`);
+  erwarte(app.$(`#stage .item[data-id="${seat}"]`).style.getPropertyValue('--tl') === TLC(app)[5], 'Strichliste ohne eigene Farbe');
+});
+const TLC = app => JSON.parse(app.E('JSON.stringify(TL_COLORS)'));
+
+test('Heute vermerken: Farbe läuft im Abgleich mit, Apple-Texte ohne Android', app => {
+  bewertungsKlasse(app);
+  app.E('newTally(curClass(), "Material vergessen")');
+  // Fingerabdruck der Liste ändert sich mit der Farbe
+  const vorher = app.E(`JSON.stringify((() => { const r = []; syncClass(curClass(), (key, v) => { if(/^k\|/.test(key)) r.push(v); }); return r; })())`);
+  app.E('curClass().checks[0].color = TL_COLORS[3]');
+  const nachher = app.E(`JSON.stringify((() => { const r = []; syncClass(curClass(), (key, v) => { if(/^k\|/.test(key)) r.push(v); }); return r; })())`);
+  erwarte(vorher !== nachher && nachher.indexOf(app.E('TL_COLORS[3]')) >= 0, 'Farbe nicht im Abgleich: ' + nachher);
+  // Apple: Texte ohne Android
+  app.w.cordova = { platformId: 'ios' };
+  erwarte(!/android|quick share/i.test(app.E('t("transferStep2") + t("selfPinHint")')), 'Android in iOS-Texten');
+  app.E('renderInfo()');
+  erwarte(!/android/i.test(app.$('#info-body').textContent), 'Android in der Hilfe auf iOS');
+  app.w.cordova = { platformId: 'android' };
+  erwarte(/Android/.test(app.E('t("selfPinHint")')), 'Android-Hinweis auf Android weg');
+  delete app.w.cordova;
+});
+
+test('Über die App: weiterempfehlen, bewerten, Rückmeldung', app => {
+  // Browser (kein Apple-Gerät): kein Bewerten-Knopf, aber Empfehlen und Mail
+  app.E('renderInfo(); show("info")');
+  erwarte(!!app.$('#info-recommend') && !app.$('#info-rate') && /^mailto:smaehlmann\.appdev@gmail\.com\?subject=/.test(app.$('#info-feedback').getAttribute('href')), 'Knöpfe falsch (Web)');
+  erwarte(decodeURIComponent(app.$('#info-feedback').getAttribute('href')).indexOf('FairSeat ' + app.E('APP_VERSION')) >= 0, 'Version fehlt in der Mail');
+  // iOS-App: Bewerten führt in den App Store, nirgends Android/Google
+  app.w.cordova = { platformId: 'ios' };
+  let geteilt = null;
+  app.w.plugins = { socialsharing: { shareWithOptions(o){ geteilt = o; } } };
+  app.E('renderInfo()');
+  erwarte(app.$('#info-rate').getAttribute('href') === 'itms-apps://itunes.apple.com/app/id6818996972?action=write-review', 'Bewerten-Link falsch: ' + app.$('#info-rate').getAttribute('href'));
+  app.klick('#info-recommend');
+  erwarte(geteilt && geteilt.message.indexOf('https://simaehlmann-cloud.github.io/FairSeat/fairseat/download.html') >= 0, 'Empfehlung ohne Link');
+  const neu = ['likeTitle', 'likeText', 'recBtn', 'rateBtn', 'fbBtn', 'recText', 'wnTitle', 'wn21a', 'wn21b', 'wn21c', 'qkTitle', 'qkAdd', 'qkAddPh'];
+  const alles = app.$('#info-like').textContent + geteilt.message + app.E(`JSON.stringify(${JSON.stringify(neu)}.map(k => [I18N.de[k], I18N.en[k]]))`);
+  erwarte(!/android|google|play store/i.test(alles), 'Android/Google in der App erwähnt');
+  // Android-App: kein Bewerten (noch kein Store-Eintrag)
+  app.w.cordova = { platformId: 'android' };
+  app.E('renderInfo()');
+  erwarte(!app.$('#info-rate') && !!app.$('#info-recommend'), 'Bewerten auf Android ohne Store-Eintrag');
+  delete app.w.cordova; delete app.w.plugins;
+  // Englisch
+  app.E('LANG = "en"; DB.lang = "en"; renderInfo()');
+  erwarte(/Recommend FairSeat/.test(app.$('#info-recommend').textContent) && /Enjoying FairSeat/.test(app.$('#info-like').textContent), 'Englische Texte fehlen');
+});
+
+test('Bewertungsabfrage: erst nach Nutzung, nur nach dem Unterricht, mit Abstand', app => {
+  let fragen = 0;
+  app.w.FairSeatStore = { status(i, ok){ ok({ owned: true }); }, product(){}, buy(){}, restore(){}, watch(){}, review(ok){ fragen++; ok({}); } };
+  const tag = 86400000, jetzt = Date.now();
+  app.w.localStorage.setItem('fairseat.rv', JSON.stringify({ n: 0, first: jetzt - 30 * tag, last: 0 }));
+  for(let i = 0; i < 5; i++) erwarte(app.E('reviewNudge()') === false, 'Zu früh gefragt (' + (i + 1) + ')');
+  erwarte(app.E('reviewNudge()') === true, 'Nach 6 Stunden nicht gefragt');
+  erwarte(app.E('reviewNudge()') === false, 'Gleich noch einmal gefragt');
+  app.w.localStorage.setItem('fairseat.rv', JSON.stringify({ n: 20, first: jetzt - 2 * tag, last: 0 }));
+  erwarte(app.E('reviewNudge()') === false, 'Schon nach 2 Tagen gefragt');
+  app.w.localStorage.setItem('fairseat.rv', JSON.stringify({ n: 20, first: jetzt - 400 * tag, last: jetzt - 121 * tag }));
+  erwarte(app.E('reviewNudge()') === true, 'Nach 120 Tagen nicht wieder gefragt');
+  app.w.localStorage.setItem('fairseat.rv', '{kaputt');
+  erwarte(app.E('reviewNudge()') === false && JSON.parse(app.w.localStorage.getItem('fairseat.rv')).n === 1, 'Kaputter Stand nicht neu begonnen');
+  // nur das Ende einer Stunde zählt, nicht Selbsteinschätzung
+  bewertungsKlasse(app); neuerPlan(app, 0);
+  app.w.localStorage.setItem('fairseat.rv', JSON.stringify({ n: 0, first: jetzt, last: 0 }));
+  app.E('DB.settings.lesson = true; setLesson(true); setLesson(false); setLesson(false)');
+  erwarte(JSON.parse(app.w.localStorage.getItem('fairseat.rv')).n === 1, 'Stundenende falsch gezählt');
+});
+
+test('Neu in dieser Version: nach Update einmal, nicht bei Erstinstallation', async app => {
+  // vorhandene 2.0-Nutzung (Klassen da, Schlüssel fehlt) → Blatt
+  klasseMitNamen(app, '7a');
+  app.E('closeModal(); flushSave()');
+  app.w.localStorage.removeItem('fairseat.seenVer');           // so sieht ein Gerät aus, das 2.0 genutzt hat
+  const app2 = await app.neustart();
+  await pause(900);
+  erwarte(!!app2.$('#wn-list') && app2.$$('#wn-list li').length === 3 && /Neu in FairSeat 2\.1\.0/.test(app2.$('#sheet').textContent), 'Neuigkeiten nach dem Update fehlen');
+  app2.klick('#wn-ok');
+  erwarte(app2.w.localStorage.getItem('fairseat.seenVer') === '2.1.0', 'Gesehen nicht gemerkt');
+  const app3 = await app2.neustart();
+  await pause(900);
+  erwarte(!app3.$('#wn-list'), 'Neuigkeiten erneut gezeigt');
+});
+
+test('Neu in dieser Version: Erstinstallation und laufende Selbsteinschätzung', async app => {
+  await pause(900);
+  erwarte(!app.$('#wn-list') && app.w.localStorage.getItem('fairseat.seenVer') === '2.1.0', 'Neuigkeiten bei Erstinstallation');
+  app.E('showWhatsNew()');
+  erwarte(!!app.$('#wn-list'), 'Blatt lässt sich nicht öffnen');
 });
 
 /* ------------------------------------------------------------------ */

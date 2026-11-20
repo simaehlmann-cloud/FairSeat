@@ -1,8 +1,8 @@
 {
   "name": "fairseat",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "FairSeat – Sitzplaner für Klasse, Hochzeit und Feier (Cordova, Android und iOS)",
+  "description": "FairSeat – Sitzplan und Notenbuch für Lehrkräfte (Cordova, Android und iOS)",
   "scripts": {
     "test": "node validate.js && node smoketest.js",
     "legal": "node make-legal-pages.js"

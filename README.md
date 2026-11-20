@@ -126,6 +126,22 @@ liegen in `store-bilder/`; neu erzeugen mit `python3 tools/store-bilder.py`.
 Die Reihe: Start, Namen, neuer Sitzplan, Sitzplan mit Gruppen, Notenübersicht, Unterricht (Anwesenheit und
 Schnellbewertung am Platz), Abhaken, Stundenplan mit Ausfall – alles mit erfundenen Namen aus `test/fairmix-backup.json`.
 
+### Weiterempfehlen, Bewerten, Rückmeldung (ab 2.1)
+
+- „Über die App“ hat drei Knöpfe: **Weiterempfehlen** (Teilen-Menü mit Text und dem
+  neutralen Link `docs/fairseat/download.html`), **Bewerten** (nur auf Apple-Geräten,
+  `itms-apps://…id6818996972?action=write-review`) und **Rückmeldung per Mail** (Version und
+  System stehen schon im Text).
+- Apple-Regel 2.3.10: In der iOS-App wird keine andere Plattform genannt. Texte mit
+  Android-Bezug haben eine Variante `…Apple`, die `t()` auf Apple-Geräten nimmt.
+- Die Download-Seite leitet iPhone/iPad in den App Store. Sobald es FairSeat bei Google Play
+  gibt: dort einen zweiten Knopf ergänzen und in `rateHref()` einen Android-Zweig.
+- **Bewertungsabfrage** (Apples Sternchen-Fenster, Plugin-Aktion `review`): nur am Ende
+  einer Unterrichtsstunde, frühestens nach 6 Stunden und 7 Tagen, danach höchstens alle
+  120 Tage (`fairseat.rv` im localStorage). Keine eigene Vorfrage – das sieht Apple nicht gern.
+- **Neu in dieser Version**: `WHATS_NEW` in `index.html`; erscheint einmal nach einem Update,
+  nicht bei der Erstinstallation (`fairseat.seenVer`).
+
 ### In-App-Kauf (Vollversion)
 
 Die App ist kostenlos und enthält alle Funktionen für **eine Klasse**. Die Vollversion

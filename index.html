@@ -498,10 +498,26 @@ select.field{-webkit-appearance:none;appearance:none;
 .latechips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .latechips button{flex:1;min-width:52px;min-height:40px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700}
 .latechips button.on{background:#B45309;border-color:#B45309;color:#fff}
+/* Heute vermerken: farbige Knöpfe je Strichliste, Punkte am Platz */
+.qkchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.qkchip{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:6px 12px;border-radius:19px;border:1.5px solid var(--qk,var(--line));
+  background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600}
+.qkchip i{width:10px;height:10px;border-radius:50%;background:var(--qk);flex:none}
+.qkchip.on{background:var(--qk);color:#fff}
+.qkchip.on i{background:#fff}
+.tlsw{width:34px;height:34px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1.5px var(--line)}
+.tlsw.on{box-shadow:0 0 0 3px var(--ink)}
+.likecol{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.likecol .cbtn{text-align:center}
+.qkrow{display:flex;gap:8px;margin-top:6px;align-items:center}
+.qkchip.add{border-style:dashed;border-color:var(--line);color:var(--ink-soft)}
+.item .qkdots{position:absolute;right:-6px;top:-8px;display:flex;gap:3px;padding:3px;border-radius:10px;background:var(--surface);
+  box-shadow:0 1px 3px rgba(0,0,0,.3);font-style:normal;z-index:4;transform:scale(var(--gz,1));transform-origin:100% 0}
+.item .qkdots b{width:12px;height:12px;border-radius:50%}
 .item .latemark{position:absolute;left:-6px;top:-8px;min-width:22px;height:20px;padding:0 4px;border-radius:10px;background:#B45309;color:#fff;
   font-style:normal;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--surface);
   transform:scale(var(--gz,1));transform-origin:0 0;z-index:4}
-.item .tlmark{position:absolute;right:-6px;top:-8px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:#B45309;color:#fff;
+.item .tlmark{position:absolute;right:-6px;top:-8px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--tl,#B45309);color:#fff;
   font-style:normal;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--surface);
   transform:scale(var(--gz,1));transform-origin:100% 0;z-index:4}
 .item .tlmark.old{background:var(--ink-soft)}
@@ -2282,6 +2298,7 @@ Object.assign(I18N.de, {
   transferTitle:"Auf anderes Gerät übertragen",
   transferStep1:"Passwort festlegen – die Datei wird damit verschlüsselt.",
   transferStep2:"Im Teilen-Menü das Ziel wählen: AirDrop (iPhone/iPad), Quick Share (Android) oder zwischen iOS und Android per Mail oder Messenger.",
+  transferStep2Apple:"Im Teilen-Menü das Ziel wählen: AirDrop, Mail oder Messenger.",
   transferStep3:"Auf dem anderen Gerät die Datei sichern, in FairSeat „Sicherung laden“ tippen, das Passwort eingeben und „Zusammenführen“ wählen. So bleibt nichts verloren, was dort schon eingetragen ist.",
   transferSend:"Verschlüsseln und teilen", transferOk:"Übertragungsdatei erstellt",
   transferNoCrypto:"Dieses Gerät kann keine verschlüsselte Übertragungsdatei erstellen",
@@ -2302,6 +2319,7 @@ Object.assign(I18N.en, {
   transferTitle:"Transfer to another device",
   transferStep1:"Choose a password – the file is encrypted with it.",
   transferStep2:"Pick the target in the share menu: AirDrop (iPhone/iPad), Quick Share (Android) or, between iOS and Android, email or a messenger.",
+  transferStep2Apple:"Pick the target in the share menu: AirDrop, email or a messenger.",
   transferStep3:"On the other device, save the file, tap “Load backup” in FairSeat, enter the password and choose “Merge”. That way nothing already entered there gets lost.",
   transferSend:"Encrypt and share", transferOk:"Transfer file created",
   transferNoCrypto:"This device cannot create an encrypted transfer file",
@@ -2477,11 +2495,13 @@ Object.assign(I18N.en, {
 });
 Object.assign(I18N.de, {
   selfAlready:"Du hast schon geantwortet – eine neue Wahl ersetzt die alte.", selfExitLabel:"Beenden (Lehrkraft)",
-  selfPinHint:"Tipp: Mit der Bildschirmfixierung (Android) bzw. dem geführten Zugriff (iPhone/iPad) kann niemand die App verlassen."
+  selfPinHint:"Tipp: Mit der Bildschirmfixierung (Android) bzw. dem geführten Zugriff (iPhone/iPad) kann niemand die App verlassen.",
+  selfPinHintApple:"Tipp: Mit dem geführten Zugriff (Einstellungen → Bedienungshilfen) kann niemand die App verlassen."
 });
 Object.assign(I18N.en, {
   selfAlready:"You have already answered – a new choice replaces the old one.", selfExitLabel:"End (teacher)",
-  selfPinHint:"Tip: with screen pinning (Android) or Guided Access (iPhone/iPad) nobody can leave the app."
+  selfPinHint:"Tip: with screen pinning (Android) or Guided Access (iPhone/iPad) nobody can leave the app.",
+  selfPinHintApple:"Tip: with Guided Access (Settings → Accessibility) nobody can leave the app."
 });
 Object.assign(I18N.de, { selfMenuSub:"Schüler schätzen ihre Mitarbeit am Stundenende selbst ein" });
 Object.assign(I18N.en, { selfMenuSub:"Pupils rate their own participation at the end of the lesson" });
@@ -2623,8 +2643,10 @@ I18N.en.info.splice(2, 0, { h:"Working with FairMix",
      "For a new seating plan, choose “By FairMix groups”: each group gets a table group of matching size."] });
 
 let LANG = "de";
+/* Auf Apple-Geräten gelten Varianten „…Apple“ ohne Hinweise auf andere Plattformen (App-Store-Regel 2.3.10) */
 const t = k => {
   const L = I18N[LANG] || I18N.de;
+  if(L[k + "Apple"] !== undefined && appleDevice()) return L[k + "Apple"];
   return L[k] ?? k;
 };
 const tItem = type => {
@@ -2635,7 +2657,7 @@ const tTag = tag => (I18N[LANG].tags[tag] || tag);
 
 /* Version der App. validate.js gleicht sie mit config.xml und dem
    Cache-Namen in sw.js ab – wer anhebt, muss alle drei Stellen ändern. */
-const APP_VERSION = "2.0.0";
+const APP_VERSION = "2.1.0";
 
 Object.assign(I18N.de, {
   tkTitle:"Aufgaben & Notenschlüssel", tkSetup:"Punkte je Aufgabe und Notenschlüssel", tkSetupSub:"Für Klassenarbeiten: Punkte eintragen, die Note rechnet der Schlüssel aus",
@@ -2658,6 +2680,17 @@ Object.assign(I18N.de, {
   absTitle:"Fehlzeiten", absDaysLabel:"Tage mit Fehlzeit", absExcused:"entschuldigt", absExcShort:"entsch.", absExcN:"{n} entschuldigt", absNone:"Keine Fehltage erfasst.",
   lateLabel:"Verspätet (Minuten)", lateList:"Verspätungen", lateMin:"{m} Min. zu spät", lateN:"{n}× verspätet ({m} Min.)", attendanceExc:"entschuldigt",
   gXlsxDaysUnexc:"davon unentschuldigt", gXlsxUnexc:"Fehlstunden unentschuldigt", gXlsxLate:"Verspätungen", gXlsxLateMin:"Minuten zu spät",
+  wnTitle:"Neu in FairSeat {v}", wnOk:"Los geht's",
+  wn21a:"Heute vermerken: Im Unterricht den Namen antippen und „Hausaufgaben vergessen“, „Material vergessen“ oder eigene Listen mit einem Tipp setzen.",
+  wn21b:"Jede Strichliste hat ihre Farbe – heute Vermerktes erscheint als farbiger Punkt am Platz.",
+  wn21c:"Unter „Über die App“: FairSeat weiterempfehlen oder Rückmeldung per Mail schicken.",
+  wn21cApple:"Unter „Über die App“: FairSeat weiterempfehlen, bewerten oder Rückmeldung per Mail schicken.",
+  likeTitle:"Gefällt dir FairSeat?", likeText:"FairSeat wird von einer Lehrkraft für Lehrkräfte entwickelt. Eine Empfehlung im Kollegium hilft sehr – Ideen und Fehler gern per Mail.",
+  likeTextApple:"FairSeat wird von einer Lehrkraft für Lehrkräfte entwickelt. Eine Empfehlung im Kollegium oder eine Bewertung im App Store hilft sehr – Ideen und Fehler gern per Mail.",
+  recBtn:"FairSeat weiterempfehlen", rateBtn:"FairSeat bewerten", fbBtn:"Rückmeldung per Mail",
+  recText:"Schau dir FairSeat an – Sitzplan und Notenbuch in einer App: direkt am Platz bewerten, Selbsteinschätzung der Schüler, Stundenplan und Fehlzeiten. Komplett offline, ohne Konto. Eine Klasse kostenlos.",
+  recCopied:"Text mit Link kopiert", fbSubject:"FairSeat – Rückmeldung", fbBody:"Hallo,\n\n\n\n---\nFairSeat {v}",
+  qkTitle:"Heute vermerken", qkAdd:"+ Eigene", qkAddPh:"z. B. Sportzeug vergessen", qkCreate:"Anlegen", tlColor:"Farbe",
   tlTitle:"Strichlisten", tlNew:"Als Strichliste anlegen", tlHw:"Hausaufgaben vergessen", tlMat:"Material vergessen", tlCard:"Strichliste · {n} Striche",
   tlMeta:"heute {a} · insgesamt {b}", tlHint:"Namen antippen: ein Strich für heute – noch einmal tippen nimmt ihn weg. Die Zahl zeigt die Summe.",
   tlListHint:"Je Name die Summe und die letzten Tage. „Heute“ setzt oder entfernt den Strich für heute.", tlToday:"Heute", tlDelete:"Strichliste löschen",
@@ -2684,6 +2717,17 @@ Object.assign(I18N.en, {
   absTitle:"Absences", absDaysLabel:"Days with absence", absExcused:"excused", absExcShort:"exc.", absExcN:"{n} excused", absNone:"No absences recorded.",
   lateLabel:"Late (minutes)", lateList:"Late arrivals", lateMin:"{m} min late", lateN:"{n}× late ({m} min)", attendanceExc:"excused",
   gXlsxDaysUnexc:"of which unexcused", gXlsxUnexc:"Missed lessons unexcused", gXlsxLate:"Times late", gXlsxLateMin:"Minutes late",
+  wnTitle:"New in FairSeat {v}", wnOk:"Let's go",
+  wn21a:"Note for today: in a lesson, tap a name and mark “Homework forgotten”, “Materials forgotten” or your own lists with one tap.",
+  wn21b:"Every tally list has its own colour – today's notes appear as a coloured dot on the seat.",
+  wn21c:"Under “About the app”: recommend FairSeat or send feedback by email.",
+  wn21cApple:"Under “About the app”: recommend FairSeat, rate it or send feedback by email.",
+  likeTitle:"Enjoying FairSeat?", likeText:"FairSeat is made by a teacher for teachers. A recommendation to colleagues helps a lot – ideas and bug reports are welcome by email.",
+  likeTextApple:"FairSeat is made by a teacher for teachers. A recommendation to colleagues or a rating in the App Store helps a lot – ideas and bug reports are welcome by email.",
+  recBtn:"Recommend FairSeat", rateBtn:"Rate FairSeat", fbBtn:"Send feedback by email",
+  recText:"Check out FairSeat – seating plan and gradebook in one app: mark students right at their seat, student self-assessment, timetable and attendance. Fully offline, no account. One class free.",
+  recCopied:"Text with link copied", fbSubject:"FairSeat – feedback", fbBody:"Hello,\n\n\n\n---\nFairSeat {v}",
+  qkTitle:"Note for today", qkAdd:"+ Custom", qkAddPh:"e.g. PE kit forgotten", qkCreate:"Add", tlColor:"Colour",
   tlTitle:"Tally lists", tlNew:"Create as tally list", tlHw:"Homework forgotten", tlMat:"Materials forgotten", tlCard:"Tally list · {n} marks",
   tlMeta:"today {a} · total {b}", tlHint:"Tap names: one mark for today – tap again to remove it. The number shows the total.",
   tlListHint:"Total and recent days per name. “Today” sets or removes today's mark.", tlToday:"Today", tlDelete:"Delete tally list",
@@ -2738,11 +2782,13 @@ I18N.en.info.push({ h:"Seating plans day to day",
 I18N.de.info.push({ h:"Klassenarbeiten, Kursheft und Fehlzeiten",
   p:["In einer Bewertung legst du unter „Punkte je Aufgabe und Notenschlüssel“ die Aufgaben mit Höchstpunkten an. Danach trägst du je Name die Punkte ein, die Note rechnet der Schlüssel aus (mit oder ohne Tendenz). Darunter siehst du den Notenspiegel und die Lösungsquote je Aufgabe; die Auswertung lässt sich als Excel-Datei teilen.",
      "Im Unterrichtsmodus hält „Kursheft“ Thema und Hausaufgabe der Stunde fest und zeigt dabei, was in der letzten Stunde aufgegeben wurde. Im Blatt eines Namens kannst du eine Verspätung in Minuten antippen. Unter „Anwesenheit“ öffnet ein Tipp auf einen Namen die Fehlzeiten; dort markierst du entschuldigte Tage.",
-     "Unter „Abhaken“ gibt es neben Abhaklisten auch Strichlisten wie „Hausaufgaben vergessen“: Jeder Tipp auf einen Namen setzt einen Strich für heute, die Zahl am Platz zeigt die Summe. Strichlisten stehen auch im Gesprächsblatt."] });
+     "Unter „Abhaken“ gibt es neben Abhaklisten auch Strichlisten wie „Hausaufgaben vergessen“: Jeder Tipp auf einen Namen setzt einen Strich für heute, die Zahl am Platz zeigt die Summe. Strichlisten stehen auch im Gesprächsblatt.",
+     "Schneller geht es im Unterricht direkt über den Namen: Unter „Heute vermerken“ tippst du „Hausaufgaben vergessen“, „Material vergessen“ oder eine eigene Liste an (+ Eigene). Jede Liste hat ihre Farbe; am Platz erscheint ein farbiger Punkt für heute. Die Farbe lässt sich in der Liste ändern."] });
 I18N.en.info.push({ h:"Class tests, course log and absences",
   p:["In an assessment, “Points per task and grading key” lets you add the tasks with their maximum points. Then you enter the points per name and the key works out the grade (with or without +/−). Below you see the distribution and the success rate per task; the analysis can be shared as an Excel file.",
      "In lesson mode, “Course log” records the topic and homework of the lesson and shows what was set last time. In a name's sheet you can tap how many minutes someone was late. Under “Attendance”, tapping a name opens their absences, where you mark excused days.",
-     "Under “Check off” there are tally lists such as “homework forgotten” as well as checklists: each tap on a name adds a mark for today, and the number on the seat shows the total. Tally lists also appear in the conversation sheet."] });
+     "Under “Check off” there are tally lists such as “homework forgotten” as well as checklists: each tap on a name adds a mark for today, and the number on the seat shows the total. Tally lists also appear in the conversation sheet.",
+     "In a lesson it is quicker straight from the name: under “Note for today” tap “Homework forgotten”, “Materials forgotten” or a list of your own (+ Custom). Each list has its own colour, and a coloured dot appears on the seat for today. You can change the colour in the list."] });
 Object.assign(I18N.de, {
   calcBtn:"Wie berechnet?", calcTitle:"Rechenweg: {n} – {s}", calcScaleGrade:"Notenskala 1–6 (+ = −0,3, − = +0,3)", calcScalePoints:"Punkteskala 0–15",
   calcMixed:"Punkte werden nach der Tabelle in Noten umgerechnet (15 P. = 1+ … 0 P. = 6).",
@@ -3433,7 +3479,7 @@ function sanitizeDB(raw){
         date: typeof k.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(k.date) ? k.date : "",
         done: k.type === "tally" ? [] : Array.isArray(k.done) ? k.done.filter((x, i, a) => typeof x === "string" && ids.has(x) && a.indexOf(x) === i).slice(0, MAX_STUDENTS) : [],
         /* Strichliste: je Schüler höchstens ein Strich pro Tag, als "Datum|ID" */
-        ...(k.type === "tally" ? { type: "tally", ticks: sanDayIds(k.ticks, ids, MAX_TICKS) } : {})
+        ...(k.type === "tally" ? { type: "tally", ticks: sanDayIds(k.ticks, ids, MAX_TICKS), ...(TL_COLORS.indexOf(k.color) >= 0 ? { color: k.color } : {}) } : {})
       })).slice(0, MAX_CHECKS) : [],
       /* Kursheft, entschuldigte Tage und Verspätungen */
       journal: sanJournal(c?.journal),
@@ -4398,6 +4444,67 @@ function openPro(retry, adding){
   sheet.appendChild(close);
   modalCloseHook = () => { if(Pro.paint === paint){ Pro.paint = null; Pro.busy = false; } };
   if(S && !Pro.price){ Pro.priceErr = false; paint(); proRefresh(); }
+}
+
+/* ============ 10c. Weiterempfehlen, Bewerten, Rückmeldung ============ */
+/* Apple erlaubt in der iOS-App keine Hinweise auf andere Plattformen: Empfohlen wird deshalb nur
+   EIN neutraler Link (download.html leitet jedes Gerät in seinen Store), und bewertet wird nur
+   dort, wo es einen Store-Eintrag gibt. Für eine spätere Android-Ausgabe genügt ein eigener Zweig
+   in rateHref() und ein zweiter Knopf auf der Download-Seite. */
+const APPSTORE_ID = "6818996972";
+const DOWNLOAD_URL = "https://simaehlmann-cloud.github.io/FairSeat/fairseat/download.html";
+const FEEDBACK_MAIL = "smaehlmann.appdev@gmail.com";
+const platformId = () => (window.cordova && window.cordova.platformId) || "web";
+function appleDevice(){
+  const p = platformId();
+  if(p !== "web") return p === "ios";
+  const ua = navigator.userAgent || "";
+  return /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+}
+function rateHref(){
+  if(platformId() === "ios") return "itms-apps://itunes.apple.com/app/id" + APPSTORE_ID + "?action=write-review";
+  if(appleDevice()) return "https://apps.apple.com/app/id" + APPSTORE_ID + "?action=write-review";
+  return null;                                           // noch kein Store-Eintrag für dieses Gerät
+}
+function feedbackHref(){
+  const ua = navigator.userAgent || "";
+  const os = (ua.match(/Android [\d.]+|(?:iPhone|CPU) OS [\d_]+|iPad/) || [""])[0].replace(/_/g, ".");
+  return "mailto:" + FEEDBACK_MAIL + "?subject=" + encodeURIComponent(t("fbSubject")) +
+    "&body=" + encodeURIComponent(t("fbBody").replace("{v}", APP_VERSION + " · " + platformId() + (os ? " · " + os : "")));
+}
+function shareText(text){
+  const sharer = window.plugins && window.plugins.socialsharing;
+  if(window.cordova && sharer && sharer.shareWithOptions){
+    sharer.shareWithOptions({ message: text, subject: "FairSeat", iPadCoordinates: shareAnchor() }, () => {}, () => {});
+    return;
+  }
+  if(navigator.share){ navigator.share({ text, title: "FairSeat" }).catch(() => {}); return; }
+  try{ navigator.clipboard.writeText(text).then(() => toast(t("recCopied")), () => toast(text)); }catch(e){ toast(text); }
+}
+function recommendApp(){ shareText(t("recText") + "\n\n" + DOWNLOAD_URL); }
+/* Apples Bewertungsabfrage – nur zu einem ruhigen, guten Zeitpunkt: nach dem Ende einer
+   Unterrichtsstunde, frühestens nach 6 Stunden und 7 Tagen Nutzung, danach höchstens alle
+   120 Tage. Ob das Fenster dann wirklich kommt, entscheidet iOS (höchstens dreimal im Jahr).
+   Keine eigene Vorfrage („Gefällt dir …?“) – die sieht Apple nicht gern. */
+const RV_KEY = "fairseat.rv", RV_LESSONS = 6, RV_DAYS = 7, RV_GAP = 120;
+function rvState(){
+  let r = null; try{ r = JSON.parse(Store.get(RV_KEY) || "null"); }catch(e){}
+  if(!r || typeof r !== "object") r = {};
+  return { n: Math.max(0, +r.n || 0), first: +r.first || Date.now(), last: +r.last || 0 };
+}
+function reviewNudge(){
+  const S = proStore(); const r = rvState();
+  r.n++;
+  const day = 86400000, now = Date.now();
+  const due = r.n >= RV_LESSONS && now - r.first >= RV_DAYS * day && now - r.last >= RV_GAP * day;
+  const before = r.last;
+  if(due) r.last = now;
+  Store.set(RV_KEY, JSON.stringify(r));
+  if(due && S && typeof S.review === "function") setTimeout(() => S.review(res => {
+    /* Konnte iOS gar nicht fragen (kein Fenster), beim nächsten Stundenende erneut versuchen */
+    if(res && res.asked === false){ const r2 = rvState(); r2.last = before; Store.set(RV_KEY, JSON.stringify(r2)); }
+  }, () => {}), 700);
+  return due;
 }
 
 $("#btn-add-class").onclick = () => {
@@ -5773,7 +5880,10 @@ function renderStage(full){
   const seen = new Set();
   const kc0 = checkMode ? checkCur() : null, kc = isTally(kc0) ? null : kc0, kSet = kc ? new Set(kc.done) : null;   // Abhakliste einmal je Durchlauf
   const tl = isTally(kc0) ? kc0 : null, tlCount = new Map(), tlToday = new Set(), tday = isoDay(new Date());
+  const tlCol = tl ? tallyColor(curClass(), tl) : null;
   if(tl) (tl.ticks || []).forEach(x => { const sid = x.slice(11); tlCount.set(sid, (tlCount.get(sid) || 0) + 1); if(x.slice(0, 10) === tday) tlToday.add(sid); });
+  /* Heute Vermerktes (Strichlisten) als farbige Punkte – im Unterricht, nicht am Beamer */
+  const qkNow = lessonMode && !selfMode && !checkMode && !gradeMode && !presenting && curClass() ? tallyTodayMap(curClass()) : null;
   /* Verspätungen dieser Stunde einmal je Durchlauf – nicht am Beamer */
   const lateNow = new Map();
   if(lessonMode && !selfMode && !checkMode && !presenting && curClass()){
@@ -5872,6 +5982,17 @@ function renderStage(full){
     else if(!tn && tm) tm.remove();
     if(tn){ tm.textContent = String(tn); tm.classList.toggle("old", !tOn); }
     el.classList.toggle("tltoday", tOn);
+    if(tlCol) el.style.setProperty("--tl", tlCol); else el.style.removeProperty("--tl");
+    let qd = el.querySelector(".qkdots");
+    const qv = qkNow && isDesk && it.studentId ? qkNow.get(it.studentId) : null;
+    if(qv && !qd){ qd = document.createElement("i"); qd.className = "qkdots"; qd.setAttribute("aria-hidden", "true"); el.appendChild(qd); }
+    else if(!qv && qd) qd.remove();
+    if(qv){
+      const key = qv.map(x => x.color).join(",");
+      if(qd.dataset.k !== key){ qd.dataset.k = key; qd.textContent = "";
+        qv.slice(0, 4).forEach(x => { const d = document.createElement("b"); d.style.background = x.color; qd.appendChild(d); }); }
+      el.setAttribute("aria-label", el.getAttribute("aria-label") + ", " + qv.map(x => x.title).join(", "));
+    }
     if(lt || tn) el.setAttribute("aria-label", el.getAttribute("aria-label") + (lt ? ", " + t("lateMin").replace("{m}", String(lt)) : "") + (tn ? ", " + tl.title + " " + tn + "×" : ""));
     let ck = el.querySelector(".ckmark");
     const kOn = !!kSet && isDesk && !!it.studentId && kSet.has(it.studentId);
@@ -8991,6 +9112,7 @@ function lessonNote(id){
 }
 function setLesson(on){
   if(on && (!curPlanId || (!DB.settings.lesson && !gradeMode))) return;
+  if(!on && lessonMode && !selfMode && !targetRun) reviewNudge();   // Stunde zu Ende: ruhiger Moment
   if(!on && gradeMode) endGradeMode(true);
   if(!on && checkMode) endCheckMode(true);
   if(!on && selfMode) endSelfMode(true);
@@ -9054,6 +9176,66 @@ function openLessonSheet(it){
   });
   sheet.appendChild(chips); paintLate();
 
+  /* Heute vermerken: alle Strichlisten der Klasse als farbige Knöpfe, dazu „Hausaufgaben“ und
+     „Material“, auch wenn es sie noch nicht gibt (sie entstehen beim Speichern), und eigene */
+  const qkDay = isoDay(new Date());
+  c.checks = Array.isArray(c.checks) ? c.checks : [];
+  const allTl = c.checks.filter(isTally).slice().reverse();          // älteste zuerst
+  const findTl = title => allTl.find(k => k.title.trim().toLowerCase() === title.trim().toLowerCase());
+  const qkItem = k => { const on = (k.ticks || []).indexOf(qkDay + "|" + st.id) >= 0; return { k, title: k.title, color: tallyColor(c, k), on0: on, on }; };
+  /* Standard zuerst (vorhanden oder neu), dann die übrigen Listen – höchstens 8 Knöpfe */
+  const qk = [];
+  {
+    const used = new Set(allTl.map(k => tallyColor(c, k)));
+    ["tlHw", "tlMat"].map(t).forEach(title => {
+      const k = findTl(title);
+      if(k){ qk.push(qkItem(k)); return; }
+      const color = TL_COLORS.find(x => !used.has(x)) || TL_COLORS[0]; used.add(color);
+      qk.push({ k: null, title, color, on0: false, on: false });
+    });
+    allTl.forEach(k => { if(qk.length < 8 && !qk.some(q => q.k === k)) qk.push(qkItem(k)); });
+  }
+  const qkl = document.createElement("div"); qkl.className = "eyebrow"; qkl.style.marginTop = "12px"; qkl.textContent = t("qkTitle"); sheet.appendChild(qkl);
+  const qkBox = document.createElement("div"); qkBox.className = "qkchips"; qkBox.id = "lesson-qk"; sheet.appendChild(qkBox);
+  const qkAddRow = document.createElement("div"); qkAddRow.className = "qkrow"; qkAddRow.id = "lesson-qk-new"; qkAddRow.style.display = "none";
+  const qkInp = document.createElement("input"); qkInp.className = "field"; qkInp.maxLength = 60; qkInp.placeholder = t("qkAddPh"); qkInp.style.flex = "1";
+  const qkOk = document.createElement("button"); qkOk.className = "cbtn"; qkOk.id = "lesson-qk-ok"; qkOk.textContent = t("qkCreate");
+  qkInp.onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); qkOk.onclick(); } };
+  qkAddRow.appendChild(qkInp); qkAddRow.appendChild(qkOk); sheet.appendChild(qkAddRow);
+  const paintQk = () => {
+    qkBox.textContent = "";
+    qk.forEach(q => {
+      const b = document.createElement("button"); b.className = "qkchip" + (q.on ? " on" : ""); b.style.setProperty("--qk", q.color);
+      b.setAttribute("aria-pressed", String(q.on));
+      const dot = document.createElement("i"); dot.setAttribute("aria-hidden", "true"); b.appendChild(dot);
+      b.appendChild(document.createTextNode(q.title));
+      b.onclick = () => { q.on = !q.on; haptic(q.on ? 8 : 4); paintQk(); };
+      qkBox.appendChild(b);
+    });
+    if(c.checks.length < MAX_CHECKS){
+      const add = document.createElement("button"); add.className = "qkchip add"; add.id = "lesson-qk-add"; add.textContent = t("qkAdd");
+      add.onclick = () => { qkAddRow.style.display = ""; qkInp.focus(); };
+      qkBox.appendChild(add);
+    }
+  };
+  qkOk.onclick = () => {
+    const title = qkInp.value.trim().slice(0, 60);
+    if(!title){ qkInp.focus(); return; }
+    const ex = qk.find(q => q.title.trim().toLowerCase() === title.toLowerCase());
+    const old = !ex && findTl(title);
+    if(ex){ ex.on = true; }
+    else if(old){ const q = qkItem(old); q.on = true; qk.push(q); }
+    else {
+      const k = newTally(c, title); if(!k) return;          // legt die Liste gleich an
+      /* Farbe, die keiner der Knöpfe schon trägt (auch nicht die noch nicht angelegten Standardlisten) */
+      const taken = new Set(qk.map(q => q.color).concat(allTl.map(x => tallyColor(c, x))));
+      k.color = TL_COLORS.find(x => !taken.has(x)) || k.color; save();
+      qk.push({ k, title: k.title, color: k.color, on0: false, on: true });
+    }
+    qkInp.value = ""; qkAddRow.style.display = "none"; paintQk();
+  };
+  paintQk();
+
   const lab = document.createElement("div");
   lab.className = "eyebrow"; lab.style.marginTop = "14px"; lab.textContent = t("note");
   sheet.appendChild(lab);
@@ -9102,11 +9284,18 @@ function openLessonSheet(it){
     sheet.appendChild(obsArea);
   }
   function commitLesson(){
+    if(qkAddRow.style.display === "" && qkInp.value.trim()) qkOk.onclick();   // getippte eigene Liste nicht verlieren
     const i = L.absent.indexOf(st.id);
     if(absent && i < 0) L.absent.push(st.id);
     if(!absent && i >= 0) L.absent.splice(i, 1);
     if(lateMin !== (lt0 ? lt0.min : 0) || (absent && lt0)) setLateToday(c, st.id, absent ? 0 : lateMin);
     recordLessonAbsence(c);
+    qk.forEach(q => {
+      if(q.on === q.on0) return;
+      if(!q.k){ if(!q.on) return; q.k = newTally(c, q.title); if(!q.k) return; q.k.color = q.color; }
+      if(c.checks.indexOf(q.k) < 0) return;                 // inzwischen gelöscht (Abgleich)
+      toggleTally(q.k, st.id, qkDay);
+    });
     if(obsArea && obsArea.value.trim()) addObs(c, st.id, obsArea.value, lessonSubjectNow(c));
     const note = area.value.trim();
     if(note) L.notes[st.id] = note; else delete L.notes[st.id];
@@ -9246,7 +9435,9 @@ function renderInfo(){
     const h = document.createElement("h3");
     h.textContent = sec.h;
     b.appendChild(h);
-    (sec.p || []).forEach(txt => { const el = document.createElement("p"); el.textContent = txt; b.appendChild(el); });
+    (sec.p || []).forEach(txt => { const el = document.createElement("p");
+      /* Auf Apple-Geräten den Satz zur Android-Entsprechung weglassen */
+      el.textContent = appleDevice() ? txt.replace(/ (Unter Android heißt das|On Android this is called) .*$/, "") : txt; b.appendChild(el); });
     ["ol", "ul"].forEach(kind => {
       if(!sec[kind]) return;
       const list = document.createElement(kind);
@@ -9255,6 +9446,19 @@ function renderInfo(){
     });
     box.appendChild(b);
   });
+  /* Weiterempfehlen, bewerten, Rückmeldung */
+  const like = document.createElement("div"); like.className = "infoblock"; like.id = "info-like";
+  const lkh = document.createElement("h3"); lkh.textContent = t("likeTitle"); like.appendChild(lkh);
+  const lkp = document.createElement("p"); lkp.textContent = t("likeText"); like.appendChild(lkp);
+  const lcol = document.createElement("div"); lcol.className = "likecol";
+  const rec = document.createElement("button"); rec.className = "cbtn outline"; rec.id = "info-recommend"; rec.textContent = t("recBtn");
+  rec.onclick = recommendApp; lcol.appendChild(rec);
+  const rh = rateHref();
+  if(rh){ const a = document.createElement("a"); a.className = "cbtn outline"; a.id = "info-rate"; a.style.textDecoration = "none"; a.href = rh; a.textContent = t("rateBtn"); lcol.appendChild(a); }
+  const fb = document.createElement("a"); fb.className = "cbtn outline"; fb.id = "info-feedback"; fb.style.textDecoration = "none"; fb.href = feedbackHref(); fb.textContent = t("fbBtn");
+  lcol.appendChild(fb);
+  like.appendChild(lcol);
+  box.appendChild(like);
   /* Rechtstexte liegen als eigene Seiten neben der App (auch im Web unter docs/) */
   const legal = document.createElement("div");
   legal.className = "infoblock";
@@ -13879,6 +14083,7 @@ function openChecks(fromClass){
   const ids = new Set(c.students.map(st => st.id));
   c.checks.forEach(k => {
     const b = document.createElement("button"); b.className = "grpcard ckcard" + (isTally(k) ? " tlcard" : "");
+    if(isTally(k)) b.style.borderLeft = "6px solid " + tallyColor(c, k);
     const hb = document.createElement("b"); hb.textContent = k.title;
     const done = c.students.filter(st => k.done.indexOf(st.id) >= 0).length;
     const d = document.createElement("div");
@@ -13927,6 +14132,9 @@ $("#cb-exit").onclick = () => endCheckMode();
 
 /* ============ 32. Klassenarbeit mit Aufgaben, Kursheft, Fehlzeiten, Strichlisten ============ */
 const MAX_TASKS = 40, MAX_TICKS = 5000, MAX_JOURNAL = 1500, MAX_LATE = 3000;
+/* Farben der Strichlisten: gut unterscheidbar, auch hell auf dunkel lesbar (weiße Schrift) */
+const TL_COLORS = ["#B45309", "#7C3AED", "#0E7490", "#BE185D", "#4D7C0F", "#1D4ED8"];
+const TL_NAMES = { de: ["Orange", "Violett", "Petrol", "Pink", "Grün", "Blau"], en: ["Orange", "Violet", "Teal", "Pink", "Green", "Blue"] };
 /* Notenschlüssel: Mindestanteil in % für 1 … 5 (darunter 6) bzw. 15 … 1 Punkte (darunter 0) */
 const KEY_PRESETS = {
   grade: [["ihk", [92, 81, 67, 50, 30]], ["epa", [85, 70, 55, 40, 20]]],
@@ -14766,6 +14974,27 @@ function openAbsences(c, st, back){
 
 /* ---- Strichlisten (z. B. Hausaufgaben vergessen): ein Strich je Tag, Summe bleibt ---- */
 const isTally = k => !!k && k.type === "tally";
+/* Jede Strichliste hat eine Farbe – so sind „Hausaufgaben“, „Material“ und eigene im Sitzplan auseinanderzuhalten */
+function tallyColor(c, k){
+  if(TL_COLORS.indexOf(k.color) >= 0) return k.color;
+  const all = (c && c.checks || []).filter(isTally).reverse();      // älteste zuerst: Farben bleiben stabil
+  const i = Math.max(0, all.indexOf(k));
+  return TL_COLORS[i % TL_COLORS.length];
+}
+function nextTallyColor(c){
+  const used = new Set((c.checks || []).filter(isTally).map(k => tallyColor(c, k)));
+  return TL_COLORS.find(x => !used.has(x)) || TL_COLORS[(c.checks || []).filter(isTally).length % TL_COLORS.length];
+}
+/* Heute vermerkte Striche je Schüler: sid -> [{ title, color }] */
+function tallyTodayMap(c){
+  const m = new Map(), day = isoDay(new Date());
+  (c && c.checks || []).filter(isTally).slice().reverse().forEach(k => {
+    const col = tallyColor(c, k);
+    (k.ticks || []).forEach(x => { if(x.slice(0, 10) !== day) return; const sid = x.slice(11);
+      if(!m.has(sid)) m.set(sid, []); m.get(sid).push({ title: k.title, color: col }); });
+  });
+  return m;
+}
 const tallyCount = (k, sid) => (k.ticks || []).filter(x => x.slice(11) === sid).length;
 function tallyDates(k, sid){ return (k.ticks || []).filter(x => x.slice(11) === sid).map(x => x.slice(0, 10)).sort(); }
 function toggleTally(k, sid, day){
@@ -14776,8 +15005,9 @@ function toggleTally(k, sid, day){
   return i < 0;
 }
 function newTally(c, title){
+  c.checks = Array.isArray(c.checks) ? c.checks : [];
   if(c.checks.length >= MAX_CHECKS){ toast(t("ckLimit")); return null; }
-  const k = { id: uid(), title: title.slice(0, 60), date: isoDay(new Date()), done: [], type: "tally", ticks: [] };
+  const k = { id: uid(), title: title.slice(0, 60), date: isoDay(new Date()), done: [], type: "tally", ticks: [], color: nextTallyColor(c) };
   c.checks.unshift(k); save(); return k;
 }
 function openTallyList(kArg, back){
@@ -14786,6 +15016,14 @@ function openTallyList(kArg, back){
   const sheet = sheetBase(k.title);
   sheetLabel(sheet, t("ckName"));
   const inp = document.createElement("input"); inp.className = "field"; inp.id = "ck-title"; inp.maxLength = 60; inp.value = k.title; sheet.appendChild(inp);
+  sheetLabel(sheet, t("tlColor"));
+  const sw = document.createElement("div"); sw.className = "qkchips"; sw.id = "tl-colors";
+  const paintSw = () => { sw.textContent = ""; TL_COLORS.forEach(col => {
+    const b = document.createElement("button"); b.className = "tlsw" + (tallyColor(c, k) === col ? " on" : ""); b.style.background = col;
+    b.setAttribute("aria-label", t("tlColor") + ": " + (TL_NAMES[LANG] || TL_NAMES.de)[TL_COLORS.indexOf(col)]); b.setAttribute("aria-pressed", String(tallyColor(c, k) === col));
+    b.onclick = () => { k.color = col; save(); paintSw(); refreshCheckView(); };
+    sw.appendChild(b); }); };
+  paintSw(); sheet.appendChild(sw);
   const h = document.createElement("div"); h.className = "hint"; h.textContent = t("tlListHint"); sheet.appendChild(h);
   const box = document.createElement("div"); box.id = "tl-names"; box.style.marginTop = "6px";
   const today = isoDay(new Date());
@@ -14894,7 +15132,7 @@ function syncClass(c, add){
   });
   (c.checks || []).forEach(x => {
     const kk = "k|" + cid + "|" + idk(x.id);
-    add(kk, { title: x.title, date: x.date }, ck);
+    add(kk, x.color ? { title: x.title, date: x.date, color: x.color } : { title: x.title, date: x.date }, ck);   // Farbe nur, wenn gesetzt: alte Listen behalten ihren Zeitstempel
     if(x.type === "tally") add("kty|" + cid + "|" + idk(x.id), "tally", kk);
     (x.done || []).forEach(s => add("kd|" + cid + "|" + idk(x.id) + "|" + idk(s), 1, kk, [sk(s)]));
     (x.ticks || []).forEach(v => add("kt|" + cid + "|" + idk(x.id) + "|" + idk(v), 1, kk, [sk(v.slice(11))]));
@@ -16053,6 +16291,31 @@ applyLang();
 renderStart();
 updateUndoButtons();
 if(!DB.onboarded) setTimeout(showWelcome, 250);
+/* „Neu in dieser Version“: einmal nach einem Update, nicht bei der Erstinstallation.
+   Wer 2.0 schon genutzt hat, kennt den Schlüssel noch nicht – erkennbar an vorhandenen Klassen. */
+const WN_KEY = "fairseat.seenVer";
+const WHATS_NEW = { "2.1.0": ["wn21a", "wn21b", "wn21c"] };
+function showWhatsNew(){
+  const keys = WHATS_NEW[APP_VERSION]; if(!keys) return;
+  const sheet = sheetBase(t("wnTitle").replace("{v}", APP_VERSION));
+  const ul = document.createElement("ul"); ul.className = "pro-list"; ul.id = "wn-list";
+  keys.forEach(k => { const li = document.createElement("li"); li.textContent = t(k); ul.appendChild(li); });
+  sheet.appendChild(ul);
+  const ok = document.createElement("button"); ok.className = "primary"; ok.id = "wn-ok"; ok.style.width = "100%"; ok.style.marginTop = "12px";
+  ok.textContent = t("wnOk"); ok.onclick = closeModal; sheet.appendChild(ok);
+  Store.set(WN_KEY, APP_VERSION);
+}
+(function whatsNewOnStart(){
+  const seen = Store.get(WN_KEY);
+  if(seen === APP_VERSION) return;
+  if(!DB.onboarded || (!seen && !DB.classes.length)){ Store.set(WN_KEY, APP_VERSION); return; }   // neu installiert
+  if(!WHATS_NEW[APP_VERSION]){ Store.set(WN_KEY, APP_VERSION); return; }
+  setTimeout(() => {
+    /* nicht über eine laufende Selbsteinschätzung, Zielscheibe oder ein offenes Fenster legen – dann beim nächsten Start */
+    if(selfMode || targetRun || DB.selfLock || DB.targetLock || $("#modal").classList.contains("on")) return;
+    showWhatsNew();
+  }, 700);
+})();
 /* Lief beim Beenden der App eine Zielscheibe, geht es dort weiter */
 function resumeTargetLock(){
   const L = DB.targetLock; if(!L) return;

@@ -3,6 +3,7 @@
    product(id, ok, fail)  ok({ id, price })                    – Preis als fertiger Text, z. B. "3,99 €"
    buy(id, ok, fail)      ok({ result: "purchased"|"pending"|"cancelled" })
    restore(id, ok, fail)  ok({ owned, error, cancelled })      – Abgleich mit dem App Store (Apple-ID-Anmeldung möglich)
+   review(ok, fail)       Apples Bewertungsabfrage anstoßen (iOS entscheidet, ob sie erscheint)
    watch(cb)              cb({ productId }) bei jeder Änderung (z. B. "Kaufen anfragen" genehmigt, Erstattung)
    fail(e)                e = { error: Text }                                                                      */
 var exec = require('cordova/exec');
@@ -16,5 +17,6 @@ module.exports = {
   product: function(id, ok, fail){ call('product', [String(id)], ok, fail); },
   buy:     function(id, ok, fail){ call('buy',     [String(id)], ok, fail); },
   restore: function(id, ok, fail){ call('restore', [String(id)], ok, fail); },
+  review:  function(ok, fail){ call('review', [], ok, fail); },
   watch:   function(cb){ call('watch', [], cb, null); }
 };
