@@ -54,16 +54,24 @@ jobs:
         with:
           node-version: '22'
 
-      # Fest gewaehlte Xcode-Fassung. Apple nimmt Uploads nur an, wenn sie
-      # mit einem hinreichend neuen SDK gebaut wurden; welches das ist,
-      # verschiebt sich jaehrlich. Diese Zeile ist der Ort, an dem das
-      # nachgezogen wird.
+      # Xcode-Fassung. Apple nimmt Uploads nur an, wenn sie mit einem hinreichend
+      # neuen SDK gebaut wurden; welches das ist, verschiebt sich jaehrlich.
+      # XCODE_WANT unten ist der Ort, an dem das nachgezogen wird.
       - name: Xcode auswählen
         run: |
           set -e
           ls /Applications | grep -i '^Xcode' || true
-          APP=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
-          [ -n "$APP" ] || { echo "Kein Xcode 26 auf diesem Laeufer gefunden."; exit 1; }
+          # Ab April 2027 verlangt Apple das iOS-27-SDK, also Xcode 27 (ITMS-90725).
+          # Bevorzugt wird die neueste fertige Xcode-27-Fassung, sonst Xcode 26.
+          # Beta-Fassungen werden nie gewaehlt – damit gebaute Apps nimmt Apple nicht an.
+          # Bricht der Bau mit Xcode 27, voruebergehend XCODE_WANT="26" setzen.
+          XCODE_WANT="27 26"
+          APP=""
+          for M in $XCODE_WANT; do
+            APP=$(ls -d /Applications/Xcode_${M}*.app 2>/dev/null | grep -viE 'beta|release_candidate' | sort -V | tail -1 || true)
+            [ -n "$APP" ] && break
+          done
+          [ -n "$APP" ] || { echo "Kein passendes Xcode (${XCODE_WANT}) auf diesem Laeufer gefunden."; exit 1; }
           sudo xcode-select -switch "$APP"
           xcodebuild -version
 
